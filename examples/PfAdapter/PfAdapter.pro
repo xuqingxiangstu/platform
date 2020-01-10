@@ -17,11 +17,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapter
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapter
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapterManager
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapterManager
 
 INCLUDEPATH += $$PWD/../../src/PfAdapter
 DEPENDPATH += $$PWD/../../src/PfAdapter
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lanalogIn
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lanalogIn
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lnetWork
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lnetWork
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lserialPort
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lserialPort

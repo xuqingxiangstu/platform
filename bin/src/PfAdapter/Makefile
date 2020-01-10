@@ -24,7 +24,12 @@ SYMLINK       = $(QMAKE) -install ln -f -s
 DEL_DIR       = rmdir
 MOVE          = move
 SUBTARGETS    =  \
-		sub-PfAdapterManager
+		sub-PfAdapterManager \
+		sub-AnalogInAdapter \
+		sub-BroadcastAdapter \
+		sub-MulticastAdapter \
+		sub-UnicastAdapter \
+		sub-SerialPortAdapter
 
 
 sub-PfAdapterManager-qmake_all:  FORCE
@@ -52,6 +57,131 @@ sub-PfAdapterManager-install_subtargets: FORCE
 sub-PfAdapterManager-uninstall_subtargets: FORCE
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-AnalogInAdapter-qmake_all:  FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd AnalogInAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-AnalogInAdapter: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-AnalogInAdapter-make_first: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-AnalogInAdapter-all: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-AnalogInAdapter-clean: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-AnalogInAdapter-distclean: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-AnalogInAdapter-install_subtargets: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-AnalogInAdapter-uninstall_subtargets: FORCE
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-BroadcastAdapter-qmake_all:  FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd BroadcastAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-BroadcastAdapter: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-BroadcastAdapter-make_first: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-BroadcastAdapter-all: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-BroadcastAdapter-clean: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-BroadcastAdapter-distclean: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-BroadcastAdapter-install_subtargets: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-BroadcastAdapter-uninstall_subtargets: FORCE
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-MulticastAdapter-qmake_all:  FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd MulticastAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-MulticastAdapter: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-MulticastAdapter-make_first: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-MulticastAdapter-all: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-MulticastAdapter-clean: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-MulticastAdapter-distclean: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-MulticastAdapter-install_subtargets: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-MulticastAdapter-uninstall_subtargets: FORCE
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-UnicastAdapter-qmake_all:  FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd UnicastAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-UnicastAdapter: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-UnicastAdapter-make_first: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-UnicastAdapter-all: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-UnicastAdapter-clean: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-UnicastAdapter-distclean: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-UnicastAdapter-install_subtargets: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-UnicastAdapter-uninstall_subtargets: FORCE
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-SerialPortAdapter-qmake_all:  FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd SerialPortAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-SerialPortAdapter: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-SerialPortAdapter-make_first: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-SerialPortAdapter-all: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-SerialPortAdapter-clean: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-SerialPortAdapter-distclean: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-SerialPortAdapter-install_subtargets: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-SerialPortAdapter-uninstall_subtargets: FORCE
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../../src/PfAdapter/PfAdapter.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -313,30 +443,75 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\..\src\PfAdapter\PfAdapter.pro
 
-qmake_all: sub-PfAdapterManager-qmake_all FORCE
+qmake_all: sub-PfAdapterManager-qmake_all sub-AnalogInAdapter-qmake_all sub-BroadcastAdapter-qmake_all sub-MulticastAdapter-qmake_all sub-UnicastAdapter-qmake_all sub-SerialPortAdapter-qmake_all FORCE
 
-make_first: sub-PfAdapterManager-make_first  FORCE
-all: sub-PfAdapterManager-all  FORCE
-clean: sub-PfAdapterManager-clean  FORCE
-distclean: sub-PfAdapterManager-distclean  FORCE
+make_first: sub-PfAdapterManager-make_first sub-AnalogInAdapter-make_first sub-BroadcastAdapter-make_first sub-MulticastAdapter-make_first sub-UnicastAdapter-make_first sub-SerialPortAdapter-make_first  FORCE
+all: sub-PfAdapterManager-all sub-AnalogInAdapter-all sub-BroadcastAdapter-all sub-MulticastAdapter-all sub-UnicastAdapter-all sub-SerialPortAdapter-all  FORCE
+clean: sub-PfAdapterManager-clean sub-AnalogInAdapter-clean sub-BroadcastAdapter-clean sub-MulticastAdapter-clean sub-UnicastAdapter-clean sub-SerialPortAdapter-clean  FORCE
+distclean: sub-PfAdapterManager-distclean sub-AnalogInAdapter-distclean sub-BroadcastAdapter-distclean sub-MulticastAdapter-distclean sub-UnicastAdapter-distclean sub-SerialPortAdapter-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfAdapterManager-install_subtargets FORCE
-uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets FORCE
+install_subtargets: sub-PfAdapterManager-install_subtargets sub-AnalogInAdapter-install_subtargets sub-BroadcastAdapter-install_subtargets sub-MulticastAdapter-install_subtargets sub-UnicastAdapter-install_subtargets sub-SerialPortAdapter-install_subtargets FORCE
+uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets sub-AnalogInAdapter-uninstall_subtargets sub-BroadcastAdapter-uninstall_subtargets sub-MulticastAdapter-uninstall_subtargets sub-UnicastAdapter-uninstall_subtargets sub-SerialPortAdapter-uninstall_subtargets FORCE
 
 sub-PfAdapterManager-debug:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-PfAdapterManager-debug
+sub-AnalogInAdapter-debug:
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-BroadcastAdapter-debug:
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-MulticastAdapter-debug:
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-UnicastAdapter-debug:
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-SerialPortAdapter-debug:
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-PfAdapterManager-debug sub-AnalogInAdapter-debug sub-BroadcastAdapter-debug sub-MulticastAdapter-debug sub-UnicastAdapter-debug sub-SerialPortAdapter-debug
 
 sub-PfAdapterManager-release:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-PfAdapterManager-release
+sub-AnalogInAdapter-release:
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-BroadcastAdapter-release:
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-MulticastAdapter-release:
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-UnicastAdapter-release:
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-SerialPortAdapter-release:
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-PfAdapterManager-release sub-AnalogInAdapter-release sub-BroadcastAdapter-release sub-MulticastAdapter-release sub-UnicastAdapter-release sub-SerialPortAdapter-release
 
 sub-PfAdapterManager-check:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfAdapterManager-check
+sub-AnalogInAdapter-check:
+	@if not exist AnalogInAdapter\ mkdir AnalogInAdapter\ & if not exist AnalogInAdapter\ exit 1
+	cd AnalogInAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-BroadcastAdapter-check:
+	@if not exist BroadcastAdapter\ mkdir BroadcastAdapter\ & if not exist BroadcastAdapter\ exit 1
+	cd BroadcastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\BroadcastAdapter\BroadcastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-MulticastAdapter-check:
+	@if not exist MulticastAdapter\ mkdir MulticastAdapter\ & if not exist MulticastAdapter\ exit 1
+	cd MulticastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\MulticastAdapter\MulticastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-UnicastAdapter-check:
+	@if not exist UnicastAdapter\ mkdir UnicastAdapter\ & if not exist UnicastAdapter\ exit 1
+	cd UnicastAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\UnicastAdapter\UnicastAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-SerialPortAdapter-check:
+	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
+	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-PfAdapterManager-check sub-AnalogInAdapter-check sub-BroadcastAdapter-check sub-MulticastAdapter-check sub-UnicastAdapter-check sub-SerialPortAdapter-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

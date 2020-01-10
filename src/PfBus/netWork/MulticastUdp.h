@@ -19,7 +19,7 @@ namespace Pf
     {
         /**
          * @brief The MulticastUdp class
-         * UDP广播
+         * UDP组播
          */
         class NETWORKSHARED_EXPORT MulticastUdp
         {

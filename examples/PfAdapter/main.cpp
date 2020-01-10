@@ -2,19 +2,15 @@
 
 #include <memory>
 
-#include "pfAdapter.h"
-
-#include "./netWork/BroadcastAdapter.h"
-
-#include "./analogIn/AnalogInAdapter.h"
-#include "./analogOut/AnalogOutAdapter.h"
-#include "./digitalIo/DigitalIoAdapter.h"
-#include "./digitalOut/DigitalOutAdapter.h"
-#include "./relayCtrl/RelayCtrlAdapter.h"
+#include "PfAdapterManager/pfadaptermanager.h"
 
 #include <QDateTime>
+#include <iostream>
+#include <unistd.h>
 
 using namespace Pf;
+
+using float64 = double;
 
 //step1：实例化
 std::shared_ptr<PfAdapter::PfAdapterManager> obj = std::make_shared<PfAdapter::PfAdapterManager>();
@@ -23,7 +19,7 @@ std::shared_ptr<PfAdapter::PfAdapterManager> obj = std::make_shared<PfAdapter::P
 #define CHANNLE_SIZE 2
 //数据缓冲器
 float64 values[CHANNLE_SIZE] = {0};
-
+#if 0
 //数据委托 数据回调函数，在此函数中读取数据
 int32 analogDataDelegate(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
 {
@@ -45,6 +41,7 @@ int32 analogDataDelegate(TaskHandle taskHandle, int32 everyNsamplesEventType, uI
         std::cout << std::endl;
     }
 }
+#endif
 
 void test()
 {
@@ -54,13 +51,15 @@ void test()
     //step3：获取适配器句柄
     PfAdapter::Adapter *ada = nullptr;
 
-    std::string id = "PXI6375_1";
+    std::string id = "send2";
 
     if(obj->getAdapter(id, &ada))
     {
-#if 0
+        //int rate = 5;
+        //ada->setAttribute("Rate", &rate);
+#if 1
         //step4：总线收发数据
-        std::string msg = "hello word";
+        std::string msg = "hello word ffffffffffffffffff";
         if(ada->sendMsg(msg.c_str(), msg.size()))
         {
             std::cout << "send ok" << std::endl;
@@ -82,7 +81,7 @@ void test()
 
         while(1)
         {
-            Sleep(500);
+            //sleep(500);
             if(ada->receiveMsg(str, rcvSize, maxRcvSize, timeOut))
             {
                 std::cout << "receive ok " << str << rcvSize << std::endl;
