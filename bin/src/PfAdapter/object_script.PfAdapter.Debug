@@ -1,0 +1,13 @@
+INPUT(
+./debug\Adapter.o
+./debug\pfAdapter.o
+./debug\BroadcastAdapter.o
+./debug\MulticastAdapter.o
+./debug\UnicastAdapter.o
+./debug\SerialPortAdapter.o
+./debug\AnalogInAdapter.o
+./debug\AnalogOutAdapter.o
+./debug\DigitalIoAdapter.o
+./debug\DigitalOutAdapter.o
+./debug\RelayCtrlAdapter.o
+);

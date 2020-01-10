@@ -1,0 +1,12 @@
+#ifndef ANALOGIN_GLOBAL_H
+#define ANALOGIN_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(ANALOGIN_LIBRARY)
+#  define ANALOGINSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define ANALOGINSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ANALOGIN_GLOBAL_H

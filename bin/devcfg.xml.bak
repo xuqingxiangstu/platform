@@ -1,0 +1,27 @@
+<?xml version="1.0"?>	
+<configure>
+	<!--
+	继电器控制适配器
+	id：全局唯一，需按实际更改
+	class：固定不变
+	-->
+	<dev id="PXI2569" class="RelayCtrlAdapter">			
+		<!-- 设备名称，Ni-Max中查看 -->
+		<rname>PXI2569</rname>
+		<!-- 通道数，NI-Max查看-->
+		<channelSize>100</channelSize>	
+	</dev>
+	
+	<!--
+	模拟量输入适配器
+	id：全局唯一，需按实际更改
+	class：固定不变
+	-->
+	<dev id="PXI6375_1" class="AnalogInAdapter">			
+		<!-- 设备名称，Ni-Max中查看 -->
+		<rname>PXI6375_1</rname>
+		<!-- port号，按实际填写 Ni-Max中查看，可多个<port></port> -->
+		<port>1</port>
+		<port>2</port>			
+	</dev>
+</configure>

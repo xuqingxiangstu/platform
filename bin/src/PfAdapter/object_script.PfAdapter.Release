@@ -1,0 +1,13 @@
+INPUT(
+./release\Adapter.o
+./release\pfAdapter.o
+./release\BroadcastAdapter.o
+./release\MulticastAdapter.o
+./release\UnicastAdapter.o
+./release\SerialPortAdapter.o
+./release\AnalogInAdapter.o
+./release\AnalogOutAdapter.o
+./release\DigitalIoAdapter.o
+./release\DigitalOutAdapter.o
+./release\RelayCtrlAdapter.o
+);
