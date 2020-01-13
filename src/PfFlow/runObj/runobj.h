@@ -97,6 +97,12 @@ public:
      * @param[in] adapter 适配器
      */
     virtual void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter){}
+
+    /**
+     * @brief version 版本号
+     * @return 版本号
+     */
+    virtual std::string version(){return "";}
 };
 
 /** 类导出函数指针 **/

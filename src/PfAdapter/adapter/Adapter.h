@@ -112,6 +112,11 @@ namespace Pf
              */
             virtual bool readValue(double *value, int &rSzie){return false;}
 
+            /**
+             * @brief version 版本号
+             * @return 版本号
+             */
+            virtual std::string version(){return "";}
         };
 
         /** 类导出函数指针 **/

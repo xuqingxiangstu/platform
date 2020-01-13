@@ -17,11 +17,8 @@
 	id：全局唯一，需按实际更改
 	class：固定不变
 	-->
-	<dev id="PXI6375_1" class="AnalogInAdapter">			
+	<dev id="ssss" class="test">			
 		<!-- 设备名称，Ni-Max中查看 -->
-		<rname>PXI6375_1</rname>
-		<!-- port号，按实际填写 Ni-Max中查看，可多个<port></port> -->
-		<port>1</port>
-		<port>2</port>			
+		<ip>12</ip>
 	</dev>
 </configure>

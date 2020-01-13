@@ -69,6 +69,9 @@ void MainWindow::add()
 \n\
 #include <memory>\n\
 \n\
+/** 版本号 **/\n\
+#define VERSION \"1.0.0\"\n\
+\n\
 namespace Pf\n\
 {\n\
   namespace PfAdapter\n\
@@ -88,6 +91,7 @@ namespace Pf\n\
           int setAttribute(const std::string &attr, const void *value) override;\n\
           bool writeValue(const double *value, const int size) override;\n\
           bool readValue(double *value, int &rSzie) override;\n\
+          std::string version() override {return VERSION;}\n\
       private:\n\
           std::mutex mMutex;   ///< 消息锁\n\
       };\n\

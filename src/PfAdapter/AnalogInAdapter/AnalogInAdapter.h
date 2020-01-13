@@ -7,6 +7,9 @@
 
 #include <memory>
 
+/** 版本号 **/
+#define VERSION "1.0.0"
+
 namespace Pf
 {
   namespace PfAdapter
@@ -26,6 +29,7 @@ namespace Pf
           int setAttribute(const std::string &attr, const void *value) override;
           bool writeValue(const double *value, const int size) override;
           bool readValue(double *value, int &rSzie) override;
+          std::string version() override {return VERSION;}
       private:
           std::mutex mMutex;   ///< 消息锁
       };

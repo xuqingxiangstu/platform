@@ -66,6 +66,9 @@ void MainWindow::add()
 #include \"" + className + "_global.h\"\n\
 \n\
 #include \"../runObj/runobj.h\"\n\
+/** 版本号 **/\n\
+#define VERSION \"1.0.0\"\n\
+\n\
 \n\
 class " + tmp + "SHARED_EXPORT " + className + " : public runObj\n\
 {\n\
@@ -81,6 +84,7 @@ public:\n\
     std::string outText() override;\n\
     void setAutoRunObj(runObj *obj) override;\n\
     void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter) override;\n\
+    std::string version() override {return VERSION;}\n\
 private:\n\
     runObj *mRunObj;    ///< 运行类\n\
     bool mResult; ///< 测试结果\n\
