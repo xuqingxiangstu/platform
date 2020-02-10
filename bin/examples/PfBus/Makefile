@@ -205,6 +205,8 @@ Makefile: ../../../examples/PfBus/PfBus.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspec
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri \
@@ -331,6 +333,8 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri:
+F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri:
+F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri:

@@ -26,7 +26,8 @@ MOVE          = move
 SUBTARGETS    =  \
 		sub-TinyXml \
 		sub-dynCreate \
-		sub-recordLog
+		sub-recordLog \
+		sub-crc
 
 
 sub-TinyXml-qmake_all:  FORCE
@@ -104,6 +105,31 @@ sub-recordLog-install_subtargets: FORCE
 sub-recordLog-uninstall_subtargets: FORCE
 	@if not exist recordLog\ mkdir recordLog\ & if not exist recordLog\ exit 1
 	cd recordLog\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\recordLog\recordLog.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-crc-qmake_all:  FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd crc\ && $(MAKE) -f Makefile qmake_all
+sub-crc: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-crc-make_first: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-crc-all: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-crc-clean: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-crc-distclean: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-crc-install_subtargets: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-crc-uninstall_subtargets: FORCE
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../../src/PfCommon/PfCommon.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -365,15 +391,15 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\..\src\PfCommon\PfCommon.pro
 
-qmake_all: sub-TinyXml-qmake_all sub-dynCreate-qmake_all sub-recordLog-qmake_all FORCE
+qmake_all: sub-TinyXml-qmake_all sub-dynCreate-qmake_all sub-recordLog-qmake_all sub-crc-qmake_all FORCE
 
-make_first: sub-TinyXml-make_first sub-dynCreate-make_first sub-recordLog-make_first  FORCE
-all: sub-TinyXml-all sub-dynCreate-all sub-recordLog-all  FORCE
-clean: sub-TinyXml-clean sub-dynCreate-clean sub-recordLog-clean  FORCE
-distclean: sub-TinyXml-distclean sub-dynCreate-distclean sub-recordLog-distclean  FORCE
+make_first: sub-TinyXml-make_first sub-dynCreate-make_first sub-recordLog-make_first sub-crc-make_first  FORCE
+all: sub-TinyXml-all sub-dynCreate-all sub-recordLog-all sub-crc-all  FORCE
+clean: sub-TinyXml-clean sub-dynCreate-clean sub-recordLog-clean sub-crc-clean  FORCE
+distclean: sub-TinyXml-distclean sub-dynCreate-distclean sub-recordLog-distclean sub-crc-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-TinyXml-install_subtargets sub-dynCreate-install_subtargets sub-recordLog-install_subtargets FORCE
-uninstall_subtargets: sub-TinyXml-uninstall_subtargets sub-dynCreate-uninstall_subtargets sub-recordLog-uninstall_subtargets FORCE
+install_subtargets: sub-TinyXml-install_subtargets sub-dynCreate-install_subtargets sub-recordLog-install_subtargets sub-crc-install_subtargets FORCE
+uninstall_subtargets: sub-TinyXml-uninstall_subtargets sub-dynCreate-uninstall_subtargets sub-recordLog-uninstall_subtargets sub-crc-uninstall_subtargets FORCE
 
 sub-TinyXml-debug:
 	@if not exist TinyXml\ mkdir TinyXml\ & if not exist TinyXml\ exit 1
@@ -384,7 +410,10 @@ sub-dynCreate-debug:
 sub-recordLog-debug:
 	@if not exist recordLog\ mkdir recordLog\ & if not exist recordLog\ exit 1
 	cd recordLog\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\recordLog\recordLog.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-TinyXml-debug sub-dynCreate-debug sub-recordLog-debug
+sub-crc-debug:
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-TinyXml-debug sub-dynCreate-debug sub-recordLog-debug sub-crc-debug
 
 sub-TinyXml-release:
 	@if not exist TinyXml\ mkdir TinyXml\ & if not exist TinyXml\ exit 1
@@ -395,7 +424,10 @@ sub-dynCreate-release:
 sub-recordLog-release:
 	@if not exist recordLog\ mkdir recordLog\ & if not exist recordLog\ exit 1
 	cd recordLog\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\recordLog\recordLog.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-TinyXml-release sub-dynCreate-release sub-recordLog-release
+sub-crc-release:
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-TinyXml-release sub-dynCreate-release sub-recordLog-release sub-crc-release
 
 sub-TinyXml-check:
 	@if not exist TinyXml\ mkdir TinyXml\ & if not exist TinyXml\ exit 1
@@ -406,7 +438,10 @@ sub-dynCreate-check:
 sub-recordLog-check:
 	@if not exist recordLog\ mkdir recordLog\ & if not exist recordLog\ exit 1
 	cd recordLog\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\recordLog\recordLog.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-TinyXml-check sub-dynCreate-check sub-recordLog-check
+sub-crc-check:
+	@if not exist crc\ mkdir crc\ & if not exist crc\ exit 1
+	cd crc\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\crc\crc.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-TinyXml-check sub-dynCreate-check sub-recordLog-check sub-crc-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

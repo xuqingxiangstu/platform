@@ -28,7 +28,8 @@ SUBTARGETS    =  \
 		sub-PfNi \
 		sub-PfCommon \
 		sub-PfFlow \
-		sub-PfAdapter
+		sub-PfAdapter \
+		sub-PfIcdWorkBench
 
 
 sub-PfBus-qmake_all:  FORCE
@@ -156,6 +157,31 @@ sub-PfAdapter-install_subtargets: FORCE
 sub-PfAdapter-uninstall_subtargets: FORCE
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-PfIcdWorkBench-qmake_all:  FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd PfIcdWorkBench\ && $(MAKE) -f Makefile qmake_all
+sub-PfIcdWorkBench: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-PfIcdWorkBench-make_first: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-PfIcdWorkBench-all: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-PfIcdWorkBench-clean: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-PfIcdWorkBench-distclean: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-PfIcdWorkBench-install_subtargets: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-PfIcdWorkBench-uninstall_subtargets: FORCE
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../src/src.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -415,15 +441,15 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\src\src.pro
 
-qmake_all: sub-PfBus-qmake_all sub-PfNi-qmake_all sub-PfCommon-qmake_all sub-PfFlow-qmake_all sub-PfAdapter-qmake_all FORCE
+qmake_all: sub-PfBus-qmake_all sub-PfNi-qmake_all sub-PfCommon-qmake_all sub-PfFlow-qmake_all sub-PfAdapter-qmake_all sub-PfIcdWorkBench-qmake_all FORCE
 
-make_first: sub-PfBus-make_first sub-PfNi-make_first sub-PfCommon-make_first sub-PfFlow-make_first sub-PfAdapter-make_first  FORCE
-all: sub-PfBus-all sub-PfNi-all sub-PfCommon-all sub-PfFlow-all sub-PfAdapter-all  FORCE
-clean: sub-PfBus-clean sub-PfNi-clean sub-PfCommon-clean sub-PfFlow-clean sub-PfAdapter-clean  FORCE
-distclean: sub-PfBus-distclean sub-PfNi-distclean sub-PfCommon-distclean sub-PfFlow-distclean sub-PfAdapter-distclean  FORCE
+make_first: sub-PfBus-make_first sub-PfNi-make_first sub-PfCommon-make_first sub-PfFlow-make_first sub-PfAdapter-make_first sub-PfIcdWorkBench-make_first  FORCE
+all: sub-PfBus-all sub-PfNi-all sub-PfCommon-all sub-PfFlow-all sub-PfAdapter-all sub-PfIcdWorkBench-all  FORCE
+clean: sub-PfBus-clean sub-PfNi-clean sub-PfCommon-clean sub-PfFlow-clean sub-PfAdapter-clean sub-PfIcdWorkBench-clean  FORCE
+distclean: sub-PfBus-distclean sub-PfNi-distclean sub-PfCommon-distclean sub-PfFlow-distclean sub-PfAdapter-distclean sub-PfIcdWorkBench-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfBus-install_subtargets sub-PfNi-install_subtargets sub-PfCommon-install_subtargets sub-PfFlow-install_subtargets sub-PfAdapter-install_subtargets FORCE
-uninstall_subtargets: sub-PfBus-uninstall_subtargets sub-PfNi-uninstall_subtargets sub-PfCommon-uninstall_subtargets sub-PfFlow-uninstall_subtargets sub-PfAdapter-uninstall_subtargets FORCE
+install_subtargets: sub-PfBus-install_subtargets sub-PfNi-install_subtargets sub-PfCommon-install_subtargets sub-PfFlow-install_subtargets sub-PfAdapter-install_subtargets sub-PfIcdWorkBench-install_subtargets FORCE
+uninstall_subtargets: sub-PfBus-uninstall_subtargets sub-PfNi-uninstall_subtargets sub-PfCommon-uninstall_subtargets sub-PfFlow-uninstall_subtargets sub-PfAdapter-uninstall_subtargets sub-PfIcdWorkBench-uninstall_subtargets FORCE
 
 sub-PfBus-debug:
 	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
@@ -440,7 +466,10 @@ sub-PfFlow-debug:
 sub-PfAdapter-debug:
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-PfBus-debug sub-PfNi-debug sub-PfCommon-debug sub-PfFlow-debug sub-PfAdapter-debug
+sub-PfIcdWorkBench-debug:
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-PfBus-debug sub-PfNi-debug sub-PfCommon-debug sub-PfFlow-debug sub-PfAdapter-debug sub-PfIcdWorkBench-debug
 
 sub-PfBus-release:
 	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
@@ -457,7 +486,10 @@ sub-PfFlow-release:
 sub-PfAdapter-release:
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-PfBus-release sub-PfNi-release sub-PfCommon-release sub-PfFlow-release sub-PfAdapter-release
+sub-PfIcdWorkBench-release:
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-PfBus-release sub-PfNi-release sub-PfCommon-release sub-PfFlow-release sub-PfAdapter-release sub-PfIcdWorkBench-release
 
 sub-PfBus-check:
 	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
@@ -474,7 +506,10 @@ sub-PfFlow-check:
 sub-PfAdapter-check:
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfBus-check sub-PfNi-check sub-PfCommon-check sub-PfFlow-check sub-PfAdapter-check
+sub-PfIcdWorkBench-check:
+	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
+	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-PfBus-check sub-PfNi-check sub-PfCommon-check sub-PfFlow-check sub-PfAdapter-check sub-PfIcdWorkBench-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

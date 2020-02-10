@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS +=  \
     TinyXml \
     dynCreate \
-    recordLog
+    recordLog \
+    crc
 
 include (./tools/tools.pri)

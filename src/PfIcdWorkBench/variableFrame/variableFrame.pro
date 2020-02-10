@@ -1,0 +1,31 @@
+#-------------------------------------------------
+#
+# Project created by QtCreator 2020-02-10T11:06:39
+#
+#-------------------------------------------------
+
+QT       -= gui
+QT       += xlsx
+TARGET = ../../../../frameLib/variableFrame
+TEMPLATE = lib
+
+CONFIG += C++14
+
+DEFINES += VARIABLEFRAME_LIBRARY
+
+SOURCES += variableframe.cpp \
+    protocolconfigure.cpp \
+    subprotocolconfigure.cpp
+
+HEADERS += variableframe.h\
+        variableframe_global.h \
+    protocolconfigure.h \
+    subprotocolconfigure.h
+
+unix {
+    target.path = /usr/lib
+    INSTALLS += target
+}
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml

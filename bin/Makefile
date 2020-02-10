@@ -25,7 +25,8 @@ DEL_DIR       = rmdir
 MOVE          = move
 SUBTARGETS    =  \
 		sub-examples \
-		sub-src
+		sub-src \
+		sub-template
 
 
 sub-examples-qmake_all:  FORCE
@@ -78,6 +79,31 @@ sub-src-install_subtargets: FORCE
 sub-src-uninstall_subtargets: FORCE
 	@if not exist src\ mkdir src\ & if not exist src\ exit 1
 	cd src\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\src.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-template-qmake_all:  FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd template\ && $(MAKE) -f Makefile qmake_all
+sub-template: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-template-make_first: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-template-all: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-template-clean: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-template-distclean: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-template-install_subtargets: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-template-uninstall_subtargets: FORCE
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../platform.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -179,6 +205,8 @@ Makefile: ../platform.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri \
@@ -305,6 +333,8 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri:
+F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri:
+F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri:
@@ -333,15 +363,15 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\platform.pro
 
-qmake_all: sub-examples-qmake_all sub-src-qmake_all FORCE
+qmake_all: sub-examples-qmake_all sub-src-qmake_all sub-template-qmake_all FORCE
 
-make_first: sub-examples-make_first sub-src-make_first  FORCE
-all: sub-examples-all sub-src-all  FORCE
-clean: sub-examples-clean sub-src-clean  FORCE
-distclean: sub-examples-distclean sub-src-distclean  FORCE
+make_first: sub-examples-make_first sub-src-make_first sub-template-make_first  FORCE
+all: sub-examples-all sub-src-all sub-template-all  FORCE
+clean: sub-examples-clean sub-src-clean sub-template-clean  FORCE
+distclean: sub-examples-distclean sub-src-distclean sub-template-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-examples-install_subtargets sub-src-install_subtargets FORCE
-uninstall_subtargets: sub-examples-uninstall_subtargets sub-src-uninstall_subtargets FORCE
+install_subtargets: sub-examples-install_subtargets sub-src-install_subtargets sub-template-install_subtargets FORCE
+uninstall_subtargets: sub-examples-uninstall_subtargets sub-src-uninstall_subtargets sub-template-uninstall_subtargets FORCE
 
 sub-examples-debug:
 	@if not exist examples\ mkdir examples\ & if not exist examples\ exit 1
@@ -349,7 +379,10 @@ sub-examples-debug:
 sub-src-debug:
 	@if not exist src\ mkdir src\ & if not exist src\ exit 1
 	cd src\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\src.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-examples-debug sub-src-debug
+sub-template-debug:
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-examples-debug sub-src-debug sub-template-debug
 
 sub-examples-release:
 	@if not exist examples\ mkdir examples\ & if not exist examples\ exit 1
@@ -357,7 +390,10 @@ sub-examples-release:
 sub-src-release:
 	@if not exist src\ mkdir src\ & if not exist src\ exit 1
 	cd src\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\src.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-examples-release sub-src-release
+sub-template-release:
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-examples-release sub-src-release sub-template-release
 
 sub-examples-check:
 	@if not exist examples\ mkdir examples\ & if not exist examples\ exit 1
@@ -365,7 +401,10 @@ sub-examples-check:
 sub-src-check:
 	@if not exist src\ mkdir src\ & if not exist src\ exit 1
 	cd src\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\src.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-examples-check sub-src-check
+sub-template-check:
+	@if not exist template\ mkdir template\ & if not exist template\ exit 1
+	cd template\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\template\template.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-examples-check sub-src-check sub-template-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

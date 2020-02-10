@@ -1,0 +1,7 @@
+<?xml version="1.0"?>	
+<configure>
+	<icd key="1" protocol="variableFrame">
+		<frameconfig>Variable/VariableConfig.xlsx</frameconfig>
+		<dataRegionConfig>Variable/VariableDataRegionConfig.xlsx</dataRegionConfig>
+	</icd>
+</configure>

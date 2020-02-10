@@ -27,7 +27,8 @@ SUBTARGETS    =  \
 		sub-PfBus \
 		sub-PfNi \
 		sub-PfAdapter \
-		sub-PfCommon
+		sub-PfCommon \
+		sub-PfIcdDemo
 
 
 sub-PfBus-qmake_all:  FORCE
@@ -130,6 +131,31 @@ sub-PfCommon-install_subtargets: FORCE
 sub-PfCommon-uninstall_subtargets: FORCE
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-PfIcdDemo-qmake_all:  FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd PfIcdDemo\ && $(MAKE) -f Makefile qmake_all
+sub-PfIcdDemo: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-PfIcdDemo-make_first: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-PfIcdDemo-all: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-PfIcdDemo-clean: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-PfIcdDemo-distclean: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-PfIcdDemo-install_subtargets: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-PfIcdDemo-uninstall_subtargets: FORCE
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../examples/examples.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -231,6 +257,8 @@ Makefile: ../../examples/examples.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win3
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri \
@@ -357,6 +385,8 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri:
+F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri:
+F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri:
 C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri:
@@ -385,15 +415,15 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\examples\examples.pro
 
-qmake_all: sub-PfBus-qmake_all sub-PfNi-qmake_all sub-PfAdapter-qmake_all sub-PfCommon-qmake_all FORCE
+qmake_all: sub-PfBus-qmake_all sub-PfNi-qmake_all sub-PfAdapter-qmake_all sub-PfCommon-qmake_all sub-PfIcdDemo-qmake_all FORCE
 
-make_first: sub-PfBus-make_first sub-PfNi-make_first sub-PfAdapter-make_first sub-PfCommon-make_first  FORCE
-all: sub-PfBus-all sub-PfNi-all sub-PfAdapter-all sub-PfCommon-all  FORCE
-clean: sub-PfBus-clean sub-PfNi-clean sub-PfAdapter-clean sub-PfCommon-clean  FORCE
-distclean: sub-PfBus-distclean sub-PfNi-distclean sub-PfAdapter-distclean sub-PfCommon-distclean  FORCE
+make_first: sub-PfBus-make_first sub-PfNi-make_first sub-PfAdapter-make_first sub-PfCommon-make_first sub-PfIcdDemo-make_first  FORCE
+all: sub-PfBus-all sub-PfNi-all sub-PfAdapter-all sub-PfCommon-all sub-PfIcdDemo-all  FORCE
+clean: sub-PfBus-clean sub-PfNi-clean sub-PfAdapter-clean sub-PfCommon-clean sub-PfIcdDemo-clean  FORCE
+distclean: sub-PfBus-distclean sub-PfNi-distclean sub-PfAdapter-distclean sub-PfCommon-distclean sub-PfIcdDemo-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfBus-install_subtargets sub-PfNi-install_subtargets sub-PfAdapter-install_subtargets sub-PfCommon-install_subtargets FORCE
-uninstall_subtargets: sub-PfBus-uninstall_subtargets sub-PfNi-uninstall_subtargets sub-PfAdapter-uninstall_subtargets sub-PfCommon-uninstall_subtargets FORCE
+install_subtargets: sub-PfBus-install_subtargets sub-PfNi-install_subtargets sub-PfAdapter-install_subtargets sub-PfCommon-install_subtargets sub-PfIcdDemo-install_subtargets FORCE
+uninstall_subtargets: sub-PfBus-uninstall_subtargets sub-PfNi-uninstall_subtargets sub-PfAdapter-uninstall_subtargets sub-PfCommon-uninstall_subtargets sub-PfIcdDemo-uninstall_subtargets FORCE
 
 sub-PfBus-debug:
 	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
@@ -407,7 +437,10 @@ sub-PfAdapter-debug:
 sub-PfCommon-debug:
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-PfBus-debug sub-PfNi-debug sub-PfAdapter-debug sub-PfCommon-debug
+sub-PfIcdDemo-debug:
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-PfBus-debug sub-PfNi-debug sub-PfAdapter-debug sub-PfCommon-debug sub-PfIcdDemo-debug
 
 sub-PfBus-release:
 	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
@@ -421,7 +454,10 @@ sub-PfAdapter-release:
 sub-PfCommon-release:
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-PfBus-release sub-PfNi-release sub-PfAdapter-release sub-PfCommon-release
+sub-PfIcdDemo-release:
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-PfBus-release sub-PfNi-release sub-PfAdapter-release sub-PfCommon-release sub-PfIcdDemo-release
 
 sub-PfBus-check:
 	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
@@ -435,7 +471,10 @@ sub-PfAdapter-check:
 sub-PfCommon-check:
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfBus-check sub-PfNi-check sub-PfAdapter-check sub-PfCommon-check
+sub-PfIcdDemo-check:
+	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
+	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-PfBus-check sub-PfNi-check sub-PfAdapter-check sub-PfCommon-check sub-PfIcdDemo-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE
