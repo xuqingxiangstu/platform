@@ -15,7 +15,7 @@
 
 #include <string>
 #include <vector>
-
+#include <memory>
 
 
 /** 帧配置跟目录 **/
@@ -45,6 +45,12 @@ namespace Pf
             virtual void init(const TiXmlElement *ele){}
 
             /**
+             * @brief clone 类克隆（深拷贝）
+             * @return 类句柄
+             */
+            virtual std::shared_ptr<frameObj> clone(){return nullptr;}
+
+            /**
              * @brief getFrameName 获取帧名称
              * @return 帧名
              */
@@ -70,7 +76,7 @@ namespace Pf
              * @param inSize    数据长度
              * @param outValue  输出数据
              */
-            virtual void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutSrcValueType> &outValue){}
+            virtual void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue){}
         };
 
         /** 类导出函数指针 **/

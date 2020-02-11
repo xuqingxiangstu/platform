@@ -17,7 +17,7 @@ void relayCtrlDemo()
     std::shared_ptr<PfNi::RelayCtrl> obj = std::make_shared<PfNi::RelayCtrl>();
 
     //step2:初始化板卡
-    obj->initCard("PXI2569");
+    obj->initCard("PXI2569", 9);
 
     //step3:设置板卡通道数（按照实际设置)
     obj->setChannelSize(90);

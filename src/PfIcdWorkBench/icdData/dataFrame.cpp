@@ -1,5 +1,6 @@
 #include "dataFrame.h"
 #include "datastorage.h"
+#include "datacalc.h"
 
 #include <algorithm>
 
@@ -14,13 +15,15 @@ namespace Pf
 
         }
 
-        void dataFrame::parse(const std::vector<std::shared_ptr<subProtocol::subStorageType>> storages, std::vector<icdOutSrcValueType> &outValues, const unsigned char *u8Msg, const unsigned int u32Size, const int beyond)
+        void dataFrame::parse(const std::vector<std::shared_ptr<subProtocol::subStorageType>> storages, std::vector<icdOutConvertValueType> &outValues, const unsigned char *u8Msg, const unsigned int u32Size, const int beyond)
         {
             std::string paramsValue;
             dataStorage data;
             __int64 pValue;
 
             outValues.clear();
+
+            dataCalc calc;
 
             for(auto subStorage : storages)
             {
@@ -33,7 +36,20 @@ namespace Pf
 
                 pValue = data.getData(u8Msg, u32Size, byte_start + beyond, byte_size, bit_start, bit_size, bigSmall);
 
-                outValues.push_back(std::make_tuple(pId, pValue));
+                 //根据原始数据换算工程值并进行计算(y = a * x * lsb + b)
+
+                std::string strCategory = subStorage->getMessage<subProtocol::sub_param_category_index>();
+                double d64A = subStorage->getMessage<subProtocol::sub_param_a_index>();
+                double d64B = subStorage->getMessage<subProtocol::sub_param_b_index>();
+                double d64Lsb = subStorage->getMessage<subProtocol::sub_param_lsb_index>();
+
+                //int i32Precision = subStorage->getMessage<subProtocol::paramterInfo_precision_index>(info);
+                int i32Precision = 3;
+
+                /// 数据计算
+                std::string calResult =  calc.getData(strCategory, pValue, d64A, d64B, d64Lsb, i32Precision);
+
+                outValues.push_back(std::make_pair(pId, calResult));
             }
         }
 

@@ -10,7 +10,7 @@
  */
 
 #include <unordered_map>
-
+#include "../common/type.h"
 #include "../common/subProtocol.h"
 
 namespace Pf
@@ -24,11 +24,14 @@ namespace Pf
             ~subProtocolConfigure();
         public:
             void init(QXlsx::Workbook *) override;
+
             std::string curProtocol() override;
             bool isExist(unsigned int frameCode, unsigned int insideCode = 0) override;
             int getMsgLen(unsigned int frameCode, unsigned int insideCode = 0) override;
             int getMsgBeyond(unsigned int frameCode, unsigned int insideCode = 0) override;
             int getMaxByteSize(unsigned int frameCode, unsigned int insideCode = 0) override;
+
+            std::shared_ptr<subProtocolConfigure> clone();
 
             /**
              * @brief getKeys   获取子帧关键字集合
@@ -46,7 +49,7 @@ namespace Pf
         private:
 
             /// 子帧信息校验
-            void checkParamValid(std::string, int, int, std::string, std::string, int, int, int, int, std::string, int, int, int, int);
+            void checkParamValid(std::string, int, int, std::string, std::string, int, int, int, int, std::string, double, double, std::string, double, double, double);
         private:
             std::unordered_map<subMapKeyType, subMapValueType, pair_hash> mParamsInfo;  ///< 子帧信息存储
         };

@@ -53,6 +53,12 @@ namespace Pf
             void init(QXlsx::Worksheet *);
 
             /**
+             * @brief clone 类克隆，深拷贝
+             * @return 类句柄
+             */
+            std::shared_ptr<protocolConfigure> clone();
+
+            /**
              * @brief getMessage    获取相应消息
              * @param index         消息索引
              * @return 相应消息内容

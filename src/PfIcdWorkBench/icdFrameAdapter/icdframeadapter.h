@@ -38,6 +38,15 @@ namespace Pf
              * @exception catch(runtime_error)
              */
             void init(const std::string &xmlPath);
+
+            /**
+             * @brief getFrameObj   获取帧句柄
+             * @param key   关键字（xml-> key）
+             * @return 帧句柄
+             * - nullptr:获取失败
+             * - !nullptr:帧句柄
+             */
+            std::shared_ptr<frameObj> getFrameObj(const std::string &key);
         private:
             std::unordered_map<std::string, std::shared_ptr<frameObj>> mFrameManagement; ///<  帧管理适配器
         };

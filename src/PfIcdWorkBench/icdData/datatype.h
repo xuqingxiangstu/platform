@@ -15,7 +15,7 @@ namespace Pf
     {
         const std::string floatType = "连续量";
         const std::string boolType = "离散量";
-        const std::string intType = "整形";
+        const std::string intType = "整型";
     }
 }
 

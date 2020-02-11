@@ -33,7 +33,7 @@ namespace Pf
              * @param inSize    源码长度
              * @param beyond    解析偏移量
              */
-            void parse(const std::vector<std::shared_ptr<subProtocol::subStorageType>> inInfo, std::vector<icdOutSrcValueType> &outValue, const unsigned char *inBuf, const unsigned int inSize, const int beyond = 0);
+            void parse(const std::vector<std::shared_ptr<subProtocol::subStorageType>> inInfo, std::vector<icdOutConvertValueType> &outValue, const unsigned char *inBuf, const unsigned int inSize, const int beyond = 0);
 
             void simulation(unsigned char *outValue, const int size, const std::vector<std::shared_ptr<subProtocol::subStorageType>> inInfo, const int beyond = 0, const std::vector<icdInValueType> inValue = {});
         };

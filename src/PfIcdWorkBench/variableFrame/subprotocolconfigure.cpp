@@ -1,6 +1,7 @@
 #include "subprotocolconfigure.h"
 
 #include "../../PfCommon/tools/ut_error.h"
+#include "../common/subProtocol.h"
 #include "../common/type.h"
 
 namespace Pf
@@ -15,6 +16,17 @@ namespace Pf
         subProtocolConfigure::~subProtocolConfigure()
         {
 
+        }
+
+        std::shared_ptr<subProtocolConfigure> subProtocolConfigure::clone()
+        {
+            subProtocolConfigure *tmpCfg = new subProtocolConfigure();
+            for(auto itor = this->mParamsInfo.begin(); itor != this->mParamsInfo.end(); itor++)
+            {
+                tmpCfg->mParamsInfo.insert(decltype(tmpCfg->mParamsInfo)::value_type(itor->first, itor->second));
+            }
+
+            return std::shared_ptr<subProtocolConfigure>(tmpCfg);
         }
 
         void subProtocolConfigure::init(QXlsx::Workbook *workBook)
@@ -55,8 +67,11 @@ namespace Pf
                 int bitStart = 0, bitSize = 0;
                 std::string bigSmal;
                 int srcMin = 0, srcMax = 0;
-                int meanMin = 0, meanMax = 0;
+                double meanMin = 0, meanMax = 0;
+                std::string pCategory = "";
+                double d64A = 0, d64B = 0, d64Lsb = 0;
                 std::string curSheetName = "";
+                unsigned int initData = 0;
 
                 QXlsx::Worksheet *workSheet = static_cast<QXlsx::Worksheet*>(workBook->sheet(index));
 
@@ -157,24 +172,56 @@ namespace Pf
 
                     tmp = workSheet->read(rowIndex, columnIndex++);
                     value = tmp.toString();
+                    if( value.contains("0x") || value.contains("0X"))
+                    {
+                        initData = value.toInt(&Ok, 16);
+                    }
+                    else
+                    {
+                        initData = value.toInt(&Ok, 10);
+                    }
+
+                    /* modify xqx 20200211 去除源码上下限，增加a b lsb
+                    tmp = workSheet->read(rowIndex, columnIndex++);
+                    value = tmp.toString();
                     srcMin = value.toInt(&Ok, 10);
 
                     tmp = workSheet->read(rowIndex, columnIndex++);
                     value = tmp.toString();
                     srcMax = value.toInt(&Ok, 10);
+                    */
+                    tmp = workSheet->read(rowIndex, columnIndex++);
+                    value = tmp.toString();
+                    meanMin = value.toDouble(&Ok);
 
                     tmp = workSheet->read(rowIndex, columnIndex++);
                     value = tmp.toString();
-                    meanMin = value.toInt(&Ok, 10);
+                    meanMax = value.toDouble(&Ok);
 
                     tmp = workSheet->read(rowIndex, columnIndex++);
                     value = tmp.toString();
-                    meanMax = value.toInt(&Ok, 10);
+        #ifdef Utf8_Coding
+                    pCategory = value.toUtf8().data();
+        #else
+                    pCategory = value.toLocal8Bit().data();
+        #endif
+
+                    tmp = workSheet->read(rowIndex, columnIndex++);
+                    value = tmp.toString();
+                    d64A = value.toDouble(&Ok);
+
+                    tmp = workSheet->read(rowIndex, columnIndex++);
+                    value = tmp.toString();
+                    d64B = value.toDouble(&Ok);
+
+                    tmp = workSheet->read(rowIndex, columnIndex++);
+                    value = tmp.toString();
+                    d64Lsb = value.toDouble(&Ok);
 
                     ///校验正确性
-                    checkParamValid(curSheetName, frameSize, beyond, pId, pName, byteStart, byteSize, bitStart, bitSize, bigSmal, srcMin, srcMax, meanMin, meanMax);
+                    checkParamValid(curSheetName, frameSize, beyond, pId, pName, byteStart, byteSize, bitStart, bitSize, bigSmal, meanMin, meanMax, pCategory, d64A, d64B, d64Lsb);
 
-                    tmpStorage.push_back(std::make_shared<subStorageType>(pId, pName, byteStart, byteSize, bitStart, bitSize, bigSmal, srcMin, srcMax, meanMin, meanMax));
+                    tmpStorage.push_back(std::make_shared<subStorageType>(pId, pName, byteStart, byteSize, bitStart, bitSize, bigSmal, initData, meanMin, meanMax, pCategory, d64A, d64B, d64Lsb));
                 }
 
                 mParamsInfo.insert(decltype(mParamsInfo)::value_type(std::make_pair(frameCode, insideCode),
@@ -184,7 +231,7 @@ namespace Pf
 
         }
 
-        void subProtocolConfigure::checkParamValid(std::string sheetName, int frameLen, int beyond, std::string pId, std::string pName, int byteStart, int byteSize, int bitStart, int bitSize, std::string bigSmal, int srcMin, int srcMax, int meanMin, int meanMax)
+        void subProtocolConfigure::checkParamValid(std::string sheetName, int frameLen, int beyond, std::string pId, std::string pName, int byteStart, int byteSize, int bitStart, int bitSize, std::string bigSmal, double meanMin, double meanMax, std::string category, double a, double b, double lsb)
         {
             std::ostringstream strErr;
 
@@ -207,14 +254,7 @@ namespace Pf
                 strErr.str("");
                 strErr << sheetName << " => 参数位置(" << std::dec << byteStart << "," << byteSize << "," << bitStart << "," << bitSize << ")" << "大于帧长度(" << frameLen << ")异常";
                 UT_THROW_EXCEPTION(strErr.str());
-            }
-
-            if(srcMin > srcMax)
-            {
-                strErr.str("");
-                strErr << sheetName << " => 源码上下限异常(" << std::dec << srcMin << "," << srcMax << ")";
-                UT_THROW_EXCEPTION(strErr.str());
-            }
+            }           
 
             if(meanMin > meanMax)
             {

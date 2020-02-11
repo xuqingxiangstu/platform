@@ -254,7 +254,9 @@ release/variableframe.o: ../../../../src/PfIcdWorkBench/variableFrame/variablefr
 		../../../../src/PfCommon/crc/crc_global.h \
 		../../../../src/PfIcdWorkBench/icdData/datastorage.h \
 		../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
-		../../../../src/PfIcdWorkBench/icdData/dataFrame.h
+		../../../../src/PfIcdWorkBench/icdData/dataFrame.h \
+		../../../../src/PfIcdWorkBench/icdData/datacalc.h \
+		../../../../src/PfIcdWorkBench/icdData/dataconvert.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\variableframe.o ..\..\..\..\src\PfIcdWorkBench\variableFrame\variableframe.cpp
 
 release/protocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/protocolconfigure.cpp ../../../../src/PfIcdWorkBench/variableFrame/protocolconfigure.h \
@@ -370,10 +372,12 @@ release/protocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/protoc
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpainterpath.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpixelformat.h \
-		../../../../src/PfCommon/tools/ut_error.h
+		../../../../src/PfCommon/tools/ut_error.h \
+		../../../../src/PfIcdWorkBench/common/type.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\protocolconfigure.o ..\..\..\..\src\PfIcdWorkBench\variableFrame\protocolconfigure.cpp
 
 release/subprotocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.cpp ../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.h \
+		../../../../src/PfIcdWorkBench/common/type.h \
 		../../../../src/PfIcdWorkBench/common/subProtocol.h \
 		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/include/QtXlsx/xlsxdocument.h \
 		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxdocument.h \
@@ -487,8 +491,7 @@ release/subprotocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/sub
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpixelformat.h \
 		../../../../src/PfIcdWorkBench/common/protocolstorage.h \
-		../../../../src/PfCommon/tools/ut_error.h \
-		../../../../src/PfIcdWorkBench/common/type.h
+		../../../../src/PfCommon/tools/ut_error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\subprotocolconfigure.o ..\..\..\..\src\PfIcdWorkBench\variableFrame\subprotocolconfigure.cpp
 
 ####### Install

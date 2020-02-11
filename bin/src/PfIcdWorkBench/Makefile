@@ -25,7 +25,8 @@ DEL_DIR       = rmdir
 MOVE          = move
 SUBTARGETS    =  \
 		sub-variableFrame \
-		sub-icdFrameAdapter
+		sub-icdFrameAdapter \
+		sub-icdData
 
 
 sub-variableFrame-qmake_all:  FORCE
@@ -78,6 +79,31 @@ sub-icdFrameAdapter-install_subtargets: FORCE
 sub-icdFrameAdapter-uninstall_subtargets: FORCE
 	@if not exist icdFrameAdapter\ mkdir icdFrameAdapter\ & if not exist icdFrameAdapter\ exit 1
 	cd icdFrameAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdFrameAdapter\icdFrameAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-icdData-qmake_all:  FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd icdData\ && $(MAKE) -f Makefile qmake_all
+sub-icdData: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-icdData-make_first: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-icdData-all: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-icdData-clean: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-icdData-distclean: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-icdData-install_subtargets: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-icdData-uninstall_subtargets: FORCE
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../../src/PfIcdWorkBench/PfIcdWorkBench.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -339,15 +365,15 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\..\src\PfIcdWorkBench\PfIcdWorkBench.pro
 
-qmake_all: sub-variableFrame-qmake_all sub-icdFrameAdapter-qmake_all FORCE
+qmake_all: sub-variableFrame-qmake_all sub-icdFrameAdapter-qmake_all sub-icdData-qmake_all FORCE
 
-make_first: sub-variableFrame-make_first sub-icdFrameAdapter-make_first  FORCE
-all: sub-variableFrame-all sub-icdFrameAdapter-all  FORCE
-clean: sub-variableFrame-clean sub-icdFrameAdapter-clean  FORCE
-distclean: sub-variableFrame-distclean sub-icdFrameAdapter-distclean  FORCE
+make_first: sub-variableFrame-make_first sub-icdFrameAdapter-make_first sub-icdData-make_first  FORCE
+all: sub-variableFrame-all sub-icdFrameAdapter-all sub-icdData-all  FORCE
+clean: sub-variableFrame-clean sub-icdFrameAdapter-clean sub-icdData-clean  FORCE
+distclean: sub-variableFrame-distclean sub-icdFrameAdapter-distclean sub-icdData-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-variableFrame-install_subtargets sub-icdFrameAdapter-install_subtargets FORCE
-uninstall_subtargets: sub-variableFrame-uninstall_subtargets sub-icdFrameAdapter-uninstall_subtargets FORCE
+install_subtargets: sub-variableFrame-install_subtargets sub-icdFrameAdapter-install_subtargets sub-icdData-install_subtargets FORCE
+uninstall_subtargets: sub-variableFrame-uninstall_subtargets sub-icdFrameAdapter-uninstall_subtargets sub-icdData-uninstall_subtargets FORCE
 
 sub-variableFrame-debug:
 	@if not exist variableFrame\ mkdir variableFrame\ & if not exist variableFrame\ exit 1
@@ -355,7 +381,10 @@ sub-variableFrame-debug:
 sub-icdFrameAdapter-debug:
 	@if not exist icdFrameAdapter\ mkdir icdFrameAdapter\ & if not exist icdFrameAdapter\ exit 1
 	cd icdFrameAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdFrameAdapter\icdFrameAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-variableFrame-debug sub-icdFrameAdapter-debug
+sub-icdData-debug:
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-variableFrame-debug sub-icdFrameAdapter-debug sub-icdData-debug
 
 sub-variableFrame-release:
 	@if not exist variableFrame\ mkdir variableFrame\ & if not exist variableFrame\ exit 1
@@ -363,7 +392,10 @@ sub-variableFrame-release:
 sub-icdFrameAdapter-release:
 	@if not exist icdFrameAdapter\ mkdir icdFrameAdapter\ & if not exist icdFrameAdapter\ exit 1
 	cd icdFrameAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdFrameAdapter\icdFrameAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-variableFrame-release sub-icdFrameAdapter-release
+sub-icdData-release:
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-variableFrame-release sub-icdFrameAdapter-release sub-icdData-release
 
 sub-variableFrame-check:
 	@if not exist variableFrame\ mkdir variableFrame\ & if not exist variableFrame\ exit 1
@@ -371,7 +403,10 @@ sub-variableFrame-check:
 sub-icdFrameAdapter-check:
 	@if not exist icdFrameAdapter\ mkdir icdFrameAdapter\ & if not exist icdFrameAdapter\ exit 1
 	cd icdFrameAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdFrameAdapter\icdFrameAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-variableFrame-check sub-icdFrameAdapter-check
+sub-icdData-check:
+	@if not exist icdData\ mkdir icdData\ & if not exist icdData\ exit 1
+	cd icdData\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\icdData\icdData.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-variableFrame-check sub-icdFrameAdapter-check sub-icdData-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

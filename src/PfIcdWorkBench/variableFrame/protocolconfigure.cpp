@@ -2,6 +2,8 @@
 
 #include "../../PfCommon/tools/ut_error.h"
 
+#include "../common/type.h"
+
 namespace Pf
 {
     namespace PfIcdWorkBench
@@ -257,6 +259,20 @@ namespace Pf
                 strErr << "帧校验计算索引异常(" << std::dec << checkCalStartPos << "," << checkCalToEnd << ")";
                 UT_THROW_EXCEPTION(strErr.str());
             }
+        }
+
+        /**
+         * @return virtual framePtlCfg *
+         */
+        std::shared_ptr<protocolConfigure> protocolConfigure::clone()
+        {
+            protocolConfigure *fix = new protocolConfigure();
+
+            fix->mProtocolMsg = this->mProtocolMsg->clone();
+
+            std::shared_ptr<protocolConfigure> tmp(fix);
+
+            return tmp;
         }
 
     }

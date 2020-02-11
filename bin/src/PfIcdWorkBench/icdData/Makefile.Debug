@@ -348,6 +348,7 @@ debug/dataFrame.o: ../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp ../../..
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpixelformat.h \
 		../../../../src/PfIcdWorkBench/common/protocolstorage.h \
+		../../../../src/PfIcdWorkBench/icdData/datacalc.h \
 		../../../../src/PfCommon/tools/ut_error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\dataFrame.o ..\..\..\..\src\PfIcdWorkBench\icdData\dataFrame.cpp
 

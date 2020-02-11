@@ -17,18 +17,7 @@ namespace Pf
     {
         class subProtocol
         {
-        public:
-            /// map key为pair时
-            struct pair_hash
-            {
-                template<class T1, class T2>
-                std::size_t operator() (const std::pair<T1, T2>& p) const
-                {
-                    auto h1 = std::hash<T1>{}(p.first);
-                    auto h2 = std::hash<T2>{}(p.second);
-                    return h1 == h2;
-                }
-            };
+
         public:
             /// 子帧帧信息索引
             enum
@@ -42,7 +31,7 @@ namespace Pf
         public:
 
             /// 子帧存储类型定义
-            using subStorageType = protocolStorage<std::string, std::string, int, int, int, int, std::string, int, int, int, int>;
+            using subStorageType = protocolStorage<std::string, std::string, int, int, int, int, std::string, unsigned int, double, double, std::string, double, double, double>;
 
             /// 子帧存储key类型定义
             using subMapKeyType = std::pair<unsigned int, unsigned int>;
@@ -60,10 +49,16 @@ namespace Pf
                 sub_param_bit_start_pos_index,
                 sub_param_bit_size_index,
                 sub_param_small_big_index,
-                sub_param_src_min_index,
-                sub_param_src_max_index,
+                sub_init_value_index,
+                /*sub_param_src_min_index,
+                sub_param_src_max_index,*/
                 sub_param_mean_min_index,
-                sub_param_mean_max_index
+                sub_param_mean_max_index,
+
+                sub_param_category_index,
+                sub_param_a_index,
+                sub_param_b_index,
+                sub_param_lsb_index,
             };
 
         public:
@@ -102,11 +97,6 @@ namespace Pf
              */
             virtual int getMaxByteSize(unsigned int frameCode, unsigned int insideCode = 0){return 0;}
 
-            /**
-             * @brief clone 类克隆（深拷贝）
-             * @return 类句柄
-             */
-            virtual std::shared_ptr<subProtocol> clone(){return nullptr;}
 
             /**
              * @brief curProtocol   获取当前协议类型

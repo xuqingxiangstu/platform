@@ -22,6 +22,19 @@ namespace Pf
 
         }
 
+        std::shared_ptr<frameObj> icdFrameAdapter::getFrameObj(const std::string &key)
+        {
+            bool res = false;
+
+            auto itor = mFrameManagement.find(key);
+            if(itor == mFrameManagement.end())
+            {
+                return nullptr;
+            }
+
+            return (itor->second)->clone();
+        }
+
         void icdFrameAdapter::init(const std::string &xmlPath)
         {
             std::stringstream strErr;
