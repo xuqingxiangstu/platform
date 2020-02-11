@@ -6,6 +6,10 @@ SUBDIRS += \
     BroadcastAdapter \
     MulticastAdapter \
     UnicastAdapter \
-    SerialPortAdapter
+    SerialPortAdapter \
+    AnalogOutAdapter \
+    DigitalIoAdapter \
+    DigitalOutAdapter \
+    RelayCtrlAdapter
 
 include (./adapter/adapter.pri)

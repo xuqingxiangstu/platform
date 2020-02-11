@@ -16,8 +16,7 @@
 #include <string>
 #include <vector>
 
-/** 变量字符串 **/
-#define VAR_NAME(var) (#var)
+
 
 /** 帧配置跟目录 **/
 #define ROOT_PATH "./frameCfg/"

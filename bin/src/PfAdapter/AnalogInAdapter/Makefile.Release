@@ -17,7 +17,7 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -std=c++0x -frtti -Wall -We
 INCPATH       = -I..\..\..\..\src\PfAdapter\AnalogInAdapter -I. -IC:\Qt\Qt5.5.0\5.5\mingw492_32\include -IC:\Qt\Qt5.5.0\5.5\mingw492_32\include\QtCore -Irelease -IC:\Qt\Qt5.5.0\5.5\mingw492_32\mkspecs\win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -shared -Wl,-subsystem,windows -mthreads -Wl,--out-implib,..\..\..\adapterLib\libAnalogInAdapter.a
-LIBS        =        -LE:/work/P13-platformLibrary/programe/platform/bin/src/PfAdapter/AnalogInAdapter/../../../ -lTinyXml -LC:/Qt/Qt5.5.0/5.5/mingw492_32/lib -lQt5Core 
+LIBS        =        -LE:/work/P13-platformLibrary/programe/platform/bin/src/PfAdapter/AnalogInAdapter/../../../ -lTinyXml -LE:/work/P13-platformLibrary/programe/platform/bin/src/PfAdapter/AnalogInAdapter/../../ -lanalogIn -LC:/Qt/Qt5.5.0/5.5/mingw492_32/lib -lQt5Core 
 QMAKE         = C:\Qt\Qt5.5.0\5.5\mingw492_32\bin\qmake.exe
 IDC           = idc
 IDL           = midl
@@ -152,7 +152,10 @@ release/AnalogInAdapter.o: ../../../../src/PfAdapter/AnalogInAdapter/AnalogInAda
 		../../../../src/PfAdapter/adapter/Adapter.h \
 		../../../../src/PfCommon/TinyXml/tinyxml.h \
 		../../../../src/PfCommon/TinyXml/tinyxml_global.h \
-		../../../../src/PfCommon/TinyXml/tinystr.h
+		../../../../src/PfCommon/TinyXml/tinystr.h \
+		../../../../src/PfNi/analogIn/analogin.h \
+		../../../../src/PfNi/analogIn/analogin_global.h \
+		../../../../src/PfNi/niDAQmx/NIDAQmx.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\AnalogInAdapter.o ..\..\..\..\src\PfAdapter\AnalogInAdapter\AnalogInAdapter.cpp
 
 ####### Install

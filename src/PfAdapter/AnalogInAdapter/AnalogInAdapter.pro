@@ -17,5 +17,8 @@ unix {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lanalogIn
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lanalogIn
     
     

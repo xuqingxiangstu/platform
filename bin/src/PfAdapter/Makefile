@@ -29,7 +29,11 @@ SUBTARGETS    =  \
 		sub-BroadcastAdapter \
 		sub-MulticastAdapter \
 		sub-UnicastAdapter \
-		sub-SerialPortAdapter
+		sub-SerialPortAdapter \
+		sub-AnalogOutAdapter \
+		sub-DigitalIoAdapter \
+		sub-DigitalOutAdapter \
+		sub-RelayCtrlAdapter
 
 
 sub-PfAdapterManager-qmake_all:  FORCE
@@ -182,6 +186,106 @@ sub-SerialPortAdapter-install_subtargets: FORCE
 sub-SerialPortAdapter-uninstall_subtargets: FORCE
 	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
 	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-AnalogOutAdapter-qmake_all:  FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd AnalogOutAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-AnalogOutAdapter: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-AnalogOutAdapter-make_first: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-AnalogOutAdapter-all: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-AnalogOutAdapter-clean: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-AnalogOutAdapter-distclean: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-AnalogOutAdapter-install_subtargets: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-AnalogOutAdapter-uninstall_subtargets: FORCE
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-DigitalIoAdapter-qmake_all:  FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd DigitalIoAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-DigitalIoAdapter: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-DigitalIoAdapter-make_first: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-DigitalIoAdapter-all: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-DigitalIoAdapter-clean: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-DigitalIoAdapter-distclean: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-DigitalIoAdapter-install_subtargets: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-DigitalIoAdapter-uninstall_subtargets: FORCE
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-DigitalOutAdapter-qmake_all:  FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd DigitalOutAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-DigitalOutAdapter: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-DigitalOutAdapter-make_first: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-DigitalOutAdapter-all: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-DigitalOutAdapter-clean: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-DigitalOutAdapter-distclean: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-DigitalOutAdapter-install_subtargets: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-DigitalOutAdapter-uninstall_subtargets: FORCE
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-RelayCtrlAdapter-qmake_all:  FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd RelayCtrlAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-RelayCtrlAdapter: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-RelayCtrlAdapter-make_first: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-RelayCtrlAdapter-all: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-RelayCtrlAdapter-clean: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-RelayCtrlAdapter-distclean: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-RelayCtrlAdapter-install_subtargets: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-RelayCtrlAdapter-uninstall_subtargets: FORCE
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../../src/PfAdapter/PfAdapter.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -443,15 +547,15 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\..\src\PfAdapter\PfAdapter.pro
 
-qmake_all: sub-PfAdapterManager-qmake_all sub-AnalogInAdapter-qmake_all sub-BroadcastAdapter-qmake_all sub-MulticastAdapter-qmake_all sub-UnicastAdapter-qmake_all sub-SerialPortAdapter-qmake_all FORCE
+qmake_all: sub-PfAdapterManager-qmake_all sub-AnalogInAdapter-qmake_all sub-BroadcastAdapter-qmake_all sub-MulticastAdapter-qmake_all sub-UnicastAdapter-qmake_all sub-SerialPortAdapter-qmake_all sub-AnalogOutAdapter-qmake_all sub-DigitalIoAdapter-qmake_all sub-DigitalOutAdapter-qmake_all sub-RelayCtrlAdapter-qmake_all FORCE
 
-make_first: sub-PfAdapterManager-make_first sub-AnalogInAdapter-make_first sub-BroadcastAdapter-make_first sub-MulticastAdapter-make_first sub-UnicastAdapter-make_first sub-SerialPortAdapter-make_first  FORCE
-all: sub-PfAdapterManager-all sub-AnalogInAdapter-all sub-BroadcastAdapter-all sub-MulticastAdapter-all sub-UnicastAdapter-all sub-SerialPortAdapter-all  FORCE
-clean: sub-PfAdapterManager-clean sub-AnalogInAdapter-clean sub-BroadcastAdapter-clean sub-MulticastAdapter-clean sub-UnicastAdapter-clean sub-SerialPortAdapter-clean  FORCE
-distclean: sub-PfAdapterManager-distclean sub-AnalogInAdapter-distclean sub-BroadcastAdapter-distclean sub-MulticastAdapter-distclean sub-UnicastAdapter-distclean sub-SerialPortAdapter-distclean  FORCE
+make_first: sub-PfAdapterManager-make_first sub-AnalogInAdapter-make_first sub-BroadcastAdapter-make_first sub-MulticastAdapter-make_first sub-UnicastAdapter-make_first sub-SerialPortAdapter-make_first sub-AnalogOutAdapter-make_first sub-DigitalIoAdapter-make_first sub-DigitalOutAdapter-make_first sub-RelayCtrlAdapter-make_first  FORCE
+all: sub-PfAdapterManager-all sub-AnalogInAdapter-all sub-BroadcastAdapter-all sub-MulticastAdapter-all sub-UnicastAdapter-all sub-SerialPortAdapter-all sub-AnalogOutAdapter-all sub-DigitalIoAdapter-all sub-DigitalOutAdapter-all sub-RelayCtrlAdapter-all  FORCE
+clean: sub-PfAdapterManager-clean sub-AnalogInAdapter-clean sub-BroadcastAdapter-clean sub-MulticastAdapter-clean sub-UnicastAdapter-clean sub-SerialPortAdapter-clean sub-AnalogOutAdapter-clean sub-DigitalIoAdapter-clean sub-DigitalOutAdapter-clean sub-RelayCtrlAdapter-clean  FORCE
+distclean: sub-PfAdapterManager-distclean sub-AnalogInAdapter-distclean sub-BroadcastAdapter-distclean sub-MulticastAdapter-distclean sub-UnicastAdapter-distclean sub-SerialPortAdapter-distclean sub-AnalogOutAdapter-distclean sub-DigitalIoAdapter-distclean sub-DigitalOutAdapter-distclean sub-RelayCtrlAdapter-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfAdapterManager-install_subtargets sub-AnalogInAdapter-install_subtargets sub-BroadcastAdapter-install_subtargets sub-MulticastAdapter-install_subtargets sub-UnicastAdapter-install_subtargets sub-SerialPortAdapter-install_subtargets FORCE
-uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets sub-AnalogInAdapter-uninstall_subtargets sub-BroadcastAdapter-uninstall_subtargets sub-MulticastAdapter-uninstall_subtargets sub-UnicastAdapter-uninstall_subtargets sub-SerialPortAdapter-uninstall_subtargets FORCE
+install_subtargets: sub-PfAdapterManager-install_subtargets sub-AnalogInAdapter-install_subtargets sub-BroadcastAdapter-install_subtargets sub-MulticastAdapter-install_subtargets sub-UnicastAdapter-install_subtargets sub-SerialPortAdapter-install_subtargets sub-AnalogOutAdapter-install_subtargets sub-DigitalIoAdapter-install_subtargets sub-DigitalOutAdapter-install_subtargets sub-RelayCtrlAdapter-install_subtargets FORCE
+uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets sub-AnalogInAdapter-uninstall_subtargets sub-BroadcastAdapter-uninstall_subtargets sub-MulticastAdapter-uninstall_subtargets sub-UnicastAdapter-uninstall_subtargets sub-SerialPortAdapter-uninstall_subtargets sub-AnalogOutAdapter-uninstall_subtargets sub-DigitalIoAdapter-uninstall_subtargets sub-DigitalOutAdapter-uninstall_subtargets sub-RelayCtrlAdapter-uninstall_subtargets FORCE
 
 sub-PfAdapterManager-debug:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
@@ -471,7 +575,19 @@ sub-UnicastAdapter-debug:
 sub-SerialPortAdapter-debug:
 	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
 	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-PfAdapterManager-debug sub-AnalogInAdapter-debug sub-BroadcastAdapter-debug sub-MulticastAdapter-debug sub-UnicastAdapter-debug sub-SerialPortAdapter-debug
+sub-AnalogOutAdapter-debug:
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-DigitalIoAdapter-debug:
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-DigitalOutAdapter-debug:
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-RelayCtrlAdapter-debug:
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-PfAdapterManager-debug sub-AnalogInAdapter-debug sub-BroadcastAdapter-debug sub-MulticastAdapter-debug sub-UnicastAdapter-debug sub-SerialPortAdapter-debug sub-AnalogOutAdapter-debug sub-DigitalIoAdapter-debug sub-DigitalOutAdapter-debug sub-RelayCtrlAdapter-debug
 
 sub-PfAdapterManager-release:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
@@ -491,7 +607,19 @@ sub-UnicastAdapter-release:
 sub-SerialPortAdapter-release:
 	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
 	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-PfAdapterManager-release sub-AnalogInAdapter-release sub-BroadcastAdapter-release sub-MulticastAdapter-release sub-UnicastAdapter-release sub-SerialPortAdapter-release
+sub-AnalogOutAdapter-release:
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-DigitalIoAdapter-release:
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-DigitalOutAdapter-release:
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-RelayCtrlAdapter-release:
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-PfAdapterManager-release sub-AnalogInAdapter-release sub-BroadcastAdapter-release sub-MulticastAdapter-release sub-UnicastAdapter-release sub-SerialPortAdapter-release sub-AnalogOutAdapter-release sub-DigitalIoAdapter-release sub-DigitalOutAdapter-release sub-RelayCtrlAdapter-release
 
 sub-PfAdapterManager-check:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
@@ -511,7 +639,19 @@ sub-UnicastAdapter-check:
 sub-SerialPortAdapter-check:
 	@if not exist SerialPortAdapter\ mkdir SerialPortAdapter\ & if not exist SerialPortAdapter\ exit 1
 	cd SerialPortAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\SerialPortAdapter\SerialPortAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfAdapterManager-check sub-AnalogInAdapter-check sub-BroadcastAdapter-check sub-MulticastAdapter-check sub-UnicastAdapter-check sub-SerialPortAdapter-check
+sub-AnalogOutAdapter-check:
+	@if not exist AnalogOutAdapter\ mkdir AnalogOutAdapter\ & if not exist AnalogOutAdapter\ exit 1
+	cd AnalogOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\AnalogOutAdapter\AnalogOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-DigitalIoAdapter-check:
+	@if not exist DigitalIoAdapter\ mkdir DigitalIoAdapter\ & if not exist DigitalIoAdapter\ exit 1
+	cd DigitalIoAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalIoAdapter\DigitalIoAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-DigitalOutAdapter-check:
+	@if not exist DigitalOutAdapter\ mkdir DigitalOutAdapter\ & if not exist DigitalOutAdapter\ exit 1
+	cd DigitalOutAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\DigitalOutAdapter\DigitalOutAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-RelayCtrlAdapter-check:
+	@if not exist RelayCtrlAdapter\ mkdir RelayCtrlAdapter\ & if not exist RelayCtrlAdapter\ exit 1
+	cd RelayCtrlAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\RelayCtrlAdapter\RelayCtrlAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-PfAdapterManager-check sub-AnalogInAdapter-check sub-BroadcastAdapter-check sub-MulticastAdapter-check sub-UnicastAdapter-check sub-SerialPortAdapter-check sub-AnalogOutAdapter-check sub-DigitalIoAdapter-check sub-DigitalOutAdapter-check sub-RelayCtrlAdapter-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

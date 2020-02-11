@@ -9,6 +9,7 @@ QT       += xlsx
 TARGET = ../../../../frameLib/variableFrame
 TEMPLATE = lib
 
+
 CONFIG += C++14
 
 DEFINES += VARIABLEFRAME_LIBRARY
@@ -29,3 +30,9 @@ unix {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -licdData
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -licdData
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc

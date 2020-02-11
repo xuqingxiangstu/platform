@@ -35,9 +35,10 @@ namespace Pf
             /**
              * @brief initCard  初始化板卡
              * @param[in] rName 板卡虚拟名称（NiMax中查看）
+             * @param[in] channelSize 通道数
              * @exception   catch(runtime_error)
              */
-            void initCard(const std::string &rName);
+            void initCard(const std::string &rName, const int &channelSize);
 
             /**
              * @brief openRelay 打开继电器

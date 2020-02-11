@@ -17,7 +17,7 @@ CXXFLAGS      = -pipe -fno-keep-inline-dllexport -g -std=c++1y -frtti -Wall -Wex
 INCPATH       = -I..\..\..\..\src\PfIcdWorkBench\variableFrame -I. -IF:\software\QtXlsx\QtXlsxWriter-master\build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug\include -IF:\software\QtXlsx\QtXlsxWriter-master\build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug\include\QtXlsx -IC:\Qt\Qt5.5.0\5.5\mingw492_32\include -IC:\Qt\Qt5.5.0\5.5\mingw492_32\include\QtGui -IC:\Qt\Qt5.5.0\5.5\mingw492_32\include\QtANGLE -IC:\Qt\Qt5.5.0\5.5\mingw492_32\include\QtCore -Idebug -IC:\Qt\Qt5.5.0\5.5\mingw492_32\mkspecs\win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -shared -Wl,-subsystem,windows -mthreads -Wl,--out-implib,..\..\..\frameLib\libvariableFrame.a
-LIBS        =        -LE:/work/P13-platformLibrary/programe/platform/bin/src/PfIcdWorkBench/variableFrame/../../../ -lTinyXml -LF:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/lib -lQt5Xlsxd -LC:/Qt/Qt5.5.0/5.5/mingw492_32/lib -lQt5Guid -lQt5Cored 
+LIBS        =        -LE:/work/P13-platformLibrary/programe/platform/bin/src/PfIcdWorkBench/variableFrame/../../../ -lTinyXml -licdData -lcrc -LF:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/lib -lQt5Xlsxd -LC:/Qt/Qt5.5.0/5.5/mingw492_32/lib -lQt5Guid -lQt5Cored 
 QMAKE         = C:\Qt\Qt5.5.0\5.5\mingw492_32\bin\qmake.exe
 IDC           = idc
 IDL           = midl
@@ -247,7 +247,14 @@ debug/variableframe.o: ../../../../src/PfIcdWorkBench/variableFrame/variablefram
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpainterpath.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpixelformat.h \
-		../../../../src/PfCommon/tools/ut_error.h
+		../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.h \
+		../../../../src/PfIcdWorkBench/common/subProtocol.h \
+		../../../../src/PfCommon/tools/ut_error.h \
+		../../../../src/PfCommon/crc/crc.h \
+		../../../../src/PfCommon/crc/crc_global.h \
+		../../../../src/PfIcdWorkBench/icdData/datastorage.h \
+		../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
+		../../../../src/PfIcdWorkBench/icdData/dataFrame.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\variableframe.o ..\..\..\..\src\PfIcdWorkBench\variableFrame\variableframe.cpp
 
 debug/protocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/protocolconfigure.cpp ../../../../src/PfIcdWorkBench/variableFrame/protocolconfigure.h \
@@ -366,7 +373,122 @@ debug/protocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/protocol
 		../../../../src/PfCommon/tools/ut_error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\protocolconfigure.o ..\..\..\..\src\PfIcdWorkBench\variableFrame\protocolconfigure.cpp
 
-debug/subprotocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.cpp ../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.h
+debug/subprotocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.cpp ../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.h \
+		../../../../src/PfIcdWorkBench/common/subProtocol.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/include/QtXlsx/xlsxdocument.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxdocument.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxglobal.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QtGlobal \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qglobal.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qconfig.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qfeatures.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qsystemdetection.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qprocessordetection.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qcompilerdetection.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qtypeinfo.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qtypetraits.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qsysinfo.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qlogging.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qflags.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qbasicatomic.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_bootstrap.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qgenericatomic.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_gcc.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_msvc.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_armv7.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_armv6.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_armv5.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_ia64.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_mips.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_x86.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qatomic_unix.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qglobalstatic.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qmutex.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qnumeric.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxformat.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/QFont \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qfont.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qwindowdefs.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qobjectdefs.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qnamespace.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qwindowdefs_win.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qstring.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qchar.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qbytearray.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qrefcount.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qarraydata.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qstringbuilder.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qsharedpointer.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qshareddata.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qhash.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qiterator.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qlist.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qalgorithms.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qbytearraylist.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qstringlist.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qregexp.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qstringmatcher.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qpair.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qobject.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qcoreevent.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qscopedpointer.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qmetatype.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qvarlengtharray.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qcontainerfwd.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qisenum.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qobject_impl.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/QColor \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qcolor.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qrgb.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QByteArray \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QList \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QExplicitlySharedDataPointer \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QVariant \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qvariant.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qmap.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qdebug.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qtextstream.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qiodevice.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qlocale.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qvector.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qpoint.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qset.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qcontiguouscache.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/include/QtXlsx/xlsxworksheet.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxworksheet.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxabstractsheet.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxabstractooxmlfile.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QStringList \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QSharedPointer \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxcell.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxcellrange.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxcellreference.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QMap \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QPointF \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QObject \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/include/QtXlsx/xlsxworkbook.h \
+		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxworkbook.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/QImage \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qimage.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qtransform.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qmatrix.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpolygon.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qrect.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qmargins.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qsize.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qregion.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qdatastream.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qline.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpainterpath.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpixelformat.h \
+		../../../../src/PfIcdWorkBench/common/protocolstorage.h \
+		../../../../src/PfCommon/tools/ut_error.h \
+		../../../../src/PfIcdWorkBench/common/type.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\subprotocolconfigure.o ..\..\..\..\src\PfIcdWorkBench\variableFrame\subprotocolconfigure.cpp
 
 ####### Install

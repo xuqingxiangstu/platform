@@ -12,6 +12,7 @@
 #include "variableframe_global.h"
 #include "../common/frameObj.h"
 #include "protocolconfigure.h"
+#include "subprotocolconfigure.h"
 
 #include <memory>
 
@@ -37,6 +38,13 @@ namespace Pf
             void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutSrcValueType> &outValue) override;
         private:
             /**
+             * @brief frameCheck    帧校验
+             * @param inBuf         校验首地址
+             * @param inSize        校验长度
+             */
+            void frameCheck(const unsigned char *inBuf, const unsigned int inSize);
+        private:
+            /**
              * @brief initFrameCfg  初始化帧配置(Excel)
              * @param[in] path 帧配置路径
              */
@@ -51,6 +59,7 @@ namespace Pf
             std::string mFrameCfgPath;  ///< 帧配置路径
             std::string mDataRegionCfgPath; ///< 数据域配置路径
             std::shared_ptr<protocolConfigure> mProtocolCfg; ///< 帧配置
+            std::shared_ptr<subProtocolConfigure> mSubProtocolCfg; ///< 子帧配置（数据域描述）
         };
 
         extern "C"

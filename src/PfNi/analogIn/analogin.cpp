@@ -10,11 +10,11 @@ namespace Pf
     namespace PfNi
     {
         AnalogIn::AnalogIn():
-            mChannelSize(0),
-            mSamplingRate(50),
-            mSamplingSize(1),            
-            isStarting(false),
-            mTaskHandle(0)
+        mChannelSize(0),
+        mSamplingRate(50),
+        mSamplingSize(1),
+        isStarting(false),
+        mTaskHandle(0)
         {
 
         }
@@ -75,7 +75,7 @@ namespace Pf
                 errCode += std::string(errBuff);
                 errCode + ")\n ";
                 throw std::runtime_error(errCode);
-            }
+            }            
         }
 
         bool AnalogIn::readValue(float64 *rValue, int &rSize)

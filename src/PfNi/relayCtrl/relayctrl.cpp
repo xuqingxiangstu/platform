@@ -32,7 +32,7 @@ namespace Pf
         }
 
 
-        void RelayCtrl::initCard(const std::string &rName)
+        void RelayCtrl::initCard(const std::string &rName, const int &channelSize)
         {
             if(VI_SUCCESS != niSwitch_init(ViRsrc(rName.c_str()),  VI_TRUE, VI_TRUE, &mSession))
             {
@@ -41,6 +41,8 @@ namespace Pf
 
             ///断开所有继电器
             niSwitch_DisconnectAll(mSession);
+
+            setChannelSize(channelSize);
         }
 
 

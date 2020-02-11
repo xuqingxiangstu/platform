@@ -1,6 +1,23 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+
+#include <tuple>
+#include <vector>
+
+/**
+ * @brief 自定义宏
+ */
+
+#define BIGENDIAN		"大端"
+#define SAMLLENDIAN		"小端"
+
+#define CRC_CHECK		"CRC"
+#define SUM_CHECK		"累加和"
+
+/** 变量字符串 **/
+#define VAR_NAME(var) (#var)
+
 /**
  * @brief 自定义类型
  */
@@ -41,6 +58,7 @@ namespace Pf
 
         /// byteArray类型
         using byteArray = std::vector<unsigned char>;
+
     }
 }
 

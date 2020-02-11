@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
     try
     {
         frameAdapter->init("./icd.xml");
+
+        std::cout << "init Ok" << std::endl;
     }
     catch(std::runtime_error err)
     {
