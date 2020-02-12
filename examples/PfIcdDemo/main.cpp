@@ -9,18 +9,27 @@
 
 using namespace Pf;
 
+/**
+ * @brief 帧解析与仿真例程
+ * @example PfIcdDemo/main.cpp
+ */
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    //step1：实例化IcdWordkbench适配器
 
     std::shared_ptr<PfIcdWorkBench::icdFrameAdapter> frameAdapter = std::make_shared<PfIcdWorkBench::icdFrameAdapter>();
 
     try
     {
+        //step2：初始化帧解析xml
         frameAdapter->init("./icd.xml");
 
-        std::cout << "init Ok" << std::endl;
+        qDebug() << "init Ok\n";
 
+        //step3：获取待解析的帧句柄
         auto obj = frameAdapter->getFrameObj("1");
         if(obj != nullptr)
         {
@@ -35,10 +44,25 @@ int main(int argc, char *argv[])
                                               0x1
                                              };
 
+            //step4：根据Excel中的数据进行仿真
+            PfIcdWorkBench::byteArray sendMsg;
+
+            obj->simulation(sendMsg, 0xF0A1);
+            qDebug() << "仿真测试->";
+
+            for(auto v : sendMsg)
+            {
+                std::cout << std::hex << (int)v << " ";
+            }
+
+            std::cout << std::endl;
+
+            //step5：根据Excel中的数据进行解析
             std::vector<PfIcdWorkBench::icdOutConvertValueType> outV;
+            qDebug() << "解析测试->\n";
+            obj->parse(&sendMsg.at(0), sendMsg.size(), outV);
 
-            obj->parse(&msg.at(0), msg.size(), outV);
-
+            //打印解析后的数据 ID + Value
             for(auto v : outV)
             {
                 std::cout << std::get<0>(v) << " " << std::get<1>(v) << std::endl;

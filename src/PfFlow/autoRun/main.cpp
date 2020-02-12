@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        fl.init("./flow.xml");
+        fl.init("./Sleep-if-elseif-end.xml");
         fl.runAllFlow();
     }
     catch(std::runtime_error err)

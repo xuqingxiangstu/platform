@@ -119,7 +119,7 @@ namespace Pf
                 d64B = storage->getMessage<subProtocolConfigure::sub_param_b_index>();
                 d64Lsb = storage->getMessage<subProtocolConfigure::sub_param_lsb_index>();
 
-                initValue = storage->getMessage<subProtocolConfigure::sub_param_lsb_index>();
+                initValue = storage->getMessage<subProtocolConfigure::sub_init_value_index>();
 
                 /// 如果有输入数据则按照输入数据计算，否则按照总参数表默认数据
                 auto itor = std::find_if(inValue.begin(), inValue.end(),

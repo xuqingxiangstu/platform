@@ -58,9 +58,16 @@ bool sleepStep::exec()
 
     return mResult;
 }
-std::string sleepStep::getVarValue(std::string)
+std::string sleepStep::getVarValue(std::string var)
 {
-    return "";
+    std::string res = "";
+
+    if(var == "timeout")
+    {
+        res = std::to_string(mTimeOut);
+    }
+
+    return res;
 }
 
 bool sleepStep::getResult()

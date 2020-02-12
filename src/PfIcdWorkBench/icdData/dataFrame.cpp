@@ -107,10 +107,11 @@ namespace Pf
                 if(findItor != inValue.end())
                 {
                     tmpValue = std::get<1>(*findItor);
-
+#if 0
                     strErr.str("");
                     strErr << pId << " => " << std::dec << (int)tmpValue << "/0x" << std::hex << (int)tmpValue;
-                    UT_SHOW(strErr.str());
+                    SHOW(strErr.str());
+#endif
                 }
 
                 try

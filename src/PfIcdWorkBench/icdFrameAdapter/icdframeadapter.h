@@ -2,8 +2,8 @@
 #define ICDFRAMEADAPTER_H
 
 /**
- * @brief The icdFrameAdapter class
- * 帧适配器，加载各种帧解析器
+ * @file icdFrameAdapter.h
+ * @brief 帧解析与仿真适配器，加载各种帧解析器
  * @author xqx
  * @date 20200210
  * @version 1.0
