@@ -4,10 +4,12 @@
 #include <memory>
 #include <unordered_map>
 #include <sstream>
+#include <memory>
 
 #include "icddata_global.h"
 
 /**
+ * @file dataCalc.h
  * @brief   数据计算类，包括浮点数、整数等计算，可自定义计算类
  * @author  xqx
  * @date    20190410
@@ -25,14 +27,14 @@ namespace Pf
         public:
             /**
              * @brief data      原始数据通过公式进行计算(a * x * lsb + b)
-             * @param srcData   原始数据
-             * @param a
-             * @param b
-             * @param lsb
-             * @param precision 精度
-             * @return          计算后值
+             * @param[in] srcData   原始数据
+             * @param[in] a
+             * @param[in] b
+             * @param[in] lsb
+             * @param[in] precision 精度
+             * @return 计算后值
              */
-            virtual std::string data(__int64 srcData, double a, double b, double lsb, int precision = 0){return "";}
+            virtual std::string data(const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0){return "";}
         };
 
         /**
@@ -40,16 +42,8 @@ namespace Pf
          */
         class ICDDATASHARED_EXPORT floatCalc : public calc
         {
-        public:
-            /**
-             * @brief data      原始数据通过公式进行计算(a * x * lsb + b)
-             * @param srcData   原始数据
-             * @param a
-             * @param b
-             * @param lsb
-             * @return          计算后值
-             */
-            std::string data(__int64 srcData, double a, double b, double lsb, int precision = 0)
+        public:            
+            std::string data(const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0) override
             {
                 std::ostringstream result;
 
@@ -65,16 +59,8 @@ namespace Pf
          */
         class ICDDATASHARED_EXPORT intCalc : public calc
         {
-        public:
-            /**
-             * @brief data      原始数据通过公式进行计算(a * x * lsb + b)
-             * @param srcData   原始数据
-             * @param a
-             * @param b
-             * @param lsb
-             * @return          计算后值
-             */
-            std::string data(__int64 srcData, double a, double b, double lsb, int precision = 0)
+        public:            
+            std::string data(const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0) override
             {
                 std::ostringstream result;
 
@@ -95,7 +81,11 @@ namespace Pf
             dataCalc(const dataCalc &) = delete;
             dataCalc &operator = (const dataCalc &) = delete;
 
-            std::string getData(std::string type, __int64 srcData, double e, double b, double lsb, int precision = 0);
+            std::string getData(std::string type, const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0);
+        private:
+#ifdef USE_NEW
+            std::unordered_map<std::string, std::shared_ptr<calc>> mDataManager;    ///< 数据管理句柄
+#endif
         };
     }
 }

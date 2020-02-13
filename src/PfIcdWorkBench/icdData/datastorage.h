@@ -15,6 +15,10 @@ namespace Pf
 {
     namespace PfIcdWorkBench
     {
+        /**
+         * @brief The dataStorage class
+         * 数据存储类，获取及设置数据
+         */
         class ICDDATASHARED_EXPORT dataStorage
         {
         public:
@@ -23,29 +27,29 @@ namespace Pf
             dataStorage &operator = (const dataStorage &) = delete;
             /**
              * @brief getData       获取某个位置的数据
-             * @param u8Data        源码首地址
-             * @param u32Size       源码长度
-             * @param byteStartPos  起始字节
-             * @param byteSize      字节长度
-             * @param bitStartPos   起始位
-             * @param bitSize       位长度
-             * @param dataType      大端/小端
+             * @param[in] u8Data        源码首地址
+             * @param[in] u32Size       源码长度
+             * @param[in] byteStartPos  起始字节
+             * @param[in] byteSize      字节长度
+             * @param[in] bitStartPos   起始位
+             * @param[in] bitSize       位长度
+             * @param[in] dataType      大端/小端
              * @return  数据
              */
-            unsigned __int64 getData(const unsigned char *u8Data, const unsigned int u32Size, const int byteStartPos, const int byteSize, const int bitStartPos, const int bitSize, const std::string dataType = BIGENDIAN);
+            unsigned __int64 getData(const unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const std::string &dataType = BIGENDIAN);
 
             /**
              * @brief setData       设置某个位置的数据
-             * @param u8Data        数据首地址
-             * @param u32Size       数据长度
-             * @param byteStartPos  起始字节
-             * @param byteSize      字节长度
-             * @param bitStartPos   起始位
-             * @param bitSize       位长度
-             * @param value         待写入数据
-             * @param dataType      大段/小端
+             * @param[in/out] u8Data        数据首地址
+             * @param[in] u32Size       数据长度
+             * @param[in] byteStartPos  起始字节
+             * @param[in] byteSize      字节长度
+             * @param[in] bitStartPos   起始位
+             * @param[in] bitSize       位长度
+             * @param[in] value         待写入数据
+             * @param[in] dataType      大段/小端
              */
-            void setData(unsigned char *u8Data, const unsigned int u32Size, const int byteStartPos, const int byteSize, const int bitStartPos, const int bitSize, __int64 value, const std::string dataType = BIGENDIAN);
+            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const __int64 &value, const std::string &dataType = BIGENDIAN);
         };
     }
 }

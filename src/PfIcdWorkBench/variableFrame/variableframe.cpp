@@ -140,7 +140,7 @@ namespace Pf
                 }
 
                 /// 按照公式进行计算
-                converValue = data.convert(strCategory, tmpValue, d64A, d64B, d64Lsb);
+                converValue = data.getData(strCategory, tmpValue, d64A, d64B, d64Lsb);
 
                 calInValue.push_back(std::make_pair(id, converValue));
             }

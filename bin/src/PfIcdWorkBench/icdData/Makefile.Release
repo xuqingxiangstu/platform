@@ -264,6 +264,7 @@ release/dataFrame.o: ../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp ../../
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qmutex.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qnumeric.h \
 		../../../../src/PfIcdWorkBench/common/subProtocol.h \
+		../../../../src/PfIcdWorkBench/common/protocolstorage.h \
 		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/include/QtXlsx/xlsxdocument.h \
 		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxdocument.h \
 		F:/software/QtXlsx/QtXlsxWriter-master/QtXlsxWriter-master/src/xlsx/xlsxglobal.h \
@@ -347,7 +348,6 @@ release/dataFrame.o: ../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp ../../
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpainterpath.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpaintdevice.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtGui/qpixelformat.h \
-		../../../../src/PfIcdWorkBench/common/protocolstorage.h \
 		../../../../src/PfIcdWorkBench/icdData/datacalc.h \
 		../../../../src/PfCommon/tools/ut_error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\dataFrame.o ..\..\..\..\src\PfIcdWorkBench\icdData\dataFrame.cpp

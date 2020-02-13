@@ -1,8 +1,12 @@
 #ifndef PROTOCOLSTORAGE_H
 #define PROTOCOLSTORAGE_H
 
-/** 协议存储类
- *  @brief The protocolStorage class
+/**
+ * @file protocolstorage.h
+ * @brief 协议存储类
+ * @author xqx
+ * @date 2020-02-10
+ * @version V1.0
  */
 
 #include <tuple>
@@ -17,7 +21,10 @@ namespace Pf
 {
     namespace PfIcdWorkBench
     {
-
+        /**
+         * @brief protocolStorage
+         * 协议存储
+         */
         template<typename... Args>
         class protocolStorage
         {
@@ -29,7 +36,8 @@ namespace Pf
 
             /**
              * @brief protocolStorage
-             * @param arg
+             * 构造函数
+             * @param arg tuple参数
              */
             protocolStorage(Args... arg)
             {
@@ -66,10 +74,7 @@ namespace Pf
 
 
         private:
-            /** 数据存储元组
-             * @brief mMessage
-             */
-            std::tuple<Args...> mMessage;
+            std::tuple<Args...> mMessage; ///< 数据存储元祖
         };
     }
 }

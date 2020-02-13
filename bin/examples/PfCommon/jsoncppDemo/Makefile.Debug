@@ -172,6 +172,20 @@ debug/main.o: ../../../../examples/PfCommon/jsoncppDemo/main.cpp C:/Qt/Qt5.5.0/5
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qisenum.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qobject_impl.h \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qeventloop.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/QDebug \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qdebug.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qhash.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qpair.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qmap.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qtextstream.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qiodevice.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qlocale.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qvariant.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qshareddata.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qvector.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qpoint.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qset.h \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/include/QtCore/qcontiguouscache.h \
 		../../../../src/PfCommon/jsoncpp/json.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\main.o ..\..\..\..\examples\PfCommon\jsoncppDemo\main.cpp
 

@@ -64,17 +64,19 @@ namespace Pf
 
             /**
              * @brief simulation    协议仿真，根据配置协议进行参数仿真，组成一帧数据
-             * @param outValue      仿真数据
-             * @param frameCode     仿真码
-             * @param insideCode    仿真字码
+             * @param[out] outValue      仿真数据
+             * @param[in] frameCode     仿真码
+             * @param[in] insideCode    仿真字码
+             * @return
              */
             virtual void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}){}
 
             /**
              * @brief 协议解析，根据配置协议进行参数解析
-             * @param inBuf     数据首地址
-             * @param inSize    数据长度
-             * @param outValue  输出数据
+             * @param[in] inBuf     数据首地址
+             * @param[in] inSize    数据长度
+             * @param[out] outValue  输出数据
+             * @return
              */
             virtual void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue){}
         };

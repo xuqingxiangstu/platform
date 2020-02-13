@@ -15,8 +15,7 @@ SOURCES += \
     jsoncpp.cpp
 
 HEADERS += \
-    json.h \
-    json-forwards.h
+    json.h
 
 unix {
     target.path = /usr/lib

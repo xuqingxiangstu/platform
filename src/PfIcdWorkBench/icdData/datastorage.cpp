@@ -11,7 +11,7 @@ namespace Pf
         {
 
         }
-        unsigned __int64 dataStorage::getData(const unsigned char *u8Data, const unsigned int u32Size, const int byteStartPos, const int byteSize, const int bitStartPos, const int bitSize,const std::string dataType)
+        unsigned __int64 dataStorage::getData(const unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize,const std::string &dataType)
         {
             int i32Pos = 0;
             int i32BitStartPos = bitStartPos;
@@ -90,7 +90,7 @@ namespace Pf
             return TmpData;
         }
 
-        void dataStorage::setData(unsigned char *u8Data, const unsigned int u32Size, const int byteStartPos, const int byteSize, const int bitStartPos, const int bitSize, const __int64 value, const std::string dataType)
+        void dataStorage::setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const __int64 &value, const std::string &dataType)
         {
             int i32Pos = 0;
             int i32BitStartPos = bitStartPos;

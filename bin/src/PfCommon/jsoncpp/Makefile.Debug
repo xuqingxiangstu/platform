@@ -46,8 +46,7 @@ OBJECTS_DIR   = debug
 SOURCES       = ..\..\..\..\src\PfCommon\jsoncpp\jsoncpp.cpp 
 OBJECTS       = debug/jsoncpp.o
 
-DIST          =  ..\..\..\..\src\PfCommon\jsoncpp\json.h \
-		..\..\..\..\src\PfCommon\jsoncpp\json-forwards.h ..\..\..\..\src\PfCommon\jsoncpp\jsoncpp.cpp
+DIST          =  ..\..\..\..\src\PfCommon\jsoncpp\json.h ..\..\..\..\src\PfCommon\jsoncpp\jsoncpp.cpp
 QMAKE_TARGET  = jsoncpp
 DESTDIR        = ..\..\..\ #avoid trailing-slash linebreak
 TARGET         = jsoncpp.dll

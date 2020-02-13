@@ -3,7 +3,7 @@
 
 /**
  * @file icdFrameAdapter.h
- * @brief 帧解析与仿真适配器，加载各种帧解析器
+ * @brief 帧解析与仿真适配器，加载各种帧
  * @author xqx
  * @date 20200210
  * @version 1.0

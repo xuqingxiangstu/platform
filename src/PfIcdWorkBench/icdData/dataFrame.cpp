@@ -15,7 +15,7 @@ namespace Pf
 
         }
 
-        void dataFrame::parse(const std::vector<std::shared_ptr<subProtocol::subStorageType>> storages, std::vector<icdOutConvertValueType> &outValues, const unsigned char *u8Msg, const unsigned int u32Size, const int beyond)
+        void dataFrame::parse(const std::vector<std::shared_ptr<subProtocol::subStorageType>> &storages, std::vector<icdOutConvertValueType> &outValues, const unsigned char *u8Msg, const unsigned int &u32Size, const int &beyond)
         {
             std::string paramsValue;
             dataStorage data;
@@ -53,7 +53,7 @@ namespace Pf
             }
         }
 
-        void dataFrame::simulation(unsigned char *outValue, const int size, const std::vector<std::shared_ptr<subProtocol::subStorageType>> inInfo,const int beyond, const std::vector<icdInValueType> inValue)
+        void dataFrame::simulation(unsigned char *outValue, const int &size, const std::vector<std::shared_ptr<subProtocol::subStorageType>> &inInfo,const int &beyond, const std::vector<icdInValueType> &inValue)
         {
             int calSize = 0;  ///< 帧总长度
             __int64 tmpValue = 0;

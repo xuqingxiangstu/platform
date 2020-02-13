@@ -9,4 +9,7 @@
 #  define ICDDATASHARED_EXPORT Q_DECL_IMPORT
 #endif
 
+/** 是否采用new **/
+#define USE_NEW 0
+
 #endif // ICDDATA_GLOBAL_H
