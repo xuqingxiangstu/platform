@@ -4,6 +4,7 @@ SUBDIRS +=  \
     TinyXml \
     dynCreate \
     recordLog \
-    crc
+    crc \
+    jsoncpp
 
 include (./tools/tools.pri)
