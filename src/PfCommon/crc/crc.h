@@ -4,6 +4,7 @@
 #include "crc_global.h"
 
 /**
+ * @file crc.h
  * @brief   crc计算类，包括crc16、累加和等计算
  * @author  xqx
  * @date    20190412

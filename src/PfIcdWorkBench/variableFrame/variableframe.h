@@ -24,6 +24,10 @@ namespace Pf
 {
     namespace PfIcdWorkBench
     {
+        /**
+         * @brief The variableFrame class
+         * 变长帧操作：解析、仿真等
+         */
         class VARIABLEFRAMESHARED_EXPORT variableFrame : public frameObj
         {
 
@@ -42,15 +46,15 @@ namespace Pf
             void _simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {});
             /**
              * @brief frameCheck    帧校验
-             * @param inBuf         校验首地址
-             * @param inSize        校验长度
+             * @param[in] inBuf         校验首地址
+             * @param[in] inSize        校验长度
              */
             void frameCheck(const unsigned char *inBuf, const unsigned int inSize);
 
             /**
              * @brief upDataCrc 更新crc
-             * @param u8Msg     数据首地址
-             * @param u32Size   数据长度
+             * @param[in] u8Msg     数据首地址
+             * @param[in] u32Size   数据长度
              */
             void upDataCrc(unsigned char *u8Msg, const unsigned int u32Size);
         private:
@@ -70,7 +74,7 @@ namespace Pf
             std::string mDataRegionCfgPath; ///< 数据域配置路径
             std::shared_ptr<protocolConfigure> mProtocolCfg; ///< 帧配置
             std::shared_ptr<subProtocolConfigure> mSubProtocolCfg; ///< 子帧配置（数据域描述）
-            std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt;
+            std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数
         };
 
         extern "C"

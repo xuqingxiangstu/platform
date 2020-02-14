@@ -34,7 +34,7 @@ namespace Pf
         public:
             /**
              * @brief init  初始化
-             * @param xmlPath 文件路径
+             * @param[in] xmlPath 文件路径
              * @exception catch(runtime_error)
              */
             void init(const std::string &xmlPath);
@@ -48,7 +48,7 @@ namespace Pf
              */
             std::shared_ptr<frameObj> getFrameObj(const std::string &key);
         private:
-            std::unordered_map<std::string, std::shared_ptr<frameObj>> mFrameManagement; ///<  帧管理适配器
+            std::unordered_map<std::string, std::shared_ptr<frameObj>> mFrameManagement; ///< 帧管理适配器
         };
     }
 }

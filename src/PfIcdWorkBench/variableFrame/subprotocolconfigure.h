@@ -2,6 +2,7 @@
 #define SUBPROTOCOLCONFIGURE_H
 
 /**
+ * @file subprotocolconfigure.h
  * @brief The protocolConfigure class
  * 子帧配置类（数据域配置信息）
  * @author xqx
@@ -17,6 +18,10 @@ namespace Pf
 {
     namespace PfIcdWorkBench
     {
+        /**
+         * @brief The subProtocolConfigure class
+         * 子帧配置信息：包括参数ID及相关信息
+         */
         class subProtocolConfigure : public subProtocol
         {
         public:
@@ -51,7 +56,8 @@ namespace Pf
             /// 子帧信息校验
             void checkParamValid(std::string, int, int, std::string, std::string, int, int, int, int, std::string, double, double, std::string, double, double, double);
         private:
-            std::unordered_map<subMapKeyType, subMapValueType, pair_hash> mParamsInfo;  ///< 子帧信息存储
+            /** 子帧信息存储 **/
+            std::unordered_map<subMapKeyType, subMapValueType, pair_hash> mParamsInfo;
         };
     }
 }
