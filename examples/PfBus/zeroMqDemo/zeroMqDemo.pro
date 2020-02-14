@@ -8,7 +8,10 @@ QT       += core
 
 QT       -= gui
 CONFIG += C++11
-TARGET = zeroMqDemo
+
+win32:CONFIG(release, debug|release): TARGET = ../../../../zeroMqDemo
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../zeroMqDemo
+else:unix:!macx: TARGET = ../../../zeroMqDemo
 CONFIG   += console
 CONFIG   -= app_bundle
 

@@ -24,366 +24,173 @@ INSTALL_DIR   = xcopy /s /q /y /i
 DEL_FILE      = del
 SYMLINK       = $(QMAKE) -install ln -f -s
 DEL_DIR       = rmdir
-MOVE          = mv -f
-TAR           = tar -cf
-COMPRESS      = gzip -9f
-DISTNAME      = icdData1.0.0
-DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfIcdWorkBench/icdData/.tmp/icdData1.0.0
-LINK          = g++
-LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libicdData.so.1
-LIBS          = $(SUBLIBS) -L/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/lib -lQt5Xlsx -L/usr/lib64 -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Gui -lQt5Core -lGL -lpthread 
-AR            = ar cqs
-RANLIB        = 
-SED           = sed
-STRIP         = strip
-
-####### Output directory
-
-OBJECTS_DIR   = ./
-
-####### Files
-
-SOURCES       = ../../../../src/PfIcdWorkBench/icdData/datacalc.cpp \
-		../../../../src/PfIcdWorkBench/icdData/dataconvert.cpp \
-		../../../../src/PfIcdWorkBench/icdData/datastorage.cpp \
-		../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp 
-OBJECTS       = datacalc.o \
-		dataconvert.o \
-		datastorage.o \
-		dataFrame.o
-DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/linux.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/sanitize.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base-unix.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-base.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-unix.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/qconfig.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_clucene_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designercomponents_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_platformsupport_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmldevtools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickparticles_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uiplugin.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webview_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xcb_qpa_lib_private.pri \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xlsx.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_functions.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_config.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_post.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exclusive_builds.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_pre.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resolve_config.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_post.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/c++11.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/c++14.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/warn_on.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resources.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/moc.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/unix/opengl.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/unix/thread.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/testcase_targets.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exceptions.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/yacc.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/lex.prf \
-		/home/xqx/xqx/work/src/PfIcdWorkBench/icdData/icdData.pro ../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
-		../../../../src/PfIcdWorkBench/icdData/datacalc.h \
-		../../../../src/PfIcdWorkBench/icdData/dataconvert.h \
-		../../../../src/PfIcdWorkBench/icdData/datastorage.h \
-		../../../../src/PfIcdWorkBench/icdData/datatype.h \
-		../../../../src/PfIcdWorkBench/icdData/dataFrame.h ../../../../src/PfIcdWorkBench/icdData/datacalc.cpp \
-		../../../../src/PfIcdWorkBench/icdData/dataconvert.cpp \
-		../../../../src/PfIcdWorkBench/icdData/datastorage.cpp \
-		../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp
-QMAKE_TARGET  = icdData
-DESTDIR       = ../../../#avoid trailing-slash linebreak
-TARGET        = libicdData.so.1.0.0
-TARGETA       = ../../../libicdData.a
-TARGET0       = libicdData.so
-TARGETD       = libicdData.so.1.0.0
-TARGET1       = libicdData.so.1
-TARGET2       = libicdData.so.1.0
+MOVE          = move
+SUBTARGETS    =  \
+		debug \
+		release
 
 
-first: all
-####### Implicit rules
+debug: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug
+debug-make_first: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug 
+debug-all: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug all
+debug-clean: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug clean
+debug-distclean: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug distclean
+debug-install: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug install
+debug-uninstall: FORCE
+	$(MAKE) -f $(MAKEFILE).Debug uninstall
+release: FORCE
+	$(MAKE) -f $(MAKEFILE).Release
+release-make_first: FORCE
+	$(MAKE) -f $(MAKEFILE).Release 
+release-all: FORCE
+	$(MAKE) -f $(MAKEFILE).Release all
+release-clean: FORCE
+	$(MAKE) -f $(MAKEFILE).Release clean
+release-distclean: FORCE
+	$(MAKE) -f $(MAKEFILE).Release distclean
+release-install: FORCE
+	$(MAKE) -f $(MAKEFILE).Release install
+release-uninstall: FORCE
+	$(MAKE) -f $(MAKEFILE).Release uninstall
 
-.SUFFIXES: .o .c .cpp .cc .cxx .C
-
-.cpp.o:
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
-
-.cc.o:
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
-
-.cxx.o:
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
-
-.C.o:
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
-
-.c.o:
-	$(CC) -c $(CFLAGS) $(INCPATH) -o "$@" "$<"
-
-####### Build rules
-
-../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../ || mkdir -p ../../../
-	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
-	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
-	-ln -s $(TARGET) $(TARGET0)
-	-ln -s $(TARGET) $(TARGET1)
-	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../ 
-	-$(DEL_FILE) ../../../$(TARGET0)
-	-$(DEL_FILE) ../../../$(TARGET1)
-	-$(DEL_FILE) ../../../$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../ 
-	-$(MOVE) $(TARGET1) ../../../ 
-	-$(MOVE) $(TARGET2) ../../../ 
-
-
-
-staticlib: $(TARGETA)
-
-$(TARGETA):  $(OBJECTS) $(OBJCOMP) 
-	-$(DEL_FILE) $(TARGETA) 
-	$(AR) $(TARGETA) $(OBJECTS)
-
-Makefile: ../../../../src/PfIcdWorkBench/icdData/icdData.pro /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/linux.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/sanitize.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base-unix.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-base.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-unix.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/qconfig.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_clucene_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designercomponents_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_platformsupport_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmldevtools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickparticles_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uiplugin.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webview_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xcb_qpa_lib_private.pri \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xlsx.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns_private.pri \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_functions.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_config.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_post.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exclusive_builds.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_pre.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resolve_config.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_post.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/c++11.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/c++14.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/warn_on.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resources.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/moc.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/unix/opengl.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/unix/thread.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/testcase_targets.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exceptions.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/yacc.prf \
-		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/lex.prf \
+Makefile: ../../../../src/PfIcdWorkBench/icdData/icdData.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/device_config.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qconfig.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dcore.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dcore_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dinput.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dinput_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dquick.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dquick_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dquickrenderer.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3dquickrenderer_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3drenderer.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_3drenderer_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_axbase.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_axbase_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_axcontainer.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_axcontainer_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_axserver.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_axserver_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_bluetooth.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_bluetooth_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_bootstrap_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_clucene_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_concurrent.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_concurrent_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_core.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_core_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_dbus.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_dbus_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_declarative.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_declarative_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_designer.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_designer_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_designercomponents_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_enginio.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_enginio_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_gui.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_gui_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_help.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_help_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_location.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_location_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_multimedia.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_multimedia_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_multimediawidgets.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_multimediawidgets_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_network.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_network_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_nfc.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_nfc_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_opengl.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_opengl_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_openglextensions.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_openglextensions_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_platformsupport_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_positioning.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_positioning_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_printsupport.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_printsupport_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_qml.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_qml_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_qmldevtools_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_qmltest.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_qmltest_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_quick.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_quick_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_quickparticles_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_quickwidgets.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_quickwidgets_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_script.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_script_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_scripttools.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_scripttools_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_sensors.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_sensors_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_serialport.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_serialport_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_sql.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_sql_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_svg.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_svg_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_testlib.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_testlib_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_uiplugin.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_uitools.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_uitools_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_webchannel.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_webchannel_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_webkit.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_webkit_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_webkitwidgets.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_webkitwidgets_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_websockets.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_websockets_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_widgets_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_winextras_private.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri \
+		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xlsx.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xml_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xmlpatterns.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/modules/qt_lib_xmlpatterns_private.pri \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/qt_functions.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/qt_config.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/win32/qt_config.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_post.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/exclusive_builds.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/default_pre.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/win32/default_pre.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/resolve_config.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/exclusive_builds_post.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/default_post.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/c++11.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/c++14.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/win32/rtti.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/precompile_header.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/warn_on.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/qt.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/resources.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/moc.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/win32/opengl.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/win32/windows.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/testcase_targets.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/exceptions.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/yacc.prf \
+		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf \
 		../../../../src/PfIcdWorkBench/icdData/icdData.pro \
 		F:/software/QtXlsx/QtXlsxWriter-master/build-qtxlsx-Desktop_Qt_5_5_0_MinGW_32bit-Debug/lib/Qt5Xlsx.prl \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/lib/Qt5Gui.prl \
@@ -530,27 +337,11 @@ qmake: FORCE
 
 qmake_all: FORCE
 
-
-all: Makefile ../../../$(TARGET)
-
-dist: distdir FORCE
-	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
-
-distdir: FORCE
-	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
-	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../../src/PfIcdWorkBench/icdData/icddata_global.h ../../../../src/PfIcdWorkBench/icdData/datacalc.h ../../../../src/PfIcdWorkBench/icdData/dataconvert.h ../../../../src/PfIcdWorkBench/icdData/datastorage.h ../../../../src/PfIcdWorkBench/icdData/datatype.h ../../../../src/PfIcdWorkBench/icdData/dataFrame.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../../../../src/PfIcdWorkBench/icdData/datacalc.cpp ../../../../src/PfIcdWorkBench/icdData/dataconvert.cpp ../../../../src/PfIcdWorkBench/icdData/datastorage.cpp ../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp $(DISTDIR)/
-
-
-clean: compiler_clean 
-	-$(DEL_FILE) $(OBJECTS)
-	-$(DEL_FILE) *~ core *.core
-
-
-distclean: clean 
-	-$(DEL_FILE) ../../../$(TARGET) 
-	-$(DEL_FILE) ../../../$(TARGET0) ../../../$(TARGET1) ../../../$(TARGET2) $(TARGETA)
+make_first: debug-make_first release-make_first  FORCE
+all: debug-all release-all  FORCE
+clean: debug-clean release-clean  FORCE
+	-$(DEL_FILE) ..\..\..\..\libicdData.a
+distclean: debug-distclean release-distclean  FORCE
 	-$(DEL_FILE) Makefile
 
 debug-mocclean:
@@ -566,266 +357,6 @@ release-mocables:
 mocables: debug-mocables release-mocables
 
 check: first
-
-compiler_rcc_make_all:
-compiler_rcc_clean:
-compiler_moc_header_make_all:
-compiler_moc_header_clean:
-compiler_moc_source_make_all:
-compiler_moc_source_clean:
-compiler_yacc_decl_make_all:
-compiler_yacc_decl_clean:
-compiler_yacc_impl_make_all:
-compiler_yacc_impl_clean:
-compiler_lex_make_all:
-compiler_lex_clean:
-compiler_clean: 
-
-####### Compile
-
-datacalc.o: ../../../../src/PfIcdWorkBench/icdData/datacalc.cpp ../../../../src/PfIcdWorkBench/icdData/datacalc.h \
-		../../../../src/PfIcdWorkBench/common/type.h \
-		../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobal.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qconfig.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qfeatures.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsystemdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qprocessordetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcompilerdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypeinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypetraits.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsysinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlogging.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qflags.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbasicatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_bootstrap.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qgenericatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_cxx11.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_gcc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_msvc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv7.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv6.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv5.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_ia64.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_mips.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_x86.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_unix.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobalstatic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmutex.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnumeric.h \
-		../../../../src/PfIcdWorkBench/icdData/datatype.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o datacalc.o ../../../../src/PfIcdWorkBench/icdData/datacalc.cpp
-
-dataconvert.o: ../../../../src/PfIcdWorkBench/icdData/dataconvert.cpp ../../../../src/PfIcdWorkBench/icdData/dataconvert.h \
-		../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobal.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qconfig.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qfeatures.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsystemdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qprocessordetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcompilerdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypeinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypetraits.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsysinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlogging.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qflags.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbasicatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_bootstrap.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qgenericatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_cxx11.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_gcc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_msvc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv7.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv6.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv5.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_ia64.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_mips.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_x86.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_unix.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobalstatic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmutex.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnumeric.h \
-		../../../../src/PfIcdWorkBench/common/type.h \
-		../../../../src/PfIcdWorkBench/icdData/datatype.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dataconvert.o ../../../../src/PfIcdWorkBench/icdData/dataconvert.cpp
-
-datastorage.o: ../../../../src/PfIcdWorkBench/icdData/datastorage.cpp ../../../../src/PfIcdWorkBench/icdData/datastorage.h \
-		../../../../src/PfIcdWorkBench/common/type.h \
-		../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobal.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qconfig.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qfeatures.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsystemdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qprocessordetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcompilerdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypeinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypetraits.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsysinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlogging.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qflags.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbasicatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_bootstrap.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qgenericatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_cxx11.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_gcc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_msvc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv7.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv6.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv5.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_ia64.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_mips.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_x86.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_unix.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobalstatic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmutex.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnumeric.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o datastorage.o ../../../../src/PfIcdWorkBench/icdData/datastorage.cpp
-
-dataFrame.o: ../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp ../../../../src/PfIcdWorkBench/icdData/dataFrame.h \
-		../../../../src/PfIcdWorkBench/icdData/datastorage.h \
-		../../../../src/PfIcdWorkBench/common/type.h \
-		../../../../src/PfIcdWorkBench/icdData/icddata_global.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobal.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qconfig.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qfeatures.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsystemdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qprocessordetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcompilerdetection.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypeinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtypetraits.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsysinfo.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlogging.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qflags.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbasicatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_bootstrap.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qgenericatomic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_cxx11.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_gcc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_msvc.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv7.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv6.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_armv5.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_ia64.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_mips.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_x86.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qatomic_unix.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qglobalstatic.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmutex.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnumeric.h \
-		../../../../src/PfIcdWorkBench/common/subProtocol.h \
-		../../../../src/PfIcdWorkBench/common/protocolstorage.h \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/include/QtXlsx/xlsxdocument.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxdocument.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxglobal.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QtGlobal \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxformat.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/QFont \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qfont.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qwindowdefs.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobjectdefs.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnamespace.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobjectdefs_impl.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qwindowdefs_win.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstring.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qchar.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbytearray.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qrefcount.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qarraydata.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringbuilder.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsharedpointer.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qshareddata.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qhash.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qiterator.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlist.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qalgorithms.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbytearraylist.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringlist.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qregexp.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringmatcher.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qpair.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsharedpointer_impl.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobject.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcoreevent.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qscopedpointer.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmetatype.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvarlengtharray.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcontainerfwd.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qisenum.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobject_impl.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/QColor \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qcolor.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qrgb.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QByteArray \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QList \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QExplicitlySharedDataPointer \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QVariant \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvariant.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmap.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qdebug.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtextstream.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qiodevice.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlocale.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvector.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qpoint.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qset.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcontiguouscache.h \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/include/QtXlsx/xlsxworksheet.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxworksheet.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxabstractsheet.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxabstractooxmlfile.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QStringList \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QSharedPointer \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxcell.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxcellrange.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxcellreference.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QMap \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QPointF \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QObject \
-		/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/include/QtXlsx/xlsxworkbook.h \
-		/home/xqx/xqx/soft/QtXlsxWriter-master/src/xlsx/xlsxworkbook.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/QImage \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qimage.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qtransform.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qmatrix.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qpolygon.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qrect.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmargins.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qsize.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qregion.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qdatastream.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qline.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qpainterpath.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qpaintdevice.h \
-		/opt/Qt5.5.0/5.5/gcc_64/include/QtGui/qpixelformat.h \
-		../../../../src/PfIcdWorkBench/icdData/datacalc.h \
-		../../../../src/PfCommon/tools/ut_error.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dataFrame.o ../../../../src/PfIcdWorkBench/icdData/dataFrame.cpp
-
-####### Install
-
-install_target: first FORCE
-	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
-	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
-	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
-	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)
-
-uninstall_target: FORCE
-	-$(DEL_FILE) $(INSTALL_ROOT)/usr/lib/$(TARGET) 
-	 -$(DEL_FILE) $(INSTALL_ROOT)/usr/lib/$(TARGET0) 
-	 -$(DEL_FILE) $(INSTALL_ROOT)/usr/lib/$(TARGET1) 
-	 -$(DEL_FILE) $(INSTALL_ROOT)/usr/lib/$(TARGET2)
-	-$(DEL_DIR) $(INSTALL_ROOT)/usr/lib/ 
-
-
-install: install_target  FORCE
-
-uninstall: uninstall_target  FORCE
-
 FORCE:
 
 $(MAKEFILE).Debug: Makefile

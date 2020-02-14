@@ -4,6 +4,6 @@ SUBDIRS += \
     PfBus \
     #PfNi \
     PfCommon \
-    #PfFlow \
+    PfFlow \
     PfAdapter \
     PfIcdWorkBench

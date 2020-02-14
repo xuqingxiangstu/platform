@@ -113,38 +113,6 @@ namespace Pf
                                 strErr << "[" << dllPath << "] 加载dll失败:" << strClass << "(" + lib.errorString().toStdString() + ")";
                                 UT_THROW_EXCEPTION(strErr.str());
                             }
-#endif
-
-                            LOAD_FRAME_LIB libfun = nullptr;
-
-                            QLibrary lib("./frameLib/variableFrame.dll");//加载*****.dll
-                            if (lib.load())//判断是否加载成功
-                            {
-                                libfun = (LOAD_FRAME_LIB)lib.resolve("LoadClass");//获取dll的函数,***为动态库中的函数                                i
-
-
-                                if(libfun != nullptr)
-                                {
-                                    frameObj  *initObj = libfun();
-
-                                    try
-                                    {
-                                        initObj->init(mChildEle);
-                                        mFrameManagement[strId] = std::shared_ptr<frameObj>(initObj);
-                                        isLoad = true;
-                                    }
-                                    catch(std::runtime_error err)
-                                    {
-                                        UT_THROW_EXCEPTION(strId + " 初始化失败(" + err.what() + ")");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                QString err = lib.errorString();
-                                SHOW(err.toStdString());
-                                //qDebug() << err;
-                            }
                         }
                     }
                     catch(std::runtime_error err)
