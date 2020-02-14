@@ -4,5 +4,5 @@ SUBDIRS += \
     #PfBus \
     #PfNi \
     #PfAdapter \
-    PfCommon #\
-    #PfIcdDemo
+#    PfCommon \
+    PfIcdDemo

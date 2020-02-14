@@ -6,6 +6,8 @@
 #include <sstream>
 #include <windows.h>
 
+#include <QLibrary>
+
 
 namespace Pf
 {
@@ -72,7 +74,7 @@ namespace Pf
                             }
 
                             bool isLoad = false;
-
+#if 0
                             std::string dllPath = "./frameLib/" + strClass + ".dll";
 
                             HMODULE hd = LoadLibraryW(std::wstring(dllPath.begin(), dllPath.end()).c_str());
@@ -101,6 +103,38 @@ namespace Pf
                                 strErr.str("");
                                 strErr << "[" << dllPath << "] 加载dll失败:" << strClass;
                                 UT_THROW_EXCEPTION(strErr.str());
+                            }
+#endif
+
+                            LOAD_FRAME_LIB libfun = nullptr;
+
+                            QLibrary lib("./frameLib/variableFrame.dll");//加载*****.dll
+                            if (lib.load())//判断是否加载成功
+                            {
+                                libfun = (LOAD_FRAME_LIB)lib.resolve("LoadClass");//获取dll的函数,***为动态库中的函数                                i
+
+
+                                if(libfun != nullptr)
+                                {
+                                    frameObj  *initObj = libfun();
+
+                                    try
+                                    {
+                                        initObj->init(mChildEle);
+                                        mFrameManagement[strId] = std::shared_ptr<frameObj>(initObj);
+                                        isLoad = true;
+                                    }
+                                    catch(std::runtime_error err)
+                                    {
+                                        UT_THROW_EXCEPTION(strId + " 初始化失败(" + err.what() + ")");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                QString err = lib.errorString();
+                                SHOW(err.toStdString());
+                                //qDebug() << err;
                             }
                         }
                     }

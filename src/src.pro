@@ -5,5 +5,5 @@ SUBDIRS += \
     #PfNi \
     PfCommon \
     #PfFlow \
-    #PfAdapter \
-    #PfIcdWorkBench
+    PfAdapter \
+    PfIcdWorkBench
