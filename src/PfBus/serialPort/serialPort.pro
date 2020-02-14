@@ -23,5 +23,3 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
-LIBS += -lpthread libwsock32 libws2_32

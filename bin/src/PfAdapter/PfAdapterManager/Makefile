@@ -36,7 +36,7 @@ DISTNAME      = PfAdapterManager1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfAdapter/PfAdapterManager/.tmp/PfAdapterManager1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libPfAdapterManager.so.1
-LIBS          = $(SUBLIBS) -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/home/xqx/xqx/work/platform/bin/src/PfAdapter/PfAdapterManager/../../../ -lTinyXml -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -185,9 +185,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/xqx/xqx/work/src/PfAdapter/PfAdapterManager/PfAdapterManager.pro ../../../../src/PfAdapter/PfAdapterManager/pfadaptermanager.h \
 		../../../../src/PfAdapter/PfAdapterManager/pfadaptermanager_global.h ../../../../src/PfAdapter/PfAdapterManager/pfadaptermanager.cpp
 QMAKE_TARGET  = PfAdapterManager
-DESTDIR       = ../../../../#avoid trailing-slash linebreak
+DESTDIR       = ../../../#avoid trailing-slash linebreak
 TARGET        = libPfAdapterManager.so.1.0.0
-TARGETA       = ../../../../libPfAdapterManager.a
+TARGETA       = ../../../libPfAdapterManager.a
 TARGET0       = libPfAdapterManager.so
 TARGETD       = libPfAdapterManager.so.1.0.0
 TARGET1       = libPfAdapterManager.so.1
@@ -216,21 +216,21 @@ first: all
 
 ####### Build rules
 
-../../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../ || mkdir -p ../../../../
+../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../ || mkdir -p ../../../
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../ 
-	-$(DEL_FILE) ../../../../$(TARGET0)
-	-$(DEL_FILE) ../../../../$(TARGET1)
-	-$(DEL_FILE) ../../../../$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../ 
-	-$(MOVE) $(TARGET1) ../../../../ 
-	-$(MOVE) $(TARGET2) ../../../../ 
+	-$(DEL_FILE) ../../../$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../ 
+	-$(DEL_FILE) ../../../$(TARGET0)
+	-$(DEL_FILE) ../../../$(TARGET1)
+	-$(DEL_FILE) ../../../$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../ 
+	-$(MOVE) $(TARGET1) ../../../ 
+	-$(MOVE) $(TARGET2) ../../../ 
 
 
 
@@ -515,7 +515,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../$(TARGET)
+all: Makefile ../../../$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -533,8 +533,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../$(TARGET) 
-	-$(DEL_FILE) ../../../../$(TARGET0) ../../../../$(TARGET1) ../../../../$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../$(TARGET) 
+	-$(DEL_FILE) ../../../$(TARGET0) ../../../$(TARGET1) ../../../$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -596,6 +596,32 @@ pfadaptermanager.o: ../../../../src/PfAdapter/PfAdapterManager/pfadaptermanager.
 		../../../../src/PfCommon/TinyXml/tinyxml.h \
 		../../../../src/PfCommon/TinyXml/tinyxml_global.h \
 		../../../../src/PfCommon/TinyXml/tinystr.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QLibrary \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlibrary.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qisenum.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobject_impl.h \
 		../../../../src/PfCommon/tools/ut_error.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o pfadaptermanager.o ../../../../src/PfAdapter/PfAdapterManager/pfadaptermanager.cpp
 
@@ -603,7 +629,7 @@ pfadaptermanager.o: ../../../../src/PfAdapter/PfAdapterManager/pfadaptermanager.
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

@@ -6,7 +6,12 @@
 
 QT       -= gui
 QT       += xlsx
-TARGET = ../../../../frameLib/variableFrame
+
+
+win32:CONFIG(release, debug|release): TARGET = ../../../../frameLib/variableFrame
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../frameLib/variableFrame
+else:unix:!macx: TARGET = ../../../variableFrame
+
 TEMPLATE = lib
 
 
@@ -30,9 +35,13 @@ unix {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -licdData
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -licdData
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -licdData
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lcrc

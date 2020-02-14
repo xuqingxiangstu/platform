@@ -36,7 +36,7 @@ DISTNAME      = zeroMq1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfBus/zeroMq/.tmp/zeroMq1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libzeroMq.so.1
-LIBS          = $(SUBLIBS) /home/xqx/xqx/work/platform/src/PfBus/zeroMq/zmq/libzmq.lib -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) /home/xqx/xqx/work/platform/src/PfBus/zeroMq/zmq/libzmq.lib /home/xqx/xqx/work/platform/src/PfBus/zeroMq/zmq/libzmq.so -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -189,9 +189,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../src/PfBus/zeroMq/zmqreceive.h ../../../../src/PfBus/zeroMq/zmqsend.cpp \
 		../../../../src/PfBus/zeroMq/zmqreceive.cpp
 QMAKE_TARGET  = zeroMq
-DESTDIR       = ../../../../#avoid trailing-slash linebreak
+DESTDIR       = ../../../#avoid trailing-slash linebreak
 TARGET        = libzeroMq.so.1.0.0
-TARGETA       = ../../../../libzeroMq.a
+TARGETA       = ../../../libzeroMq.a
 TARGET0       = libzeroMq.so
 TARGETD       = libzeroMq.so.1.0.0
 TARGET1       = libzeroMq.so.1
@@ -220,21 +220,21 @@ first: all
 
 ####### Build rules
 
-../../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../ || mkdir -p ../../../../
+../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../ || mkdir -p ../../../
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../ 
-	-$(DEL_FILE) ../../../../$(TARGET0)
-	-$(DEL_FILE) ../../../../$(TARGET1)
-	-$(DEL_FILE) ../../../../$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../ 
-	-$(MOVE) $(TARGET1) ../../../../ 
-	-$(MOVE) $(TARGET2) ../../../../ 
+	-$(DEL_FILE) ../../../$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../ 
+	-$(DEL_FILE) ../../../$(TARGET0)
+	-$(DEL_FILE) ../../../$(TARGET1)
+	-$(DEL_FILE) ../../../$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../ 
+	-$(MOVE) $(TARGET1) ../../../ 
+	-$(MOVE) $(TARGET2) ../../../ 
 
 
 
@@ -519,7 +519,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../$(TARGET)
+all: Makefile ../../../$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -537,8 +537,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../$(TARGET) 
-	-$(DEL_FILE) ../../../../$(TARGET0) ../../../../$(TARGET1) ../../../../$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../$(TARGET) 
+	-$(DEL_FILE) ../../../$(TARGET0) ../../../$(TARGET1) ../../../$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -638,7 +638,7 @@ zmqreceive.o: ../../../../src/PfBus/zeroMq/zmqreceive.cpp ../../../../src/PfBus/
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

@@ -6,7 +6,10 @@
 
 QT       -= gui
 
-TARGET = ../../../../TinyXml
+win32:CONFIG(release, debug|release): TARGET = ../../../../TinyXml
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../TinyXml
+else:unix:!macx: TARGET = ../../../TinyXml
+
 TEMPLATE = lib
 
 DEFINES += TINYXML_LIBRARY

@@ -2,4 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     recordLogDemo \
-    jsoncppDemo
+    jsoncppDemo \
+    tinyxmlDemo \
+    xlsxDemo

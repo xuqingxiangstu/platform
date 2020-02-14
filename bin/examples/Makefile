@@ -24,34 +24,9 @@ SYMLINK       = $(QMAKE) -install ln -f -s
 DEL_DIR       = rmdir
 MOVE          = move
 SUBTARGETS    =  \
+		sub-PfBus \
+		sub-PfCommon \
 		sub-PfIcdDemo
-
-
-sub-PfIcdDemo-qmake_all:  FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
-	cd PfIcdDemo\ && $(MAKE) -f Makefile qmake_all
-sub-PfIcdDemo: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
-sub-PfIcdDemo-make_first: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
-sub-PfIcdDemo-all: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
-sub-PfIcdDemo-clean: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
-sub-PfIcdDemo-distclean: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-PfIcdDemo-install_subtargets: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
-sub-PfIcdDemo-uninstall_subtargets: FORCE
-	@if not exist PfIcdDemo\ mkdir PfIcdDemo\ & if not exist PfIcdDemo\ exit 1
-	cd PfIcdDemo\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\examples\PfIcdDemo\PfIcdDemo.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../examples/examples.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \

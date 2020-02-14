@@ -27,7 +27,7 @@ void testSend(std::string rIp, std::string rPort)
         obj->init(rIp, rPort);
 
         //step3 发送数据
-        std::string msg = "hello word";
+        std::string msg = "hello word 123";
         if(obj->sendMsg((unsigned char*)msg.c_str(), msg.size()))
         {
             std::cout << " send ok " << std::endl;

@@ -185,9 +185,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/xqx/xqx/work/src/PfFlow/endStep/endStep.pro ../../../../src/PfFlow/endStep/endStep.h \
 		../../../../src/PfFlow/endStep/endStep_global.h ../../../../src/PfFlow/endStep/endStep.cpp
 QMAKE_TARGET  = endStep
-DESTDIR       = ../../../../stepLib/#avoid trailing-slash linebreak
+DESTDIR       = ../../../stepLib/#avoid trailing-slash linebreak
 TARGET        = libendStep.so.1.0.0
-TARGETA       = ../../../../stepLib/libendStep.a
+TARGETA       = ../../../stepLib/libendStep.a
 TARGET0       = libendStep.so
 TARGETD       = libendStep.so.1.0.0
 TARGET1       = libendStep.so.1
@@ -216,21 +216,21 @@ first: all
 
 ####### Build rules
 
-../../../../stepLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../stepLib/ || mkdir -p ../../../../stepLib/
+../../../stepLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../stepLib/ || mkdir -p ../../../stepLib/
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../stepLib/ 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET0)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET1)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../stepLib/ 
-	-$(MOVE) $(TARGET1) ../../../../stepLib/ 
-	-$(MOVE) $(TARGET2) ../../../../stepLib/ 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../stepLib/ 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET0)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET1)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../stepLib/ 
+	-$(MOVE) $(TARGET1) ../../../stepLib/ 
+	-$(MOVE) $(TARGET2) ../../../stepLib/ 
 
 
 
@@ -515,7 +515,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../stepLib/$(TARGET)
+all: Makefile ../../../stepLib/$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -533,8 +533,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET) 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET0) ../../../../stepLib/$(TARGET1) ../../../../stepLib/$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET) 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET0) ../../../stepLib/$(TARGET1) ../../../stepLib/$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -606,7 +606,7 @@ endStep.o: ../../../../src/PfFlow/endStep/endStep.cpp ../../../../src/PfFlow/end
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../stepLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../stepLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

@@ -28,11 +28,11 @@ COMPRESS      = gzip -9f
 DISTNAME      = PfFlow1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfFlow/.tmp/PfFlow1.0.0
 SUBTARGETS    =  \
+		sub-condition \
 		sub-autoRun \
 		sub-ifStep \
 		sub-endStep \
 		sub-printfStep \
-		sub-condition \
 		sub-breakStep \
 		sub-continueStep \
 		sub-elseIfStep \
@@ -46,6 +46,31 @@ SUBTARGETS    =  \
 		sub-setSwitchOutStep
 
 
+sub-condition-qmake_all:  FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile
+	cd condition/ && $(MAKE) -f Makefile qmake_all
+sub-condition: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
+sub-condition-make_first: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
+sub-condition-all: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
+sub-condition-clean: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
+sub-condition-distclean: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-condition-install_subtargets: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
+sub-condition-uninstall_subtargets: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-autoRun-qmake_all:  FORCE
 	@test -d autoRun/ || mkdir -p autoRun/
 	cd autoRun/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/autoRun/autoRun.pro -spec linux-g++ CONFIG+=debug -o Makefile
@@ -146,31 +171,6 @@ sub-printfStep-install_subtargets: FORCE
 sub-printfStep-uninstall_subtargets: FORCE
 	@test -d printfStep/ || mkdir -p printfStep/
 	cd printfStep/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/printfStep/printfStep.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-condition-qmake_all:  FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd condition/ && $(MAKE) -f Makefile qmake_all
-sub-condition: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-condition-make_first: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-condition-all: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-condition-clean: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-condition-distclean: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-condition-install_subtargets: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-condition-uninstall_subtargets: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-breakStep-qmake_all:  FORCE
 	@test -d breakStep/ || mkdir -p breakStep/
 	cd breakStep/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/breakStep/breakStep.pro -spec linux-g++ CONFIG+=debug -o Makefile
@@ -709,16 +709,19 @@ Makefile: ../../../src/PfFlow/PfFlow.pro /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g
 qmake: FORCE
 	@$(QMAKE) -spec linux-g++ CONFIG+=debug -o Makefile ../../../src/PfFlow/PfFlow.pro
 
-qmake_all: sub-autoRun-qmake_all sub-ifStep-qmake_all sub-endStep-qmake_all sub-printfStep-qmake_all sub-condition-qmake_all sub-breakStep-qmake_all sub-continueStep-qmake_all sub-elseIfStep-qmake_all sub-elseStep-qmake_all sub-sleepStep-qmake_all sub-whileStep-qmake_all sub-temperatureStep-qmake_all sub-getAnalogInStep-qmake_all sub-getSwitchInStep-qmake_all sub-setAnalogOutStep-qmake_all sub-setSwitchOutStep-qmake_all FORCE
+qmake_all: sub-condition-qmake_all sub-autoRun-qmake_all sub-ifStep-qmake_all sub-endStep-qmake_all sub-printfStep-qmake_all sub-breakStep-qmake_all sub-continueStep-qmake_all sub-elseIfStep-qmake_all sub-elseStep-qmake_all sub-sleepStep-qmake_all sub-whileStep-qmake_all sub-temperatureStep-qmake_all sub-getAnalogInStep-qmake_all sub-getSwitchInStep-qmake_all sub-setAnalogOutStep-qmake_all sub-setSwitchOutStep-qmake_all FORCE
 
-make_first: sub-autoRun-make_first sub-ifStep-make_first sub-endStep-make_first sub-printfStep-make_first sub-condition-make_first sub-breakStep-make_first sub-continueStep-make_first sub-elseIfStep-make_first sub-elseStep-make_first sub-sleepStep-make_first sub-whileStep-make_first sub-temperatureStep-make_first sub-getAnalogInStep-make_first sub-getSwitchInStep-make_first sub-setAnalogOutStep-make_first sub-setSwitchOutStep-make_first  FORCE
-all: sub-autoRun-all sub-ifStep-all sub-endStep-all sub-printfStep-all sub-condition-all sub-breakStep-all sub-continueStep-all sub-elseIfStep-all sub-elseStep-all sub-sleepStep-all sub-whileStep-all sub-temperatureStep-all sub-getAnalogInStep-all sub-getSwitchInStep-all sub-setAnalogOutStep-all sub-setSwitchOutStep-all  FORCE
-clean: sub-autoRun-clean sub-ifStep-clean sub-endStep-clean sub-printfStep-clean sub-condition-clean sub-breakStep-clean sub-continueStep-clean sub-elseIfStep-clean sub-elseStep-clean sub-sleepStep-clean sub-whileStep-clean sub-temperatureStep-clean sub-getAnalogInStep-clean sub-getSwitchInStep-clean sub-setAnalogOutStep-clean sub-setSwitchOutStep-clean  FORCE
-distclean: sub-autoRun-distclean sub-ifStep-distclean sub-endStep-distclean sub-printfStep-distclean sub-condition-distclean sub-breakStep-distclean sub-continueStep-distclean sub-elseIfStep-distclean sub-elseStep-distclean sub-sleepStep-distclean sub-whileStep-distclean sub-temperatureStep-distclean sub-getAnalogInStep-distclean sub-getSwitchInStep-distclean sub-setAnalogOutStep-distclean sub-setSwitchOutStep-distclean  FORCE
+make_first: sub-condition-make_first sub-autoRun-make_first sub-ifStep-make_first sub-endStep-make_first sub-printfStep-make_first sub-breakStep-make_first sub-continueStep-make_first sub-elseIfStep-make_first sub-elseStep-make_first sub-sleepStep-make_first sub-whileStep-make_first sub-temperatureStep-make_first sub-getAnalogInStep-make_first sub-getSwitchInStep-make_first sub-setAnalogOutStep-make_first sub-setSwitchOutStep-make_first  FORCE
+all: sub-condition-all sub-autoRun-all sub-ifStep-all sub-endStep-all sub-printfStep-all sub-breakStep-all sub-continueStep-all sub-elseIfStep-all sub-elseStep-all sub-sleepStep-all sub-whileStep-all sub-temperatureStep-all sub-getAnalogInStep-all sub-getSwitchInStep-all sub-setAnalogOutStep-all sub-setSwitchOutStep-all  FORCE
+clean: sub-condition-clean sub-autoRun-clean sub-ifStep-clean sub-endStep-clean sub-printfStep-clean sub-breakStep-clean sub-continueStep-clean sub-elseIfStep-clean sub-elseStep-clean sub-sleepStep-clean sub-whileStep-clean sub-temperatureStep-clean sub-getAnalogInStep-clean sub-getSwitchInStep-clean sub-setAnalogOutStep-clean sub-setSwitchOutStep-clean  FORCE
+distclean: sub-condition-distclean sub-autoRun-distclean sub-ifStep-distclean sub-endStep-distclean sub-printfStep-distclean sub-breakStep-distclean sub-continueStep-distclean sub-elseIfStep-distclean sub-elseStep-distclean sub-sleepStep-distclean sub-whileStep-distclean sub-temperatureStep-distclean sub-getAnalogInStep-distclean sub-getSwitchInStep-distclean sub-setAnalogOutStep-distclean sub-setSwitchOutStep-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-autoRun-install_subtargets sub-ifStep-install_subtargets sub-endStep-install_subtargets sub-printfStep-install_subtargets sub-condition-install_subtargets sub-breakStep-install_subtargets sub-continueStep-install_subtargets sub-elseIfStep-install_subtargets sub-elseStep-install_subtargets sub-sleepStep-install_subtargets sub-whileStep-install_subtargets sub-temperatureStep-install_subtargets sub-getAnalogInStep-install_subtargets sub-getSwitchInStep-install_subtargets sub-setAnalogOutStep-install_subtargets sub-setSwitchOutStep-install_subtargets FORCE
-uninstall_subtargets: sub-autoRun-uninstall_subtargets sub-ifStep-uninstall_subtargets sub-endStep-uninstall_subtargets sub-printfStep-uninstall_subtargets sub-condition-uninstall_subtargets sub-breakStep-uninstall_subtargets sub-continueStep-uninstall_subtargets sub-elseIfStep-uninstall_subtargets sub-elseStep-uninstall_subtargets sub-sleepStep-uninstall_subtargets sub-whileStep-uninstall_subtargets sub-temperatureStep-uninstall_subtargets sub-getAnalogInStep-uninstall_subtargets sub-getSwitchInStep-uninstall_subtargets sub-setAnalogOutStep-uninstall_subtargets sub-setSwitchOutStep-uninstall_subtargets FORCE
+install_subtargets: sub-condition-install_subtargets sub-autoRun-install_subtargets sub-ifStep-install_subtargets sub-endStep-install_subtargets sub-printfStep-install_subtargets sub-breakStep-install_subtargets sub-continueStep-install_subtargets sub-elseIfStep-install_subtargets sub-elseStep-install_subtargets sub-sleepStep-install_subtargets sub-whileStep-install_subtargets sub-temperatureStep-install_subtargets sub-getAnalogInStep-install_subtargets sub-getSwitchInStep-install_subtargets sub-setAnalogOutStep-install_subtargets sub-setSwitchOutStep-install_subtargets FORCE
+uninstall_subtargets: sub-condition-uninstall_subtargets sub-autoRun-uninstall_subtargets sub-ifStep-uninstall_subtargets sub-endStep-uninstall_subtargets sub-printfStep-uninstall_subtargets sub-breakStep-uninstall_subtargets sub-continueStep-uninstall_subtargets sub-elseIfStep-uninstall_subtargets sub-elseStep-uninstall_subtargets sub-sleepStep-uninstall_subtargets sub-whileStep-uninstall_subtargets sub-temperatureStep-uninstall_subtargets sub-getAnalogInStep-uninstall_subtargets sub-getSwitchInStep-uninstall_subtargets sub-setAnalogOutStep-uninstall_subtargets sub-setSwitchOutStep-uninstall_subtargets FORCE
 
+sub-condition-check:
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
 sub-autoRun-check:
 	@test -d autoRun/ || mkdir -p autoRun/
 	cd autoRun/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/autoRun/autoRun.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
@@ -731,9 +734,6 @@ sub-endStep-check:
 sub-printfStep-check:
 	@test -d printfStep/ || mkdir -p printfStep/
 	cd printfStep/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/printfStep/printfStep.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-condition-check:
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
 sub-breakStep-check:
 	@test -d breakStep/ || mkdir -p breakStep/
 	cd breakStep/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/breakStep/breakStep.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
@@ -767,7 +767,7 @@ sub-setAnalogOutStep-check:
 sub-setSwitchOutStep-check:
 	@test -d setSwitchOutStep/ || mkdir -p setSwitchOutStep/
 	cd setSwitchOutStep/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/setSwitchOutStep/setSwitchOutStep.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-autoRun-check sub-ifStep-check sub-endStep-check sub-printfStep-check sub-condition-check sub-breakStep-check sub-continueStep-check sub-elseIfStep-check sub-elseStep-check sub-sleepStep-check sub-whileStep-check sub-temperatureStep-check sub-getAnalogInStep-check sub-getSwitchInStep-check sub-setAnalogOutStep-check sub-setSwitchOutStep-check
+check: sub-condition-check sub-autoRun-check sub-ifStep-check sub-endStep-check sub-printfStep-check sub-breakStep-check sub-continueStep-check sub-elseIfStep-check sub-elseStep-check sub-sleepStep-check sub-whileStep-check sub-temperatureStep-check sub-getAnalogInStep-check sub-getSwitchInStep-check sub-setAnalogOutStep-check sub-setSwitchOutStep-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE
@@ -777,9 +777,13 @@ FORCE:
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
 
-distdir: sub-autoRun-distdir sub-ifStep-distdir sub-endStep-distdir sub-printfStep-distdir sub-condition-distdir sub-breakStep-distdir sub-continueStep-distdir sub-elseIfStep-distdir sub-elseStep-distdir sub-sleepStep-distdir sub-whileStep-distdir sub-temperatureStep-distdir sub-getAnalogInStep-distdir sub-getSwitchInStep-distdir sub-setAnalogOutStep-distdir sub-setSwitchOutStep-distdir FORCE
+distdir: sub-condition-distdir sub-autoRun-distdir sub-ifStep-distdir sub-endStep-distdir sub-printfStep-distdir sub-breakStep-distdir sub-continueStep-distdir sub-elseIfStep-distdir sub-elseStep-distdir sub-sleepStep-distdir sub-whileStep-distdir sub-temperatureStep-distdir sub-getAnalogInStep-distdir sub-getSwitchInStep-distdir sub-setAnalogOutStep-distdir sub-setSwitchOutStep-distdir FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/linux.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/sanitize.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/qconfig.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_clucene_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designercomponents_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_platformsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmldevtools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickparticles_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uiplugin.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webview_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xcb_qpa_lib_private.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xlsx.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_functions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exclusive_builds.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_pre.prf ../../../src/PfFlow/runObj/runObj.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resolve_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/warn_on.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/testcase_targets.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exceptions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/yacc.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/lex.prf ../../../src/PfFlow/PfFlow.pro $(DISTDIR)/
+
+sub-condition-distdir: FORCE
+	@test -d condition/ || mkdir -p condition/
+	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/condition
 
 sub-autoRun-distdir: FORCE
 	@test -d autoRun/ || mkdir -p autoRun/
@@ -796,10 +800,6 @@ sub-endStep-distdir: FORCE
 sub-printfStep-distdir: FORCE
 	@test -d printfStep/ || mkdir -p printfStep/
 	cd printfStep/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/printfStep/printfStep.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/printfStep
-
-sub-condition-distdir: FORCE
-	@test -d condition/ || mkdir -p condition/
-	cd condition/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfFlow/condition/condition.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/condition
 
 sub-breakStep-distdir: FORCE
 	@test -d breakStep/ || mkdir -p breakStep/

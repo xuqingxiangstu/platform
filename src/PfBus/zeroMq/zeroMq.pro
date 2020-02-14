@@ -6,7 +6,10 @@
 
 QT       -= gui
 
-TARGET = ../../../../zeroMq
+win32:CONFIG(release, debug|release): TARGET = ../../../../zeroMq
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../zeroMq
+else:unix:!macx: TARGET = ../../../zeroMq
+
 TEMPLATE = lib
 
 CONFIG += C++11
@@ -28,3 +31,8 @@ unix {
 }
 
 LIBS += $$PWD/zmq/libzmq.lib
+
+win32:CONFIG(release, debug|release): LIBS += $$PWD/zmq/libzmq.lib
+else:win32:CONFIG(debug, debug|release): LIBS += $$PWD/zmq/libzmq.lib
+else:unix:!macx: LIBS += $$PWD/zmq/libzmq.so
+

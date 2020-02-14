@@ -28,16 +28,7 @@ COMPRESS      = gzip -9f
 DISTNAME      = PfAdapter1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfAdapter/.tmp/PfAdapter1.0.0
 SUBTARGETS    =  \
-		sub-PfAdapterManager \
-		sub-AnalogInAdapter \
-		sub-BroadcastAdapter \
-		sub-MulticastAdapter \
-		sub-UnicastAdapter \
-		sub-SerialPortAdapter \
-		sub-AnalogOutAdapter \
-		sub-DigitalIoAdapter \
-		sub-DigitalOutAdapter \
-		sub-RelayCtrlAdapter
+		sub-PfAdapterManager
 
 
 sub-PfAdapterManager-qmake_all:  FORCE
@@ -65,231 +56,6 @@ sub-PfAdapterManager-install_subtargets: FORCE
 sub-PfAdapterManager-uninstall_subtargets: FORCE
 	@test -d PfAdapterManager/ || mkdir -p PfAdapterManager/
 	cd PfAdapterManager/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/PfAdapterManager/PfAdapterManager.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-AnalogInAdapter-qmake_all:  FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd AnalogInAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-AnalogInAdapter: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-AnalogInAdapter-make_first: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-AnalogInAdapter-all: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-AnalogInAdapter-clean: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-AnalogInAdapter-distclean: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-AnalogInAdapter-install_subtargets: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-AnalogInAdapter-uninstall_subtargets: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-BroadcastAdapter-qmake_all:  FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd BroadcastAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-BroadcastAdapter: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-BroadcastAdapter-make_first: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-BroadcastAdapter-all: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-BroadcastAdapter-clean: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-BroadcastAdapter-distclean: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-BroadcastAdapter-install_subtargets: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-BroadcastAdapter-uninstall_subtargets: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-MulticastAdapter-qmake_all:  FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd MulticastAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-MulticastAdapter: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-MulticastAdapter-make_first: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-MulticastAdapter-all: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-MulticastAdapter-clean: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-MulticastAdapter-distclean: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-MulticastAdapter-install_subtargets: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-MulticastAdapter-uninstall_subtargets: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-UnicastAdapter-qmake_all:  FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd UnicastAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-UnicastAdapter: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-UnicastAdapter-make_first: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-UnicastAdapter-all: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-UnicastAdapter-clean: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-UnicastAdapter-distclean: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-UnicastAdapter-install_subtargets: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-UnicastAdapter-uninstall_subtargets: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-SerialPortAdapter-qmake_all:  FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd SerialPortAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-SerialPortAdapter: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-SerialPortAdapter-make_first: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-SerialPortAdapter-all: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-SerialPortAdapter-clean: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-SerialPortAdapter-distclean: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-SerialPortAdapter-install_subtargets: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-SerialPortAdapter-uninstall_subtargets: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-AnalogOutAdapter-qmake_all:  FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd AnalogOutAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-AnalogOutAdapter: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-AnalogOutAdapter-make_first: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-AnalogOutAdapter-all: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-AnalogOutAdapter-clean: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-AnalogOutAdapter-distclean: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-AnalogOutAdapter-install_subtargets: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-AnalogOutAdapter-uninstall_subtargets: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-DigitalIoAdapter-qmake_all:  FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd DigitalIoAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-DigitalIoAdapter: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-DigitalIoAdapter-make_first: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-DigitalIoAdapter-all: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-DigitalIoAdapter-clean: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-DigitalIoAdapter-distclean: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-DigitalIoAdapter-install_subtargets: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-DigitalIoAdapter-uninstall_subtargets: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-DigitalOutAdapter-qmake_all:  FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd DigitalOutAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-DigitalOutAdapter: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-DigitalOutAdapter-make_first: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-DigitalOutAdapter-all: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-DigitalOutAdapter-clean: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-DigitalOutAdapter-distclean: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-DigitalOutAdapter-install_subtargets: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-DigitalOutAdapter-uninstall_subtargets: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-RelayCtrlAdapter-qmake_all:  FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd RelayCtrlAdapter/ && $(MAKE) -f Makefile qmake_all
-sub-RelayCtrlAdapter: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-RelayCtrlAdapter-make_first: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-RelayCtrlAdapter-all: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-RelayCtrlAdapter-clean: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-RelayCtrlAdapter-distclean: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-RelayCtrlAdapter-install_subtargets: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-RelayCtrlAdapter-uninstall_subtargets: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../../src/PfAdapter/PfAdapter.pro /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf \
@@ -553,47 +319,20 @@ Makefile: ../../../src/PfAdapter/PfAdapter.pro /opt/Qt5.5.0/5.5/gcc_64/mkspecs/l
 qmake: FORCE
 	@$(QMAKE) -spec linux-g++ CONFIG+=debug -o Makefile ../../../src/PfAdapter/PfAdapter.pro
 
-qmake_all: sub-PfAdapterManager-qmake_all sub-AnalogInAdapter-qmake_all sub-BroadcastAdapter-qmake_all sub-MulticastAdapter-qmake_all sub-UnicastAdapter-qmake_all sub-SerialPortAdapter-qmake_all sub-AnalogOutAdapter-qmake_all sub-DigitalIoAdapter-qmake_all sub-DigitalOutAdapter-qmake_all sub-RelayCtrlAdapter-qmake_all FORCE
+qmake_all: sub-PfAdapterManager-qmake_all FORCE
 
-make_first: sub-PfAdapterManager-make_first sub-AnalogInAdapter-make_first sub-BroadcastAdapter-make_first sub-MulticastAdapter-make_first sub-UnicastAdapter-make_first sub-SerialPortAdapter-make_first sub-AnalogOutAdapter-make_first sub-DigitalIoAdapter-make_first sub-DigitalOutAdapter-make_first sub-RelayCtrlAdapter-make_first  FORCE
-all: sub-PfAdapterManager-all sub-AnalogInAdapter-all sub-BroadcastAdapter-all sub-MulticastAdapter-all sub-UnicastAdapter-all sub-SerialPortAdapter-all sub-AnalogOutAdapter-all sub-DigitalIoAdapter-all sub-DigitalOutAdapter-all sub-RelayCtrlAdapter-all  FORCE
-clean: sub-PfAdapterManager-clean sub-AnalogInAdapter-clean sub-BroadcastAdapter-clean sub-MulticastAdapter-clean sub-UnicastAdapter-clean sub-SerialPortAdapter-clean sub-AnalogOutAdapter-clean sub-DigitalIoAdapter-clean sub-DigitalOutAdapter-clean sub-RelayCtrlAdapter-clean  FORCE
-distclean: sub-PfAdapterManager-distclean sub-AnalogInAdapter-distclean sub-BroadcastAdapter-distclean sub-MulticastAdapter-distclean sub-UnicastAdapter-distclean sub-SerialPortAdapter-distclean sub-AnalogOutAdapter-distclean sub-DigitalIoAdapter-distclean sub-DigitalOutAdapter-distclean sub-RelayCtrlAdapter-distclean  FORCE
+make_first: sub-PfAdapterManager-make_first  FORCE
+all: sub-PfAdapterManager-all  FORCE
+clean: sub-PfAdapterManager-clean  FORCE
+distclean: sub-PfAdapterManager-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfAdapterManager-install_subtargets sub-AnalogInAdapter-install_subtargets sub-BroadcastAdapter-install_subtargets sub-MulticastAdapter-install_subtargets sub-UnicastAdapter-install_subtargets sub-SerialPortAdapter-install_subtargets sub-AnalogOutAdapter-install_subtargets sub-DigitalIoAdapter-install_subtargets sub-DigitalOutAdapter-install_subtargets sub-RelayCtrlAdapter-install_subtargets FORCE
-uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets sub-AnalogInAdapter-uninstall_subtargets sub-BroadcastAdapter-uninstall_subtargets sub-MulticastAdapter-uninstall_subtargets sub-UnicastAdapter-uninstall_subtargets sub-SerialPortAdapter-uninstall_subtargets sub-AnalogOutAdapter-uninstall_subtargets sub-DigitalIoAdapter-uninstall_subtargets sub-DigitalOutAdapter-uninstall_subtargets sub-RelayCtrlAdapter-uninstall_subtargets FORCE
+install_subtargets: sub-PfAdapterManager-install_subtargets FORCE
+uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets FORCE
 
 sub-PfAdapterManager-check:
 	@test -d PfAdapterManager/ || mkdir -p PfAdapterManager/
 	cd PfAdapterManager/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/PfAdapterManager/PfAdapterManager.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-AnalogInAdapter-check:
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-BroadcastAdapter-check:
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-MulticastAdapter-check:
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-UnicastAdapter-check:
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-SerialPortAdapter-check:
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-AnalogOutAdapter-check:
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-DigitalIoAdapter-check:
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-DigitalOutAdapter-check:
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-RelayCtrlAdapter-check:
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfAdapterManager-check sub-AnalogInAdapter-check sub-BroadcastAdapter-check sub-MulticastAdapter-check sub-UnicastAdapter-check sub-SerialPortAdapter-check sub-AnalogOutAdapter-check sub-DigitalIoAdapter-check sub-DigitalOutAdapter-check sub-RelayCtrlAdapter-check
+check: sub-PfAdapterManager-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE
@@ -603,47 +342,11 @@ FORCE:
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
 
-distdir: sub-PfAdapterManager-distdir sub-AnalogInAdapter-distdir sub-BroadcastAdapter-distdir sub-MulticastAdapter-distdir sub-UnicastAdapter-distdir sub-SerialPortAdapter-distdir sub-AnalogOutAdapter-distdir sub-DigitalIoAdapter-distdir sub-DigitalOutAdapter-distdir sub-RelayCtrlAdapter-distdir FORCE
+distdir: sub-PfAdapterManager-distdir FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/linux.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/sanitize.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/qconfig.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_clucene_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designercomponents_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_platformsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmldevtools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickparticles_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uiplugin.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webview_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xcb_qpa_lib_private.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xlsx.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_functions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exclusive_builds.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_pre.prf ../../../src/PfAdapter/adapter/adapter.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resolve_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/warn_on.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/testcase_targets.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exceptions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/yacc.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/lex.prf ../../../src/PfAdapter/PfAdapter.pro $(DISTDIR)/
 
 sub-PfAdapterManager-distdir: FORCE
 	@test -d PfAdapterManager/ || mkdir -p PfAdapterManager/
 	cd PfAdapterManager/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/PfAdapterManager/PfAdapterManager.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/PfAdapterManager
-
-sub-AnalogInAdapter-distdir: FORCE
-	@test -d AnalogInAdapter/ || mkdir -p AnalogInAdapter/
-	cd AnalogInAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogInAdapter/AnalogInAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/AnalogInAdapter
-
-sub-BroadcastAdapter-distdir: FORCE
-	@test -d BroadcastAdapter/ || mkdir -p BroadcastAdapter/
-	cd BroadcastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/BroadcastAdapter/BroadcastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/BroadcastAdapter
-
-sub-MulticastAdapter-distdir: FORCE
-	@test -d MulticastAdapter/ || mkdir -p MulticastAdapter/
-	cd MulticastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/MulticastAdapter/MulticastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/MulticastAdapter
-
-sub-UnicastAdapter-distdir: FORCE
-	@test -d UnicastAdapter/ || mkdir -p UnicastAdapter/
-	cd UnicastAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/UnicastAdapter/UnicastAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/UnicastAdapter
-
-sub-SerialPortAdapter-distdir: FORCE
-	@test -d SerialPortAdapter/ || mkdir -p SerialPortAdapter/
-	cd SerialPortAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/SerialPortAdapter/SerialPortAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/SerialPortAdapter
-
-sub-AnalogOutAdapter-distdir: FORCE
-	@test -d AnalogOutAdapter/ || mkdir -p AnalogOutAdapter/
-	cd AnalogOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/AnalogOutAdapter/AnalogOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/AnalogOutAdapter
-
-sub-DigitalIoAdapter-distdir: FORCE
-	@test -d DigitalIoAdapter/ || mkdir -p DigitalIoAdapter/
-	cd DigitalIoAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalIoAdapter/DigitalIoAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/DigitalIoAdapter
-
-sub-DigitalOutAdapter-distdir: FORCE
-	@test -d DigitalOutAdapter/ || mkdir -p DigitalOutAdapter/
-	cd DigitalOutAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/DigitalOutAdapter/DigitalOutAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/DigitalOutAdapter
-
-sub-RelayCtrlAdapter-distdir: FORCE
-	@test -d RelayCtrlAdapter/ || mkdir -p RelayCtrlAdapter/
-	cd RelayCtrlAdapter/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/RelayCtrlAdapter
 

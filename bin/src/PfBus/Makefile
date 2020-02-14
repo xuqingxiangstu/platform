@@ -28,35 +28,9 @@ COMPRESS      = gzip -9f
 DISTNAME      = PfBus1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfBus/.tmp/PfBus1.0.0
 SUBTARGETS    =  \
-		sub-serialPort \
 		sub-zeroMq
 
 
-sub-serialPort-qmake_all:  FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd serialPort/ && $(MAKE) -f Makefile qmake_all
-sub-serialPort: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-serialPort-make_first: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-serialPort-all: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-serialPort-clean: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-serialPort-distclean: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-serialPort-install_subtargets: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-serialPort-uninstall_subtargets: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-zeroMq-qmake_all:  FORCE
 	@test -d zeroMq/ || mkdir -p zeroMq/
 	cd zeroMq/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/zeroMq/zeroMq.pro -spec linux-g++ CONFIG+=debug -o Makefile
@@ -343,23 +317,20 @@ Makefile: ../../../src/PfBus/PfBus.pro /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++
 qmake: FORCE
 	@$(QMAKE) -spec linux-g++ CONFIG+=debug -o Makefile ../../../src/PfBus/PfBus.pro
 
-qmake_all: sub-serialPort-qmake_all sub-zeroMq-qmake_all FORCE
+qmake_all: sub-zeroMq-qmake_all FORCE
 
-make_first: sub-serialPort-make_first sub-zeroMq-make_first  FORCE
-all: sub-serialPort-all sub-zeroMq-all  FORCE
-clean: sub-serialPort-clean sub-zeroMq-clean  FORCE
-distclean: sub-serialPort-distclean sub-zeroMq-distclean  FORCE
+make_first: sub-zeroMq-make_first  FORCE
+all: sub-zeroMq-all  FORCE
+clean: sub-zeroMq-clean  FORCE
+distclean: sub-zeroMq-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-serialPort-install_subtargets sub-zeroMq-install_subtargets FORCE
-uninstall_subtargets: sub-serialPort-uninstall_subtargets sub-zeroMq-uninstall_subtargets FORCE
+install_subtargets: sub-zeroMq-install_subtargets FORCE
+uninstall_subtargets: sub-zeroMq-uninstall_subtargets FORCE
 
-sub-serialPort-check:
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
 sub-zeroMq-check:
 	@test -d zeroMq/ || mkdir -p zeroMq/
 	cd zeroMq/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/zeroMq/zeroMq.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-serialPort-check sub-zeroMq-check
+check: sub-zeroMq-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE
@@ -369,13 +340,9 @@ FORCE:
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
 
-distdir: sub-serialPort-distdir sub-zeroMq-distdir FORCE
+distdir: sub-zeroMq-distdir FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/linux.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/sanitize.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/qconfig.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_clucene_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designercomponents_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_platformsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmldevtools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickparticles_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uiplugin.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webview_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xcb_qpa_lib_private.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xlsx.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_functions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exclusive_builds.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_pre.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resolve_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/warn_on.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/testcase_targets.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exceptions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/yacc.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/lex.prf ../../../src/PfBus/PfBus.pro $(DISTDIR)/
-
-sub-serialPort-distdir: FORCE
-	@test -d serialPort/ || mkdir -p serialPort/
-	cd serialPort/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfBus/serialPort/serialPort.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/serialPort
 
 sub-zeroMq-distdir: FORCE
 	@test -d zeroMq/ || mkdir -p zeroMq/

@@ -2,5 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     #netWork \
-    serialPort \
+    #serialPort \
     zeroMq

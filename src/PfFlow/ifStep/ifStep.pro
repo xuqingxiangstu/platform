@@ -6,7 +6,11 @@
 
 QT       -= gui
 
-TARGET = ../../../../stepLib/ifStep
+
+win32:CONFIG(release, debug|release): TARGET = ../../../../stepLib/ifStep
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../stepLib/ifStep
+else:unix:!macx: TARGET = ../../../stepLib/ifStep
+
 TEMPLATE = lib
 CONFIG += C++11
 DEFINES += IFSTEP_LIBRARY
@@ -23,6 +27,8 @@ unix {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcondition
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcondition
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lcondition

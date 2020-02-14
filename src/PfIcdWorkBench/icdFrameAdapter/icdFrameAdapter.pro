@@ -6,7 +6,13 @@
 
 QT       -= gui
 CONFIG += C++11
-TARGET = ../../../../icdFrameAdapter
+
+
+win32:CONFIG(release, debug|release): TARGET = ../../../../icdFrameAdapter
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../icdFrameAdapter
+else:unix:!macx: TARGET = ../../../icdFrameAdapter
+
+
 TEMPLATE = lib
 
 DEFINES += ICDFRAMEADAPTER_LIBRARY
@@ -23,3 +29,5 @@ unix {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+

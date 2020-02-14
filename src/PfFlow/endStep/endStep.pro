@@ -1,6 +1,9 @@
 QT       -= gui
 
-TARGET = ../../../../stepLib/endStep
+win32:CONFIG(release, debug|release): TARGET = ../../../../stepLib/endStep
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../stepLib/endStep
+else:unix:!macx: TARGET = ../../../stepLib/endStep
+
 TEMPLATE = lib
 CONFIG += C++11
 DEFINES += ENDSTEP_LIBRARY

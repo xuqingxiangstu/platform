@@ -7,7 +7,11 @@
 QT       -= gui
 CONFIG += C++14
 QT       += xlsx
-TARGET = ../../../../icdData
+
+win32:CONFIG(release, debug|release): TARGET = ../../../../icdData
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../icdData
+else:unix:!macx: TARGET = ../../../icdData
+
 TEMPLATE = lib
 
 DEFINES += ICDDATA_LIBRARY

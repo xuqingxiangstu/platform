@@ -36,7 +36,7 @@ DISTNAME      = sleepStep1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfFlow/sleepStep/.tmp/sleepStep1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libsleepStep.so.1
-LIBS          = $(SUBLIBS) -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/home/xqx/xqx/work/platform/bin/src/PfFlow/sleepStep/../../../ -lTinyXml -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -185,9 +185,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/xqx/xqx/work/src/PfFlow/sleepStep/sleepStep.pro ../../../../src/PfFlow/sleepStep/sleepStep.h \
 		../../../../src/PfFlow/sleepStep/sleepStep_global.h ../../../../src/PfFlow/sleepStep/sleepStep.cpp
 QMAKE_TARGET  = sleepStep
-DESTDIR       = ../../../../stepLib/#avoid trailing-slash linebreak
+DESTDIR       = ../../../stepLib/#avoid trailing-slash linebreak
 TARGET        = libsleepStep.so.1.0.0
-TARGETA       = ../../../../stepLib/libsleepStep.a
+TARGETA       = ../../../stepLib/libsleepStep.a
 TARGET0       = libsleepStep.so
 TARGETD       = libsleepStep.so.1.0.0
 TARGET1       = libsleepStep.so.1
@@ -216,21 +216,21 @@ first: all
 
 ####### Build rules
 
-../../../../stepLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../stepLib/ || mkdir -p ../../../../stepLib/
+../../../stepLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../stepLib/ || mkdir -p ../../../stepLib/
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../stepLib/ 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET0)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET1)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../stepLib/ 
-	-$(MOVE) $(TARGET1) ../../../../stepLib/ 
-	-$(MOVE) $(TARGET2) ../../../../stepLib/ 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../stepLib/ 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET0)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET1)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../stepLib/ 
+	-$(MOVE) $(TARGET1) ../../../stepLib/ 
+	-$(MOVE) $(TARGET2) ../../../stepLib/ 
 
 
 
@@ -515,7 +515,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../stepLib/$(TARGET)
+all: Makefile ../../../stepLib/$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -533,8 +533,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET) 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET0) ../../../../stepLib/$(TARGET1) ../../../../stepLib/$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET) 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET0) ../../../stepLib/$(TARGET1) ../../../stepLib/$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -606,7 +606,7 @@ sleepStep.o: ../../../../src/PfFlow/sleepStep/sleepStep.cpp ../../../../src/PfFl
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../stepLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../stepLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

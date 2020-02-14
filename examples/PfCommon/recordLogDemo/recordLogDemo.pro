@@ -7,8 +7,10 @@
 QT       += core
 
 QT       -= gui
+win32:CONFIG(release, debug|release): TARGET = ../../../../recordLogDemo
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../recordLogDemo
+else:unix:!macx: TARGET = ../../../recordLogDemo
 
-TARGET = ../../../../recordLogDemo
 CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG += C++11
