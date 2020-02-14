@@ -6,7 +6,10 @@
 
 QT       -= gui
 
-TARGET = ../../../../recordLog
+win32:CONFIG(release, debug|release): TARGET = ../../../../recordLog
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../recordLog
+else:unix:!macx: TARGET = ../../../recordLog
+
 TEMPLATE = lib
 CONFIG += C++11
 DEFINES += RECORDLOG_LIBRARY

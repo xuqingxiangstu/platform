@@ -6,7 +6,11 @@
 
 QT       -= gui
 
-TARGET = ../../../../jsoncpp
+win32:CONFIG(release, debug|release): TARGET = ../../../../jsoncpp
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../jsoncpp
+else:unix:!macx: TARGET = ../../../jsoncpp
+
+
 TEMPLATE = lib
 CONFIG += C++11
 DEFINES += JSONCPP_LIBRARY
