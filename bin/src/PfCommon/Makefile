@@ -29,7 +29,6 @@ DISTNAME      = PfCommon1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfCommon/.tmp/PfCommon1.0.0
 SUBTARGETS    =  \
 		sub-TinyXml \
-		sub-dynCreate \
 		sub-recordLog \
 		sub-crc \
 		sub-jsoncpp
@@ -60,31 +59,6 @@ sub-TinyXml-install_subtargets: FORCE
 sub-TinyXml-uninstall_subtargets: FORCE
 	@test -d TinyXml/ || mkdir -p TinyXml/
 	cd TinyXml/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/TinyXml/TinyXml.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-dynCreate-qmake_all:  FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile
-	cd dynCreate/ && $(MAKE) -f Makefile qmake_all
-sub-dynCreate: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile
-sub-dynCreate-make_first: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile 
-sub-dynCreate-all: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile all
-sub-dynCreate-clean: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile clean
-sub-dynCreate-distclean: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-dynCreate-install_subtargets: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile install
-sub-dynCreate-uninstall_subtargets: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-recordLog-qmake_all:  FORCE
 	@test -d recordLog/ || mkdir -p recordLog/
 	cd recordLog/ && $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/recordLog/recordLog.pro -spec linux-g++ CONFIG+=debug -o Makefile
@@ -423,22 +397,19 @@ Makefile: ../../../src/PfCommon/PfCommon.pro /opt/Qt5.5.0/5.5/gcc_64/mkspecs/lin
 qmake: FORCE
 	@$(QMAKE) -spec linux-g++ CONFIG+=debug -o Makefile ../../../src/PfCommon/PfCommon.pro
 
-qmake_all: sub-TinyXml-qmake_all sub-dynCreate-qmake_all sub-recordLog-qmake_all sub-crc-qmake_all sub-jsoncpp-qmake_all FORCE
+qmake_all: sub-TinyXml-qmake_all sub-recordLog-qmake_all sub-crc-qmake_all sub-jsoncpp-qmake_all FORCE
 
-make_first: sub-TinyXml-make_first sub-dynCreate-make_first sub-recordLog-make_first sub-crc-make_first sub-jsoncpp-make_first  FORCE
-all: sub-TinyXml-all sub-dynCreate-all sub-recordLog-all sub-crc-all sub-jsoncpp-all  FORCE
-clean: sub-TinyXml-clean sub-dynCreate-clean sub-recordLog-clean sub-crc-clean sub-jsoncpp-clean  FORCE
-distclean: sub-TinyXml-distclean sub-dynCreate-distclean sub-recordLog-distclean sub-crc-distclean sub-jsoncpp-distclean  FORCE
+make_first: sub-TinyXml-make_first sub-recordLog-make_first sub-crc-make_first sub-jsoncpp-make_first  FORCE
+all: sub-TinyXml-all sub-recordLog-all sub-crc-all sub-jsoncpp-all  FORCE
+clean: sub-TinyXml-clean sub-recordLog-clean sub-crc-clean sub-jsoncpp-clean  FORCE
+distclean: sub-TinyXml-distclean sub-recordLog-distclean sub-crc-distclean sub-jsoncpp-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-TinyXml-install_subtargets sub-dynCreate-install_subtargets sub-recordLog-install_subtargets sub-crc-install_subtargets sub-jsoncpp-install_subtargets FORCE
-uninstall_subtargets: sub-TinyXml-uninstall_subtargets sub-dynCreate-uninstall_subtargets sub-recordLog-uninstall_subtargets sub-crc-uninstall_subtargets sub-jsoncpp-uninstall_subtargets FORCE
+install_subtargets: sub-TinyXml-install_subtargets sub-recordLog-install_subtargets sub-crc-install_subtargets sub-jsoncpp-install_subtargets FORCE
+uninstall_subtargets: sub-TinyXml-uninstall_subtargets sub-recordLog-uninstall_subtargets sub-crc-uninstall_subtargets sub-jsoncpp-uninstall_subtargets FORCE
 
 sub-TinyXml-check:
 	@test -d TinyXml/ || mkdir -p TinyXml/
 	cd TinyXml/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/TinyXml/TinyXml.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-sub-dynCreate-check:
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
 sub-recordLog-check:
 	@test -d recordLog/ || mkdir -p recordLog/
 	cd recordLog/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/recordLog/recordLog.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
@@ -448,7 +419,7 @@ sub-crc-check:
 sub-jsoncpp-check:
 	@test -d jsoncpp/ || mkdir -p jsoncpp/
 	cd jsoncpp/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/jsoncpp/jsoncpp.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-TinyXml-check sub-dynCreate-check sub-recordLog-check sub-crc-check sub-jsoncpp-check
+check: sub-TinyXml-check sub-recordLog-check sub-crc-check sub-jsoncpp-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE
@@ -458,17 +429,13 @@ FORCE:
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
 
-distdir: sub-TinyXml-distdir sub-dynCreate-distdir sub-recordLog-distdir sub-crc-distdir sub-jsoncpp-distdir FORCE
+distdir: sub-TinyXml-distdir sub-recordLog-distdir sub-crc-distdir sub-jsoncpp-distdir FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/linux.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/sanitize.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/gcc-base-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-base.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/common/g++-unix.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/qconfig.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dcore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dinput_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3dquickrenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_3drenderer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bluetooth_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_bootstrap_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_clucene_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_concurrent_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_core_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_dbus_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_declarative_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designer_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_designercomponents_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_enginio_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_gui_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_help_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_location_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimedia_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_multimediawidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_network_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_nfc_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_opengl_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_openglextensions_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_platformsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_positioning_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_printsupport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmldevtools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qmltest_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quick_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickparticles_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_quickwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_script_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_scripttools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sensors_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_serialport_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_sql_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_svg_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_testlib_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uiplugin.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_uitools_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webchannel_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webengine_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginecore_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webenginewidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkit_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webkitwidgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_websockets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_webview_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_widgets_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_x11extras_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xcb_qpa_lib_private.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx.pri /home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/mkspecs/modules-inst/qt_lib_xlsx_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xlsx.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xml_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/modules/qt_lib_xmlpatterns_private.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_functions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/qt_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exclusive_builds.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_pre.prf ../../../src/PfCommon/tools/tools.pri /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/resolve_config.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/default_post.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/warn_on.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/testcase_targets.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/exceptions.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/yacc.prf /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/lex.prf ../../../src/PfCommon/PfCommon.pro $(DISTDIR)/
 
 sub-TinyXml-distdir: FORCE
 	@test -d TinyXml/ || mkdir -p TinyXml/
 	cd TinyXml/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/TinyXml/TinyXml.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/TinyXml
-
-sub-dynCreate-distdir: FORCE
-	@test -d dynCreate/ || mkdir -p dynCreate/
-	cd dynCreate/ && ( test -e Makefile || $(QMAKE) /home/xqx/xqx/work/platform/src/PfCommon/dynCreate/dynCreate.pro -spec linux-g++ CONFIG+=debug -o Makefile ) && $(MAKE) -e -f Makefile distdir DISTDIR=$(DISTDIR)/dynCreate
 
 sub-recordLog-distdir: FORCE
 	@test -d recordLog/ || mkdir -p recordLog/

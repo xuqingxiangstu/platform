@@ -6,7 +6,10 @@
 
 QT       -= gui
 
-TARGET = ../../../../crc
+win32:CONFIG(release, debug|release): TARGET = ../../../../crc
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../crc
+else:unix:!macx: TARGET = ../../../crc
+
 TEMPLATE = lib
 
 DEFINES += CRC_LIBRARY

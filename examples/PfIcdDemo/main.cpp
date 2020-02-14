@@ -18,8 +18,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    //step1：实例化IcdWordkbench适配器
-
     std::shared_ptr<PfIcdWorkBench::icdFrameAdapter> frameAdapter = std::make_shared<PfIcdWorkBench::icdFrameAdapter>();
 
     try

@@ -209,6 +209,9 @@ extern \"C\"\n\
 QT       -= gui\n\
 \n\
 TARGET = ../../../../stepLib/" + className + "\n\
+win32:CONFIG(release, debug|release): TARGET = ../../../../stepLib/" + className + "\n\
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../stepLib/" + className + "\n\
+else:unix:!macx: TARGET = ../../../stepLib/" + className + "\n\
 TEMPLATE = lib\n\
 CONFIG += C++11\n\
 DEFINES += " + tmp + "_LIBRARY\n\
@@ -225,6 +228,7 @@ INSTALLS += target\n\
 \n\
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml\n\
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml\n\
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml\n\
 \n\
 \n\
     \n\

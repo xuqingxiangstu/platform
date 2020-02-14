@@ -36,7 +36,7 @@ DISTNAME      = icdFrameAdapter1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfIcdWorkBench/icdFrameAdapter/.tmp/icdFrameAdapter1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libicdFrameAdapter.so.1
-LIBS          = $(SUBLIBS) -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/home/xqx/xqx/work/platform/bin/src/PfIcdWorkBench/icdFrameAdapter/../../../ -lTinyXml -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -185,9 +185,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/xqx/xqx/work/src/PfIcdWorkBench/icdFrameAdapter/icdFrameAdapter.pro ../../../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h \
 		../../../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter_global.h ../../../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.cpp
 QMAKE_TARGET  = icdFrameAdapter
-DESTDIR       = ../../../../#avoid trailing-slash linebreak
+DESTDIR       = ../../../#avoid trailing-slash linebreak
 TARGET        = libicdFrameAdapter.so.1.0.0
-TARGETA       = ../../../../libicdFrameAdapter.a
+TARGETA       = ../../../libicdFrameAdapter.a
 TARGET0       = libicdFrameAdapter.so
 TARGETD       = libicdFrameAdapter.so.1.0.0
 TARGET1       = libicdFrameAdapter.so.1
@@ -216,21 +216,21 @@ first: all
 
 ####### Build rules
 
-../../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../ || mkdir -p ../../../../
+../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../ || mkdir -p ../../../
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../ 
-	-$(DEL_FILE) ../../../../$(TARGET0)
-	-$(DEL_FILE) ../../../../$(TARGET1)
-	-$(DEL_FILE) ../../../../$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../ 
-	-$(MOVE) $(TARGET1) ../../../../ 
-	-$(MOVE) $(TARGET2) ../../../../ 
+	-$(DEL_FILE) ../../../$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../ 
+	-$(DEL_FILE) ../../../$(TARGET0)
+	-$(DEL_FILE) ../../../$(TARGET1)
+	-$(DEL_FILE) ../../../$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../ 
+	-$(MOVE) $(TARGET1) ../../../ 
+	-$(MOVE) $(TARGET2) ../../../ 
 
 
 
@@ -515,7 +515,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../$(TARGET)
+all: Makefile ../../../$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -533,8 +533,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../$(TARGET) 
-	-$(DEL_FILE) ../../../../$(TARGET0) ../../../../$(TARGET1) ../../../../$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../$(TARGET) 
+	-$(DEL_FILE) ../../../$(TARGET0) ../../../$(TARGET1) ../../../$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -597,14 +597,54 @@ icdframeadapter.o: ../../../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapte
 		../../../../src/PfCommon/TinyXml/tinyxml_global.h \
 		../../../../src/PfCommon/TinyXml/tinystr.h \
 		../../../../src/PfIcdWorkBench/common/type.h \
-		../../../../src/PfCommon/tools/ut_error.h
+		../../../../src/PfCommon/tools/ut_error.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QLibrary \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlibrary.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qisenum.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/QDebug \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qdebug.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qmap.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qtextstream.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qlocale.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvariant.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qset.h \
+		/opt/Qt5.5.0/5.5/gcc_64/include/QtCore/qcontiguouscache.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o icdframeadapter.o ../../../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.cpp
 
 ####### Install
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

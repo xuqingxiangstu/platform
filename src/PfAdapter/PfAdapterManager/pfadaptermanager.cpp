@@ -1,7 +1,7 @@
 #include "pfadaptermanager.h"
 
 #include <sstream>
-#include <windows.h>
+#include <QLibrary>
 
 #include "../../PfCommon/tools/ut_error.h"
 
@@ -57,12 +57,19 @@ namespace Pf
 
                             bool isLoad = false;
 
+#if defined(Q_OS_WIN)
                             std::string dllPath = "./adapterLib/" + strClass + ".dll";
+#else
+                            std::string dllPath = "./adapterLib/lib" + strClass + ".so";
+#endif
 
-                            HMODULE hd = LoadLibraryW(std::wstring(dllPath.begin(), dllPath.end()).c_str());
-                            if(hd != 0)
+                            LOAD_STEP_LIB libfun = nullptr;
+
+                            QLibrary lib(dllPath.c_str());//加载*****.dll
+                            if (lib.load())//判断是否加载成功
                             {
-                                LOAD_STEP_LIB libfun = (LOAD_STEP_LIB)GetProcAddress(hd, "LoadClass");
+                                libfun = (LOAD_STEP_LIB)lib.resolve("LoadClass");//获取dll的函数,***为动态库中的函数                                i
+
                                 if(libfun != nullptr)
                                 {
                                     Adapter  *initObj = libfun();
@@ -83,37 +90,10 @@ namespace Pf
                             if(!isLoad)
                             {
                                 strErr.str("");
-                                strErr << "[" << dllPath << "] 加载dll失败:" << strClass;
+                                strErr << "[" << dllPath << "] 加载dll失败:" << strClass << "(" + lib.errorString().toStdString() + ")";
                                 UT_THROW_EXCEPTION(strErr.str());
                             }
-#if 0
-                            RuntimeClass *rtClass = RuntimeClass::LoadByName(strClass); //根据名字找到运行时类指针
-                            if (rtClass == NULL)
-                            {
-                                strErr.str("");
-                                strErr << "[ERROR][" << __FILE__ << __LINE__ << __FUNCTION__ << "]动态创建类型失败:" << strClass;
-                                throw std::runtime_error(strErr.str());
-                            }
 
-                            DynObject *obj = (DynObject*)rtClass->CreateObject();//根据运行类指针创建对象
-                            if (obj == NULL)
-                            {
-                                strErr.str("");
-                                strErr << "[ERROR][" << __FILE__ << __LINE__ << __FUNCTION__ << "]动态创建对象失败:" << strClass;
-                                throw std::runtime_error(strErr.str());
-                            }
-
-                            Adapter *initObj = (Adapter*)obj;
-                            try
-                            {
-                                initObj->init(mChildEle);
-                                mManagement[strId] = std::shared_ptr<Adapter>(initObj);
-                            }
-                            catch(std::runtime_error err)
-                            {
-                                throw std::runtime_error(strId + " 初始化失败(" + err.what() + ")");
-                            }
-#endif
                         }
                     }
                     catch(std::runtime_error err)

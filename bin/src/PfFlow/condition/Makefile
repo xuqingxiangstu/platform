@@ -36,7 +36,7 @@ DISTNAME      = condition1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfFlow/condition/.tmp/condition1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libcondition.so.1
-LIBS          = $(SUBLIBS) -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/home/xqx/xqx/work/platform/bin/src/PfFlow/condition/../../../ -lTinyXml -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -189,9 +189,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../src/PfFlow/condition/data.h ../../../../src/PfFlow/condition/condition.cpp \
 		../../../../src/PfFlow/condition/data.cpp
 QMAKE_TARGET  = condition
-DESTDIR       = ../../../../#avoid trailing-slash linebreak
+DESTDIR       = ../../../#avoid trailing-slash linebreak
 TARGET        = libcondition.so.1.0.0
-TARGETA       = ../../../../libcondition.a
+TARGETA       = ../../../libcondition.a
 TARGET0       = libcondition.so
 TARGETD       = libcondition.so.1.0.0
 TARGET1       = libcondition.so.1
@@ -220,21 +220,21 @@ first: all
 
 ####### Build rules
 
-../../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../ || mkdir -p ../../../../
+../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../ || mkdir -p ../../../
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../ 
-	-$(DEL_FILE) ../../../../$(TARGET0)
-	-$(DEL_FILE) ../../../../$(TARGET1)
-	-$(DEL_FILE) ../../../../$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../ 
-	-$(MOVE) $(TARGET1) ../../../../ 
-	-$(MOVE) $(TARGET2) ../../../../ 
+	-$(DEL_FILE) ../../../$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../ 
+	-$(DEL_FILE) ../../../$(TARGET0)
+	-$(DEL_FILE) ../../../$(TARGET1)
+	-$(DEL_FILE) ../../../$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../ 
+	-$(MOVE) $(TARGET1) ../../../ 
+	-$(MOVE) $(TARGET2) ../../../ 
 
 
 
@@ -519,7 +519,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../$(TARGET)
+all: Makefile ../../../$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -537,8 +537,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../$(TARGET) 
-	-$(DEL_FILE) ../../../../$(TARGET0) ../../../../$(TARGET1) ../../../../$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../$(TARGET) 
+	-$(DEL_FILE) ../../../$(TARGET0) ../../../$(TARGET1) ../../../$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -614,7 +614,7 @@ data.o: ../../../../src/PfFlow/condition/data.cpp ../../../../src/PfFlow/conditi
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

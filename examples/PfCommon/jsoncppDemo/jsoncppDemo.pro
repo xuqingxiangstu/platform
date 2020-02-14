@@ -8,7 +8,11 @@ QT       += core
 
 QT       -= gui
 CONFIG += C++11
-TARGET = ../../../../jsoncppDemo
+
+win32:CONFIG(release, debug|release): TARGET = ../../../../jsoncppDemo
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../jsoncppDemo
+else:unix:!macx: TARGET = ../../../jsoncppDemo
+
 CONFIG   += console
 CONFIG   -= app_bundle
 

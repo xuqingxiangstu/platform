@@ -36,7 +36,7 @@ DISTNAME      = getAnalogInStep1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfFlow/getAnalogInStep/.tmp/getAnalogInStep1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libgetAnalogInStep.so.1
-LIBS          = $(SUBLIBS) -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
+LIBS          = $(SUBLIBS) -L/home/xqx/xqx/work/platform/bin/src/PfFlow/getAnalogInStep/../../../ -lTinyXml -lPfAdapterManager -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Core -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -185,9 +185,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		/home/xqx/xqx/work/src/PfFlow/getAnalogInStep/getAnalogInStep.pro ../../../../src/PfFlow/getAnalogInStep/getAnalogInStep.h \
 		../../../../src/PfFlow/getAnalogInStep/getAnalogInStep_global.h ../../../../src/PfFlow/getAnalogInStep/getAnalogInStep.cpp
 QMAKE_TARGET  = getAnalogInStep
-DESTDIR       = ../../../../stepLib/#avoid trailing-slash linebreak
+DESTDIR       = ../../../stepLib/#avoid trailing-slash linebreak
 TARGET        = libgetAnalogInStep.so.1.0.0
-TARGETA       = ../../../../stepLib/libgetAnalogInStep.a
+TARGETA       = ../../../stepLib/libgetAnalogInStep.a
 TARGET0       = libgetAnalogInStep.so
 TARGETD       = libgetAnalogInStep.so.1.0.0
 TARGET1       = libgetAnalogInStep.so.1
@@ -216,21 +216,21 @@ first: all
 
 ####### Build rules
 
-../../../../stepLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../stepLib/ || mkdir -p ../../../../stepLib/
+../../../stepLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../stepLib/ || mkdir -p ../../../stepLib/
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../stepLib/ 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET0)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET1)
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../stepLib/ 
-	-$(MOVE) $(TARGET1) ../../../../stepLib/ 
-	-$(MOVE) $(TARGET2) ../../../../stepLib/ 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../stepLib/ 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET0)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET1)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../stepLib/ 
+	-$(MOVE) $(TARGET1) ../../../stepLib/ 
+	-$(MOVE) $(TARGET2) ../../../stepLib/ 
 
 
 
@@ -515,7 +515,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../stepLib/$(TARGET)
+all: Makefile ../../../stepLib/$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -533,8 +533,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET) 
-	-$(DEL_FILE) ../../../../stepLib/$(TARGET0) ../../../../stepLib/$(TARGET1) ../../../../stepLib/$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../stepLib/$(TARGET) 
+	-$(DEL_FILE) ../../../stepLib/$(TARGET0) ../../../stepLib/$(TARGET1) ../../../stepLib/$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -606,7 +606,7 @@ getAnalogInStep.o: ../../../../src/PfFlow/getAnalogInStep/getAnalogInStep.cpp ..
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../stepLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../stepLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

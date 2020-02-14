@@ -19,6 +19,9 @@ SOURCES += main.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lzeroMq
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lzeroMq
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lzeroMq
 
 INCLUDEPATH += $$PWD/../../../src/PfBus/zeroMq
 DEPENDPATH += $$PWD/../../../src/PfBus/zeroMq
+
+unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lzmq

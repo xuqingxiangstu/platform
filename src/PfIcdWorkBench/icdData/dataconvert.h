@@ -6,6 +6,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include "../common/type.h"
+
 /**
  * @file    dataConvert.h
  * @brief   数据转换类，依据原始数据及类型进行转换

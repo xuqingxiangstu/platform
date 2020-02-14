@@ -6,6 +6,7 @@
 #include <sstream>
 #include <memory>
 
+#include "../common/type.h"
 #include "icddata_global.h"
 
 /**

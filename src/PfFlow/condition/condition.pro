@@ -6,7 +6,10 @@
 
 QT       -= gui
 
-TARGET = ../../../../condition
+win32:CONFIG(release, debug|release): TARGET = ../../../../condition
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../condition
+else:unix:!macx: TARGET = ../../../condition
+
 TEMPLATE = lib
 
 DEFINES += CONDITION_LIBRARY
@@ -25,3 +28,4 @@ unix {
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml

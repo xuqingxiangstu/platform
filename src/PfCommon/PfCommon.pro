@@ -2,7 +2,7 @@ TEMPLATE = subdirs
 
 SUBDIRS +=  \
     TinyXml \
-    dynCreate \
+    #dynCreate \
     recordLog \
     crc \
     jsoncpp

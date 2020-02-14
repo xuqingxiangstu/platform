@@ -3,11 +3,11 @@ TEMPLATE = subdirs
 include (./runObj/runObj.pri)
 
 SUBDIRS += \
+    condition \
     autoRun \   
     ifStep \
     endStep \
-    printfStep \
-    condition \
+    printfStep \    
     breakStep \
     continueStep \
     elseIfStep \    

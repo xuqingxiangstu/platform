@@ -36,7 +36,7 @@ DISTNAME      = variableFrame1.0.0
 DISTDIR = /home/xqx/xqx/work/platform/bin/src/PfIcdWorkBench/variableFrame/.tmp/variableFrame1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64 -Wl,-rpath,/opt/Qt5.5.0/5.5/gcc_64/lib -shared -Wl,-soname,libvariableFrame.so.1
-LIBS          = $(SUBLIBS) -L/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/lib -lQt5Xlsx -L/usr/lib64 -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/home/xqx/xqx/work/platform/bin/src/PfIcdWorkBench/variableFrame/../../../ -lTinyXml -licdData -lcrc -L/home/xqx/xqx/soft/build-qtxlsx-Desktop_Qt_5_5_0_GCC_64bit-Debug/lib -lQt5Xlsx -L/usr/lib64 -L/opt/Qt5.5.0/5.5/gcc_64/lib -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -195,9 +195,9 @@ DIST          = /opt/Qt5.5.0/5.5/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../src/PfIcdWorkBench/variableFrame/protocolconfigure.cpp \
 		../../../../src/PfIcdWorkBench/variableFrame/subprotocolconfigure.cpp
 QMAKE_TARGET  = variableFrame
-DESTDIR       = ../../../../frameLib/#avoid trailing-slash linebreak
+DESTDIR       = ../../../#avoid trailing-slash linebreak
 TARGET        = libvariableFrame.so.1.0.0
-TARGETA       = ../../../../frameLib/libvariableFrame.a
+TARGETA       = ../../../libvariableFrame.a
 TARGET0       = libvariableFrame.so
 TARGETD       = libvariableFrame.so.1.0.0
 TARGET1       = libvariableFrame.so.1
@@ -226,21 +226,21 @@ first: all
 
 ####### Build rules
 
-../../../../frameLib/$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
-	@test -d ../../../../frameLib/ || mkdir -p ../../../../frameLib/
+../../../$(TARGET):  $(OBJECTS) $(SUBLIBS) $(OBJCOMP)  
+	@test -d ../../../ || mkdir -p ../../../
 	-$(DEL_FILE) $(TARGET) $(TARGET0) $(TARGET1) $(TARGET2)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS) $(OBJCOMP)
 	-ln -s $(TARGET) $(TARGET0)
 	-ln -s $(TARGET) $(TARGET1)
 	-ln -s $(TARGET) $(TARGET2)
-	-$(DEL_FILE) ../../../../frameLib/$(TARGET)
-	-$(MOVE) $(TARGET)  ../../../../frameLib/ 
-	-$(DEL_FILE) ../../../../frameLib/$(TARGET0)
-	-$(DEL_FILE) ../../../../frameLib/$(TARGET1)
-	-$(DEL_FILE) ../../../../frameLib/$(TARGET2)
-	-$(MOVE) $(TARGET0) ../../../../frameLib/ 
-	-$(MOVE) $(TARGET1) ../../../../frameLib/ 
-	-$(MOVE) $(TARGET2) ../../../../frameLib/ 
+	-$(DEL_FILE) ../../../$(TARGET)
+	-$(MOVE) $(TARGET)  ../../../ 
+	-$(DEL_FILE) ../../../$(TARGET0)
+	-$(DEL_FILE) ../../../$(TARGET1)
+	-$(DEL_FILE) ../../../$(TARGET2)
+	-$(MOVE) $(TARGET0) ../../../ 
+	-$(MOVE) $(TARGET1) ../../../ 
+	-$(MOVE) $(TARGET2) ../../../ 
 
 
 
@@ -533,7 +533,7 @@ qmake: FORCE
 qmake_all: FORCE
 
 
-all: Makefile ../../../../frameLib/$(TARGET)
+all: Makefile ../../../$(TARGET)
 
 dist: distdir FORCE
 	(cd `dirname $(DISTDIR)` && $(TAR) $(DISTNAME).tar $(DISTNAME) && $(COMPRESS) $(DISTNAME).tar) && $(MOVE) `dirname $(DISTDIR)`/$(DISTNAME).tar.gz . && $(DEL_FILE) -r $(DISTDIR)
@@ -551,8 +551,8 @@ clean: compiler_clean
 
 
 distclean: clean 
-	-$(DEL_FILE) ../../../../frameLib/$(TARGET) 
-	-$(DEL_FILE) ../../../../frameLib/$(TARGET0) ../../../../frameLib/$(TARGET1) ../../../../frameLib/$(TARGET2) $(TARGETA)
+	-$(DEL_FILE) ../../../$(TARGET) 
+	-$(DEL_FILE) ../../../$(TARGET0) ../../../$(TARGET1) ../../../$(TARGET2) $(TARGETA)
 	-$(DEL_FILE) Makefile
 
 
@@ -951,7 +951,7 @@ subprotocolconfigure.o: ../../../../src/PfIcdWorkBench/variableFrame/subprotocol
 
 install_target: first FORCE
 	@test -d $(INSTALL_ROOT)/usr/lib || mkdir -p $(INSTALL_ROOT)/usr/lib
-	-$(INSTALL_PROGRAM) ../../../../frameLib/$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
+	-$(INSTALL_PROGRAM) ../../../$(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET0)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET1)
 	-$(SYMLINK) $(TARGET) $(INSTALL_ROOT)/usr/lib/$(TARGET2)

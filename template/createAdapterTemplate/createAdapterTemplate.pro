@@ -8,7 +8,11 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = ../../../createAdapterTemplate
+
+win32:CONFIG(release, debug|release): TARGET = ../../../createAdapterTemplate
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../createAdapterTemplate
+else:unix:!macx: TARGET = ../../createAdapterTemplate
+
 TEMPLATE = app
 
 CONFIG += C++11

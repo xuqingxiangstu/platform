@@ -13,6 +13,11 @@
 #include <tuple>
 #include <vector>
 
+#ifdef __int64
+#undef __int64
+#endif
+
+#define __int64 long long
 
 /** 设置工程编码格式 **/
 #define Utf8_Coding "utf-8"
