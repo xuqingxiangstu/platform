@@ -17,8 +17,10 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lrecordLog
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lrecordLog
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lrecordLog
 
 HEADERS += \
     recordlogdemo.h
