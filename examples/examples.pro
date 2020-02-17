@@ -5,4 +5,5 @@ SUBDIRS += \
     #PfNi \
     PfAdapter \
     PfCommon \
-    PfIcdDemo
+    PfIcdDemo \
+    pfSmlModel

@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     createStepTemplate \
-    createAdapterTemplate
+    createAdapterTemplate \
+    createSmlModelTemplate

@@ -5,7 +5,7 @@ SUBDIRS += \
     #AnalogInAdapter \
     #BroadcastAdapter \
     #MulticastAdapter \
-    #UnicastAdapter \
+    UnicastAdapter \
     #SerialPortAdapter \
     #AnalogOutAdapter \
     #DigitalIoAdapter \

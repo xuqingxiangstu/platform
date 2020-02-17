@@ -34,7 +34,7 @@ namespace Pf
        *      id：全局唯一
        *      class：固定不变
        *  -->
-       * <dev id="cmdSend" class="ZmqRcvAdapter">
+       * <dev id="cmdRcv" class="ZmqRcvAdapter">
        *    <!--
        *        *:接收任意IP
        *        IP地址
