@@ -10,6 +10,8 @@ SUBDIRS += \
     #AnalogOutAdapter \
     #DigitalIoAdapter \
     #DigitalOutAdapter \
-    #RelayCtrlAdapter
+    #RelayCtrlAdapter   \
+    ZmqSendAdapter  \
+    ZmqRcvAdapter  \
 
 include (./adapter/adapter.pri)

@@ -216,7 +216,9 @@ namespace Pf\n\
         strBuf << "\
 QT       -= gui\n\
 \n\
-TARGET = ../../../../adapterLib/" + className + "\n\
+win32:CONFIG(release, debug|release): TARGET = ../../../../adapterLib/" + className + "\n\
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../adapterLib/" + className + "\n\
+else:unix:!macx: TARGET = ../../../adapterLib/" + className + "\n\
 TEMPLATE = lib\n\
 \n\
 DEFINES += " + tmp + "_LIBRARY\n\
@@ -233,6 +235,7 @@ unix {\n\
 \n\
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml\n\
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml\n\
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml\n\
     \n\
     ";
         out << strBuf.str();

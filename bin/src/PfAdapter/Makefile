@@ -24,7 +24,9 @@ SYMLINK       = $(QMAKE) -install ln -f -s
 DEL_DIR       = rmdir
 MOVE          = move
 SUBTARGETS    =  \
-		sub-PfAdapterManager
+		sub-PfAdapterManager \
+		sub-ZmqSendAdapter \
+		sub-ZmqRcvAdapter
 
 
 sub-PfAdapterManager-qmake_all:  FORCE
@@ -52,6 +54,56 @@ sub-PfAdapterManager-install_subtargets: FORCE
 sub-PfAdapterManager-uninstall_subtargets: FORCE
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-ZmqSendAdapter-qmake_all:  FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd ZmqSendAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-ZmqSendAdapter: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-ZmqSendAdapter-make_first: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-ZmqSendAdapter-all: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-ZmqSendAdapter-clean: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-ZmqSendAdapter-distclean: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-ZmqSendAdapter-install_subtargets: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-ZmqSendAdapter-uninstall_subtargets: FORCE
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-ZmqRcvAdapter-qmake_all:  FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd ZmqRcvAdapter\ && $(MAKE) -f Makefile qmake_all
+sub-ZmqRcvAdapter: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-ZmqRcvAdapter-make_first: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-ZmqRcvAdapter-all: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-ZmqRcvAdapter-clean: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-ZmqRcvAdapter-distclean: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-ZmqRcvAdapter-install_subtargets: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-ZmqRcvAdapter-uninstall_subtargets: FORCE
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 
 Makefile: ../../../src/PfAdapter/PfAdapter.pro C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/win32-g++/qmake.conf C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/spec_pre.prf \
 		C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/qdevice.pri \
@@ -313,30 +365,48 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\..\src\PfAdapter\PfAdapter.pro
 
-qmake_all: sub-PfAdapterManager-qmake_all FORCE
+qmake_all: sub-PfAdapterManager-qmake_all sub-ZmqSendAdapter-qmake_all sub-ZmqRcvAdapter-qmake_all FORCE
 
-make_first: sub-PfAdapterManager-make_first  FORCE
-all: sub-PfAdapterManager-all  FORCE
-clean: sub-PfAdapterManager-clean  FORCE
-distclean: sub-PfAdapterManager-distclean  FORCE
+make_first: sub-PfAdapterManager-make_first sub-ZmqSendAdapter-make_first sub-ZmqRcvAdapter-make_first  FORCE
+all: sub-PfAdapterManager-all sub-ZmqSendAdapter-all sub-ZmqRcvAdapter-all  FORCE
+clean: sub-PfAdapterManager-clean sub-ZmqSendAdapter-clean sub-ZmqRcvAdapter-clean  FORCE
+distclean: sub-PfAdapterManager-distclean sub-ZmqSendAdapter-distclean sub-ZmqRcvAdapter-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfAdapterManager-install_subtargets FORCE
-uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets FORCE
+install_subtargets: sub-PfAdapterManager-install_subtargets sub-ZmqSendAdapter-install_subtargets sub-ZmqRcvAdapter-install_subtargets FORCE
+uninstall_subtargets: sub-PfAdapterManager-uninstall_subtargets sub-ZmqSendAdapter-uninstall_subtargets sub-ZmqRcvAdapter-uninstall_subtargets FORCE
 
 sub-PfAdapterManager-debug:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-PfAdapterManager-debug
+sub-ZmqSendAdapter-debug:
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-ZmqRcvAdapter-debug:
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+debug: sub-PfAdapterManager-debug sub-ZmqSendAdapter-debug sub-ZmqRcvAdapter-debug
 
 sub-PfAdapterManager-release:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-PfAdapterManager-release
+sub-ZmqSendAdapter-release:
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-ZmqRcvAdapter-release:
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+release: sub-PfAdapterManager-release sub-ZmqSendAdapter-release sub-ZmqRcvAdapter-release
 
 sub-PfAdapterManager-check:
 	@if not exist PfAdapterManager\ mkdir PfAdapterManager\ & if not exist PfAdapterManager\ exit 1
 	cd PfAdapterManager\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapterManager\PfAdapterManager.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfAdapterManager-check
+sub-ZmqSendAdapter-check:
+	@if not exist ZmqSendAdapter\ mkdir ZmqSendAdapter\ & if not exist ZmqSendAdapter\ exit 1
+	cd ZmqSendAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqSendAdapter\ZmqSendAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-ZmqRcvAdapter-check:
+	@if not exist ZmqRcvAdapter\ mkdir ZmqRcvAdapter\ & if not exist ZmqRcvAdapter\ exit 1
+	cd ZmqRcvAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\ZmqRcvAdapter\ZmqRcvAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+check: sub-PfAdapterManager-check sub-ZmqSendAdapter-check sub-ZmqRcvAdapter-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

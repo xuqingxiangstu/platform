@@ -8,10 +8,10 @@ QT       += core
 
 QT       -= gui
 
-TARGET = ../../../PfAdapter
+TARGET = ../../../PfAdapterDemo
 CONFIG   += console
 CONFIG   -= app_bundle
-CONFIG += C++11
+CONFIG += C++14
 TEMPLATE = app
 
 
@@ -23,11 +23,11 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapterM
 INCLUDEPATH += $$PWD/../../src/PfAdapter
 DEPENDPATH += $$PWD/../../src/PfAdapter
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lanalogIn
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lanalogIn
+#win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lanalogIn
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lanalogIn
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lnetWork
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lnetWork
+#win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lnetWork
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lnetWork
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lserialPort
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lserialPort
+#win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lserialPort
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lserialPort

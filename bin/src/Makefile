@@ -24,38 +24,13 @@ SYMLINK       = $(QMAKE) -install ln -f -s
 DEL_DIR       = rmdir
 MOVE          = move
 SUBTARGETS    =  \
-		sub-PfBus \
 		sub-PfCommon \
-		sub-PfFlow \
+		sub-PfBus \
 		sub-PfAdapter \
+		sub-PfFlow \
 		sub-PfIcdWorkBench
 
 
-sub-PfBus-qmake_all:  FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
-	cd PfBus\ && $(MAKE) -f Makefile qmake_all
-sub-PfBus: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
-sub-PfBus-make_first: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
-sub-PfBus-all: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
-sub-PfBus-clean: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
-sub-PfBus-distclean: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-PfBus-install_subtargets: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
-sub-PfBus-uninstall_subtargets: FORCE
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-PfCommon-qmake_all:  FORCE
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
@@ -81,31 +56,31 @@ sub-PfCommon-install_subtargets: FORCE
 sub-PfCommon-uninstall_subtargets: FORCE
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
-sub-PfFlow-qmake_all:  FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
-	cd PfFlow\ && $(MAKE) -f Makefile qmake_all
-sub-PfFlow: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
-sub-PfFlow-make_first: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
-sub-PfFlow-all: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
-sub-PfFlow-clean: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
-sub-PfFlow-distclean: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
-sub-PfFlow-install_subtargets: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
-sub-PfFlow-uninstall_subtargets: FORCE
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-PfBus-qmake_all:  FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd PfBus\ && $(MAKE) -f Makefile qmake_all
+sub-PfBus: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-PfBus-make_first: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-PfBus-all: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-PfBus-clean: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-PfBus-distclean: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-PfBus-install_subtargets: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-PfBus-uninstall_subtargets: FORCE
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-PfAdapter-qmake_all:  FORCE
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
@@ -131,6 +106,31 @@ sub-PfAdapter-install_subtargets: FORCE
 sub-PfAdapter-uninstall_subtargets: FORCE
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
+sub-PfFlow-qmake_all:  FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
+	cd PfFlow\ && $(MAKE) -f Makefile qmake_all
+sub-PfFlow: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile
+sub-PfFlow-make_first: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile 
+sub-PfFlow-all: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile all
+sub-PfFlow-clean: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile clean
+sub-PfFlow-distclean: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile distclean
+sub-PfFlow-install_subtargets: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile install
+sub-PfFlow-uninstall_subtargets: FORCE
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile uninstall
 sub-PfIcdWorkBench-qmake_all:  FORCE
 	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
 	cd PfIcdWorkBench\ && $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile
@@ -415,66 +415,66 @@ C:/Qt/Qt5.5.0/5.5/mingw492_32/mkspecs/features/lex.prf:
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ "CONFIG+=debug" -o Makefile ..\..\src\src.pro
 
-qmake_all: sub-PfBus-qmake_all sub-PfCommon-qmake_all sub-PfFlow-qmake_all sub-PfAdapter-qmake_all sub-PfIcdWorkBench-qmake_all FORCE
+qmake_all: sub-PfCommon-qmake_all sub-PfBus-qmake_all sub-PfAdapter-qmake_all sub-PfFlow-qmake_all sub-PfIcdWorkBench-qmake_all FORCE
 
-make_first: sub-PfBus-make_first sub-PfCommon-make_first sub-PfFlow-make_first sub-PfAdapter-make_first sub-PfIcdWorkBench-make_first  FORCE
-all: sub-PfBus-all sub-PfCommon-all sub-PfFlow-all sub-PfAdapter-all sub-PfIcdWorkBench-all  FORCE
-clean: sub-PfBus-clean sub-PfCommon-clean sub-PfFlow-clean sub-PfAdapter-clean sub-PfIcdWorkBench-clean  FORCE
-distclean: sub-PfBus-distclean sub-PfCommon-distclean sub-PfFlow-distclean sub-PfAdapter-distclean sub-PfIcdWorkBench-distclean  FORCE
+make_first: sub-PfCommon-make_first sub-PfBus-make_first sub-PfAdapter-make_first sub-PfFlow-make_first sub-PfIcdWorkBench-make_first  FORCE
+all: sub-PfCommon-all sub-PfBus-all sub-PfAdapter-all sub-PfFlow-all sub-PfIcdWorkBench-all  FORCE
+clean: sub-PfCommon-clean sub-PfBus-clean sub-PfAdapter-clean sub-PfFlow-clean sub-PfIcdWorkBench-clean  FORCE
+distclean: sub-PfCommon-distclean sub-PfBus-distclean sub-PfAdapter-distclean sub-PfFlow-distclean sub-PfIcdWorkBench-distclean  FORCE
 	-$(DEL_FILE) Makefile
-install_subtargets: sub-PfBus-install_subtargets sub-PfCommon-install_subtargets sub-PfFlow-install_subtargets sub-PfAdapter-install_subtargets sub-PfIcdWorkBench-install_subtargets FORCE
-uninstall_subtargets: sub-PfBus-uninstall_subtargets sub-PfCommon-uninstall_subtargets sub-PfFlow-uninstall_subtargets sub-PfAdapter-uninstall_subtargets sub-PfIcdWorkBench-uninstall_subtargets FORCE
+install_subtargets: sub-PfCommon-install_subtargets sub-PfBus-install_subtargets sub-PfAdapter-install_subtargets sub-PfFlow-install_subtargets sub-PfIcdWorkBench-install_subtargets FORCE
+uninstall_subtargets: sub-PfCommon-uninstall_subtargets sub-PfBus-uninstall_subtargets sub-PfAdapter-uninstall_subtargets sub-PfFlow-uninstall_subtargets sub-PfIcdWorkBench-uninstall_subtargets FORCE
 
-sub-PfBus-debug:
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
 sub-PfCommon-debug:
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-sub-PfFlow-debug:
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-PfBus-debug:
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
 sub-PfAdapter-debug:
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
+sub-PfFlow-debug:
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
 sub-PfIcdWorkBench-debug:
 	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
 	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile debug
-debug: sub-PfBus-debug sub-PfCommon-debug sub-PfFlow-debug sub-PfAdapter-debug sub-PfIcdWorkBench-debug
+debug: sub-PfCommon-debug sub-PfBus-debug sub-PfAdapter-debug sub-PfFlow-debug sub-PfIcdWorkBench-debug
 
-sub-PfBus-release:
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
 sub-PfCommon-release:
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-sub-PfFlow-release:
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-PfBus-release:
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
 sub-PfAdapter-release:
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
+sub-PfFlow-release:
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
 sub-PfIcdWorkBench-release:
 	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
 	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile release
-release: sub-PfBus-release sub-PfCommon-release sub-PfFlow-release sub-PfAdapter-release sub-PfIcdWorkBench-release
+release: sub-PfCommon-release sub-PfBus-release sub-PfAdapter-release sub-PfFlow-release sub-PfIcdWorkBench-release
 
-sub-PfBus-check:
-	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
-	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
 sub-PfCommon-check:
 	@if not exist PfCommon\ mkdir PfCommon\ & if not exist PfCommon\ exit 1
 	cd PfCommon\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfCommon\PfCommon.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-sub-PfFlow-check:
-	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
-	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-PfBus-check:
+	@if not exist PfBus\ mkdir PfBus\ & if not exist PfBus\ exit 1
+	cd PfBus\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfBus\PfBus.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
 sub-PfAdapter-check:
 	@if not exist PfAdapter\ mkdir PfAdapter\ & if not exist PfAdapter\ exit 1
 	cd PfAdapter\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfAdapter\PfAdapter.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
+sub-PfFlow-check:
+	@if not exist PfFlow\ mkdir PfFlow\ & if not exist PfFlow\ exit 1
+	cd PfFlow\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfFlow\PfFlow.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
 sub-PfIcdWorkBench-check:
 	@if not exist PfIcdWorkBench\ mkdir PfIcdWorkBench\ & if not exist PfIcdWorkBench\ exit 1
 	cd PfIcdWorkBench\ && ( if not exist Makefile $(QMAKE) E:\work\P13-platformLibrary\programe\platform\src\PfIcdWorkBench\PfIcdWorkBench.pro -spec win32-g++ "CONFIG+=debug" -o Makefile ) && $(MAKE) -f Makefile check
-check: sub-PfBus-check sub-PfCommon-check sub-PfFlow-check sub-PfAdapter-check sub-PfIcdWorkBench-check
+check: sub-PfCommon-check sub-PfBus-check sub-PfAdapter-check sub-PfFlow-check sub-PfIcdWorkBench-check
 install:install_subtargets  FORCE
 
 uninstall: uninstall_subtargets FORCE

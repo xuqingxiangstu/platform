@@ -39,7 +39,7 @@ void test()
     double minV = 0, maxV = 0;
 #if 0
     /***************电压输出******************/
-    outType = PfNi::AnalogOut::AnalogOut;
+    outType = PfNi::AnalogOut::VoltsOut;
     minV = -10.0;
     maxV = 10.0;
 #else
@@ -50,7 +50,11 @@ void test()
 #endif
 
     //step3：设置输出类型及最大最小值
-    obj->setOutParam(outType, minV, maxV);
+    //obj->setOutParam(outType, minV, maxV);
+
+
+    //20200113
+    //obj->initCard("PXI6704_1", channels, 50, 1, "AmpsOut", minV, maxV);
 
     //step4：启动DAQ输出任务
     obj->startTask();

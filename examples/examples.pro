@@ -3,6 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     PfBus \
     #PfNi \
-    #PfAdapter \
+    PfAdapter \
     PfCommon \
     PfIcdDemo

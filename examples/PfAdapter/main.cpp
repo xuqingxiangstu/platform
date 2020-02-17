@@ -4,6 +4,13 @@
 
 #include "PfAdapterManager/pfadaptermanager.h"
 
+#include "../PfAdapter/AnalogInAdapter/AnalogInAdapter.h"
+#include "../PfAdapter/AnalogOutAdapter/AnalogOutAdapter.h"
+#include "../PfAdapter/DigitalIoAdapter/DigitalIoAdapter.h"
+#include "../PfAdapter/DigitalOutAdapter/DigitalOutAdapter.h"
+#include "../PfAdapter/RelayCtrlAdapter/RelayCtrlAdapter.h"
+//#include "../PfNi/analogIn/analogin.h"
+
 #include <QDateTime>
 #include <iostream>
 #include <unistd.h>
@@ -44,19 +51,28 @@ int32 analogDataDelegate(TaskHandle taskHandle, int32 everyNsamplesEventType, uI
 #endif
 
 void test()
-{
+{   
     //step2：初始化配置文件
     obj->init("./devcfg.xml");
 
     //step3：获取适配器句柄
     PfAdapter::Adapter *ada = nullptr;
 
-    std::string id = "send2";
+    std::string id = "cmdSend";
 
     if(obj->getAdapter(id, &ada))
     {
         //int rate = 5;
         //ada->setAttribute("Rate", &rate);
+        /*{
+            "port":0,
+            "channel":1,
+            "state":true
+        }
+
+        ada->sendMsg()*/
+
+        //ada->getAttribute();
 #if 1
         //step4：总线收发数据
         std::string msg = "hello word ffffffffffffffffff";
@@ -96,28 +112,32 @@ void test()
         //if(PfAdapter::BroadcastAdapter *tmp = dynamic_cast<PfAdapter::BroadcastAdapter*>(ada))
         if(PfAdapter::AnalogInAdapter *tmp = dynamic_cast<PfAdapter::AnalogInAdapter*>(ada))
         {
-            /*BroadcastAdapte收发测试
-           // std::string msg = "hello word";
-           // tmp->sendMsg(msg.c_str(), msg.size());
+            /*getAttribute测试
+              int rate = 0;
+              ada->getAttribute("SampleRate", &rate);
             */
-/*RelayCtrlAdapter继电器开关测试
-            //step4:控制
-            //step4-1:打开第1路继电器
-            tmp->openRelayChannel(2);
-            //step4-2:关闭第1路继电器
-            //tmp->closeRelay(0);
-            std::cout << "open ok" << std::endl;
-*/
+            /*BroadcastAdapte收发测试
+              std::string msg = "hello word";
+              tmp->sendMsg(msg.c_str(), msg.size());
+            */
+            /*RelayCtrlAdapter继电器开关测试
+              step4:控制
+              step4-1:打开第1路继电器
+              tmp->openRelayChannel(2);
+              step4-2:关闭第1路继电器
+              tmp->closeRelay(0);
+              std::cout << "open ok" << std::endl;
+            */
 
 
             //step2-2：设置采样点及采样率(200ms=1000/5触发一次回调函数)
-            tmp->setSamplingRateAndSize(5, 1);
+            //tmp->setSamplingRateAndSize(5, 1);
 
             //step3：注册回调函数
-            tmp->registerInEvent(analogDataDelegate, (void*)tmp);
+            ////tmp->registerInEvent(analogDataDelegate, (void*)tmp);
 
             //step4：启动采集任务
-            tmp->startTask();
+            ////tmp->startTask();
 
             //note 如果不加while(1) 则obj将自动释放
             while(1);   //等待接收数据
