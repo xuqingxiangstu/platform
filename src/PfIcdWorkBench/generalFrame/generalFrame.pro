@@ -1,32 +1,26 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2020-02-10T11:06:39
+# Project created by QtCreator 2020-02-18T10:37:09
 #
 #-------------------------------------------------
 
 QT       -= gui
 QT       += xlsx
-
-
-win32:CONFIG(release, debug|release): TARGET = ../../../../frameLib/variableFrame
-else:win32:CONFIG(debug, debug|release): TARGET = ../../../../frameLib/variableFrame
-else:unix:!macx: TARGET = ../../../frameLib/variableFrame
+win32:CONFIG(release, debug|release): TARGET = ../../../../frameLib/generalFrame
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../frameLib/generalFrame
+else:unix:!macx: TARGET = ../../../frameLib/generalFrame
 
 TEMPLATE = lib
-
-
 CONFIG += C++14
 
-DEFINES += VARIABLEFRAME_LIBRARY
+DEFINES += GENERALFRAME_LIBRARY
 
-SOURCES += variableframe.cpp \
-    protocolconfigure.cpp \
-    subprotocolconfigure.cpp
+SOURCES += generalframe.cpp \
+    protocolconfigure.cpp
 
-HEADERS += variableframe.h\
-        variableframe_global.h \
-    protocolconfigure.h \
-    subprotocolconfigure.h
+HEADERS += generalframe.h\
+        generalframe_global.h \
+    protocolconfigure.h
 
 unix {
     target.path = /usr/lib

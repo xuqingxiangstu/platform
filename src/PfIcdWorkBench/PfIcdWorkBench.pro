@@ -5,5 +5,6 @@ include (./common/common.pri)
 SUBDIRS += \
     variableFrame \
     icdFrameAdapter \
-    icdData
+    icdData \
+    generalFrame
 

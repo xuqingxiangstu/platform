@@ -4,7 +4,7 @@ SUBDIRS += \
     PfCommon \
     PfBus \
     PfAdapter \
-    #PfNi \    
+    PfNi \
     PfFlow \
     PfIcdWorkBench \
     PfSmlModel

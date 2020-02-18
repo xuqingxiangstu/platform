@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
                                               0x1
                                              };
 
+#if 0
             //step4：根据Excel中的数据进行仿真
             PfIcdWorkBench::byteArray sendMsg;
 
@@ -54,11 +55,11 @@ int main(int argc, char *argv[])
             }
 
             std::cout << std::endl;
-
+#endif
             //step5：根据Excel中的数据进行解析
             std::vector<PfIcdWorkBench::icdOutConvertValueType> outV;
             qDebug() << "解析测试->\n";
-            obj->parse(&sendMsg.at(0), sendMsg.size(), outV);
+            obj->parse(&msg.at(0), msg.size(), outV);
 
             //打印解析后的数据 ID + Value
             for(auto v : outV)
