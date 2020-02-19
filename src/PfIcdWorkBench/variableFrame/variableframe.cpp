@@ -334,7 +334,7 @@ namespace Pf
             {
                 crc = PfCommon::Crc::calSum((unsigned char*)(&u8Msg[checkStartPos]), checkSize);
                 //modify xqx 20200211
-                crc &= 0xF;
+                crc &= 0xFF;
             }
 
 

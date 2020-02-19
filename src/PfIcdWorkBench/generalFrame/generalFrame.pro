@@ -16,11 +16,15 @@ CONFIG += C++14
 DEFINES += GENERALFRAME_LIBRARY
 
 SOURCES += generalframe.cpp \
-    protocolconfigure.cpp
+    protocolconfigure.cpp \
+    infowordconf.cpp \
+    infowordregion.cpp
 
 HEADERS += generalframe.h\
         generalframe_global.h \
-    protocolconfigure.h
+    protocolconfigure.h \
+    infowordconf.h \
+    infowordregion.h
 
 unix {
     target.path = /usr/lib

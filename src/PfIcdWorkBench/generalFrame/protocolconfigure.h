@@ -24,10 +24,11 @@ namespace Pf
         {
         public:
             /** 帧类型 **/
-            using generalStorageType = protocolStorage<unsigned int, int, int, int, int, int, int, int, int, int, int, int, int, int, std::string, int, int, int, int>;
+            using generalStorageType = protocolStorage<int, unsigned int, int, int, int, int, int, int, int, int, int, int, int, int, int, std::string, int, int, int, int>;
             /** 帧索引 **/
             enum generalStorageIndex
             {
+                general_infohead_size_index, ///< 信息头长度
                 general_head_init_index,   ///< 帧头值
                 general_head_size_index,   ///< 帧头长度
                 general_frame_len_start_index, ///< 帧长度参数起始位置

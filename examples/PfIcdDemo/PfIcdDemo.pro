@@ -30,3 +30,7 @@ else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -licdFrameAdapter
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -licdFrameAdapter
 else:unix:!macx: LIBS += -L$$OUT_PWD/../../ -licdFrameAdapter
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lcrc

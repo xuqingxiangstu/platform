@@ -32,35 +32,76 @@ namespace Pf
 
             try
             {
-                /// 帧校验
+                //step1：帧校验
                 frameCheck(u8Msg, u32Size);
 
                 dataStorage data;
-                /// 信息字类型
+                // 信息字类型
                 unsigned int frameCode = data.getData(u8Msg, u32Size,
                                                       mProtocolCfg->getMessage<protocolConfigure::general_info_type_start_index>(),
                                                       mProtocolCfg->getMessage<protocolConfigure::general_info_type_size_index>(),
                                                       0, 0);
 
-       #if 0
-                if(!mSubProtocolCfg->isExist(frameCode))
+                //获取信息字信息
+
+                auto itor = mInfoWordConf.find(frameCode);
+
+                if(itor == mInfoWordConf.end())
                 {
+                    strErr.str("");
                     strErr << "帧识别码(" << std::hex << frameCode << ")，不存在";
                     UT_THROW_EXCEPTION(strErr.str());
                 }
+                infoConf *conf = (itor->second).get();
 
-                std::vector<std::shared_ptr<subProtocolConfigure::subStorageType>> subStorages;
-                if(!mSubProtocolCfg->getStorages(subStorages, frameCode))
+                //获取信息字个数
+                unsigned int infoCnt = data.getData(u8Msg, u32Size,
+                                                      mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
+                                                      mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
+                                                      0, 0);
+                //获取信息头长度
+                unsigned int infoHeadSize = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
+
+                //step2：校验整帧个数是否满足条件
+                /**********************************************
+                 * 信息头 * 信息字1 * 信息字2 * ... * 信息字n *
+                 **********************************************/
+                if( u32Size <= infoHeadSize )
                 {
-                    strErr << "获取子帧信息失败，帧识别码(" << std::hex << frameCode << ")";
+                    strErr.str("");
+                    strErr << "信息字总长度(" << std::dec << u32Size << ")" << "<=信息头长度(" << infoHeadSize << ")";
                     UT_THROW_EXCEPTION(strErr.str());
                 }
 
-                int beyond = mSubProtocolCfg->getMsgBeyond(frameCode);
+                //step3：获取各个信息字数据并解析
+                int residueSize = u32Size - infoHeadSize;
+                int msgPos = infoHeadSize;
+                do
+                {
+                    //step4：获取信息字数据
 
-                dataFrame fParse;
-                fParse.parse(subStorages, convertOutValue, u8Msg, u32Size, beyond);
+                    //step4-1；获取信息字长度
+                    int tmpLen = 0;
+                    if(conf->getInfoLen(&u8Msg[msgPos], residueSize, tmpLen))
+                    {
+                        //step4-2：解析信息帧
+#ifdef DEBUG_ICD
+                        std::cout << " -> ";
+                        for(int index = 0; index < tmpLen; index++)
+                        {
+                            std::cout << std::hex << (int)u8Msg[msgPos + index] << " ";
+                        }
+                        std::cout << std::endl;
 #endif
+                        //step4-3：下一帧
+                        residueSize -= tmpLen;
+                        msgPos += tmpLen;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }while(residueSize > 0);
             }
             catch(std::runtime_error err)
             {
@@ -268,8 +309,13 @@ namespace Pf
         {
             generalFrame *obj = new generalFrame();
 
-            //obj->mProtocolCfg = this->mProtocolCfg->clone();
-            //obj->mSubProtocolCfg = this->mSubProtocolCfg->clone();
+            obj->mProtocolCfg = this->mProtocolCfg->clone();
+            obj->mSubProtocolCfg = this->mSubProtocolCfg->clone();
+
+            for(auto itor = mInfoWordConf.begin() ; itor != mInfoWordConf.end(); itor++)
+            {
+                obj->mInfoWordConf[itor->first] = (itor->second)->clone();
+            }
 
             obj->mFrameCfgPath = this->mFrameCfgPath;
             obj->mDataRegionCfgPath = this->mDataRegionCfgPath;
@@ -342,7 +388,7 @@ namespace Pf
             {
                 crc = PfCommon::Crc::calSum((unsigned char*)(&u8Msg[checkStartPos]), checkSize);
                 //modify xqx 20200211
-                crc &= 0xF;
+                crc &= 0xFF;
             }
 
 
@@ -383,12 +429,18 @@ namespace Pf
             mProtocolCfg->init(static_cast<QXlsx::Worksheet*>(workBook->sheet(0)));
 
             //信息字帧格式配置
+            //TODO 改成加载配置文件
+            infoConf *cfg = nullptr;
 
+            cfg = new infoWord1Conf();
+            mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
+
+            cfg = new infoWord2Conf();
+            mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
         }
 
         void generalFrame::initSubFrameCfg(const std::string &path)
         {
-#if 0
             std::ostringstream strErr;
 
     #ifdef Utf8_Coding
@@ -414,9 +466,9 @@ namespace Pf
                 UT_THROW_EXCEPTION(strErr.str());
             }
 
-            mSubProtocolCfg = std::make_shared<subProtocolConfigure>();
+            mSubProtocolCfg = std::make_shared<infoWordRegionManager>();
             mSubProtocolCfg->init(workBook);
-#endif
+
         }
 
         extern "C"

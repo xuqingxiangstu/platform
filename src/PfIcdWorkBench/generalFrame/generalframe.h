@@ -12,6 +12,8 @@
 #include "generalframe_global.h"
 #include "../common/frameObj.h"
 #include "protocolconfigure.h"
+#include "infowordconf.h"
+#include "infowordregion.h"
 
 #include <memory>
 #include <unordered_map>
@@ -71,8 +73,9 @@ namespace Pf
             std::string mFrameCfgPath;  ///< 帧配置路径
             std::string mDataRegionCfgPath; ///< 数据域配置路径
             std::shared_ptr<protocolConfigure> mProtocolCfg; ///< 帧配置
-            //std::shared_ptr<subProtocolConfigure> mSubProtocolCfg; ///< 子帧配置（数据域描述）
+            std::shared_ptr<infoWordRegionManager> mSubProtocolCfg; ///< 子帧配置（数据域描述）
             std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数
+            std::unordered_map<unsigned int, std::shared_ptr<infoConf>> mInfoWordConf; ///< 信息字配置
         };
 
         extern "C"

@@ -18,6 +18,7 @@ namespace Pf
             QVariant tmp;
             QString value;
             bool Ok;
+            int frameInfoHeadSize = 0;
             int frameHeadInitData = 0, frameHeadSize = 0;
             int frameLenStartPos = 0, frameLenByteSize = 0;
             int frameLenCalStartPos = 0, frameLenCalToEnd = 0;
@@ -38,7 +39,7 @@ namespace Pf
             int i32Rows = workSheet->dimension().lastRow();
             int i32Columns = workSheet->dimension().lastColumn();
 
-            if ((i32Rows < 18) || (i32Columns < 2))
+            if ((i32Rows < 20) || (i32Columns < 2))
             {
                 std::string sheetName = "";
     #ifdef Utf8_Coding
@@ -47,7 +48,7 @@ namespace Pf
                 sheetName = workSheet->sheetName().toLocal8Bit().data();
     #endif
                 strErr.str("");
-                strErr << "[ERROR]" << sheetName << " 行列不合法应该为(18,2), rows=" << std::dec << i32Rows
+                strErr << "[ERROR]" << sheetName << " 行列不合法应该为(20,2), rows=" << std::dec << i32Rows
                     << "columns=" << i32Columns;
 
                 UT_THROW_EXCEPTION(strErr.str());
@@ -55,6 +56,10 @@ namespace Pf
 
             int rowIndex = 2;
             int columnIndex = 2;
+
+            tmp = workSheet->read(rowIndex++, columnIndex);
+            value = tmp.toString();
+            frameInfoHeadSize = value.toInt(&Ok, 10);
 
             tmp = workSheet->read(rowIndex++, columnIndex);
             value = tmp.toString();
@@ -174,7 +179,8 @@ namespace Pf
             }
 
             mProtocolMsg = std::make_shared<generalStorageType>
-                            (frameHeadInitData, frameHeadSize,
+                            (frameInfoHeadSize,
+                             frameHeadInitData, frameHeadSize,
                              frameLenStartPos, frameLenByteSize,
                              frameLenCalStartPos, frameLenCalToEnd,
                              frameCodeStartPos, frameCodeByteSize,
