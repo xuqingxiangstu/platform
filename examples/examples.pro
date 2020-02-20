@@ -1,9 +1,9 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    #PfBus \
+    PfBus \
     #PfNi \
-    #PfAdapter \
+    PfAdapter \
     #PfCommon \
     PfIcdDemo \
     #pfSmlModel

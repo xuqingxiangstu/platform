@@ -3,6 +3,7 @@ QT       -= gui
 win32:CONFIG(release, debug|release): TARGET = ../../../../adapterLib/ZmqRcvAdapter
 else:win32:CONFIG(debug, debug|release): TARGET = ../../../../adapterLib/ZmqRcvAdapter
 else:unix:!macx: TARGET = ../../../adapterLib/ZmqRcvAdapter
+
 TEMPLATE = lib
 
 DEFINES += ZMQRCVADAPTER_LIBRARY

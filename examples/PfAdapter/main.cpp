@@ -106,6 +106,8 @@ void test()
             {
                 std::cout << "receive error" << std::endl;
             }
+
+            for(int index = 0; index < 0xFFFFFFF; index++);
         }
 #else
         //step4：非总线操作

@@ -8,7 +8,10 @@ QT       += core
 
 QT       -= gui
 
-TARGET = netWorkDemo
+win32:CONFIG(release, debug|release): TARGET = ../../../../netWorkDemo
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../netWorkDemo
+else:unix:!macx: TARGET = ../../../netWorkDemo
+
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -19,11 +22,12 @@ SOURCES += main.cpp \
     udpTest.cpp
 
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lnetWork
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lnetWork
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -ludp
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -ludp
+else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -ludp
 
-INCLUDEPATH += $$PWD/../../../src/PfBus/netWork
-DEPENDPATH += $$PWD/../../../src/PfBus/netWork
+INCLUDEPATH += $$PWD/../../../src/PfBus/udp
+DEPENDPATH += $$PWD/../../../src/PfBus/udp
 
 HEADERS += \
     udpTest.h

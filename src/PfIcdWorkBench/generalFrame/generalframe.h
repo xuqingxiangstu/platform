@@ -57,6 +57,8 @@ namespace Pf
              * @param[in] u32Size   数据长度
              */
             void upDataCrc(unsigned char *u8Msg, const unsigned int u32Size);
+
+            void _parse(const unsigned);
         private:
             /**
              * @brief initFrameCfg  初始化帧配置(Excel)
