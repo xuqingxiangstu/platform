@@ -49,7 +49,7 @@ namespace Pf
             mInfoType(-1)
         {
             mInfoLen = 12;
-            mInfoType = 0x2;
+            mInfoType = 0x3;
         }
 
         std::shared_ptr<infoConf> infoWord2Conf::clone()
@@ -69,14 +69,27 @@ namespace Pf
         bool infoWord2Conf::getInfoLen(const unsigned char *msg, const int &msgSize, int &len)
         {
             bool res = false;
+            int typeIndex = 6;
+            int lenIndex = 14;
+            int lenByteSize = 1;
 
             dataStorage data;
             try
             {
-                //获取帧长度值
-                mInfoLen = data.getData(msg, msgSize, 14, 1, 0, 0);
-                //加上未计算长度
-                mInfoLen += 15;
+                //先查看类型
+                int type = data.getData(msg, msgSize, typeIndex, 1, 0, 0);
+                if(type == 3)
+                {
+                    //获取帧长度值
+                    mInfoLen = data.getData(msg, msgSize, lenIndex, lenByteSize, 0, 0);
+                    //加上未计算长度
+                    mInfoLen += lenIndex;
+                    mInfoLen += lenByteSize;
+                }
+                else
+                {
+                    mInfoLen = 14;
+                }
 
                 len = mInfoLen;
 

@@ -14,6 +14,12 @@ namespace Pf
             mDataManager[intType] = std::make_shared<intCalc>();
             mDataManager[floatType] = std::make_shared<floatCalc>();
             mDataManager[boolType] = std::make_shared<intCalc>();
+            mDataManager[uint8Type] = std::make_shared<intCalc>();
+            mDataManager[uint16Type] = std::make_shared<intCalc>();
+            mDataManager[uint32Type] = std::make_shared<intCalc>();
+            mDataManager[ieeeType] = std::make_shared<floatCalc>();
+            //mDataManager[ncharType] = std::make_shared<floatCalc>();
+
 #else
             //@note 此处没有采用 new 办法创建计算公式是因为考虑new比较耗时间，放在栈上比较省时间
 #endif

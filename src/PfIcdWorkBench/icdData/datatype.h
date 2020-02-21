@@ -16,6 +16,11 @@ namespace Pf
         const std::string floatType = "连续量";    ///< 浮点类型
         const std::string boolType = "离散量";     ///< 离散量类型
         const std::string intType = "整型";        ///< 整数类型
+        const std::string uint8Type = "UINT8";
+        const std::string uint16Type = "UINT16";
+        const std::string uint32Type = "UINT32";
+        const std::string ieeeType = "IEEE";
+        const std::string ncharType = "NCHAR";
     }
 }
 

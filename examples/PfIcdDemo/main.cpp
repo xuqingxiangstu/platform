@@ -8,7 +8,7 @@
 #include "../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
 #include "../../src/PfCommon/crc/crc.h"
 using namespace Pf;
-
+#pragma execution_character_set("utf-8")
 /**
  * @brief 帧解析与仿真例程
  * @example PfIcdDemo/main.cpp
@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
             std::vector<unsigned char> msg = {0xAA,
                                               0x0, 0x42,
                                               0x0,
-                                              0x0, 0x0, 0x0, 0x0,
-                                              0x0, 0x0, 0x0, 0x0,
+                                              0x1, 0x11, 0x22, 0x33,
+                                              0x2, 0x22, 0x33, 0x44,
                                               0x0, 0x0, 0x0, 0x0,
                                               0x0, 0x0, 0x0, 0x0,
                                               0x0, 0x0, 0x0, 0x0,
                                               0x0,
                                               0x0,
-                                              0x2,
+                                              0x3,
                                               0x0, 0x3,
                                               0x0, 0x0, 0x0, 0x0,
                                               0xF0
@@ -73,24 +73,24 @@ int main(int argc, char *argv[])
                                                    0x0, 0x1,
                                                    0x0,
                                                    0x0,
-                                                   0x0,
+                                                   0x1,
                                                    0x0,
                                                    0x0, 0x0, 0x0, 0x0,
                                                    0x0, 0
             };
 
-            std::string tmp1 = "hello word";
+            /*std::string tmp1 = "hello word";
             infoMsg1.push_back(tmp1.size());
 
             std::copy(tmp1.begin(), tmp1.end(), std::back_inserter(infoMsg1));
-
+*/
             std::copy(infoMsg1.begin(), infoMsg1.end(), std::back_inserter(msg));
 
             std::vector<unsigned char> infoMsg2 = {0x10, 0x42,
                                                    0x0, 0x2,
                                                    0x0,
                                                    0x0,
-                                                   0x0,
+                                                   0x3,
                                                    0x0,
                                                    0x0, 0x0, 0x0, 0x0,
                                                    0x0, 0
@@ -103,11 +103,11 @@ int main(int argc, char *argv[])
 
             std::copy(infoMsg2.begin(), infoMsg2.end(), std::back_inserter(msg));
 
-            std::vector<unsigned char> infoMsg3 = {0x10, 0x42,
+            std::vector<unsigned char> infoMsg3 = {0x42, 0x10,
                                                    0x0, 0x3,
                                                    0x0,
                                                    0x0,
-                                                   0x0,
+                                                   0x3,
                                                    0x0,
                                                    0x0, 0x0, 0x0, 0x0,
                                                    0x0, 0

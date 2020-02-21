@@ -4,11 +4,16 @@
 #include "../../PfCommon/crc/crc.h"
 
 #include "../common/subProtocol.h"
+#include "../icdData/datatype.h"
 
 #include "../icdData/datastorage.h"
 #include "../icdData/dataFrame.h"
 #include "../icdData/datacalc.h"
 #include "../icdData/dataconvert.h"
+
+#include <QTextCodec>
+
+#include <QDebug>
 
 namespace Pf
 {
@@ -49,10 +54,19 @@ namespace Pf
                 if(itor == mInfoWordConf.end())
                 {
                     strErr.str("");
-                    strErr << "帧识别码(" << std::hex << frameCode << ")，不存在";
+                    strErr << "信息字配置不存在，帧识别码(" << std::hex << frameCode << ")";
                     UT_THROW_EXCEPTION(strErr.str());
                 }
                 infoConf *conf = (itor->second).get();
+
+                //获取信息域
+                auto infoRegion = mSubProtocolCfg->getRegion(frameCode);
+                if(infoRegion == nullptr)
+                {
+                    strErr.str("");
+                    strErr << "信息字域配置不存在，帧识别码(" << std::hex << frameCode << ")";
+                    UT_THROW_EXCEPTION(strErr.str());
+                }
 
                 //获取信息字个数
                 unsigned int infoCnt = data.getData(u8Msg, u32Size,
@@ -73,18 +87,26 @@ namespace Pf
                     UT_THROW_EXCEPTION(strErr.str());
                 }
 
-                //step3：获取各个信息字数据并解析
+                //step3：获取信息头信息
+                //获取信息头域
+                auto headRegion = mSubProtocolCfg->getRegion(headCode);
+                if(headRegion != nullptr)
+                {
+                    _parseInfo(headRegion.get(), u8Msg, u32Size);
+                }
+
+                //step4：获取各个信息字数据并解析
                 int residueSize = u32Size - infoHeadSize;
                 int msgPos = infoHeadSize;
                 do
                 {
-                    //step4：获取信息字数据
+                    //step5：获取信息字数据
 
-                    //step4-1；获取信息字长度
+                    //step5-1；获取信息字长度
                     int tmpLen = 0;
                     if(conf->getInfoLen(&u8Msg[msgPos], residueSize, tmpLen))
                     {
-                        //step4-2：解析信息帧
+                        //step5-2：解析信息帧
 #ifdef DEBUG_ICD
                         std::cout << " -> ";
                         for(int index = 0; index < tmpLen; index++)
@@ -93,7 +115,9 @@ namespace Pf
                         }
                         std::cout << std::endl;
 #endif
-                        //step4-3：下一帧
+                        _parseInfo(infoRegion.get(), &u8Msg[msgPos], tmpLen);
+
+                        //step5-3：下一帧
                         residueSize -= tmpLen;
                         msgPos += tmpLen;
                     }
@@ -109,6 +133,58 @@ namespace Pf
                 UT_THROW_EXCEPTION(errCode);
             }
 
+        }
+
+        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size)
+        {
+            dataStorage data;
+            dataCalc calc;
+            __int64 pValue;
+            std::ostringstream showStr;
+
+            for(auto subStorage : region->mStorages)
+            {
+                std::string pId = subStorage->getMessage<infoWordRegion::sub_param_id_index>();
+                std::string pName = subStorage->getMessage<infoWordRegion::sub_param_name_index>();
+                int byte_start = subStorage->getMessage<infoWordRegion::sub_param_start_post_index>();
+                int byte_size = subStorage->getMessage<infoWordRegion::sub_param_byte_size_index>();
+                int bit_start = subStorage->getMessage<infoWordRegion::sub_param_bit_start_pos_index>();
+                int bit_size = subStorage->getMessage<infoWordRegion::sub_param_bit_size_index>();
+                std::string bigSmall = subStorage->getMessage<infoWordRegion::sub_param_small_big_index>();
+                std::string strCategory = subStorage->getMessage<infoWordRegion::sub_param_category_index>();
+
+                std::string calResult = "";
+
+                try
+                {
+                    if(strCategory == ncharType)
+                    {
+                        if(byte_start >= u32Size)
+                        {
+                            throw std::runtime_error("起始字符异常");
+                        }
+                        calResult = std::string((const char*)&u8Msg[byte_start], u32Size - byte_start);
+                    }
+                    else
+                    {
+                        pValue = data.getData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
+                        calResult =  calc.getData(strCategory, pValue, 1, 0, 1, 3);
+                    }
+
+#ifdef DEBUG_ICD
+                    showStr << pId << ":" << pName << ":" << calResult << " ";
+#endif
+                }
+                catch(std::runtime_error err)
+                {
+#ifdef DEBUG_ICD
+                //qDebug() << err.what();
+#endif
+                }
+            }
+#ifdef DEBUG_ICD
+                qDebug() << showStr.str().c_str();
+#endif
         }
 
         void generalFrame::init(const TiXmlElement *xmlEle)

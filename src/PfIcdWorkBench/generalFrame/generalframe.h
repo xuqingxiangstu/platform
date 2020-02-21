@@ -58,7 +58,15 @@ namespace Pf
              */
             void upDataCrc(unsigned char *u8Msg, const unsigned int u32Size);
 
-            void _parse(const unsigned);
+            /**
+             * @brief _parseInfo    解析信息字
+             * @param[in] region  信息域内容
+             * @param[in] inBuf 源码首地址
+             * @param[in] inSize 源码长度
+             */
+            void _parseInfo(const infoWordRegion *region, const unsigned char *inBuf, const unsigned int inSize);
+
+
         private:
             /**
              * @brief initFrameCfg  初始化帧配置(Excel)
@@ -78,6 +86,7 @@ namespace Pf
             std::shared_ptr<infoWordRegionManager> mSubProtocolCfg; ///< 子帧配置（数据域描述）
             std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数
             std::unordered_map<unsigned int, std::shared_ptr<infoConf>> mInfoWordConf; ///< 信息字配置
+            const unsigned int headCode = 0xFF; ///< 信息头识别吗
         };
 
         extern "C"

@@ -28,11 +28,12 @@ namespace Pf
         {
         private:
             /** 子帧存储类型定义 **/
-            using storageType = protocolStorage<std::string, int, int, int, int, std::string, unsigned int, std::string>;
+            using storageType = protocolStorage<std::string, std::string, int, int, int, int, std::string, unsigned int, std::string>;
         public:
             /** 存储类型索引 **/
             enum storageIndexType
             {
+                sub_param_id_index,             ///< 参数代号
                 sub_param_name_index,           ///< 参数名称索引
                 sub_param_start_post_index,     ///< 起始字节位置索引
                 sub_param_byte_size_index,      ///< 字节个数索引
@@ -60,7 +61,7 @@ namespace Pf
             void init(QXlsx::Worksheet *sheet);
 
             std::shared_ptr<infoWordRegion> clone();
-        private:
+        public:
             std::vector<std::shared_ptr<storageType>> mStorages; ///< 存储对象
         };
 

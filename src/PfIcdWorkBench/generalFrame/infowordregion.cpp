@@ -99,13 +99,21 @@ namespace Pf
             for(int rowIndex = 3; rowIndex <= i32Rows; rowIndex++)
             {
                 int columnIndex = 1;
-                std::string pName = "";
+                std::string pId = "", pName = "";
                 int byteStart = 0, byteSize = 0;
                 int bitStart = 0, bitSize = 0;
                 std::string bigSmal;
                 double meanMin = 0, meanMax = 0;
                 std::string pCategory = "";
                 unsigned int initData = 0;
+
+                tmp = workSheet->read(rowIndex, columnIndex++);
+                value = tmp.toString();
+#ifdef Utf8_Coding
+                pId = value.toUtf8().data();
+#else
+                pId = value.toLocal8Bit().data();
+#endif
 
                 tmp = workSheet->read(rowIndex, columnIndex++);
                 value = tmp.toString();
@@ -167,7 +175,7 @@ namespace Pf
     #else
                 pCategory = value.toLocal8Bit().data();
     #endif
-                mStorages.push_back(std::make_shared<storageType>( pName, byteStart, byteSize, bitStart, bitSize, bigSmal,
+                mStorages.push_back(std::make_shared<storageType>(pId, pName, byteStart, byteSize, bitStart, bitSize, bigSmal,
                                                                    initData, pCategory));
 
             }
@@ -175,7 +183,12 @@ namespace Pf
 
         std::shared_ptr<infoWordRegion> infoWordRegion::clone()
         {
+            infoWordRegion *obj = new infoWordRegion();
 
+            for(auto v : this->mStorages)
+                obj->mStorages.push_back(v->clone());
+
+            return std::shared_ptr<infoWordRegion>(obj);
         }
     }
 }
