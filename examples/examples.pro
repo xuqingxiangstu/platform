@@ -4,6 +4,6 @@ SUBDIRS += \
     PfBus \
     #PfNi \
     PfAdapter \
-    #PfCommon \
+    PfCommon \
     PfIcdDemo \
     #pfSmlModel

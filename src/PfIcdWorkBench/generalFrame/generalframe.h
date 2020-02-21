@@ -15,6 +15,8 @@
 #include "infowordconf.h"
 #include "infowordregion.h"
 
+#include "../../PfCommon/jsoncpp/json.h"
+
 #include <memory>
 #include <unordered_map>
 
@@ -39,11 +41,29 @@ namespace Pf
             void init(const TiXmlElement *ele) override;
             std::string getFrameName() override{return VAR_NAME(variableFrame);}
             std::string version() override {return VERSION;}
-            void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
+            void simulation(byteArray &outValue, const std::string &json) override;
+            //void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
             void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue) override;
 
         private:
-            void _simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {});
+            void fillData(byteArray &outValue, infoWordRegion *region, infoConf *conf, const Json::Value &jsValue);
+            /**
+             * @brief getHeadAndWord    获取帧头及信息字
+             * @param json json字符串
+             * @param head 帧头
+             * @param words 信息字
+             */
+            void getHeadAndWord(const std::string &json, Json::Value &head, Json::Value &words);
+            /**
+             * @brief _simFrame  全帧仿真
+             * @param outValue  仿真数据
+             * @param frameType 帧类型
+             * @param infoWordType 信息字类型
+             * @param wordsValue 信息字内容
+             */
+            void _simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue);
+
+            //void _simulation(const infoWordRegion *region, byteArray &outValue, const std::vector<icdInValueType> inValue = {});
             /**
              * @brief frameCheck    帧校验
              * @param[in] inBuf         校验首地址
@@ -64,7 +84,7 @@ namespace Pf
              * @param[in] inBuf 源码首地址
              * @param[in] inSize 源码长度
              */
-            void _parseInfo(const infoWordRegion *region, const unsigned char *inBuf, const unsigned int inSize);
+            void _parseInfo(const infoWordRegion *region, const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue);
 
 
         private:

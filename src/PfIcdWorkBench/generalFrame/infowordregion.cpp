@@ -181,6 +181,22 @@ namespace Pf
             }
         }
 
+        bool infoWordRegion::getStorage(const std::string &id, storageType **storage)
+        {
+            bool res = false;
+
+            auto itor = std::find_if(mStorages.begin(), mStorages.end(), [=](const std::shared_ptr<storageType> obj){
+                return obj->getMessage<sub_param_id_index>() == id;
+            });
+
+            if(itor != mStorages.end())
+            {
+                *storage = (*itor).get();
+                res = true;
+            }
+            return res;
+        }
+
         std::shared_ptr<infoWordRegion> infoWordRegion::clone()
         {
             infoWordRegion *obj = new infoWordRegion();

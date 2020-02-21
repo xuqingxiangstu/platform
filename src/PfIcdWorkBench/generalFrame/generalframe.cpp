@@ -11,8 +11,10 @@
 #include "../icdData/datacalc.h"
 #include "../icdData/dataconvert.h"
 
-#include <QTextCodec>
 
+
+#include <QTextCodec>
+#include <QDateTime>
 #include <QDebug>
 
 namespace Pf
@@ -32,6 +34,8 @@ namespace Pf
 
         void generalFrame::parse(const unsigned char *u8Msg, const unsigned int u32Size, std::vector<icdOutConvertValueType> &convertOutValue)
         {
+
+            convertOutValue.clear();
 
             std::ostringstream strErr;
 
@@ -92,7 +96,7 @@ namespace Pf
                 auto headRegion = mSubProtocolCfg->getRegion(headCode);
                 if(headRegion != nullptr)
                 {
-                    _parseInfo(headRegion.get(), u8Msg, u32Size);
+                    _parseInfo(headRegion.get(), u8Msg, u32Size, convertOutValue);
                 }
 
                 //step4：获取各个信息字数据并解析
@@ -115,7 +119,7 @@ namespace Pf
                         }
                         std::cout << std::endl;
 #endif
-                        _parseInfo(infoRegion.get(), &u8Msg[msgPos], tmpLen);
+                        _parseInfo(infoRegion.get(), &u8Msg[msgPos], tmpLen, convertOutValue);
 
                         //step5-3：下一帧
                         residueSize -= tmpLen;
@@ -135,7 +139,7 @@ namespace Pf
 
         }
 
-        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size)
+        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size, std::vector<icdOutConvertValueType> &convertOutValue)
         {
             dataStorage data;
             dataCalc calc;
@@ -170,6 +174,8 @@ namespace Pf
                         pValue = data.getData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
                         calResult =  calc.getData(strCategory, pValue, 1, 0, 1, 3);
                     }
+
+                    convertOutValue.push_back(std::make_tuple(pId, calResult));
 
 #ifdef DEBUG_ICD
                     showStr << pId << ":" << pName << ":" << calResult << " ";
@@ -215,9 +221,188 @@ namespace Pf
             initSubFrameCfg(ROOT_PATH + mDataRegionCfgPath);
         }
 
+        void generalFrame::getHeadAndWord(const std::string &json, Json::Value &head, Json::Value &words)
+        {
+            std::ostringstream strErr;
+
+            //json反序列化
+            Json::Reader reader;
+            Json::Value root;
+            if(!reader.parse(json, root))
+            {
+                strErr.str("");
+                strErr << "json格式错误(" << json << ")";
+
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            //获取帧头信息
+
+            head = root["head"];
+            if(head.isNull())
+            {
+                strErr.str("");
+                strErr << "json 无 head 字段";
+
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            //获取信息字
+            words = root["infoWord"];
+            if(head.isNull())
+            {
+                strErr.str("");
+                strErr << "json 无 infoWord 字段";
+
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+        }
+
+        void generalFrame::simulation(byteArray &outValue, const std::string &json)
+        {
+            std::ostringstream strErr;
+            Json::Value headJs;
+            Json::Value wordsJs;
+
+            //获取帧头及信息字值
+            getHeadAndWord(json, headJs, wordsJs);
+
+            //获取信息字类型
+            if(headJs["head_info_word_type"].isNull())
+            {
+                strErr.str("");
+                strErr << "head 无 head_info_word_type 字段";
+
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            int frameCode = headJs["head_info_word_type"].asInt();
+
+            //获取信息字域及配置
+            auto wordInfoRegion = mSubProtocolCfg->getRegion(frameCode);
+            if(wordInfoRegion == nullptr)
+            {
+                strErr.str("");
+                strErr << "信息字域配置不存在，帧识别码(" << std::hex << frameCode << ")";
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            auto wordInfoItor = mInfoWordConf.find(frameCode);
+
+            if(wordInfoItor == mInfoWordConf.end())
+            {
+                strErr.str("");
+                strErr << "信息字配置不存在，帧识别码(" << std::hex << frameCode << ")";
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            //获取帧头域与配置信息
+
+            auto headInfoRegion = mSubProtocolCfg->getRegion(headCode);
+            if(headInfoRegion == nullptr)
+            {
+                strErr.str("");
+                strErr << "帧头域配置不存在，帧识别码(" << std::hex << headCode << ")";
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            auto headInfoItor = mInfoWordConf.find(headCode);
+
+            if(headInfoItor == mInfoWordConf.end())
+            {
+                strErr.str("");
+                strErr << "帧头字配置不存在，帧识别码(" << std::hex << headCode << ")";
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            //信息字仿真
+            std::vector<byteArray> wordsMsg;
+
+            for(int index = 0; index < wordsJs.size(); index++)
+            {
+                byteArray msg;
+                fillData(msg, wordInfoRegion.get(), (wordInfoItor->second).get(), wordsJs[index]);
+                wordsMsg.push_back(msg);
+            }
+
+            //帧头仿真
+            byteArray headMsg;
+            fillData(headMsg, headInfoRegion.get(), (headInfoItor->second).get(), headJs);
+
+            _simFrame(outValue, headMsg, wordsMsg);
+        }
+
+        void generalFrame::fillData(byteArray &outValue, infoWordRegion *region, infoConf *conf, const Json::Value &jsValue)
+        {
+            if(!region || !conf)
+                return ;
+
+            dataStorage data;
+            unsigned char tmpBuf[1024] = {0};
+            unsigned int msgSize = 512;
+
+            Json::Value::Members mem = jsValue.getMemberNames();
+            for (auto itor = mem.begin(); itor != mem.end(); itor++)
+            {
+                std::string id = *itor;
+                Json::Value value = jsValue[*itor];
+
+                infoWordRegion::storageType *storage;
+                if(region->getStorage(id, &storage))
+                {
+                    if(value.isInt())
+                    {
+                        data.setData(tmpBuf, msgSize,
+                                     storage->getMessage<infoWordRegion::sub_param_start_post_index>(),
+                                     storage->getMessage<infoWordRegion::sub_param_byte_size_index>(),
+                                     storage->getMessage<infoWordRegion::sub_param_bit_start_pos_index>(),
+                                     storage->getMessage<infoWordRegion::sub_param_bit_size_index>(),
+                                     value.asInt());
+                    }
+                    else if(value.isString())
+                    {
+                        std::copy(value.asString().begin(), value.asString().end(), &tmpBuf[storage->getMessage<infoWordRegion::sub_param_start_post_index>()]);
+                    }
+                }
+            }
+
+            //获取长度
+            int len = 0;
+            if(conf->getInfoLen(tmpBuf, msgSize, len))
+            {
+                std::copy(tmpBuf, tmpBuf + len, std::back_inserter(outValue));
+            }
+        }
+
+#if 0
         void generalFrame::simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode, const std::vector<icdInValueType> inValue)
         {
-#if 0
+
+            std::ostringstream showStr;
+
+            //获取信息字信息
+            auto itor = mInfoWordConf.find(frameCode);
+
+            if(itor == mInfoWordConf.end())
+            {
+                strErr.str("");
+                strErr << "信息字配置不存在，帧识别码(" << std::hex << frameCode << ")";
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+            infoConf *conf = (itor->second).get();
+
+            //获取信息域
+            auto infoRegion = mSubProtocolCfg->getRegion(frameCode);
+            if(infoRegion == nullptr)
+            {
+                strErr.str("");
+                strErr << "信息字域配置不存在，帧识别码(" << std::hex << frameCode << ")";
+                UT_THROW_EXCEPTION(strErr.str());
+            }
+
+
+
             std::vector<std::shared_ptr<subProtocol::subStorageType>> outStorages;
             mSubProtocolCfg->getStorages(outStorages, frameCode, insideCode);
 
@@ -267,10 +452,10 @@ namespace Pf
 
             /// step2 数据仿真
             _simulation(outValue, frameCode, insideCode, calInValue);
-#endif
-        }
 
-        void generalFrame::_simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode, const std::vector<icdInValueType> inValue)
+        }
+#endif
+        /*void generalFrame::_simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode, const std::vector<icdInValueType> inValue)
         {
 #if 0
             std::ostringstream strErr;
@@ -347,7 +532,7 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + frameLen, std::back_inserter(outValue));
 #endif
         }
-
+*/
         void generalFrame::upDataCrc(unsigned char *u8Msg, const unsigned int u32Size)
         {
 #if 0
@@ -392,6 +577,13 @@ namespace Pf
             {
                 obj->mInfoWordConf[itor->first] = (itor->second)->clone();
             }
+
+            for(auto itor = mProtocolCnt.begin() ; itor != mProtocolCnt.end(); itor++)
+            {
+                obj->mProtocolCnt[itor->first] = (itor->second);
+            }
+
+
 
             obj->mFrameCfgPath = this->mFrameCfgPath;
             obj->mDataRegionCfgPath = this->mDataRegionCfgPath;
@@ -513,6 +705,9 @@ namespace Pf
 
             cfg = new infoWord2Conf();
             mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
+
+            cfg = new frameHeadConf();
+            mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
         }
 
         void generalFrame::initSubFrameCfg(const std::string &path)
@@ -544,7 +739,70 @@ namespace Pf
 
             mSubProtocolCfg = std::make_shared<infoWordRegionManager>();
             mSubProtocolCfg->init(workBook);
+        }
 
+        void generalFrame::_simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue)
+        {
+            unsigned char tmpBuf[1024] = {0};
+            dataStorage data;
+
+            outValue.clear();
+
+            //step1 填充信息头
+            std::copy(headValue.begin(), headValue.end(), std::back_inserter(outValue));
+
+            //step1-1：获取信息头长度
+            int headLen = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
+
+            //step1-2：帧同步
+            data.setData(&outValue.at(0), headLen, 0, 1, 0, 0, mProtocolCfg->getMessage<protocolConfigure::general_head_init_index>());
+/*
+            //step1-3；帧类型
+            data.setData(tmpBuf, headLen, mProtocolCfg->getMessage<protocolConfigure::general_code_start_index>(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_code_size_index>(),
+                         0, 0, frameType);
+*/
+            //step1-4：填充时间
+            QDateTime current = QDateTime::currentDateTime();
+
+            data.setData(&outValue.at(0), headLen, 12, 2, 0, 0, current.date().year());
+            data.setData(&outValue.at(0), headLen, 13, 1, 0, 0, current.date().month());
+            data.setData(&outValue.at(0), headLen, 14, 1, 0, 0, current.date().day());
+            data.setData(&outValue.at(0), headLen, 15, 4, 0, 0, current.time().elapsed());
+
+            /*//step1-5：信息字类型
+            data.setData(tmpBuf, headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_type_start_index>(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_info_type_size_index>(),
+                         0, 0, infoWordType);
+
+            //step1-6：信息字个数
+            data.setData(tmpBuf, headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
+                         0, 0, wordsValue.size());
+*/
+            //step1-7：TODO:帧序号
+
+            //std::copy(tmpBuf, tmpBuf + headLen, std::back_inserter(outValue));
+
+            //step2：信息字
+            for(auto v : wordsValue)
+            {
+                std::copy(v.begin(), v.end(), std::back_inserter(outValue));
+            }
+
+            //step3：更新长度
+            data.setData(&outValue.at(0), outValue.size(), mProtocolCfg->getMessage<protocolConfigure::general_frame_len_start_index>(),
+                                     mProtocolCfg->getMessage<protocolConfigure::general_frame_len_byte_size_index>(),
+                                     0, 0, outValue.size() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_start_index>() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_to_end_index>());
+
+            //step4：更新校验和
+            unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(mProtocolCfg->getMessage<protocolConfigure::general_cal_check_start_index>())),
+                                    outValue.size() - mProtocolCfg->getMessage<protocolConfigure::general_cal_check_start_index>() - mProtocolCfg->getMessage<protocolConfigure::general_cal_check_to_end_index>());
+
+            data.setData(&outValue.at(0), outValue.size(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_frame_check_size_index>(),
+                         0, 0, crc);
         }
 
         extern "C"

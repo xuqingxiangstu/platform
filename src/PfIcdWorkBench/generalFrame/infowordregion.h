@@ -26,7 +26,7 @@ namespace Pf
          */
         class infoWordRegion
         {
-        private:
+        public:
             /** 子帧存储类型定义 **/
             using storageType = protocolStorage<std::string, std::string, int, int, int, int, std::string, unsigned int, std::string>;
         public:
@@ -59,6 +59,16 @@ namespace Pf
              * @param sheet Excel表格Sheet
              */
             void init(QXlsx::Worksheet *sheet);
+
+            /**
+             * @brief getStorage    获取域配置信息
+             * @param id 参数ID
+             * @param storage 信息
+             * @return 是否成功获取
+             * - true：成功
+             * - false：失败
+             */
+            bool getStorage(const std::string &id, storageType **storage);
 
             std::shared_ptr<infoWordRegion> clone();
         public:

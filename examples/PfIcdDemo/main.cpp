@@ -138,11 +138,61 @@ int main(int argc, char *argv[])
 
 #endif
 
-#if 0
+#if 1
             //step4：根据Excel中的数据进行仿真
             PfIcdWorkBench::byteArray sendMsg;
 
-            obj->simulation(sendMsg, 0xF0A1);
+            std::string msgJson = "{\
+                                  \"head\":\
+                                  {\
+                                      \"head_frame_type\":0,\
+                                      \"head_src_sys_type\":1,\
+                                      \"head_src_sys_code\":2,\
+                                      \"head_src_node_code\":3,\
+                                      \"head_dst_sys_type\":11,\
+                                      \"head_dst_sys_code\":22,\
+                                      \"head_dst_node_code\":33,\
+                                      \"head_info_word_type\":3\
+                                  },\
+                                  \"infoWord\":\
+                                  [    \
+                                      {\
+                                          \"info_2_table_num\":16912,\
+                                          \"info_2_code\":1,\
+                                          \"info_2_dev_num\":11,\
+                                          \"info_2_module\":22,\
+                                          \"info_2_data_type\":1,\
+                                          \"info_2_over\":0,\
+                                          \"info_2_data_value\":0,\
+                                          \"info_2_reserve\":0  \
+                                      },\
+                                      {\
+                                          \"info_2_table_num\":16912,\
+                                          \"info_2_code\":2,\
+                                          \"info_2_dev_num\":22,\
+                                          \"info_2_module\":33,\
+                                          \"info_2_data_type\":3,\
+                                          \"info_2_over\":0,\
+                                          \"info_2_data_value\":0,\
+                                          \"info_2_reserve\":0,\
+                                          \"info_2_string_len\":8,\
+                                          \"info_2_string_value\":\"hellword\"\
+                                      },\
+                                      {\
+                                          \"info_2_table_num\":16912,\
+                                          \"info_2_code\":3,\
+                                          \"info_2_dev_num\":33,\
+                                          \"info_2_module\":44,\
+                                          \"info_2_data_type\":3,\
+                                          \"info_2_over\":0,\
+                                          \"info_2_data_value\":0,\
+                                          \"info_2_reserve\":0,\
+                                          \"info_2_string_len\":12,\
+                                          \"info_2_string_value\":\"12hellword34\"\
+                                      }\
+                                  ]\
+                              }";
+            obj->simulation(sendMsg, msgJson);
             qDebug() << "仿真测试->";
 
             for(auto v : sendMsg)
@@ -151,17 +201,18 @@ int main(int argc, char *argv[])
             }
 
             std::cout << std::endl;
-#endif
+//#else
             //step5：根据Excel中的数据进行解析
             std::vector<PfIcdWorkBench::icdOutConvertValueType> outV;
             qDebug() << "解析测试->\n";
-            obj->parse(&msg.at(0), msg.size(), outV);
+            obj->parse(&sendMsg.at(0), sendMsg.size(), outV);
 
             //打印解析后的数据 ID + Value
             for(auto v : outV)
             {
                 std::cout << std::get<0>(v) << " " << std::get<1>(v) << std::endl;
             }
+#endif
         }
     }
     catch(std::runtime_error err)

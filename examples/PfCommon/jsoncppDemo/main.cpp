@@ -26,15 +26,30 @@ int main(int argc, char *argv[])
     qDebug() << "反序列化测试";
 
     //反序列化
-    std::string json = "{\"test\":\"56\",\"state\":true}";
+    std::string json = "{\
+                       \"head\":\
+                       {\
+                           \"head_frame_type\":9,\
+                           \"head_src_sys_type\":10,\
+                           \"head_src_sys_code\":11,\
+                           \"head_src_node_code\":23,\
+                           \"head_dst_sys_type\":10,\
+                           \"head_dst_sys_code\":11,\
+                           \"head_dst_node_code\":23,\
+                           \"head_info_word_type\":2\
+                       }}";
 
     Json::Reader reader;
     Json::Value root;
     if(reader.parse(json, root))
     {
-        std::cout << "test:" << root["test"].asString() << std::endl;
-        std::cout << "state:" << root["state"].asBool() << std::endl;
+        Json::Value head = root["head"];
 
+        Json::Value::Members mem = head.getMemberNames();
+        for (auto iter = mem.begin(); iter != mem.end(); iter++)
+        {
+            std::cout<<*iter<<" : " << head[*iter].asString();
+        }
     }
 
     std::cout << "exit" << std::endl;

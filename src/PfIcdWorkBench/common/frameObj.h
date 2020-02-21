@@ -72,6 +72,13 @@ namespace Pf
             virtual void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}){}
 
             /**
+             * @brief simulation    协议仿真
+             * @param outValue 仿真数据
+             * @param json json协议
+             */
+            virtual void simulation(byteArray &outValue, const std::string &json){}
+
+            /**
              * @brief 协议解析，根据配置协议进行参数解析
              * @param[in] inBuf     数据首地址
              * @param[in] inSize    数据长度

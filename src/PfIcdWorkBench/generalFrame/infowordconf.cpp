@@ -7,6 +7,36 @@ namespace Pf
 {
     namespace PfIcdWorkBench
     {
+        /***********帧头***************/
+
+        frameHeadConf::frameHeadConf():
+            mInfoLen(0),
+            mInfoType(-1)
+        {
+            mInfoLen = 34;
+            mInfoType = 0xFF;
+        }
+
+        std::shared_ptr<infoConf> frameHeadConf::clone()
+        {
+            infoConf *obj = new frameHeadConf();
+
+            std::shared_ptr<infoConf> tmp(obj);
+
+            return tmp;
+        }
+
+
+        bool frameHeadConf::getInfoLen(const unsigned char *msg, const int &msgSize, int &len)
+        {
+            bool res = false;
+
+            len = mInfoLen;
+            res = true;
+
+            return res;
+        }
+
         /***********信息字1***************/
 
         infoWord1Conf::infoWord1Conf():

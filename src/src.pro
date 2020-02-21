@@ -8,3 +8,5 @@ SUBDIRS += \
     PfFlow \
     PfIcdWorkBench \
     PfSmlModel
+
+HEADERS += platform.h
