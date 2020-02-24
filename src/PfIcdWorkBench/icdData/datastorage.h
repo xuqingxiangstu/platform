@@ -38,6 +38,8 @@ namespace Pf
              */
             unsigned __int64 getData(const unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const std::string &dataType = BIGENDIAN);
 
+            unDataConvert getAutoData(const unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const std::string &dataType = BIGENDIAN);
+
             /**
              * @brief setData       设置某个位置的数据
              * @param[in/out] u8Data        数据首地址
@@ -49,7 +51,35 @@ namespace Pf
              * @param[in] value         待写入数据
              * @param[in] dataType      大段/小端
              */
-            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const __int64 &value, const std::string &dataType = BIGENDIAN);
+            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const int &value, const std::string &dataType = BIGENDIAN);
+
+            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const unsigned int &value, const std::string &dataType = BIGENDIAN);
+
+            /**
+             * @brief setData       设置某个位置的数据
+             * @param[in/out] u8Data        数据首地址
+             * @param[in] u32Size       数据长度
+             * @param[in] byteStartPos  起始字节
+             * @param[in] byteSize      字节长度
+             * @param[in] bitStartPos   起始位
+             * @param[in] bitSize       位长度
+             * @param[in] value         待写入数据
+             * @param[in] dataType      大段/小端
+             */
+            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const double &value, const std::string &dataType = BIGENDIAN);
+
+            /**
+             * @brief setData       设置某个位置的数据
+             * @param[in/out] u8Data        数据首地址
+             * @param[in] u32Size       数据长度
+             * @param[in] byteStartPos  起始字节
+             * @param[in] byteSize      字节长度
+             * @param[in] bitStartPos   起始位
+             * @param[in] bitSize       位长度
+             * @param[in] value         待写入数据
+             * @param[in] dataType      大段/小端
+             */
+            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const float &value, const std::string &dataType = BIGENDIAN);
         };
     }
 }

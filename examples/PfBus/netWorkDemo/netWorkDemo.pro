@@ -7,6 +7,8 @@
 QT       += core
 
 QT       -= gui
+QT += network
+CONFIG += C++11
 
 win32:CONFIG(release, debug|release): TARGET = ../../../../netWorkDemo
 else:win32:CONFIG(debug, debug|release): TARGET = ../../../../netWorkDemo
@@ -18,16 +20,11 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp \
-    udpTest.cpp
+SOURCES += main.cpp
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -ludp
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -ludp
 else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -ludp
 
-INCLUDEPATH += $$PWD/../../../src/PfBus/udp
-DEPENDPATH += $$PWD/../../../src/PfBus/udp
-
-HEADERS += \
-    udpTest.h
+HEADERS +=

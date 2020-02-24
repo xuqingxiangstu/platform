@@ -17,8 +17,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-#win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lniSerialPort
-#else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lniSerialPort
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lserialPort
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lserialPort

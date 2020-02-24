@@ -4,7 +4,7 @@ include (./runObj/runObj.pri)
 
 SUBDIRS += \
     condition \
-    autoRun \   
+    RunFlow \
     ifStep \
     endStep \
     printfStep \    
@@ -18,6 +18,10 @@ SUBDIRS += \
     getAnalogInStep \
     getSwitchInStep \
     setAnalogOutStep \
-    setSwitchOutStep
+    setSwitchOutStep \
+    formulaCalcStep \
+    judgeMultiStep \
+    judgeStep \
+    variateStep
 
 

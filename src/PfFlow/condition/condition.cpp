@@ -3,6 +3,7 @@
 #include "data.h"
 
 #include "../../PfCommon/tools/ut_error.h"
+#include "../../PfCommon/CalcFormula/calcformula.h"
 
 Condition::Condition()
     :mResult(false),
@@ -52,8 +53,9 @@ void Condition::init(const TiXmlElement *xmlEle)
 }
 bool Condition::exec()
 {
-    dataValueType value = 0;
-
+    Pf::PfCommon::CalcFormula Calc;
+    std::string strRealValue="";
+    std::string strExpress="";
     mResult = false;
 
     ///获取待比较值
@@ -65,8 +67,7 @@ bool Condition::exec()
         obj = mRunobj->getObj(lev1, lev2, lev3);
         if(obj)
         {
-            std::string tmp = obj->getVarValue(var);
-            data::converDigital(tmp, value);
+            strRealValue = obj->getVarValue(var);
         }
         else
         {
@@ -75,13 +76,25 @@ bool Condition::exec()
     }
     else
     {
-        data::converDigital(strV, value);
+       strRealValue = strV;
     }
-
+    strExpress =Calc.Replacestr(strCalc,std::string("v"),strRealValue);
     ///比较
-    if(calcFactory::calc(strCalc, value))
-        mResult = true;
-
+    if(Calc.expression(strExpress))
+    {
+        if(Calc.mInt64Result)
+        {
+            /*if 条件成立*/
+            mResult = true;
+        }else{
+            /*if条件不成立*/
+           mResult = false;
+        }
+    }
+    else
+    {
+         UT_SHOW("express Error(" + strExpress+ ")");
+    }
     return mResult;
 }
 

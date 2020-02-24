@@ -3,4 +3,5 @@ TEMPLATE = subdirs
 SUBDIRS += \
     examples \
     src \
-    template
+    template \
+    logicLayer

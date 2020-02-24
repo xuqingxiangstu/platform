@@ -32,12 +32,10 @@ namespace Pf
 
         }
 
-        void generalFrame::parse(const unsigned char *u8Msg, const unsigned int u32Size, std::vector<icdOutConvertValueType> &convertOutValue)
+        std::string generalFrame::parse(const unsigned char *u8Msg, const unsigned int u32Size)
         {
-
-            convertOutValue.clear();
-
             std::ostringstream strErr;
+            Json::Value rootJson;
 
             try
             {
@@ -91,13 +89,19 @@ namespace Pf
                     UT_THROW_EXCEPTION(strErr.str());
                 }
 
+                Json::Value headJson;
+
+                Json::Value wordJsons;
+
                 //step3：获取信息头信息
                 //获取信息头域
                 auto headRegion = mSubProtocolCfg->getRegion(headCode);
                 if(headRegion != nullptr)
                 {
-                    _parseInfo(headRegion.get(), u8Msg, u32Size, convertOutValue);
+                    _parseInfo(headRegion.get(), u8Msg, u32Size, headJson);
                 }
+
+                rootJson["head"] = headJson;
 
                 //step4：获取各个信息字数据并解析
                 int residueSize = u32Size - infoHeadSize;
@@ -110,6 +114,7 @@ namespace Pf
                     int tmpLen = 0;
                     if(conf->getInfoLen(&u8Msg[msgPos], residueSize, tmpLen))
                     {
+                        Json::Value tmpJson;
                         //step5-2：解析信息帧
 #ifdef DEBUG_ICD
                         std::cout << " -> ";
@@ -119,7 +124,9 @@ namespace Pf
                         }
                         std::cout << std::endl;
 #endif
-                        _parseInfo(infoRegion.get(), &u8Msg[msgPos], tmpLen, convertOutValue);
+                        _parseInfo(infoRegion.get(), &u8Msg[msgPos], tmpLen, tmpJson);
+
+                        wordJsons.append(tmpJson);
 
                         //step5-3：下一帧
                         residueSize -= tmpLen;
@@ -130,6 +137,8 @@ namespace Pf
                         break;
                     }
                 }while(residueSize > 0);
+
+                rootJson["infoWord"] = wordJsons;
             }
             catch(std::runtime_error err)
             {
@@ -137,9 +146,10 @@ namespace Pf
                 UT_THROW_EXCEPTION(errCode);
             }
 
+            return rootJson.toStyledString();
         }
 
-        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size, std::vector<icdOutConvertValueType> &convertOutValue)
+        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &value)
         {
             dataStorage data;
             dataCalc calc;
@@ -168,17 +178,32 @@ namespace Pf
                             throw std::runtime_error("起始字符异常");
                         }
                         calResult = std::string((const char*)&u8Msg[byte_start], u32Size - byte_start);
+
+                        value[pId] = calResult;
                     }
                     else
                     {
-                        pValue = data.getData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
-                        calResult =  calc.getData(strCategory, pValue, 1, 0, 1, 3);
+                        unDataConvert pValue = data.getAutoData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
+                        //pValue = data.getData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
+
+                        //calResult =  calc.getData(strCategory, pValue, 1, 0, 1, 3);
+
+                        if( (strCategory == ieee32Type))
+                        {
+                            value[pId] = pValue.f32Value;
+                        }
+                        else if( (strCategory == ieee64Type))
+                        {
+                            value[pId] = pValue.d64Value;
+                        }
+                        else
+                        {
+                            value[pId] = pValue.i64Value;
+                        }
                     }
 
-                    convertOutValue.push_back(std::make_tuple(pId, calResult));
-
 #ifdef DEBUG_ICD
-                    showStr << pId << ":" << pName << ":" << calResult << " ";
+                    //showStr << pId << ":" << pName << ":" << calResult << " ";
 #endif
                 }
                 catch(std::runtime_error err)
@@ -359,9 +384,19 @@ namespace Pf
                                      storage->getMessage<infoWordRegion::sub_param_bit_size_index>(),
                                      value.asInt());
                     }
-                    else if(value.isString())
+                    else if(value.isDouble())
                     {
-                        std::copy(value.asString().begin(), value.asString().end(), &tmpBuf[storage->getMessage<infoWordRegion::sub_param_start_post_index>()]);
+
+                        data.setData(tmpBuf, msgSize,
+                                     storage->getMessage<infoWordRegion::sub_param_start_post_index>(),
+                                     storage->getMessage<infoWordRegion::sub_param_byte_size_index>(),
+                                     storage->getMessage<infoWordRegion::sub_param_bit_start_pos_index>(),
+                                     storage->getMessage<infoWordRegion::sub_param_bit_size_index>(),
+                                     value.asFloat());
+                    }
+                    else if(value.isString())
+                    {                        
+                        sprintf((char*)&tmpBuf[storage->getMessage<infoWordRegion::sub_param_start_post_index>()], "%s", value.asString().c_str());
                     }
                 }
             }

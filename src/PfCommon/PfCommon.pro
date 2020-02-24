@@ -5,6 +5,8 @@ SUBDIRS +=  \
     #dynCreate \
     recordLog \
     crc \
-    jsoncpp
+    jsoncpp \
+    CalcFormula \
+    cmdToJson
 
 include (./tools/tools.pri)

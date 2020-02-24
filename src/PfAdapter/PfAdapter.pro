@@ -6,7 +6,7 @@ SUBDIRS += \
     BroadcastAdapter \
     MulticastAdapter \
     UnicastAdapter \
-    #SerialPortAdapter \
+    SerialPortAdapter \
     #AnalogOutAdapter \
     #DigitalIoAdapter \
     #DigitalOutAdapter \

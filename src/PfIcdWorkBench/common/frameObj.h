@@ -86,6 +86,14 @@ namespace Pf
              * @return
              */
             virtual void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue){}
+
+            /**
+             * @brief parse 协议解析，根据配置协议进行参数解析
+             * @param[in] inBuf  数据首地址
+             * @param[in] inSize 数据长度
+             * @return json帧
+             */
+            virtual std::string parse(const unsigned char *inBuf, const unsigned int inSize){return "";}
         };
 
         /** 类导出函数指针 **/

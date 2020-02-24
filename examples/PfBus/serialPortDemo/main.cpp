@@ -3,11 +3,13 @@
 #include "serialport.h"
 #include <QDebug>
 #include <iostream>
+
 /**
  * @brief 串口收发例程
  * @example PfBus/serialPortDemo/main.cpp
  */
 using namespace Pf;
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);

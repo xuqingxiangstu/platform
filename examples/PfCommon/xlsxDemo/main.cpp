@@ -7,6 +7,13 @@
 #include <sstream>
 #include <QDebug>
 
+
+/**
+ * @brief excel读写例程
+ * @example PfCommon/xlsxDemo/main.cpp
+ */
+
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);

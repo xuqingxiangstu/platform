@@ -56,7 +56,7 @@ namespace Pf
         void dataFrame::simulation(unsigned char *outValue, const int &size, const std::vector<std::shared_ptr<subProtocol::subStorageType>> &inInfo,const int &beyond, const std::vector<icdInValueType> &inValue)
         {
             int calSize = 0;  ///< 帧总长度
-            __int64 tmpValue = 0;
+            int tmpValue = 0;
             dataStorage data;
             std::ostringstream strErr;
 

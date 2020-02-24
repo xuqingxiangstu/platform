@@ -17,7 +17,8 @@ namespace Pf
             mDataManager[uint8Type] = std::make_shared<intCalc>();
             mDataManager[uint16Type] = std::make_shared<intCalc>();
             mDataManager[uint32Type] = std::make_shared<intCalc>();
-            mDataManager[ieeeType] = std::make_shared<floatCalc>();
+            mDataManager[ieee32Type] = std::make_shared<floatCalc>();
+            mDataManager[ieee64Type] = std::make_shared<doubleCalc>();
             //mDataManager[ncharType] = std::make_shared<floatCalc>();
 
 #else

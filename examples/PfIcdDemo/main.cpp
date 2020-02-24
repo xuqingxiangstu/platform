@@ -131,10 +131,10 @@ int main(int argc, char *argv[])
 
             for(auto v : msg)
             {
-                std::cout << std::hex << (int)v << " ";
+                //std::cout << std::hex << (int)v << " ";
             }
 
-            std::cout << std::endl;
+           // std::cout << std::endl;
 
 #endif
 
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
                                           \"info_2_module\":22,\
                                           \"info_2_data_type\":1,\
                                           \"info_2_over\":0,\
-                                          \"info_2_data_value\":0,\
+                                          \"info_2_data_value\":0.123,\
                                           \"info_2_reserve\":0  \
                                       },\
                                       {\
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
                                           \"info_2_module\":33,\
                                           \"info_2_data_type\":3,\
                                           \"info_2_over\":0,\
-                                          \"info_2_data_value\":0,\
+                                          \"info_2_data_value\":3.6,\
                                           \"info_2_reserve\":0,\
                                           \"info_2_string_len\":8,\
                                           \"info_2_string_value\":\"hellword\"\
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
                                           \"info_2_module\":44,\
                                           \"info_2_data_type\":3,\
                                           \"info_2_over\":0,\
-                                          \"info_2_data_value\":0,\
+                                          \"info_2_data_value\":1.69,\
                                           \"info_2_reserve\":0,\
                                           \"info_2_string_len\":12,\
                                           \"info_2_string_value\":\"12hellword34\"\
@@ -205,12 +205,15 @@ int main(int argc, char *argv[])
             //step5：根据Excel中的数据进行解析
             std::vector<PfIcdWorkBench::icdOutConvertValueType> outV;
             qDebug() << "解析测试->\n";
-            obj->parse(&sendMsg.at(0), sendMsg.size(), outV);
+
+            std::string jsonStr = obj->parse(&sendMsg.at(0), sendMsg.size());
+
+            std::cout << jsonStr << std::endl;
 
             //打印解析后的数据 ID + Value
-            for(auto v : outV)
+//            for(auto v : outV)
             {
-                std::cout << std::get<0>(v) << " " << std::get<1>(v) << std::endl;
+                //std::cout << std::get<0>(v) << " " << std::get<1>(v) << std::endl;
             }
 #endif
         }

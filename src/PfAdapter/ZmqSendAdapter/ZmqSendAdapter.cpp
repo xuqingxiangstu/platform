@@ -15,6 +15,16 @@ namespace Pf
 
       }
 
+      void  ZmqSendAdapter::init(const std::string &remoteIp, const std::string &remotePort)
+      {
+          std::lock_guard<std::mutex> lk(mMutex);
+          if(!mSendObj)
+          {
+              mSendObj = std::make_shared<PfBus::zmqSend>();
+              mSendObj->init(remoteIp, remotePort);
+          }
+      }
+
       void ZmqSendAdapter::init(const TiXmlElement *xmlEle)
       {
           const TiXmlElement *pTmpElem = NULL;
