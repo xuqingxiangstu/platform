@@ -48,6 +48,9 @@ public:
     void setFlowType(std::string type){mCurFlowType = type;}
     void setAutoRunObj(runObj *obj);
     void setMsgObj(Pf::PfAdapter::Adapter *obj){mMsgObj = obj;}
+
+    void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter) override;
+    void setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter) override;
 private:
     void updateMsg(const std::string &);
     void run();

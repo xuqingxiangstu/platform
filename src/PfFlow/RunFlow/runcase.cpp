@@ -327,6 +327,22 @@ void TestCase::setAutoRunObj(runObj *obj)
     }
 }
 
+void TestCase::setAdapter(Pf::PfAdapter::PfAdapterManager *adapter)
+{
+    for(auto item : mStepObj)
+    {
+        (std::get<ObjIndex>(item))->setAdapter(adapter);
+    }
+}
+
+void TestCase::setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
+{
+    for(auto item : mStepObj)
+    {
+        (std::get<ObjIndex>(item))->setIcdframeadapter(icdAdapter);
+    }
+}
+
 runObj *TestCase::getObj(std::string stepIndex)
 {
     auto isFind = std::find_if(mStepObj.begin(), mStepObj.end(), [=](const ValueType &v){

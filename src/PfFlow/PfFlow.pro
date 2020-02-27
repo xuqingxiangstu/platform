@@ -22,6 +22,9 @@ SUBDIRS += \
     formulaCalcStep \
     judgeMultiStep \
     judgeStep \
-    variateStep
+    variateStep\
+    sndUdpStep\
+    revUdpStep
+
 
 

@@ -309,6 +309,22 @@ void autoRun::setFlowType(std::string type)
     }
 }
 
+void autoRun::setAdapter(Pf::PfAdapter::PfAdapterManager *adapter)
+{
+    for (auto itor = mRunVec.begin(); itor != mRunVec.end(); ++itor)
+    {
+        (dynamic_cast<TestProcedure*>(std::get<ObjIndex>(*itor)))->setAdapter(adapter);
+    }
+}
+
+void autoRun::setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
+{
+    for (auto itor = mRunVec.begin(); itor != mRunVec.end(); ++itor)
+    {
+        (dynamic_cast<TestProcedure*>(std::get<ObjIndex>(*itor)))->setIcdframeadapter(icdAdapter);
+    }
+}
+
 void autoRun::setMsgObj(Pf::PfAdapter::Adapter *obj)
 {
     mMsgObj = obj;

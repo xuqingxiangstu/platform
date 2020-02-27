@@ -47,6 +47,9 @@ public:
 
     void setMsgObj(Pf::PfAdapter::Adapter *obj);
     runObj *getObj(std::string testCaseIndex, std::string stepIndex);
+
+    void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter) override;
+    void setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter) override;
 private:
     void run();
     void updateMsg(const std::string &);

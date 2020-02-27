@@ -341,6 +341,22 @@ void TestProcedure::setAutoRunObj(runObj *obj)
     }
 }
 
+void TestProcedure::setAdapter(Pf::PfAdapter::PfAdapterManager *adapter)
+{
+    for (unsigned int i = 0; i < mTestCaseVec.size(); i++)
+    {
+        (dynamic_cast<TestCase*>(std::get<ObjIndex>(mTestCaseVec.at(i))))->setAdapter(adapter);
+    }
+}
+
+void TestProcedure::setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
+{
+    for (unsigned int i = 0; i < mTestCaseVec.size(); i++)
+    {
+        (dynamic_cast<TestCase*>(std::get<ObjIndex>(mTestCaseVec.at(i))))->setIcdframeadapter(icdAdapter);
+    }
+}
+
 void TestProcedure::setFlowType(std::string type)
 {
     mCurFlowType = type;

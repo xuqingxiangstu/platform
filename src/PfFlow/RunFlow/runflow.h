@@ -46,6 +46,9 @@ public:
 
     ///停止所有测试
     void exitAllTest();
+
+    void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter);
+    void setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter);
 private:
     void load(std::string);
 private:

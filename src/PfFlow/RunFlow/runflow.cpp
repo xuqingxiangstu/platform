@@ -96,6 +96,16 @@ void RunFlow::setMsgObj(Pf::PfAdapter::Adapter *obj)
     mAutoRun->setMsgObj(obj);
 }
 
+void RunFlow::setAdapter(Pf::PfAdapter::PfAdapterManager *adapter)
+{
+    mAutoRun->setAdapter(adapter);
+}
+
+void RunFlow::setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
+{
+    mAutoRun->setIcdframeadapter(icdAdapter);
+}
+
 void RunFlow::runFlow(std::string name)
 {
     if(!isRunning())
