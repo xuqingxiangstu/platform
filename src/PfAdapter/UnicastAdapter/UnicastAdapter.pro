@@ -20,10 +20,6 @@ unix {
   INSTALLS += target
 }
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
-else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
-    
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -ludp
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -ludp
-else:unix:!macx:  LIBS += -L$$OUT_PWD/../../ -ludp
+LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+
+LIBS += -L$$OUT_PWD/../../../ -ludp

@@ -20,9 +20,9 @@ TEMPLATE = app
 
 SOURCES += main.cpp
 
-win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapterManager
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../ -lPfAdapterManager
-else:unix:!macx: LIBS += -L$$OUT_PWD/../ -lPfAdapterManager
+LIBS += -L$$OUT_PWD/../../ -lPfAdapterManager
+
+LIBS += -L$$OUT_PWD/../../ -lTinyXml
 
 INCLUDEPATH += $$PWD/../../src/PfAdapter
 DEPENDPATH += $$PWD/../../src/PfAdapter

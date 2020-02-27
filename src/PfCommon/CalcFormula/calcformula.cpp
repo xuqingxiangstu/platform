@@ -1,4 +1,7 @@
 #include "calcformula.h"
+
+#include <stdio.h>
+
 namespace Pf
 {
     namespace PfCommon

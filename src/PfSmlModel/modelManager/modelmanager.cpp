@@ -1,6 +1,6 @@
 #include "modelmanager.h"
 #include <sstream>
-#include <windows.h>
+#include <QLibrary>
 
 #include "../../PfCommon/tools/ut_error.h"
 
@@ -52,14 +52,21 @@ void ModelManager::init(const std::string &xmlPath)
                         throw std::runtime_error(strErr.str());
                     }
 
-                    bool isLoad = false;
+                    bool isLoad = false;                    
 
+#if defined(Q_OS_WIN)
                     std::string dllPath = "./algorithmLib/" + strClass + ".dll";
+#else
+                    std::string dllPath = "./algorithmLib/lib" + strClass + ".so";
+#endif
 
-                    HMODULE hd = LoadLibraryW(std::wstring(dllPath.begin(), dllPath.end()).c_str());
-                    if(hd != 0)
+                    LOAD_STEP_LIB libfun = nullptr;
+
+                    QLibrary lib(dllPath.c_str());//加载*****.dll
+                    if (lib.load())//判断是否加载成功
                     {
-                        LOAD_STEP_LIB libfun = (LOAD_STEP_LIB)GetProcAddress(hd, "LoadClass");
+                        libfun = (LOAD_STEP_LIB)lib.resolve("LoadClass");//获取dll的函数,***为动态库中的函数                                i
+
                         if(libfun != nullptr)
                         {
                             Algorithm  *initObj = libfun();

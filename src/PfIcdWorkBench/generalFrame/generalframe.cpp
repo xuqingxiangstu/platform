@@ -198,7 +198,7 @@ namespace Pf
                         }
                         else
                         {
-                            value[pId] = pValue.i64Value;
+                            value[pId] = pValue.i32Value;
                         }
                     }
 
@@ -828,7 +828,7 @@ namespace Pf
             //step3：更新长度
             data.setData(&outValue.at(0), outValue.size(), mProtocolCfg->getMessage<protocolConfigure::general_frame_len_start_index>(),
                                      mProtocolCfg->getMessage<protocolConfigure::general_frame_len_byte_size_index>(),
-                                     0, 0, outValue.size() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_start_index>() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_to_end_index>());
+                                     0, 0, int(outValue.size() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_start_index>() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_to_end_index>()));
 
             //step4：更新校验和
             unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(mProtocolCfg->getMessage<protocolConfigure::general_cal_check_start_index>())),
