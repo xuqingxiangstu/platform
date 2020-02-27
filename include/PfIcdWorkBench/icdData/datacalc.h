@@ -34,16 +34,33 @@ namespace Pf
              * @param[in] lsb
              * @param[in] precision 精度
              * @return 计算后值
-             */
+             */           
             virtual std::string data(const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0){return "";}
         };
 
         /**
-         * @brief The floatCalc class   浮点数计算
+         * @brief The floatCalc class   单精度浮点数计算
          */
         class ICDDATASHARED_EXPORT floatCalc : public calc
         {
         public:            
+            std::string data(const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0) override
+            {
+                std::ostringstream result;
+
+                precision == 0 ? result.precision() : result.precision(precision);
+                result << (float)(srcData * a * lsb + b);
+
+                return result.str();
+            }
+        };
+
+        /**
+         * @brief The floatCalc class   双精度浮点数计算
+         */
+        class ICDDATASHARED_EXPORT doubleCalc : public calc
+        {
+        public:
             std::string data(const __int64 &srcData, const double &a, const double &b, const double &lsb, const int &precision = 0) override
             {
                 std::ostringstream result;

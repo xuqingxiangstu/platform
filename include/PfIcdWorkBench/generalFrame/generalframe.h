@@ -43,7 +43,7 @@ namespace Pf
             std::string version() override {return VERSION;}
             void simulation(byteArray &outValue, const std::string &json) override;
             //void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
-            void parse(const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue) override;
+            std::string parse(const unsigned char *inBuf, const unsigned int inSize) override;
 
         private:
             void fillData(byteArray &outValue, infoWordRegion *region, infoConf *conf, const Json::Value &jsValue);
@@ -84,7 +84,7 @@ namespace Pf
              * @param[in] inBuf 源码首地址
              * @param[in] inSize 源码长度
              */
-            void _parseInfo(const infoWordRegion *region, const unsigned char *inBuf, const unsigned int inSize, std::vector<icdOutConvertValueType> &convertOutValue);
+            void _parseInfo(const infoWordRegion *region, const unsigned char *inBuf, const unsigned int inSize, Json::Value &value);
 
 
         private:

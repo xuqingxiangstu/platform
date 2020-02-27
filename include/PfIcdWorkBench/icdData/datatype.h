@@ -19,7 +19,8 @@ namespace Pf
         const std::string uint8Type = "UINT8";
         const std::string uint16Type = "UINT16";
         const std::string uint32Type = "UINT32";
-        const std::string ieeeType = "IEEE";
+        const std::string ieee32Type = "IEEE32";
+        const std::string ieee64Type = "IEEE64";
         const std::string ncharType = "NCHAR";
     }
 }

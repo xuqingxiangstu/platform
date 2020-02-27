@@ -51,6 +51,14 @@ namespace Pf
           ZmqRcvAdapter();
           ~ZmqRcvAdapter();
       public:
+          /**
+           * @brief init  初始化zmq接收
+           * @param remoteIp[in]  远程IP地址
+           * - *：接收任意IP
+           * - ip地址
+           * @param[in] remotePort    远程端口
+           */
+          void init(const std::string &remoteIp, const std::string &remotePort);
           void init(const TiXmlElement *ele) override;
           bool sendMsg(const char *msg, const int &msgSize) override;
           bool receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF) override;
