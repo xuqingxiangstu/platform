@@ -1,0 +1,88 @@
+#include "nodeproperty.h"
+#include <algorithm>
+
+
+nodeProperty::nodeProperty()
+{
+
+}
+
+nodeProperty::nodeProperty(const Json::Value &v)
+{
+    mDefalultProperty = v;
+
+    for(int index = 0; index < v.size(); index++)
+    {
+        Json::Value nodeJs = v[index]["node"];
+        for(int nodeIndex = 0; nodeIndex < nodeJs.size(); nodeIndex++)
+        {
+            Json::Value proJs = nodeJs[nodeIndex];
+            std::string type = proJs["type"].asString();
+
+            std::shared_ptr<property> obj = std::make_shared<property>();
+
+            obj->setName(proJs["attr"].asString());
+            obj->setReadOnly(proJs["readOnly"].asBool());
+            obj->setInitValue(proJs["initValue"]);
+            if(proJs["curValue"].isNull())
+            {
+                obj->setCurValue(proJs["initValue"]);
+            }
+            else
+            {
+                obj->setCurValue(proJs["curValue"]);
+            }
+
+            mProperty.emplace_back(obj);
+        }
+    }
+}
+
+nodeProperty::nodeProperty(const nodeProperty &other)
+{
+    for(auto v : other.mProperty)
+    {
+        this->mProperty.emplace_back(v->clone());
+    }
+
+    mDefalultProperty = other.mDefalultProperty;
+}
+
+void nodeProperty::setProperty(const std::string &name, const Json::Value &value)
+{
+    auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+        {
+            return pro->name() == name;
+        });
+
+    if(itor != mProperty.end())
+    {
+        (*itor)->setCurValue(value);
+    }
+}
+
+void nodeProperty::getProperty(const std::string &name, Json::Value &value)
+{
+    auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+        {
+            return pro->name() == name;
+        });
+
+    if(itor != mProperty.end())
+    {
+        value = (*itor)->curValue();
+    }
+}
+
+Json::Value nodeProperty::getJson()
+{
+
+}
+
+nodeProperty &nodeProperty::operator=(const nodeProperty &other)
+{
+    mProperty = other.mProperty;
+    mDefalultProperty = other.mDefalultProperty;
+
+    return *this;
+}

@@ -3,7 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     PfBus \
     #PfNi \
-    PfAdapter \
-    PfCommon \
-    PfIcdDemo \
+    #PfAdapter \
+    #PfCommon \
+    #PfIcdDemo \
     #pfSmlModel

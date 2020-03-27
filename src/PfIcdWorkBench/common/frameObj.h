@@ -74,9 +74,15 @@ namespace Pf
             /**
              * @brief simulation    协议仿真
              * @param outValue 仿真数据
-             * @param json json协议
+             * @param json json协议             
              */
             virtual void simulation(byteArray &outValue, const std::string &json){}
+
+            /**
+             * @brief resendMsg 重传消息，只改变重传次数
+             * @param outValue  数据
+             */
+            virtual void resendMsg(byteArray &outValue){}
 
             /**
              * @brief 协议解析，根据配置协议进行参数解析

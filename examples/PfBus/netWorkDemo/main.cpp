@@ -94,13 +94,13 @@ void UnicastUdpTest()
 {
     PfBus::UnicastUdp UniUdp;
     //本地IP
-    std::string strLocalIp = "192.168.34.103";
+    std::string strLocalIp = "192.168.34.2";
     //本地端口
-    std::string strLocalPort = "7000";
+    std::string strLocalPort = "4001";
     //目标IP
     std::string strRemoteIp = "192.168.34.108";
     //本地端口
-    std::string strRemotePort = "6000";
+    std::string strRemotePort = "4002";
     //Step.1 通信接口初始化
     UniUdp.init(strLocalIp, strLocalPort, strRemoteIp, strRemotePort);
 
@@ -135,9 +135,9 @@ int main(int argc, char *argv[])
     //广播测试
     //BroadcastUdpTest();
     //组播测试
-    MulticastUdpTest();
+   // MulticastUdpTest();
     //单播测试
-    //UnicastUdpTest();
+    UnicastUdpTest();
 
 
 

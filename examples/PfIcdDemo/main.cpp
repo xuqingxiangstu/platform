@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <QDebug>
-
+#include "../../src/PfSql/paramsTable/paramstable.h"
 #include "../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
 #include "../../src/PfCommon/crc/crc.h"
 using namespace Pf;
@@ -22,13 +22,17 @@ int main(int argc, char *argv[])
 
     try
     {
+        //初始化sqlite
+        paramsTable::getInstance();
+
         //step2：初始化帧解析xml
-        frameAdapter->init("./icd.xml");
+        frameAdapter->init("./cfgfile/icd.xml");
 
         qDebug() << "init Ok\n";
 
         //step3：获取待解析的帧句柄
-        auto obj = frameAdapter->getFrameObj("1");
+        auto obj = frameAdapter->getFrameObj("FE");
+
         if(obj != nullptr)
         {
 #if 0
@@ -141,7 +145,8 @@ int main(int argc, char *argv[])
 #if 1
             //step4：根据Excel中的数据进行仿真
             PfIcdWorkBench::byteArray sendMsg;
-
+#define TEST 4
+#if TEST == 0
             std::string msgJson = "{\
                                   \"head\":\
                                   {\
@@ -157,41 +162,162 @@ int main(int argc, char *argv[])
                                   \"infoWord\":\
                                   [    \
                                       {\
-                                          \"info_2_table_num\":16912,\
-                                          \"info_2_code\":1,\
-                                          \"info_2_dev_num\":11,\
-                                          \"info_2_module\":22,\
-                                          \"info_2_data_type\":1,\
-                                          \"info_2_over\":0,\
-                                          \"info_2_data_value\":0.123,\
-                                          \"info_2_reserve\":0  \
+                                          \"info_3_table_num\":16912,\
+                                          \"info_3_code\":1,\
+                                          \"info_3_dev_num\":11,\
+                                          \"info_3_module\":22,\
+                                          \"info_3_data_type\":1,\
+                                          \"info_3_over\":0,\
+                                          \"info_3_data_value\":0.123,\
+                                          \"info_3_reserve\":0  \
                                       },\
                                       {\
-                                          \"info_2_table_num\":16912,\
-                                          \"info_2_code\":2,\
-                                          \"info_2_dev_num\":22,\
-                                          \"info_2_module\":33,\
-                                          \"info_2_data_type\":3,\
-                                          \"info_2_over\":0,\
-                                          \"info_2_data_value\":3.6,\
-                                          \"info_2_reserve\":0,\
-                                          \"info_2_string_len\":8,\
-                                          \"info_2_string_value\":\"hellword\"\
+                                          \"info_3_table_num\":16912,\
+                                          \"info_3_code\":2,\
+                                          \"info_3_dev_num\":22,\
+                                          \"info_3_module\":33,\
+                                          \"info_3_data_type\":3,\
+                                          \"info_3_over\":0,\
+                                          \"info_3_data_value\":3.6,\
+                                          \"info_3_reserve\":0,\
+                                          \"info_3_string_len\":8,\
+                                          \"info_3_string_value\":\"hellword\"\
                                       },\
                                       {\
-                                          \"info_2_table_num\":16912,\
-                                          \"info_2_code\":3,\
-                                          \"info_2_dev_num\":33,\
-                                          \"info_2_module\":44,\
-                                          \"info_2_data_type\":3,\
-                                          \"info_2_over\":0,\
-                                          \"info_2_data_value\":1.69,\
-                                          \"info_2_reserve\":0,\
-                                          \"info_2_string_len\":12,\
-                                          \"info_2_string_value\":\"12hellword34\"\
+                                          \"info_3_table_num\":16912,\
+                                          \"info_3_code\":3,\
+                                          \"info_3_dev_num\":33,\
+                                          \"info_3_module\":44,\
+                                          \"info_3_data_type\":3,\
+                                          \"info_3_over\":0,\
+                                          \"info_3_data_value\":1.69,\
+                                          \"info_3_reserve\":0,\
+                                          \"info_3_string_len\":12,\
+                                          \"info_3_string_value\":\"12hellword34\"\
                                       }\
                                   ]\
                               }";
+#elif TEST == 0
+            std::string msgJson = "{\
+                \"head\":\
+                {\
+                    \"head_frame_type\":0,\
+                    \"head_src_sys_type\":1,\
+                    \"head_src_sys_code\":2,\
+                    \"head_src_node_code\":3,\
+                    \"head_dst_sys_type\":11,\
+                    \"head_dst_sys_code\":22,\
+                    \"head_dst_node_code\":33,\
+                    \"head_info_word_type\":2\
+                },\
+                \"infoWord\":\
+                [    \
+                    {\
+                        \"info_2_table_num\":16896,\
+                        \"info_2_code\":1,         \
+                        \"info_2_reserve\":0  \
+                    }\
+                ],\
+                \"region\":\
+                {\
+                    \"table_num\":16896,\
+                    \"data\":\
+                    [\
+                        {\
+                            \"coding\":1,\
+                            \"value\":11   \
+                        },\
+                        {\
+                            \"coding\":2,\
+                            \"value\":3  \
+                        },\
+                        {\
+                            \"coding\":3,\
+                            \"value\":\"wer\"   \
+                        },\
+                        {\
+                            \"coding\":4,\
+                            \"value\":5   \
+                        },\
+                        {\
+                            \"coding\":5,\
+                            \"value\":\"yuiew\" \
+                        }\
+                    ]\
+                }\
+            }\
+                                  ";
+#elif TEST == 3
+            std::string msgJson = "{\
+                \"region\":\
+                {\
+                    \"table_num\":16896,\
+                    \"data\":\
+                    [\
+                        {\
+                            \"coding\":1,\
+                            \"value\":11   \
+                        },\
+                        {\
+                            \"coding\":2,\
+                            \"value\":3  \
+                        },\
+                        {\
+                            \"coding\":3,\
+                            \"value\":\"wer\"   \
+                        },\
+                        {\
+                            \"coding\":4,\
+                            \"value\":5   \
+                        },\
+                        {\
+                            \"coding\":5,\
+                            \"value\":\"yuiew\" \
+                        }\
+                    ]\
+                }\
+            }\
+                                  ";
+#elif TEST == 4
+            std::string msgJson = "{\
+                  \"head\":\
+                  {\
+                      \"head_src_node\":2,\
+                      \"head_dst_node\":3,\
+                      \"data_type\":12,\
+                      \"ack\":1,\
+                      \"retrans_cnt\":2\
+                  },\
+                  \"region\":\
+                  {\
+                      \"table_num\":16896,\
+                      \"data\":\
+                      [\
+                          {\
+                              \"coding\":1,\
+                              \"value\":11   \
+                          },\
+                          {\
+                              \"coding\":2,\
+                              \"value\":3  \
+                          },\
+                          {\
+                              \"coding\":3,\
+                              \"value\":\"wer\"   \
+                          },\
+                          {\
+                              \"coding\":4,\
+                              \"value\":5   \
+                          },\
+                          {\
+                              \"coding\":5,\
+                              \"value\":\"yuiew\" \
+                          }\
+                      ]\
+                  }\
+              }\
+                                  ";
+#endif
             obj->simulation(sendMsg, msgJson);
             qDebug() << "仿真测试->";
 
@@ -199,8 +325,8 @@ int main(int argc, char *argv[])
             {
                 std::cout << std::hex << (int)v << " ";
             }
+            std::cout << "\n";
 
-            std::cout << std::endl;
 //#else
             //step5：根据Excel中的数据进行解析
             std::vector<PfIcdWorkBench::icdOutConvertValueType> outV;
@@ -217,6 +343,11 @@ int main(int argc, char *argv[])
             }
 #endif
         }
+        else
+        {
+            qDebug() << "get error";
+        }
+
     }
     catch(std::runtime_error err)
     {

@@ -11,7 +11,9 @@
 #include "../icdData/datacalc.h"
 #include "../icdData/dataconvert.h"
 
+#include "infowordconf.h"
 
+#include "../../PfSql/paramsTable/paramstable.h"
 
 #include <QTextCodec>
 #include <QDateTime>
@@ -75,6 +77,13 @@ namespace Pf
                                                       mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
                                                       mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
                                                       0, 0);
+                if(infoCnt <= 0)
+                {
+                    strErr.str("");
+                    strErr << "获取信息字个数失败(" << std::dec << infoCnt << ")";
+                    UT_THROW_EXCEPTION(strErr.str());
+                }
+
                 //获取信息头长度
                 unsigned int infoHeadSize = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
 
@@ -106,12 +115,12 @@ namespace Pf
                 //step4：获取各个信息字数据并解析
                 int residueSize = u32Size - infoHeadSize;
                 int msgPos = infoHeadSize;
+                int tmpLen = 0;
                 do
                 {
                     //step5：获取信息字数据
 
-                    //step5-1；获取信息字长度
-                    int tmpLen = 0;
+                    //step5-1；获取信息字长度                    
                     if(conf->getInfoLen(&u8Msg[msgPos], residueSize, tmpLen))
                     {
                         Json::Value tmpJson;
@@ -131,14 +140,26 @@ namespace Pf
                         //step5-3：下一帧
                         residueSize -= tmpLen;
                         msgPos += tmpLen;
+
+                        infoCnt--;
                     }
                     else
                     {
                         break;
                     }
-                }while(residueSize > 0);
+                }while(infoCnt > 0);
 
-                rootJson["infoWord"] = wordJsons;
+                //step6如果为信息格式2则需解析域信息
+                if(0x2 == frameCode)
+                {
+                    Json::Value tmpJson;
+                    _parseRegion(wordJsons, &u8Msg[infoHeadSize + tmpLen], residueSize, tmpJson);
+
+                    if(!tmpJson.isNull())
+                        rootJson["region"] = tmpJson;
+                }
+                if(!wordJsons.isNull())
+                    rootJson["infoWord"] = wordJsons;
             }
             catch(std::runtime_error err)
             {
@@ -147,6 +168,82 @@ namespace Pf
             }
 
             return rootJson.toStyledString();
+        }
+
+        void generalFrame::_parseRegion(const Json::Value &wordJsons, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
+        {
+            //获取表号
+            if(wordJsons.size() <= 0)
+                return ;
+            if(wordJsons[0]["info_2_table_num"].isNull())
+                return ;
+
+            int tableNum = wordJsons[0]["info_2_table_num"].asInt();
+            //通过表号 从数据库中获取参数信息
+
+            regionValue["table_num"] = tableNum;
+
+            //从数据库中获取参数信息
+            Json::Value paramValues;
+            paramsTable::getInstance()->getValues(tableNum, paramValues);
+
+            dataStorage data;
+            int preValue = 0;
+            int preStartPos = 0;
+
+            Json::Value dataJs;
+
+            for(int index = 0; index < paramValues.size(); index++)
+            {
+                Json::Value tmpValue;
+                int coding = paramValues[index][PARAM_TABLE_CODING_NUM].asInt();
+                int startPos = paramValues[index][PARAM_TABLE_PARAM_BYTE_START_POS].asInt();
+                int byteSize = paramValues[index][PARAM_TABLE_PARAM_BYTE_SIZE].asInt();
+                int bitPos = paramValues[index][PARAM_TABLE_PARAM_BIT_START_POS].asInt();
+                int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
+                std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
+                std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+
+                tmpValue["coding"] = coding;
+
+                if(startPos == -1)
+                    startPos = preStartPos;
+
+                if(ncharType == dataType)
+                {
+                    std::string calResult = std::string((const char*)&u8Msg[startPos], preValue);
+
+                    tmpValue["value"] = calResult;
+
+                    preStartPos = startPos + preValue;
+                }
+                else
+                {
+                    unDataConvert pValue = data.getAutoData(u8Msg, u32Size, startPos, byteSize, bitPos, bitSize, bigSmall);
+
+                    preValue = pValue.i32Value;
+                    preStartPos = startPos + byteSize;
+
+                    if( (dataType == ieee32Type))
+                    {
+                        tmpValue["value"] = pValue.f32Value;
+                    }
+                    else if( (dataType == ieee64Type))
+                    {
+                        tmpValue["value"] = pValue.d64Value;
+                    }
+                    else
+                    {
+                        tmpValue["value"] = pValue.i32Value;
+                    }
+                }
+                if(!tmpValue.isNull())
+                    dataJs.append(tmpValue);
+            }
+
+            if(!dataJs.isNull())
+                regionValue["data"] = dataJs;
         }
 
         void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &value)
@@ -246,7 +343,7 @@ namespace Pf
             initSubFrameCfg(ROOT_PATH + mDataRegionCfgPath);
         }
 
-        void generalFrame::getHeadAndWord(const std::string &json, Json::Value &head, Json::Value &words)
+        void generalFrame::getHeadAndWord(const std::string &json, Json::Value &head, Json::Value &words, Json::Value &regionJson, Json::Value &resendJson)
         {
             std::ostringstream strErr;
 
@@ -281,6 +378,12 @@ namespace Pf
 
                 UT_THROW_EXCEPTION(strErr.str());
             }
+
+            //获取域信息
+            regionJson = root["region"];
+
+            //获取重传标志
+            resendJson = root["resendCnt"];
         }
 
         void generalFrame::simulation(byteArray &outValue, const std::string &json)
@@ -288,9 +391,11 @@ namespace Pf
             std::ostringstream strErr;
             Json::Value headJs;
             Json::Value wordsJs;
+            Json::Value regionJs;
+            Json::Value resendJs;
 
             //获取帧头及信息字值
-            getHeadAndWord(json, headJs, wordsJs);
+            getHeadAndWord(json, headJs, wordsJs, regionJs, resendJs);
 
             //获取信息字类型
             if(headJs["head_info_word_type"].isNull())
@@ -350,11 +455,118 @@ namespace Pf
                 wordsMsg.push_back(msg);
             }
 
+            //其它域信息(帧格式为2的时候有信息域)
+            byteArray regionMsg;
+            if(frameCode == infoConf::InfoWord_Two)
+            {
+                if(!regionJs.isNull())
+                {
+                    fillRegion(regionMsg, regionJs);
+                }
+            }
+
             //帧头仿真
             byteArray headMsg;
             fillData(headMsg, headInfoRegion.get(), (headInfoItor->second).get(), headJs);
 
-            _simFrame(outValue, headMsg, wordsMsg);
+            //获取确认标志
+            //从数据库中获取参数信息
+            Json::Value paramValues;
+            int ack = 0;
+            std::string tableKey = "info_" + std::to_string(frameCode + 1) + "_table_num";
+            if(wordsJs.size() > 0)
+            {
+                auto tmp = wordsJs[0][tableKey].asInt();
+                paramsTable::getInstance()->getValues(wordsJs[0][tableKey].asInt(), paramValues);
+
+                if(paramValues.size() > 0)
+                {
+                    std::string isAck = paramValues[0][PARAM_TABLE_IS_ACK].asString();
+                    if(IS_ACK_YES == isAck)
+                        ack = 0x1;
+                    else if(IS_ACK_NO == isAck)
+                        ack = 0x0;
+                }
+            }
+
+            _simFrame(outValue, headMsg, wordsMsg, regionMsg, resendJs.asInt(), ack);
+        }
+
+        void generalFrame::fillRegion(byteArray &outValue, const Json::Value &regionJs)
+        {
+            if(regionJs.isNull())
+                return ;
+
+            outValue.clear();
+            int outSize = 0;
+
+            unsigned char tmpBuf[1024] = {0};
+            unsigned int msgSize = 512;
+            dataStorage data;
+            int preStartPos = 0;
+
+            //获取表号
+            int tableNum = regionJs["table_num"].asInt();
+            //通过表号 从数据库中获取参数信息
+
+            //从数据库中获取参数信息
+            Json::Value paramValues;
+            paramsTable::getInstance()->getValues(tableNum, paramValues);
+
+            //qDebug() << paramValues.toStyledString().c_str();
+
+            for(int index = 0; index < paramValues.size(); index++)
+            {
+                int coding = paramValues[index][PARAM_TABLE_CODING_NUM].asInt();
+                int startPos = paramValues[index][PARAM_TABLE_PARAM_BYTE_START_POS].asInt();
+                int byteSize = paramValues[index][PARAM_TABLE_PARAM_BYTE_SIZE].asInt();
+                int bitPos = paramValues[index][PARAM_TABLE_PARAM_BIT_START_POS].asInt();
+                int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
+                std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
+                std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+
+                if(startPos == -1)
+                    startPos = preStartPos;
+
+                //查找域中是否赋值
+                for(auto v : regionJs["data"])
+                {
+                    if(v["coding"] == coding)
+                    {
+                        initValue = v["value"].asString();
+                        break;
+                    }
+                }
+
+                if( dataType == ieee32Type)
+                {
+                    data.setData(tmpBuf, msgSize, startPos, byteSize, bitPos, bitSize, (float)std::atof(initValue.c_str()), bigSmall);
+                    preStartPos = startPos + byteSize;
+                    outSize += byteSize;
+                }
+                else if( dataType == ieee64Type)
+                {
+                    data.setData(tmpBuf, msgSize, startPos, byteSize, bitPos, bitSize, (double)std::atof(initValue.c_str()), bigSmall);
+                    preStartPos = startPos + byteSize;
+                    outSize += byteSize;
+                }
+                else if(ncharType == dataType)
+                {
+                    //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
+                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                    preStartPos = startPos + initValue.size();
+                    outSize += initValue.size();
+                }
+                else
+                {
+                    data.setData(tmpBuf, msgSize, startPos, byteSize, bitPos, bitSize, std::atoi(initValue.c_str()), bigSmall);
+                    preStartPos = startPos + byteSize;
+                    outSize += byteSize;
+                }
+            }
+
+            std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
         void generalFrame::fillData(byteArray &outValue, infoWordRegion *region, infoConf *conf, const Json::Value &jsValue)
@@ -618,8 +830,6 @@ namespace Pf
                 obj->mProtocolCnt[itor->first] = (itor->second);
             }
 
-
-
             obj->mFrameCfgPath = this->mFrameCfgPath;
             obj->mDataRegionCfgPath = this->mDataRegionCfgPath;
 
@@ -741,6 +951,9 @@ namespace Pf
             cfg = new infoWord2Conf();
             mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
 
+            cfg = new infoWord3Conf();
+            mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
+
             cfg = new frameHeadConf();
             mInfoWordConf[cfg->getInfoType()] = std::shared_ptr<infoConf>(cfg);
         }
@@ -776,7 +989,13 @@ namespace Pf
             mSubProtocolCfg->init(workBook);
         }
 
-        void generalFrame::_simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue)
+        void generalFrame::resendMsg(byteArray &outValue)
+        {
+            if(outValue.size() >= 25)
+                outValue.at(25) = outValue.at(25) + 1;
+        }
+
+        void generalFrame::_simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack)
         {
             unsigned char tmpBuf[1024] = {0};
             dataStorage data;
@@ -801,21 +1020,44 @@ namespace Pf
             QDateTime current = QDateTime::currentDateTime();
 
             data.setData(&outValue.at(0), headLen, 12, 2, 0, 0, current.date().year());
-            data.setData(&outValue.at(0), headLen, 13, 1, 0, 0, current.date().month());
-            data.setData(&outValue.at(0), headLen, 14, 1, 0, 0, current.date().day());
-            data.setData(&outValue.at(0), headLen, 15, 4, 0, 0, current.time().elapsed());
+            data.setData(&outValue.at(0), headLen, 14, 1, 0, 0, current.date().month());
+            data.setData(&outValue.at(0), headLen, 15, 1, 0, 0, current.date().day());
+            unsigned int time = current.time().hour() * 3600000 + current.time().minute() * 60000 + current.time().second() * 1000 + current.time().msec();
+            data.setData(&outValue.at(0), headLen, 16, 4, 0, 0, time);
 
             /*//step1-5：信息字类型
             data.setData(tmpBuf, headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_type_start_index>(),
                          mProtocolCfg->getMessage<protocolConfigure::general_info_type_size_index>(),
                          0, 0, infoWordType);
-
+*/
             //step1-6：信息字个数
-            data.setData(tmpBuf, headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
+            data.setData(&outValue.at(0), headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
                          mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
                          0, 0, wordsValue.size());
-*/
-            //step1-7：TODO:帧序号
+
+            //step1-7：帧序号(信源+新宿)
+
+            unsigned int src = data.getData(&outValue.at(0), headLen, 4, 4, 0, 0);
+            unsigned int dst = data.getData(&outValue.at(0), headLen, 8, 4, 0, 0);
+
+            auto findItor = mProtocolCnt.find(std::make_pair(src, dst));
+            if(findItor == mProtocolCnt.end())
+            {
+                mProtocolCnt[std::make_pair(src, dst)] = 0;
+            }
+
+            data.setData(&outValue.at(0), headLen, mProtocolCfg->getMessage<protocolConfigure::general_cnt_start_index>(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_cnt_size_index>(), 0, 0,
+                         mProtocolCnt[std::make_pair(src, dst)]);
+
+            if(resendCnt == 0)//重传时不需要更新命令计数
+                mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
+
+            //step1-8：确认标志
+            data.setData(&outValue.at(0), headLen, 24, 1, 0, 0, ack);
+
+            //step1-9：重传次数
+            data.setData(&outValue.at(0), headLen, 25, 1, 0, 0, resendCnt);
 
             //std::copy(tmpBuf, tmpBuf + headLen, std::back_inserter(outValue));
 
@@ -824,6 +1066,10 @@ namespace Pf
             {
                 std::copy(v.begin(), v.end(), std::back_inserter(outValue));
             }
+
+            //step3：域信息（信息格式为2时）
+            if(regionValue.size() > 0)
+                std::copy(regionValue.begin(), regionValue.end(), std::back_inserter(outValue));
 
             //step3：更新长度
             data.setData(&outValue.at(0), outValue.size(), mProtocolCfg->getMessage<protocolConfigure::general_frame_len_start_index>(),

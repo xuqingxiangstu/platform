@@ -4,6 +4,8 @@
 #include <QNetworkInterface>
 #include <QList>
 
+#include <chrono>
+
 namespace Pf
 {
     namespace PfBus
@@ -71,16 +73,30 @@ namespace Pf
 
         bool BroadcastUdp::receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut)
         {
-            unsigned int RecvLen = 0;
+            int RecvLen = 0;
+
+            auto beginTime = std::chrono::high_resolution_clock::now();
 
             bool bRes = false;
             QByteArray baRecv;
-            while(mSocket->hasPendingDatagrams())
+            while(1)
             {
-                baRecv.resize(mSocket->pendingDatagramSize());
-                RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size());
-                *u32MsgLen = RecvLen;
-                bRes = true;
+                if(mSocket->hasPendingDatagrams())
+                {
+                    baRecv.resize(mSocket->pendingDatagramSize());
+                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size());
+                    *u32MsgLen = RecvLen;
+                    bRes = true;
+                    break;
+                }
+
+                auto endTime = std::chrono::high_resolution_clock::now();
+                auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
+
+                if(elapsedTime.count() >= u32TimeOut)   //超时退出
+                {
+                    break;
+                }
             }
             return bRes;
         }

@@ -109,6 +109,36 @@ namespace Pf
             }
         }
 
+        bool PfAdapterManager::isExist(const std::string &id)
+        {
+            bool res = false;
+
+            auto itor = mManagement.find(id);
+            if(itor != mManagement.end())
+            {
+                res = true;
+            }
+
+            return res;
+        }
+
+        void PfAdapterManager::deleteAll()
+        {
+            for(auto itor = mManagement.begin(); itor != mManagement.end(); )
+            {
+                if( "UI" == (itor->first))
+                {
+                    itor++;
+                }
+                else
+                {
+                    (itor->second).reset();
+
+                    mManagement.erase(itor++);
+                }
+            }
+        }
+
         bool PfAdapterManager::getAdapter(const std::string &id, Adapter **adapter)
         {
             bool res = false;

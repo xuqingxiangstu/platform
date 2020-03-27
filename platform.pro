@@ -1,7 +1,8 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    examples \
-    src \
-    template \
-    logicLayer
+      src \
+#  examples \
+    #template \
+    #logicLayer \
+    eq

@@ -13,7 +13,7 @@
 #define UNICASTUDP_H
 
 #include "udp_global.h"
-
+#include <mutex>
 #include <memory>
 
 namespace Pf
@@ -38,6 +38,11 @@ namespace Pf
              * @param[in] remotPort 目标端口号
              */
             void init(std::string localIp, std::string localPort, std::string remotIp, std::string remotPort);
+
+            void init(std::string localIp, std::string localPort);
+
+            bool sendMsg(unsigned char *u8Msg, unsigned int u32MsgLen, std::string remotIp, std::string remotPort);
+
             void unInit();
             /**
              * @brief sendMsg 发送数据
@@ -59,6 +64,11 @@ namespace Pf
              *- false 接收失败
              */
             bool receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut = 0xFFFFFFFF);
+
+            bool atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, std::string remotIp, std::string remotPort);
+        private:
+            bool _receive(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut = 0xFFFFFFFF);
+            bool _send(unsigned char *u8Msg, unsigned int u32MsgLen, std::string remotIp, std::string remotPort);
         private:
             /**
              * @brief getHostIpAddress 获取本地IP地址
@@ -67,8 +77,9 @@ namespace Pf
             QString getHostIpAddress();
         private:
             std::shared_ptr<QUdpSocket> mSocket;      ///< 通信接口
-            QHostAddress sendaddrees; ///< 发送地址
-            QString sendPort;         ///< 发送端口
+            std::string sendaddrees; ///< 发送地址
+            std::string sendPort;         ///< 发送端口
+            std::mutex mMutex;
         };
     }
 }

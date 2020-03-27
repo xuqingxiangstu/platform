@@ -6,7 +6,10 @@
 
 QT       -= gui
 
-TARGET = ../../../../dynCreate
+win32:CONFIG(release, debug|release): TARGET = ../../../../dynCreate
+else:win32:CONFIG(debug, debug|release): TARGET = ../../../../dynCreate
+else:unix:!macx: TARGET = ../../../dynCreate
+
 TEMPLATE = lib
 
 DEFINES += DYNCREATE_LIBRARY

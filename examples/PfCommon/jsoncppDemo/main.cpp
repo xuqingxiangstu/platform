@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     std::cout << test.toStyledString() << std::endl;
 
     qDebug() << "反序列化测试";
-
+#if 0
     //反序列化
     std::string json = "{\
                        \"head\":\
@@ -51,7 +51,52 @@ int main(int argc, char *argv[])
             std::cout<<*iter<<" : " << head[*iter].asString();
         }
     }
-
+#else
+    std::string json = "{\
+            \"table_num\":16896,\
+            \"data\":\
+            [\
+                {\
+                    \"coding\":1,\
+                    \"value\":\"11\"\
+                },\
+                {\
+                    \"coding\":2,\
+                    \"value\":\"123\"\
+                },\
+                {\
+                    \"coding\":3,\
+                    \"value\":\"测试字符串\"\
+                },\
+                {\
+                    \"coding\":4,\
+                    \"value\":\"89\"\
+                },\
+                {\
+                    \"coding\":5,\
+                    \"value\":\"审批通过\"\
+                }\
+            ]\
+        }\
+";
+    Json::Reader reader;
+    Json::Value root;
+    if(reader.parse(json, root))
+    {
+        Json::Value head = root["data"];
+        for(auto v : head)
+        {
+            if(v["coding"] == 2)
+            {
+                std::cout << "find";
+            }
+        }
+        Json::Value v;
+        /*v["coding"] = 2;
+        Json::Value fV = head.get(head.toStyledString().data(), head.toStyledString().data() + head.toStyledString().length(), v);
+        std::cout << fV.toStyledString();*/
+    }
+#endif
     std::cout << "exit" << std::endl;
     return a.exec();
 }

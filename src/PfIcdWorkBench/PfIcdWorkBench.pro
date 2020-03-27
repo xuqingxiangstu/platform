@@ -3,8 +3,9 @@ TEMPLATE = subdirs
 include (./common/common.pri)
 
 SUBDIRS += \
-    variableFrame \
-    icdFrameAdapter \
     icdData \
-    generalFrame
-
+    icdFrameAdapter\
+    variableFrame \
+    generalFrame \
+    frame93 \
+    frameFE

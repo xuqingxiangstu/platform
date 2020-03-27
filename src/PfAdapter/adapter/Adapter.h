@@ -65,6 +65,18 @@ namespace Pf
             virtual bool receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF) { return false; }
 
             /**
+             * @brief atomicTrMsg   原子发送接收数据（send rcv）
+             * @param[in] sMsg      发送消息首地址
+             * @param[in] sMsgSize  发送消息长度
+             * @param[out] rMsg     接收消息首地址
+             * @param[out] rcvSize  接收长度
+             * @param[in] interval(ms)      发送后间隔接收时间
+             * @param[in] rMaxRcvSize   待接收长度
+             * @return
+             */
+            virtual bool atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, const int &rMaxRcvSize = 1024){return false;}
+
+            /**
              * @brief getClassName  获取类名称
              * @return 类名称
              */

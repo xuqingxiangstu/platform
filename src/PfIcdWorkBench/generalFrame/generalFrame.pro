@@ -6,6 +6,7 @@
 
 QT       -= gui
 QT       += xlsx
+QT       += sql
 win32:CONFIG(release, debug|release): TARGET = ../../../../frameLib/generalFrame
 else:win32:CONFIG(debug, debug|release): TARGET = ../../../../frameLib/generalFrame
 else:unix:!macx: TARGET = ../../../frameLib/generalFrame
@@ -47,3 +48,5 @@ else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lcrc
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
 else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
+
+ LIBS += -L$$OUT_PWD/../../../ -lsqlTable

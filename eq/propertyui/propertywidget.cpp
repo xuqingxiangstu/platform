@@ -1,0 +1,438 @@
+#include "propertywidget.h"
+#include "ui_propertywidget.h"
+
+#include "../property/nodeproperty.h"
+
+#include <QDebug>
+
+propertyWidget::propertyWidget(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::propertyWidget)
+{
+    ui->setupUi(this);
+
+    //属性管理
+    mGroupManager =new QtGroupPropertyManager(this);
+    mEnumManager  =new QtEnumPropertyManager(this);
+    mIntManager   =new QtIntPropertyManager(this);
+    mDoubleManager = new QtDoublePropertyManager(this);
+    mstrManager   =new QtStringPropertyManager(this);
+    mboolManager = new QtBoolPropertyManager(this);
+
+    mEditorProperty = new QtTreePropertyBrowser(this);
+
+    //为每个属性管理设置Factory
+    QtSpinBoxFactory *spinBoxFactory = new QtSpinBoxFactory(this);
+    mEditorProperty->setFactoryForManager(mIntManager, spinBoxFactory);
+    QtEnumEditorFactory *comboBoxFactory = new QtEnumEditorFactory(this);
+    mEditorProperty->setFactoryForManager(mEnumManager, comboBoxFactory);
+    QtLineEditFactory   *lineEditFactory = new QtLineEditFactory(this);
+    mEditorProperty->setFactoryForManager(mstrManager,lineEditFactory);
+    QtDoubleSpinBoxFactory *doubleSpinBoxFactory = new QtDoubleSpinBoxFactory(this);
+    mEditorProperty->setFactoryForManager(mDoubleManager,doubleSpinBoxFactory);
+
+    //connect(mstrManager, &QtStringPropertyManager::propertyChanged, this, &propertyWidget::onPropertyChange);
+
+    connect(mIntManager, &QtIntPropertyManager::valueChanged, this, &propertyWidget::onIntValueChanged);
+    connect(mDoubleManager, &QtDoublePropertyManager::valueChanged, this, &propertyWidget::onDoubleValueChanged);
+    connect(mstrManager, &QtStringPropertyManager::valueChanged, this, &propertyWidget::onStringValueChanged);
+    connect(mboolManager, &QtBoolPropertyManager::valueChanged, this, &propertyWidget::onBoolValueChanged);
+
+    connect(mEnumManager, &QtEnumPropertyManager::valueChanged, this, &propertyWidget::onEnumValueChanged);
+
+    ui->horizontalLayout->addWidget(mEditorProperty);
+}
+
+propertyWidget::~propertyWidget()
+{
+    delete ui;
+}
+#if 0
+void propertyWidget::showProperty(QString json)
+{
+
+}
+#endif
+void propertyWidget::showProperty(Json::Value value)
+{
+    isUpDate = false;
+
+    //显示之前先删除之前属性
+    deleteAllExistProperty();
+#ifdef DEBUG_PRINT
+    qDebug() << value.toStyledString().c_str();
+#endif
+    Json::Value propertyJs = value["property"];
+    for(int index = 0; index < propertyJs.size(); index++)
+    {
+        Json::Value groupJs = propertyJs[index];
+        std::string groupName = groupJs["group"].asString();
+
+        QtProperty *groupItem = mGroupManager->addProperty(groupName.c_str());
+
+        Json::Value nodeJs = groupJs["node"];
+
+        for(int nodeIndex = 0; nodeIndex < nodeJs.size(); nodeIndex++)
+        {
+            QtProperty *item = nullptr;
+
+            std::string attr = nodeJs[nodeIndex]["attr"].asString();
+            std::string type = nodeJs[nodeIndex]["type"].asString();
+            bool isReadOnly = nodeJs[nodeIndex]["readOnly"].asBool();
+
+            Json::Value initValue = nodeJs[nodeIndex]["initValue"];
+
+            Json::Value curValue = nodeJs[nodeIndex]["curValue"];
+
+            if(PROPERTY_INT == type)
+            {
+                item = createIntProperty(isReadOnly, attr, initValue, curValue);
+            }
+            else if(PROPERTY_DOUBLE == type)
+            {
+                item = createDoubleProperty(isReadOnly, attr, initValue, curValue);
+            }
+            else if(PROPERTY_STRING == type)
+            {
+                item = createStringProperty(isReadOnly, attr, initValue, curValue);
+            }
+            else if(PROPERTY_ENUM == type)
+            {
+                item = createEnumProperty(isReadOnly, attr, initValue, curValue);
+            }
+            else if(PROPERTY_TRIGGER == type)
+            {
+                item = createTriggerProperty(isReadOnly, attr, initValue, curValue);
+            }
+            if(item)
+                groupItem->addSubProperty(item);
+        }
+
+        mEditorProperty->addProperty(groupItem);
+    }
+
+    //更新仿真变化
+    updateSimChange();
+
+    isUpDate = true;
+}
+
+QtProperty *propertyWidget::createTriggerProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+{
+    QtProperty *property = mEnumManager->addProperty(attrName.c_str());
+
+    property->setEnabled(!isReadOnlay);
+
+    int curIndex = 0;
+
+    if(!curValue.isObject() || !initValue.isArray())
+        return property;
+
+    QStringList listName;
+
+    QMap<int, QVariant> enumDatas;
+
+    for(int index = 0; index < initValue.size(); index++)
+    {
+        std::string tmp = initValue[index][TRIGGER_NAME].asString();
+
+        if(!curValue.isNull())
+        {
+            if(initValue[index] == curValue)
+            {
+                curIndex = index;
+            }
+        }
+        listName.append(tmp.c_str());
+
+        QVariant var;
+        var.setValue(initValue[index]);
+
+        enumDatas[index] = var;
+    }
+
+    mEnumManager->setEnumNames(property, listName);
+    mEnumManager->setData(property, enumDatas);
+    mEnumManager->setValue(property, curIndex);
+
+    return property;
+}
+
+QtProperty *propertyWidget::createEnumProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+{
+    QtProperty *property = mEnumManager->addProperty(attrName.c_str());
+
+    property->setEnabled(!isReadOnlay);
+
+    if(!curValue.isString() || !initValue.isArray())
+        return property;
+
+    int curIndex = 0;
+    std::string v;
+    if(!curValue.isNull())
+        v = curValue.asString();
+
+    QStringList listName;
+
+    for(int index = 0; index < initValue.size(); index++)
+    {
+        std::string tmp = initValue[index].asString();
+
+        if(tmp == v)
+            curIndex = index;
+
+        listName.append(tmp.c_str());
+    }
+
+    mEnumManager->setEnumNames(property, listName);
+
+    mEnumManager->setValue(property, curIndex);
+
+    return property;
+}
+
+QtProperty *propertyWidget::createIntProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+{
+    QtProperty *property = mIntManager->addProperty(attrName.c_str());
+
+    property->setEnabled(!isReadOnlay);
+
+    if(!curValue.isInt() || !initValue.isInt())
+        return property;
+
+    if(!curValue.isNull())
+        mIntManager->setValue(property, curValue.asInt());
+    else
+        mIntManager->setValue(property, initValue.asInt());
+
+    return property;
+}
+
+QtProperty *propertyWidget::createStringProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+{
+    QtProperty *property = mstrManager->addProperty(attrName.c_str());
+
+    property->setEnabled(!isReadOnlay);
+
+    if(!curValue.isString() || !initValue.isString())
+        return property;
+
+    if(!curValue.isNull())
+        mstrManager->setValue(property, curValue.asString().c_str());
+    else
+        mstrManager->setValue(property, initValue.asString().c_str());
+
+    return property;
+}
+
+QtProperty *propertyWidget::createBoolProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+{
+    QtProperty *property = mboolManager->addProperty(attrName.c_str());
+
+    property->setEnabled(!isReadOnlay);
+
+    if(!curValue.isBool() || !initValue.isBool())
+        return property;
+
+    if(!curValue.isNull())
+        mboolManager->setValue(property, curValue.asBool());
+    else
+        mboolManager->setValue(property, initValue.asBool());
+
+    return property;
+}
+
+QtProperty *propertyWidget::createDoubleProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+{
+    QtProperty *property = mDoubleManager->addProperty(attrName.c_str());
+
+    property->setEnabled(!isReadOnlay);
+
+    if(!curValue.isDouble() || !initValue.isDouble())
+        return property;
+
+    if(!curValue.isNull())
+        mDoubleManager->setValue(property, curValue.asFloat());
+    else
+        mDoubleManager->setValue(property, initValue.asFloat());
+
+    return property;
+}
+
+void propertyWidget::deleteAllExistProperty()
+{
+    mEditorProperty->clear();
+    mEnumManager->clear();
+    mGroupManager->clear();
+    mIntManager->clear();
+    mstrManager->clear();
+    mboolManager->clear();
+    mDoubleManager->clear();
+
+}
+
+void propertyWidget::onIntValueChanged(QtProperty *property, int val)
+{
+    if(isUpDate)
+        emit valueChange(property->propertyName(), Json::Value(val));
+#ifdef DEBUG_PRINT
+    qDebug() << property->propertyName();
+    qDebug() << QString::number(val, 10);
+#endif
+}
+
+void propertyWidget::onDoubleValueChanged(QtProperty *property, double val)
+{
+    if(isUpDate)
+        emit valueChange(property->propertyName(), Json::Value(val));
+#ifdef DEBUG_PRINT
+    qDebug() << property->propertyName();
+    qDebug() << QString::number(val);
+#endif
+}
+
+void propertyWidget::onStringValueChanged(QtProperty *property, QString val)
+{
+    if(isUpDate)
+        emit valueChange(property->propertyName(), Json::Value(val.toStdString()));
+#ifdef DEBUG_PRINT
+    qDebug() << property->propertyName();
+    qDebug() << val;
+#endif
+}
+
+void propertyWidget::onBoolValueChanged(QtProperty *property, bool val)
+{
+    if(isUpDate)
+        emit valueChange(property->propertyName(), Json::Value(val));
+
+#ifdef DEBUG_PRINT
+    qDebug() << property->propertyName();
+    if(val)
+        qDebug() <<"true";
+    else
+        qDebug() <<"false";
+#endif
+}
+
+void propertyWidget::updateSimChange()
+{
+    foreach(QtProperty *pro, mEnumManager->properties())
+    {
+        if(pro->propertyName().compare(PROPERTY_SIM_MODEL) == 0)
+        {
+            std::string type = pro->valueText().toStdString();
+
+            setChange(type);
+        }
+    }
+}
+
+void propertyWidget::setChange(std::string type)
+{
+    if(PROPERTY_MODEL_FIX == type)
+    {
+        foreach(QtProperty *pro, mGroupManager->properties())
+        {
+            if( (pro->propertyName().compare(PROPERTY_MODEL_RAND) == 0)|| (pro->propertyName().compare(PROPERTY_MODEL_LINE) == 0))
+            {
+                pro->setEnabled(false);
+            }
+            else if(pro->propertyName().compare(PROPERTY_MODEL_FIX) == 0)
+            {
+                //更新参数值
+                foreach (QtProperty *subPro, pro->subProperties())
+                {
+                    emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                    //qDebug() << "[FIX]" << subPro->propertyName() << ":" << subPro->valueText();
+                }
+                pro->setEnabled(true);
+                //break;
+            }
+        }
+    }
+    else if(PROPERTY_MODEL_RAND == type)
+    {
+        foreach(QtProperty *pro, mGroupManager->properties())
+        {
+            if( (pro->propertyName().compare(PROPERTY_MODEL_FIX) == 0)|| (pro->propertyName().compare(PROPERTY_MODEL_LINE) == 0))
+            {
+                pro->setEnabled(false);
+            }
+            else if(pro->propertyName().compare(PROPERTY_MODEL_RAND) == 0)
+            {
+                //更新参数值
+                foreach (QtProperty *subPro, pro->subProperties())
+                {
+                    emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                    //qDebug() << "[RAND]" << subPro->propertyName() << ":" << subPro->valueText();
+                }
+                pro->setEnabled(true);
+                //break;
+            }
+        }
+    }
+    else if(PROPERTY_MODEL_LINE == type)
+    {
+        foreach(QtProperty *pro, mGroupManager->properties())
+        {
+            if( (pro->propertyName().compare(PROPERTY_MODEL_FIX) == 0)|| (pro->propertyName().compare(PROPERTY_MODEL_RAND) == 0))
+            {
+                pro->setEnabled(false);
+            }
+            else if(pro->propertyName().compare(PROPERTY_MODEL_LINE) == 0)
+            {
+                //更新参数值
+                foreach (QtProperty *subPro, pro->subProperties())
+                {
+                    emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                    //qDebug() << "[LINE]" << subPro->propertyName() << ":" << subPro->valueText();
+                }
+                pro->setEnabled(true);
+                //break;
+            }
+        }
+    }
+}
+
+void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
+{
+    //选择仿真模型时需关联下面属性
+    if(property->propertyName().compare(PROPERTY_SIM_MODEL) == 0)
+    {
+        std::string type = mEnumManager->enumNames(property).at(val).toStdString();
+
+        setChange(type);
+    }
+
+    if(isUpDate)
+    {
+        if((property->propertyName().compare(PROPERTY_START_CONDITION) == 0)
+            ||(property->propertyName().compare(PROPERTY_STOP_CONDITION) == 0)
+            ||(property->propertyName().compare(PROPERTY_DESTDEVICE) == 0))
+        {
+            //Json::Value tmpJs = mEnumManager->data(property).value<Json::Value>();
+            emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());
+            //qDebug() << tmpJs.toStyledString().c_str();
+        }
+        else
+        {
+            emit valueChange(property->propertyName(), Json::Value(mEnumManager->enumNames(property).at(val).toStdString()));
+        }
+    }
+#ifdef DEBUG_PRINT
+    qDebug() << property->propertyName();
+    qDebug() << mEnumManager->enumNames(property).at(val);
+#endif
+}
+
+
+void propertyWidget::onPropertyChange(QtProperty *property)
+{
+    if(isUpDate)
+        emit valueChange(property->propertyName(), Json::Value(mstrManager->value(property).toStdString()));
+#ifdef DEBUG_PRINT
+    qDebug() << property->propertyName();
+    qDebug() << mstrManager->value(property);
+#endif
+}

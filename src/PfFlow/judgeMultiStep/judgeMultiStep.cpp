@@ -41,7 +41,7 @@ void judgeMultiStep::init(const TiXmlElement *xmlEle)
       }
    }
    ///表达式
-   pTmpElem = xmlEle->FirstChildElement("JudgeCalc");
+   pTmpElem = xmlEle->FirstChildElement("calc");
     if (pTmpElem)
     {
          const char *point = nullptr;
@@ -95,11 +95,11 @@ bool judgeMultiStep::exec()
         {
             mResult = true;
             mstrCalcResult="1";
-            strOutText= "calc:"+mstrexp +"is true\n";
+            strOutText= "judgeMultiStep calc:"+mstrexp +"is true\n";
         }else{
            mResult = false;
            mstrCalcResult="0";
-           strOutText= "calc:"+mstrexp +"is false\n";
+           strOutText= "judgeMultiStep calc:"+mstrexp +"is false\n";
         }
     }
     else

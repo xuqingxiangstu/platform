@@ -13,5 +13,6 @@ SUBDIRS += \
     #RelayCtrlAdapter   \
     ZmqSendAdapter  \
     ZmqRcvAdapter  \
+    virtualUnicastAdapter \
 
 include (./adapter/adapter.pri)

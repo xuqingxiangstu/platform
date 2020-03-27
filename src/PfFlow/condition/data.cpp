@@ -204,9 +204,11 @@ bool data::getIndexFromV(const std::string &src, std::string &level1Index, std::
     bool isParse = false;
 
     ///!1@2#23$Value$4
-    std::regex reg("^!(\\d+)@(\\d+)#(\\d+)\\$(\\w+)\\$(\\d+)", std::regex::icase);
+    std::regex reg1("^!(\\d+)@(\\d+)#(\\d+)\\$(\\w+)\\$(\\d+)", std::regex::icase);
+    ///!1@2#23$Value[0,1]$4
+    std::regex reg2("^!(\\d+)@(\\d+)#(\\d+)\\$(\\w+\\[\\d+\\,\\d+\\])\\$(\\d+)", std::regex::icase);
     std::smatch matchRes;
-    isParse = std::regex_match(src, matchRes, reg);
+    isParse = (std::regex_match(src, matchRes, reg1)||std::regex_match(src, matchRes, reg2));
 
     if(isParse)
     {

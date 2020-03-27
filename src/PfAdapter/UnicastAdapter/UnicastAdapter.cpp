@@ -59,6 +59,17 @@ namespace Pf
           return udp->sendMsg((unsigned char*)msg, msgSize);
       }
 
+      bool UnicastAdapter::atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, const int &rMaxRcvSize)
+      {
+          std::unique_lock<std::mutex> lk(mMutex);
+
+          //发送
+          udp->sendMsg((unsigned char*)sMsg, sMsgSize);
+
+          //接收
+          return udp->receiveMsg((unsigned char*)rMsg, (unsigned int*)&rcvSize, rMaxRcvSize, interval);
+      }
+
       bool UnicastAdapter::receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize, const unsigned int &timeOut)
       {
           std::unique_lock<std::mutex> lk(mMutex);

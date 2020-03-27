@@ -65,6 +65,16 @@ namespace Pf
           return udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, timeOut);
       }
 
+      bool MulticastAdapter::atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, const int &rMaxRcvSize)
+      {
+          std::unique_lock<std::mutex> lk(mMutex);
+
+          //发送
+          udp->sendMsg((unsigned char*)sMsg, sMsgSize);
+
+          //接收
+          return udp->receiveMsg((unsigned char*)rMsg, (unsigned int*)&rcvSize, rMaxRcvSize, interval);
+      }
       std::string MulticastAdapter::getClassName()
       {
           return VAR_NAME(MulticastAdapter);

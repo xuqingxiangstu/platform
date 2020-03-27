@@ -3,20 +3,32 @@
 #include <QDebug>
 #include <string>
 #include <vector>
+#include <QDir>
+#include <tuple>
+#include <set>
+
 #include "../../src/PfCommon/tools/ut_error.h"
 #include "../src/PfCommon/cmdToJson/cmdtojson.h"
+#include "../src/PfSql/paramsTable/paramstable.h"
+#include "../src/PfSql/paramsTable/flowrecordtable.h"
+#include "../src/PfSql/paramsTable/systemtable.h"
+#include "../src/PfSql/paramsTable/sysinterfacetable.h"
+#include "../src/PfSql/paramsTable/udptable.h"
+#include "../src/PfAdapter/virtualUnicastAdapter/virtualUnicastAdapter.h"
+
+#include "virtualParams/virtualparams.h"
+
+
 cmdDecode::cmdDecode(PfAdapter::Adapter  *obj, QObject *parent )
     :QObject(parent),
       mCmdSendObj(obj),
-      //mAnalogSendObj(nullptr),
+      mIcdFrameAdpter(nullptr),
       mAdpterManagerObj(nullptr)
 {
-    mAdpterManagerObj = new PfAdapter::PfAdapterManager();
+
 }
 cmdDecode::~cmdDecode()
 {
-    ///设备对象析构
-    delete mAdpterManagerObj;
 
 }
 void cmdDecode::respond(const std::string &code)
@@ -37,8 +49,9 @@ void cmdDecode::parse(QString srcJson)
     Json::Value root;
     Json::Reader reader;
     if(reader.parse(srcJson.toStdString(),root))
-    {
-        std::string msgType = root[MSG_TYPE].asString();
+    {        
+        cmdMsg(root);
+#if 0
         ///类型检查
        if((msgType.compare(CMD_TYPE) == 0))
        {
@@ -62,6 +75,7 @@ void cmdDecode::parse(QString srcJson)
            std::string strTemp = PfCommon::cmdToJson::replyErrorCmd((const std::string&)strErrInfo);
            respond(strTemp);
        }
+#endif
     }
     else
     {
@@ -72,7 +86,7 @@ void cmdDecode::parse(QString srcJson)
 }
 void cmdDecode::cmdMsg(Json::Value jsValue)
 {
-    std::string type = jsValue[TYPE].asString();
+    std::string type = jsValue[MSG_TYPE].asString();
 
 #ifndef QT_NO_DEBUG
     UT_SHOW(type);
@@ -83,13 +97,17 @@ void cmdDecode::cmdMsg(Json::Value jsValue)
     {
         initPrograme();
     }
+    else if(type == INIT_FLOW)
+    {
+        initFlow(jsValue["msg"]);
+    }
     else if(type == START_TEST)
     {
-        startTest(jsValue["flow"].asString(), jsValue["items"].asString());
+        startTest(jsValue["msg"]);
     }
     else if(type == STOP_TEST)
     {
-        stopTest(jsValue["flow"].asString());
+        stopTest(jsValue["msg"]);
     }
     else if(type == SUSPEND_TEST)
     {
@@ -105,11 +123,17 @@ void cmdDecode::cmdMsg(Json::Value jsValue)
     }
     else if(type == GET_RUNITES)
     {
-        getRunItems(jsValue["flow"].asString());
+        getRunItems();
     }
     else if(type == LOAD)
     {
         load(jsValue["flow"].asString(), jsValue["path"].asString());
+    }
+    else
+    {
+        std::string strErrInfo= "命令类型错误，类型(" + type + " )不存在";
+        std::string strTemp = PfCommon::cmdToJson::replyErrorCmd((const std::string&)strErrInfo);
+        respond(strTemp);
     }
 }
 void cmdDecode::rs422OutMsg(Json::Value rs422Obj)
@@ -212,75 +236,34 @@ void cmdDecode::analogOutMsg(Json::Value analogArray)
     respond(strTemp);
 }
 
-void cmdDecode::stopTest(std::string flowType)
+
+void cmdDecode::getRunItems()
 {
-    std::string errCode;
-    try
+    Json::Value items;
+
+    items["msgType"] = GET_RUNITES;
+
+    Json::Value msg;
+
+    for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); itor++)
     {
-        std::map<std::string, RunFlow*>::iterator it;
-        it = mFLows.find(flowType);
-        if(it!=mFLows.end())
-        {
-            mFLows[flowType]->exitAllTest();
-            errCode = OK;
-        }
-        else
-        {
-            errCode = NO_FLOW;
-        }
-    }
-    catch(std::runtime_error err)
-    {
-        errCode = err.what();
+        Json::Value flow;
+        flow["record_uuid"] = itor->first;
+
+        flow["flow"] = (itor->second)->getRunItems();
+
+        msg.append(flow);
     }
 
-    ///返回结果
-    std::vector<std::string> vecMsg;
-    vecMsg.clear();
-    vecMsg.push_back("stop");
-    vecMsg.push_back(flowType);
-    vecMsg.push_back(errCode);
-    std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
-    respond(strTemp);
-}
+    items["msg"] = msg;
 
-void cmdDecode::getRunItems(std::string flowType)
-{
-    std::vector<std::string> items;
-    std::string errCode;
-    std::ostringstream strItems;
-    strItems.str("");
-    std::map<std::string, RunFlow*>::iterator it;
-    it = mFLows.find(flowType);
-    if(it!=mFLows.end())
-    {
-        mFLows[flowType]->getRunItems(items);
-
-        for (unsigned int i = 0; i < items.size(); i++)
-        {
-            strItems << items.at(i) << ";";
-        }
-        errCode = OK;
-    }
-    else
-    {
-        errCode = NO_FLOW;
-    }
-
-    ///返回结果
-    std::vector<std::string> vecMsg;
-    vecMsg.clear();
-    vecMsg.push_back("get_runitems");
-    vecMsg.push_back(flowType);
-    vecMsg.push_back(errCode);
-    vecMsg.push_back(strItems.str());
-    std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
-    respond(strTemp);
+    respond(items.toStyledString());
 }
 
 
 void cmdDecode::exitTest(std::string flowType)
 {
+#if 0
     std::string errCode;
     try
     {
@@ -310,10 +293,12 @@ void cmdDecode::exitTest(std::string flowType)
     vecMsg.push_back(errCode);
     std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
     respond(strTemp);
+#endif
 }
 
 void cmdDecode::continueTest(std::string flowType)
 {
+#if 0
     std::string errCode;
     try
     {
@@ -343,10 +328,12 @@ void cmdDecode::continueTest(std::string flowType)
     vecMsg.push_back(errCode);
     std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
     respond(strTemp);
+#endif
 }
 
 void cmdDecode::suspendTest(std::string flowType)
 {
+#if 0
     std::string errCode;
     try
     {
@@ -376,23 +363,67 @@ void cmdDecode::suspendTest(std::string flowType)
     vecMsg.push_back(errCode);
     std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
     respond(strTemp);
+#endif
 }
-
-void cmdDecode::startTest(std::string flowType, std::string items)
+void cmdDecode::stopTest(const Json::Value &msg)
 {
     std::string errCode;
     try
     {
-        std::map<std::string, RunFlow*>::iterator it;
-        it = mFLows.find(flowType);
-        if(it!=mFLows.end())
+        std::string uuid = msg["record_uuid"].asString();
+
+        auto it = mFLowsObj.find(uuid);
+
+        if(it != mFLowsObj.end())
         {
-            if(!mFLows[flowType]->isRunning())
+            if(mFLowsObj[uuid]->isRunning())
             {
-                if(items.compare("all") == 0)
-                    mFLows[flowType]->runAllFlow();
-                else
-                    mFLows[flowType]->runFlow(items);
+                mFLowsObj[uuid]->exit();
+                errCode = OK;
+            }
+            else
+            {
+                errCode = NOT_RUNNING;
+            }
+        }
+        else
+        {
+            errCode = NO_FLOW;
+        }
+    }
+    catch(std::runtime_error err)
+    {
+        errCode = err.what();
+    }
+
+    ///返回结果
+    respond(resultMsg(STOP_TEST, errCode));
+}
+
+void cmdDecode::startTest(const Json::Value &msg)
+{
+    std::string errCode;
+
+    try
+    {
+        std::string uuid = msg["record_uuid"].asString();
+
+        auto it = mFLowsObj.find(uuid);
+
+        if(it != mFLowsObj.end())
+        {
+            if(!mFLowsObj[uuid]->isRunning())
+            {
+                std::string flowUuid = "";
+                std::string subFlowUuid = "";
+
+                if(!msg["flow_uuid"].isNull())
+                    flowUuid = msg["flow_uuid"].asString();
+
+                if(!msg["sub_flow_uuid"].isNull())
+                    subFlowUuid = msg["sub_flow_uuid"].asString();
+
+                mFLowsObj[uuid]->exe(flowUuid, subFlowUuid);
 
                 errCode = OK;
             }
@@ -412,17 +443,13 @@ void cmdDecode::startTest(std::string flowType, std::string items)
     }
 
     ///返回结果
-    std::vector<std::string> vecMsg;
-    vecMsg.clear();
-    vecMsg.push_back("start");
-    vecMsg.push_back(flowType);
-    vecMsg.push_back(errCode);
-    std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
-    respond(strTemp);
+
+    respond(resultMsg(START_TEST, errCode));
 }
 
 void cmdDecode::load(std::string flowType, std::string path)
 {
+#if 0
     std::string errCode;
     try
     {
@@ -461,6 +488,7 @@ void cmdDecode::load(std::string flowType, std::string path)
     vecMsg.push_back(errCode);
     std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
     respond(strTemp);
+#endif
 }
 void cmdDecode::initPrograme()
 {
@@ -471,123 +499,17 @@ void cmdDecode::initPrograme()
     {
         try
         {
-            ///初始化仿真模型
-            ///simulationModel::getInstance()->init("./cfgfile/simulationModel.xml");
+            paramsTable::getInstance();
+            virtualParams::getInstance();
 
-            ///初始化硬件设备配置
+            mAdpterManagerObj = std::make_shared<PfAdapter::PfAdapterManager>();
             mAdpterManagerObj->init("./cfgfile/logic_devcfg.xml");
 
-            RunFlow *tmpFlow = nullptr;
+            //将发送UI适配器加入管理
+            mAdpterManagerObj->setAdapter("UI", mCmdSendObj);
 
-            ///初始化正常流程
-            tmpFlow = new RunFlow();
-            tmpFlow->init("./cfgfile/flow.xml");
-            tmpFlow->setFlowType(NORMAL_FLOW);
-           //fjt
-            tmpFlow->setMsgObj(mCmdSendObj);
-
-            mFLows[NORMAL_FLOW] = tmpFlow;
-
-            ///初始化故障流程
-            //tmpFlow = new RunFlow();
-            //tmpFlow->init("./cfgfile/fault_flow.xml");
-            //tmpFlow->setFlowType(FAULT_FLOW);
-           //fjt tmpFlow->setMsgObj(mCmdSendObj);
-
-            //mFLows[FAULT_FLOW] = tmpFlow;
-
-#if 0
-            ///获取开关量/模拟量输入通信句柄
-            if (!equipment::getInstance()->getDevObj(QUERY_ID, &mAnalogSendObj))
-            {
-                strErr.str("");
-                strErr << "获取设备句柄失败 id=" << QUERY_ID;
-                UT_THROW_EXCEPTION(strErr.str());
-            }
-
-            ///启动开关量输入采集任务
-            mSwitchQueryTask = new switchQueryTask();
-            mSwitchQueryTask->setSendId(QUERY_ID);
-
-            std::vector<std::string> queryIds;
-            //queryIds.push_back("ff");
-
-            mSwitchQueryTask->setQueryIds(queryIds);
-
-            mSwitchQueryTask->startTask();
-
-
-            ///启动模拟量更新任务向UI更新数据
-            mUpdateAnalogTask = new updateAnalogTask();
-            mUpdateAnalogTask->setUpdateObj(mAnalogSendObj);
-
-            ///启动模拟量采集任务
-
-            std::vector<std::string> analogInIds;
-            ///TODO:设置模拟量采集ID
-            analogInIds.push_back("PXI6375_1");
-            analogInIds.push_back("PXI6375_2");
-            analogInIds.push_back("PXI6375_3");
-            analogInIds.push_back("PXI6375_4");
-
-            for(auto id : analogInIds)
-            {
-                analogInTask *analogTask = nullptr;
-
-                analogTask = new analogInTask();
-                ///connect(analogTask, &analogInTask::upDate, this, &cmdDecode::upDateAnalogInData);
-                connect(analogTask, &analogInTask::upDate, mUpdateAnalogTask, &updateAnalogTask::onUpdate);
-                analogTask->setDevId(id);
-                analogTask->startTask();
-                mAnalogInTasks.push_back(analogTask);
-            }
-
-            mUpdateAnalogTask->startTask();
-
-            ///启动模拟量输出任务
-            std::vector<std::vector<std::string>> analogOutIds;
-            ///TODO:设置输出ID,二维，线程达到最大值时分多个线程，需测试20191021
-
-            std::vector<std::string> id;
-            id.push_back("PXI6704_1");
-            id.push_back("PXI6704_2");
-            id.push_back("PXI6704_3");
-            id.push_back("PXI6704_4");
-            id.push_back("PXI6704_5");
-            id.push_back("PXI6704_6");
-            id.push_back("PXI6704_7");
-
-            std::vector<std::string> id1;
-            id1.push_back("PXI6704_8");
-            id1.push_back("PXI6704_9");
-            id1.push_back("PXI6704_10");
-            id1.push_back("PXI6704_11");
-            id1.push_back("PXI6704_12");
-            id1.push_back("PXI6704_13");
-            id1.push_back("PXI6704_14");
-
-            std::vector<std::string> id2;
-            id2.push_back("PXI6704_15");
-            id2.push_back("PXI6704_16");
-            id2.push_back("PXI6704_17");
-            id2.push_back("PXI6704_18");
-            id2.push_back("PXI6704_19");
-            id2.push_back("PXI6704_20");
-            id2.push_back("PXI6704_21");
-
-            analogOutIds.push_back(id);
-            analogOutIds.push_back(id1);
-            analogOutIds.push_back(id2);
-
-            for(auto ids : analogOutIds)
-            {
-                analogOutTask *task = new analogOutTask();
-                QObject::connect(this, &cmdDecode::setAnalogOut, task, &analogOutTask::setOutData);
-                task->setCardIds(ids);
-                task->startTask();
-                mAnalogOutTasks.push_back(task);
-            }
-#endif
+            mIcdFrameAdpter = std::make_shared<PfIcdWorkBench::icdFrameAdapter>();
+            mIcdFrameAdpter->init("./cfgfile/icd.xml");
         }
         catch(std::runtime_error err)
         {
@@ -604,4 +526,247 @@ void cmdDecode::initPrograme()
     vecMsg.push_back(errCode);
     std::string strTemp=PfCommon::cmdToJson::replyCtrlCmd(vecMsg);
     respond(strTemp);
+}
+
+void cmdDecode::initFlow(const Json::Value &msg)
+{
+    Json::Value flows = msg["flows"];
+    std::ostringstream errorInfo;
+    errorInfo.str("");
+
+    //清空之前流程
+
+    for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); )
+    {
+        (itor->second).reset();
+        mFLowsObj.erase(itor++);
+    }
+
+    //获取文件信息，并判断文件是否存在
+    std::vector<std::tuple<std::string, std::string>> flowFileInfo;
+
+    for(int index = 0; index < flows.size(); index++)
+    {
+        std::string uuid = flows[index].asString();
+        //从数据库中获取xml文件信息
+        Json::Value js = flowRecordTable::getInstance()->getValue(uuid);
+        if(!js.isNull())
+        {
+            std::string flowName = js[FLOW_RECORD_TABLE_FLOW_NAME].asString();
+            std::string time = js[FLOW_RECORD_TABLE_CREATE_TIME].asString();
+
+            std::string file = flowName + "_" + time + ".xml";
+
+            std::string path = "/cfgfile/" + file;
+
+            //校验文件是否存在
+
+            QString filePath = QDir::currentPath() + QString::fromStdString(path);
+
+            QFileInfo info(filePath);
+
+            if(!info.exists(filePath))
+            {
+                errorInfo << "[ERROR] file not exist : " << filePath.toStdString();
+                break;
+            }
+
+            flowFileInfo.push_back(std::make_tuple(uuid, filePath.toStdString()));
+        }
+        else
+        {
+            errorInfo << "[ERROR] get uuid(" << uuid << ")record faild";
+            break;
+        }
+    }
+
+    //初始化各流程部
+    if(errorInfo.str() == "")
+    {
+        for(auto info : flowFileInfo)
+        {
+            try
+            {
+                std::shared_ptr<flowManager> tmpFlow = std::make_shared<flowManager>();
+                tmpFlow->init(std::get<1>(info));
+                tmpFlow->setAdapterManager(mAdpterManagerObj.get());
+                tmpFlow->setIcdAdapter(mIcdFrameAdpter.get());
+                tmpFlow->setRecordUuid(std::get<0>(info));
+
+                mFLowsObj[std::get<0>(info)] = tmpFlow;
+            }
+            catch(std::runtime_error err)
+            {
+                errorInfo << err.what();
+                break;
+           }
+        }
+    }
+
+    //初始化之后，初始化各设备适配器
+    if(errorInfo.str() == "")
+    {
+        try
+        {
+            resetAdapter();
+        }
+        catch(std::runtime_error err)
+        {
+            errorInfo << err.what();
+        }
+    }
+
+    //上传结果
+
+    respond(resultMsg(INIT_FLOW, errorInfo.str()));
+}
+
+void cmdDecode::resetAdapter()
+{
+    std::ostringstream errInfo;
+
+    std::map<std::string, std::set<std::string>> adapters;
+
+    for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); itor++)
+    {
+        //获取记录UUID，通过记录UUID获取等效设备
+        std::string uuid = itor->first;
+
+        //获取各目的设备信息
+        std::set<std::string> tmpV;
+
+        Json::Value info = (itor->second)->getRunItems();
+
+        qDebug() << info.toStyledString().c_str();
+
+        for(int index = 0; index < info.size(); index++)
+        {
+            Json::Value subFlow = info[index]["sub_flow"];
+            for(int subIndex = 0; subIndex < subFlow.size(); subIndex++)
+            {
+                tmpV.insert(subFlow[subIndex]["dest_system_uuid"].asString());
+            }
+        }
+        adapters[uuid] = tmpV;
+    }
+
+    //初始化各系统
+
+    //step1:停止所有接收线程
+
+
+    //step2:清空之前所有
+    mAdpterManagerObj->deleteAll();
+
+    //step3:重新初始化各系统
+    for(auto itor = adapters.begin(); itor != adapters.end(); itor++)
+    {
+        std::string eqSysUuid = itor->first;
+
+        Json::Value devInfo;
+        getDevInfo(eqSysUuid, devInfo);
+
+        if(SYSTEM_INTERFACE_TABLE_UUID == devInfo["type"].asString())
+        {
+            if(mAdpterManagerObj->isExist(eqSysUuid))
+                continue;
+
+            //等效设备,源IP+PORT
+            Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::virtualUnicastAdapter();
+            Json::Value paramJs;
+
+            paramJs["type"] = "local";
+            paramJs["ip_addr"] = devInfo["ip_addr"];
+            paramJs["port"] = devInfo["port"];
+
+            dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(eqObj)->init(paramJs.toStyledString());
+
+            mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
+
+            //初始化各发送系统
+            auto sendSyss = itor->second;
+            for(auto send_uuid : sendSyss)
+            {
+                Json::Value sendInfo;
+                getDevInfo(send_uuid, sendInfo);
+
+                if(SYSTEM_INTERFACE_TABLE_UDP == sendInfo["type"].asString())
+                {
+                    if(mAdpterManagerObj->isExist(send_uuid))
+                        continue;
+
+                    Pf::PfAdapter::Adapter *tmpObj = new Pf::PfAdapter::virtualUnicastAdapter();
+                    Json::Value paramJs;
+
+                    paramJs["type"] = "dst";
+                    paramJs["ip_addr"] = sendInfo["ip_addr"];
+                    paramJs["port"] = sendInfo["port"];
+
+                    dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(tmpObj)->init(paramJs.toStyledString());
+                    dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(tmpObj)->setUdpOpt(dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(eqObj)->getUdpOpt());
+
+                    mAdpterManagerObj->setAdapter(send_uuid, tmpObj);
+                }
+            }
+        }
+    }
+
+}
+
+void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
+{
+    std::ostringstream errInfo;
+
+    //获取系统表中的DEV_TYPE、DEV_UUID字段
+    Json::Value tmpV = sysInterfaceTable::getInstance()->getValue(sys_uuid);
+    if(!tmpV.isNull())
+    {
+        std::string type = tmpV[SYSTEM_INTERFACE_TABLE_DEV_TYPE].asString();
+        std::string devUuid = tmpV[SYSTEM_INTERFACE_TABLE_DEV_UUID].asString();
+
+        info["type"] = type;
+
+        if(SYSTEM_INTERFACE_TABLE_UDP == type)//网络
+        {
+            //获取网络IP、PORT
+            Json::Value udpJs = udpTable::getInstance()->getValue(devUuid);
+            if(!udpJs.isNull())
+            {
+                info["ip_addr"] = udpJs[UDP_TABLE_IP_ADDR].asString();
+                info["port"] = udpJs[UDP_TABLE_PORT].asInt();
+            }
+            else
+            {
+                errInfo << "[ERROR] system_table:" << sys_uuid << "，DEV_UUID:" << devUuid
+                        << ", udp_table not find ";
+
+                THROW_EXCEPTION(errInfo.str());
+            }
+        }
+        else
+        {
+            errInfo << "[ERROR] system_table:" << sys_uuid << "，unknown type:" << type;
+
+            THROW_EXCEPTION(errInfo.str());
+        }
+    }
+    else
+    {
+        errInfo << "[ERROR] not find system_table:" << sys_uuid << "，record!";
+
+        THROW_EXCEPTION(errInfo.str());
+    }
+}
+
+std::string cmdDecode::resultMsg(std::string type, const std::string &msg)
+{
+    Json::Value objJs;
+    objJs["msgType"] = type;
+
+    Json::Value msgJs;
+    msgJs["result"] = msg;
+
+    objJs["msg"] = msgJs;
+
+    return objJs.toStyledString();
 }

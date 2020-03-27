@@ -44,7 +44,7 @@ namespace Pf
             mInfoType(-1)
         {
             mInfoLen = 12;
-            mInfoType = 0x1;
+            mInfoType = InfoWord_One;
         }
 
         std::shared_ptr<infoConf> infoWord1Conf::clone()
@@ -71,15 +71,14 @@ namespace Pf
             return res;
         }
 
-
         /***********信息字2***************/
 
         infoWord2Conf::infoWord2Conf():
             mInfoLen(0),
             mInfoType(-1)
         {
-            mInfoLen = 12;
-            mInfoType = 0x3;
+            mInfoLen = 6;
+            mInfoType = InfoWord_Two;
         }
 
         std::shared_ptr<infoConf> infoWord2Conf::clone()
@@ -93,10 +92,44 @@ namespace Pf
 
         void infoWord2Conf::init(QXlsx::Worksheet *sheet)
         {
-
+            //TODO Excel配置
         }
 
         bool infoWord2Conf::getInfoLen(const unsigned char *msg, const int &msgSize, int &len)
+        {
+            bool res = false;
+            len = mInfoLen;
+            res = true;
+
+            return res;
+        }
+
+
+        /***********信息字3***************/
+
+        infoWord3Conf::infoWord3Conf():
+            mInfoLen(0),
+            mInfoType(-1)
+        {
+            mInfoLen = 12;
+            mInfoType = InfoWord_Three;
+        }
+
+        std::shared_ptr<infoConf> infoWord3Conf::clone()
+        {
+            infoWord3Conf *obj = new infoWord3Conf();
+
+            std::shared_ptr<infoConf> tmp(obj);
+
+            return tmp;
+        }
+
+        void infoWord3Conf::init(QXlsx::Worksheet *sheet)
+        {
+
+        }
+
+        bool infoWord3Conf::getInfoLen(const unsigned char *msg, const int &msgSize, int &len)
         {
             bool res = false;
             int typeIndex = 6;

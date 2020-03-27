@@ -16,7 +16,6 @@ void Condition::init(const TiXmlElement *xmlEle)
 {
     const TiXmlElement *pTmpElem = NULL;
     const char *point = nullptr;
-
     pTmpElem = xmlEle->FirstChildElement("v");
     if (pTmpElem)
     {
@@ -33,8 +32,7 @@ void Condition::init(const TiXmlElement *xmlEle)
             strCalc = pTmpElem->GetText();
     }
 
-    ///校验 v 格式
-
+    ///校验 v 引用格式是否正确
     std::string lev1, lev2, lev3, var, v;
     if(!data::getIndexFromV(strV, lev1, lev2, lev3, var, v))
     {
@@ -46,10 +44,10 @@ void Condition::init(const TiXmlElement *xmlEle)
     }
 
     ///校验Calc格式
-    if(!data::isBeyondSymboolOk(strCalc))
-    {
-        THROW_EXCEPTION("Calc(" + strCalc + ")格式异常!!");
-    }
+   // if(!data::isBeyondSymboolOk(strCalc))
+   // {
+   //     THROW_EXCEPTION("Calc(" + strCalc + ")格式异常!!");
+   // }
 }
 bool Condition::exec()
 {

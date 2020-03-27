@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-
+#include <chrono>
 
 namespace Pf
 {
@@ -50,7 +50,7 @@ namespace Pf
         {
             std::ostringstream strErr;
             bool Res = false;
-            int sendLen = mSocket->writeDatagram((char*)u8Msg,QHostAddress(remoteip),sendPort.toInt());
+            int sendLen = mSocket->writeDatagram((char*)u8Msg, u32MsgLen, QHostAddress(remoteip),sendPort.toInt());
             if(sendLen != u32MsgLen)
             {                
                 Res = false;
@@ -66,14 +66,28 @@ namespace Pf
         {
             int RecvLen = 0;
 
+            auto beginTime = std::chrono::high_resolution_clock::now();
+
             bool bRes = false;
             QByteArray baRecv;
-            while(mSocket->hasPendingDatagrams())
+            while(1)
             {
-                baRecv.resize(mSocket->pendingDatagramSize());
-                RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size());
-                *u32MsgLen = RecvLen;
-                bRes = true;
+                if(mSocket->hasPendingDatagrams())
+                {
+                    baRecv.resize(mSocket->pendingDatagramSize());
+                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size());
+                    *u32MsgLen = RecvLen;
+                    bRes = true;
+                    break;
+                }
+
+                auto endTime = std::chrono::high_resolution_clock::now();
+                auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
+
+                if(elapsedTime.count() >= u32TimeOut)   //超时退出
+                {
+                    break;
+                }
             }
             return bRes;
         }

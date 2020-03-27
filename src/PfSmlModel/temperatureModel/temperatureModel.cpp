@@ -3,7 +3,8 @@
 #include <iostream>
 #include <QDebug>
 
-      temperatureModel::temperatureModel()
+      temperatureModel::temperatureModel():
+          mTpType(Rising)
       {
       }
 
@@ -77,7 +78,16 @@
               }
           }
 
-
+          if(mTpType == Rising)
+          {
+              mCurValue = mMinValue;
+              mCurValue /= unitConver;
+          }
+          else if(mTpType == Falling)
+          {
+              mCurValue = mMaxValue;
+              mCurValue /= unitConver;
+          }
       }
 
       void temperatureModel::init(std::initializer_list<double> params)

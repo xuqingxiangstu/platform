@@ -62,6 +62,20 @@ namespace Pf
              * @param[in] obj 句柄
              */
             void setAdapter(const std::string &id, Adapter *adpter);
+
+            /**
+             * @brief isExist   查看ID是否存在
+             * @param[in] id 设备ID
+             * @return  是否成功
+             * - true：成功
+             * - false：失败
+             */
+            bool isExist(const std::string &id);
+
+            /**
+             * @brief deleteAll 删除所有,除UI外
+             */
+            void deleteAll();
         private:
             std::unordered_map<std::string, std::shared_ptr<Adapter>> mManagement; ///<  适配器管理
         };

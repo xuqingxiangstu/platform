@@ -44,8 +44,14 @@ namespace Pf
             void simulation(byteArray &outValue, const std::string &json) override;
             //void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
             std::string parse(const unsigned char *inBuf, const unsigned int inSize) override;
-
+            void resendMsg(byteArray &outValue) override;
         private:
+            /**
+             * @brief fillRegion    BE帧格式2域填充
+             * @param[out] outValue  输出值
+             * @param[in] jsValue  输入
+             */
+            void fillRegion(byteArray &outValue, const Json::Value &jsValue);
             void fillData(byteArray &outValue, infoWordRegion *region, infoConf *conf, const Json::Value &jsValue);
             /**
              * @brief getHeadAndWord    获取帧头及信息字
@@ -53,7 +59,7 @@ namespace Pf
              * @param head 帧头
              * @param words 信息字
              */
-            void getHeadAndWord(const std::string &json, Json::Value &head, Json::Value &words);
+            void getHeadAndWord(const std::string &json, Json::Value &head, Json::Value &words, Json::Value &regionJson, Json::Value &resendJson);
             /**
              * @brief _simFrame  全帧仿真
              * @param outValue  仿真数据
@@ -61,7 +67,9 @@ namespace Pf
              * @param infoWordType 信息字类型
              * @param wordsValue 信息字内容
              */
-            void _simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue);
+            void _simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack);
+
+
 
             //void _simulation(const infoWordRegion *region, byteArray &outValue, const std::vector<icdInValueType> inValue = {});
             /**
@@ -86,7 +94,7 @@ namespace Pf
              */
             void _parseInfo(const infoWordRegion *region, const unsigned char *inBuf, const unsigned int inSize, Json::Value &value);
 
-
+            void _parseRegion(const Json::Value &wordJsons, const unsigned char *inBuf, const unsigned int inSize, Json::Value &value);
         private:
             /**
              * @brief initFrameCfg  初始化帧配置(Excel)
