@@ -5,6 +5,12 @@
 
 #include "../src/PfCommon/jsoncpp/json.h"
 
+/*************帧类型属性********************/
+#define PROPERTY_FRAME  "帧类型"
+#define PROPERTY_FRAME_BE   "BE"
+#define PROPERTY_FRAME_FE   "FE"
+#define PROPERTY_FRAME_93   "93"
+
 /*************记录属性********************/
 #define PROPERTY_RECORD_NAME    "名称"
 #define PROPERTY_RECORD_CREATE_TIME "创建时间"
@@ -17,6 +23,9 @@
 #define PROPERTY_SYS_TYPE   "系统类型"
 
 /*************信源属性********************/
+#define PROPERTY_SRC    "信源属性"
+#define PROPERTY_DST    "信宿属性"
+
 #define PROPERTY_SRC_SYS_TYPE   "系统类型"
 #define PROPERTY_SRC_SYS_CODING "系统编码"
 #define PROPERTY_SRC_NODE_CODING    "节点编码"

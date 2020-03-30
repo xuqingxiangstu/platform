@@ -41,6 +41,8 @@ signals:
 
     void toShowProperty(Json::Value);
 
+    void setGroupPropertyEnable(QString propertyName, bool isEnable);
+
     /**
      * @brief saveProject   保存某个工程
      * @param item  记录item

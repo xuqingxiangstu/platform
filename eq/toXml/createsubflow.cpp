@@ -1,5 +1,4 @@
 #include "createsubflow.h"
-
 #include "../dragTree/dragrole.h"
 #include <QUuid>
 #include <QDebug>
@@ -30,30 +29,54 @@ TiXmlElement *createEquivalent::element(nodeProperty *node)
         }
     }
 
-    //系统类型
-    Json::Value sysTypeJs;
-    node->getProperty(PROPERTY_SRC_SYS_TYPE, sysTypeJs);
-    if(!sysTypeJs.isNull())
+    //帧类型
+    Json::Value frameTypeJs;
+    std::string type;
+    node->getProperty(PROPERTY_FRAME, frameTypeJs);
+    if(!frameTypeJs.isNull())
     {
-        eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_TYPE_ELEMENT, sysTypeJs.asString()));
+        type = frameTypeJs.asString();
+
+        eqEle->LinkEndChild(createTextElement(EQ_FRAME_TYPE, frameTypeJs.asString()));
     }
 
-
-    //系统编码
-    Json::Value sysCodeJs;
-    node->getProperty(PROPERTY_SRC_SYS_CODING, sysCodeJs);
-    if(!sysCodeJs.isNull())
+    if(PROPERTY_FRAME_BE == type)
     {
-        eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_CODE_ELEMENT, sysCodeJs.asString()));
+        //系统类型
+        Json::Value sysTypeJs;
+        node->getProperty(PROPERTY_SRC_SYS_TYPE, sysTypeJs);
+        if(!sysTypeJs.isNull())
+        {
+            eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_TYPE_ELEMENT, sysTypeJs.asString()));
+        }
+
+
+        //系统编码
+        Json::Value sysCodeJs;
+        node->getProperty(PROPERTY_SRC_SYS_CODING, sysCodeJs);
+        if(!sysCodeJs.isNull())
+        {
+            eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_CODE_ELEMENT, sysCodeJs.asString()));
+        }
+
+
+        //节点编码
+        Json::Value nodeCodeJs;
+        node->getProperty(PROPERTY_SRC_NODE_CODING, nodeCodeJs);
+        if(!nodeCodeJs.isNull())
+        {
+            eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_NODE_CODE_ELEMENT, nodeCodeJs.asString()));
+        }
     }
-
-
-    //节点编码
-    Json::Value nodeCodeJs;
-    node->getProperty(PROPERTY_SRC_NODE_CODING, nodeCodeJs);
-    if(!nodeCodeJs.isNull())
+    else if(PROPERTY_FRAME_FE == type)
     {
-        eqEle->LinkEndChild(createTextElement(EQ_SRC_NODE_CODE_ELEMENT, nodeCodeJs.asString()));
+        //源节点
+        Json::Value sysTypeJs;
+        node->getProperty(PROPERTY_SRC_SYS_TYPE, sysTypeJs);
+        if(!sysTypeJs.isNull())
+        {
+            eqEle->LinkEndChild(createTextElement(EQ_FE_HEAD_SRC_NODE, sysTypeJs.asString()));
+        }
     }
 
 
@@ -349,6 +372,28 @@ TiXmlElement *createSubFlow::createDataFieldsElement(nodeProperty *node, std::ve
 TiXmlElement *createSubFlow::createHeadElement(nodeProperty *node, std::vector<nodeProperty *>subNode)
 {
     TiXmlElement *headEle = new TiXmlElement(HEAD_ELEMENT);
+
+    Json::Value srcSysType;
+    node->getProperty(PROPERTY_SRC_SYS_TYPE, srcSysType);
+    if(!srcSysType.isNull())
+    {
+        headEle->LinkEndChild(createTextElement(EQ_SRC_DST_TYPE_ELEMENT, srcSysType.asString()));
+    }
+
+    Json::Value srcSysCode;
+    node->getProperty(PROPERTY_SRC_SYS_CODING, srcSysCode);
+    if(!srcSysCode.isNull())
+    {
+        headEle->LinkEndChild(createTextElement(EQ_SRC_DST_CODE_ELEMENT, srcSysCode.asString()));
+    }
+
+    Json::Value srcNodeCode;
+    node->getProperty(PROPERTY_SRC_NODE_CODING, srcNodeCode);
+    if(!srcNodeCode.isNull())
+    {
+        headEle->LinkEndChild(createTextElement(EQ_SRC_DST_NODE_CODE_ELEMENT, srcNodeCode.asString()));
+    }
+
     return headEle;
 }
 

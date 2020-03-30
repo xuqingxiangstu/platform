@@ -116,6 +116,12 @@ void propertyWidget::showProperty(Json::Value value)
     //更新仿真变化
     updateSimChange();
 
+    //恢复长时间属性
+    for(auto itor = mUserSetGroupProperty.begin(); itor != mUserSetGroupProperty.end(); itor++)
+    {
+        setGroupPropertyEnable(itor.key(), itor.value());
+    }
+
     isUpDate = true;
 }
 
@@ -350,6 +356,20 @@ void propertyWidget::onBoolValueChanged(QtProperty *property, bool val)
 #endif
 }
 
+void propertyWidget::setGroupPropertyEnable(QString propertyName, bool isEnable)
+{
+    foreach(QtProperty *pro, mGroupManager->properties())
+    {
+        if( (pro->propertyName().compare(propertyName) == 0))
+        {
+            pro->setEnabled(isEnable);
+            break;
+        }
+    }
+
+    mUserSetGroupProperty[propertyName] = isEnable;
+}
+
 void propertyWidget::updateSimChange()
 {
     foreach(QtProperty *pro, mEnumManager->properties())
@@ -359,6 +379,40 @@ void propertyWidget::updateSimChange()
             std::string type = pro->valueText().toStdString();
 
             setChange(type);
+        }
+#if 0
+        if(pro->propertyName().compare(PROPERTY_FRAME) == 0)
+        {
+            std::string type = pro->valueText().toStdString();
+
+            setFrameChange(type);
+        }
+#endif
+    }
+}
+
+void propertyWidget::setFrameChange(const std::string &type)
+{
+    if(PROPERTY_FRAME_BE == type)
+    {
+        foreach(QtProperty *pro, mGroupManager->properties())
+        {
+            if( (pro->propertyName().compare(PROPERTY_SRC) == 0))
+            {
+                pro->setEnabled(true);
+                break;
+            }
+        }
+    }
+    else if((PROPERTY_FRAME_FE == type) || (PROPERTY_FRAME_93 == type))
+    {
+        foreach(QtProperty *pro, mGroupManager->properties())
+        {
+            if( (pro->propertyName().compare(PROPERTY_SRC) == 0))
+            {
+                pro->setEnabled(false);
+                break;
+            }
         }
     }
 }
@@ -442,7 +496,15 @@ void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
 
         setChange(type);
     }
+#if 0
+    //选择帧类型时管理属性
+    if(property->propertyName().compare(PROPERTY_FRAME) == 0)
+    {
+        std::string type = mEnumManager->enumNames(property).at(val).toStdString();
 
+        setFrameChange(type);
+    }
+#endif
     if(isUpDate)
     {
         emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());

@@ -59,6 +59,13 @@ public slots:
     void onEnumValueChanged(QtProperty *property, int val);
 
     void onPropertyChange(QtProperty *property);
+
+    /**
+     * @brief setGroupPropertyEnable    设置组是否使能
+     * @param propertyName  属性组名称
+     * @param isEnable      是否使能
+     */
+    void setGroupPropertyEnable(QString propertyName, bool isEnable);
 signals:
     void valueChange(QString attr, Json::Value val);
 private:
@@ -75,6 +82,12 @@ private:
     void updateSimChange();
 
     void setChange(std::string type);
+
+    /**
+     * @brief setFrameChange    帧类型选择变化
+     * @param type
+     */
+    void setFrameChange(const std::string &type);
 private:
     QtAbstractPropertyBrowser *mEditorProperty; //属性树
     QtGroupPropertyManager *mGroupManager; //组管理
@@ -85,6 +98,8 @@ private:
     QtDoublePropertyManager *mDoubleManager;//浮点管理
 
     bool isUpDate;
+private:
+    QMap<QString, bool> mUserSetGroupProperty;  //用户设置属性（作用域为软件活动时间）
 private:
     Ui::propertyWidget *ui;
 

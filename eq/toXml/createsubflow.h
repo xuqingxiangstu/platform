@@ -13,9 +13,22 @@
 //等效
 #define EQ_ELEMENT              "equivalent"
 #define EQ_SYSTEM_UUID_ELEMENT  "system_uuid"
+
+#define EQ_FRAME_TYPE   "frameType"
+
 #define EQ_SRC_SYS_TYPE_ELEMENT "head_src_sys_type"
 #define EQ_SRC_SYS_CODE_ELEMENT "head_src_sys_code"
-#define EQ_SRC_NODE_CODE_ELEMENT "head_src_node_code"
+#define EQ_SRC_SYS_NODE_CODE_ELEMENT "head_src_node_code"
+
+#define EQ_SRC_DST_TYPE_ELEMENT     "head_dst_sys_type"
+#define EQ_SRC_DST_CODE_ELEMENT     "head_dst_sys_code"
+#define EQ_SRC_DST_NODE_CODE_ELEMENT "head_dst_node_code"
+
+#define EQ_HEAD_FRAME_TYPE_ELEMENT       "head_frame_type"
+
+//FE帧源节点，目的节点
+#define EQ_FE_HEAD_SRC_NODE         "head_src_node"
+#define EQ_FE_HEAD_DST_NODE         "head_dst_node"
 
 //流程
 

@@ -330,6 +330,22 @@ void recordNavigation::onPropertyValueChange(QString attr, Json::Value value)
     recordRole role = curItem->data(0, Qt::UserRole).value<recordRole>();
     role.mNodeProperty->setProperty(attr.toStdString(), value);
 
+    if(attr.compare(PROPERTY_FRAME) == 0)
+    {
+        std::string type = value.asString();
+        if(type == PROPERTY_FRAME_BE)
+        {
+            emit setGroupPropertyEnable(PROPERTY_DST,true);
+            emit setSelfGroupPropertyEnable(PROPERTY_SRC, true);
+        }
+        else
+        {
+            emit setGroupPropertyEnable(PROPERTY_DST, false);
+            emit setSelfGroupPropertyEnable(PROPERTY_SRC, false);
+        }
+
+    }
+
     onProjectModify(role.uuid.c_str());
 }
 
@@ -385,15 +401,31 @@ void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
         {
             mCurSelectUuid = role.uuid.c_str();
 
-            //属性变化
-            emit toShowProperty(role.mNodeProperty->getJson());
-
             emit flowChange(item->parent()->text(Name_Index), role.sysType, item->text(Name_Index),mCurSelectUuid, mNewUuid.contains(mCurSelectUuid));
         }
     }
 
     //属性变化
     emit toShowProperty(role.mNodeProperty->getJson());
+
+    //更新帧类型属性框
+    Json::Value frameJs;
+    role.mNodeProperty->getProperty(PROPERTY_FRAME, frameJs);
+    if(!frameJs.isNull())
+    {
+        std::string type = frameJs.asString();
+
+        if(type == PROPERTY_FRAME_BE)
+        {
+            emit setGroupPropertyEnable(PROPERTY_DST, true);
+            emit setSelfGroupPropertyEnable(PROPERTY_SRC, true);
+        }
+        else
+        {
+            emit setGroupPropertyEnable(PROPERTY_DST, false);
+            emit setSelfGroupPropertyEnable(PROPERTY_SRC, false);
+        }
+    }
 }
 
 

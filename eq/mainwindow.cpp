@@ -35,14 +35,21 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mNavigationPropertyObj = new propertyWidget();
     ui->navigationProptertyVerticalLayout->addWidget(mNavigationPropertyObj);
+
     connect(mRecordNavigationObj, &recordNavigation::toShowProperty, mNavigationPropertyObj, &propertyWidget::showProperty);
+
+    connect(mRecordNavigationObj, &recordNavigation::setSelfGroupPropertyEnable, mNavigationPropertyObj, &propertyWidget::setGroupPropertyEnable);
     connect(mNavigationPropertyObj, &propertyWidget::valueChange, mRecordNavigationObj, &recordNavigation::onPropertyValueChange);
+
 
     mRecordNavigationObj->buildTree();
     ui->navigationVerticalLayout->addWidget(mRecordNavigationObj);
 
     mPropertyWidgetObj = new propertyWidget();
     ui->propertyWidgetHorizontalLayout->addWidget(mPropertyWidgetObj);
+
+
+    connect(mRecordNavigationObj, &recordNavigation::setGroupPropertyEnable, mPropertyWidgetObj, &propertyWidget::setGroupPropertyEnable);
 
     connect(mPropertyWidgetObj, &propertyWidget::valueChange, this, &MainWindow::valueChange);
     connect(this, &MainWindow::toShowProperty, mPropertyWidgetObj, &propertyWidget::showProperty);

@@ -69,6 +69,10 @@ signals:
 
 
     void toShowProperty(Json::Value);
+
+    void setSelfGroupPropertyEnable(QString propertyName, bool isEnable);
+
+    void setGroupPropertyEnable(QString propertyName, bool isEnable);
 public:
     void buildTree();
 
