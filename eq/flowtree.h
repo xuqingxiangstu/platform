@@ -27,7 +27,7 @@ class flowTree : public QWidget
         Dest_Dev_Index
     };
 public:
-    explicit flowTree(QString uuid, QWidget *parent = 0);
+    explicit flowTree(QString uuid, int sysType = 0, QWidget *parent = 0);
     ~flowTree();
 public slots:
     void onDropDrag(QTreeWidgetItem *parentItem, QTreeWidgetItem *curItem, QTreeWidgetItem *dropItem, bool isFrontInsert);
@@ -37,10 +37,10 @@ public slots:
     void onPropertyValueChange(QString attr, Json::Value value);
 
     /**
-     * @brief updateProject 根据UUID读取文件并显示
+     * @brief onUpdateProject 根据UUID读取文件并显示
      * @param uuid
      */
-    void updateProject();
+    void onUpdateProject(QString uuid);
 
     /**
      * @brief setSystemAndProductName   设置系统及测试项目名称
@@ -51,16 +51,54 @@ public slots:
 
     /**
      * @brief saveProject   保存工程
+     * @param uuid
      */
-    void saveProject();
+    void onSaveProject(QTreeWidgetItem *item);
+
+    /**
+     * @brief setFlowItemValue  设置流程ITEM值
+     * @param role  值
+     */
+    void setFlowItemValue(std::shared_ptr<dragRole> role);
+
+    /**
+     * @brief setSubFlowItemValue   设置子流程ITEM值
+     * @param flowUuid  流程UUID
+     * @param role  值
+     */
+    void setSubFlowItemValue(QString flowUuid, std::shared_ptr<dragRole> role);
+
+    /**
+     * @brief setCmdItemValue   设置指令ITEM值
+     * @param flowUuid          流程UUID
+     * @param subFlowUuid       子流程UUID
+     * @param role          值
+     */
+    void setCmdItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role);
+
+    /**
+     * @brief setParamItemValue 设置参数ITEM值
+     * @param flowUuid          流程UUID
+     * @param subFlowUuid       子流程UUID
+     * @param role          值
+     * @param subRole       子值
+     */
+    void setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRole);
 signals:
     void toShowProperty(Json::Value);
+
+    void updateProperty(QString propertyName, Json::Value value);
 
     /**
      * @brief projectModify
      * @param 工程修改触发
      */
     void projectModify(QString uuid);
+
+    /**
+     * @brief saveProjectOver   保存结束
+     */
+    void saveProjectOver(QString uuid);
 private:
     /**
      * @brief newItem   新创建Item
@@ -75,12 +113,39 @@ private:
     void onMenuTrigger(QAction * action);
 
     void onActionTestSend(QTreeWidgetItem *);
+
+    /**
+     * @brief getItemSize   获取item总数
+     * @param curWidget     树句柄
+     * @return  总数
+     */
+    int getItemSize(QTreeWidget *curWidget);
+
+    /**
+     * @brief findItem  根据Uuid查找item
+     * @param uuid
+     * @return
+     */
+    QTreeWidgetItem *findItem(QString uuid);
+
+    /**
+     * @brief updateCmdOrParamGroupItemValue   更指令或参数组节点相关值
+     * @param role  数据
+     */
+    void updateCmdOrParamGroupItemValue(QTreeWidgetItem *item, std::shared_ptr<dragRole> role);
+
+    /**
+     * @brief updateParamItemValue   更参数节点相关值
+     * @param role  数据
+     */
+    void updateParamItemValue(QTreeWidgetItem *item, std::shared_ptr<dragRole> role);
 private:
     QMenu *mPopMenu;
     QPoint mRightMousePoint;
-    QTreeWidgetItem *mCurItem;
-    bool mIsModify; //是否修改
+    QTreeWidgetItem *mCurItem;    
     QString mCurProjectUuid;    //当前工程uuid
+    int mCurSystemType;         //当前系统类型
+    bool mIsUpdateTree;         //是否更新树
 private:
     Ui::flowTree *ui;
 };

@@ -189,11 +189,40 @@ std::shared_ptr<nodeProperty> nodeProperty::clone()
         tmp->mProperty.push_back(pro->clone());
     }
 
-    tmp->mTableNum = mTableNum;
-    tmp->mCodingNum = mCodingNum;
+    //tmp->mTableNum = mTableNum;
+    //tmp->mCodingNum = mCodingNum;
 
     return std::shared_ptr<nodeProperty>(tmp);
 }
+
+void nodeProperty::setTableNum(int table)
+{
+    mDefalultProperty["table"] = table;
+}
+
+int nodeProperty::tableNum()
+{
+    Json::Value tmpJs = mDefalultProperty["table"];
+    if(tmpJs.isNull())
+        return 0;
+
+    return tmpJs.asInt();
+}
+
+int nodeProperty::codingNum()
+{
+    Json::Value tmpJs = mDefalultProperty["coding"];
+    if(tmpJs.isNull())
+        return 0;
+
+    return tmpJs.asInt();
+}
+
+void nodeProperty::setCodingNum(int coding)
+{
+    mDefalultProperty["coding"] = coding;
+}
+
 
 Json::Value nodeProperty::getJson()
 {

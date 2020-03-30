@@ -210,6 +210,8 @@ void templateTree::initConditionValue()
         noJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = -1;
         noJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = -1;
 
+        mConditionCurValue = noJs;
+
         mConditionInitValue.append(noJs);
 
         for(int index = 0; index < cmdJs.size(); index++)
@@ -219,9 +221,6 @@ void templateTree::initConditionValue()
             tmpJs[PROPERTY_CONDITION_VALUE_NAME] = cmdJs[index][PARAM_TABLE_PARAM_NAME];
             tmpJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = cmdJs[index][PARAM_TABLE_TABLE_NUM];
             tmpJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = cmdJs[index][PARAM_TABLE_CODING_NUM];
-
-            if(mConditionCurValue.isNull())
-                mConditionCurValue = tmpJs;
 
             mConditionInitValue.append(tmpJs);
         }
@@ -256,7 +255,7 @@ void templateTree::initDestDevInitValue()
             if(mDestDevCurValue.isNull())
                 mDestDevCurValue = tmpJs;
         }
-    }
+    } 
 }
 
 void templateTree::updateConditionInit(dragRole *role)

@@ -5,13 +5,30 @@
 
 #include "../src/PfCommon/jsoncpp/json.h"
 
+/*************记录属性********************/
+#define PROPERTY_RECORD_NAME    "名称"
+#define PROPERTY_RECORD_CREATE_TIME "创建时间"
+#define PROPERTY_RECORD__OPEN_TIME  "最近打开时间"
+#define PROPERTY_RECORD__NODE       "备注"
+#define PROPERTY_RECORD_DEV_SEL     "接口选择"
+
+/*************系统属性********************/
+#define PROPERTY_SYS_NAME   "名称"
+#define PROPERTY_SYS_TYPE   "系统类型"
+
+/*************信源属性********************/
+#define PROPERTY_SRC_SYS_TYPE   "系统类型"
+#define PROPERTY_SRC_SYS_CODING "系统编码"
+#define PROPERTY_SRC_NODE_CODING    "节点编码"
+
+
 /*************属性宏定义**********************/
 #define PROPERTY_DESCRIBE           "describe"  //描述
 #define PROPERTY_START_CONDITION    "startCondition"
 #define PROPERTY_DELAY              "delay"
 #define PROPERTY_TIMING             "timing"
 #define PROPERTY_STOP_CONDITION     "stopCondition"
-#define PROPERTY_DESTDEVICE         "destDevice"
+#define PROPERTY_DESTDEVICE         "接口选择"
 #define PROPERTY_SIM_MODEL          "simulationModel"
 #define PROPERTY_FIX_VALUE          "fixValue"
 #define PROPERTY_RAND_MIN           "rand_min"
@@ -115,11 +132,11 @@ public:
     void setProperty(const std::string &name, const Json::Value &value);
     void getProperty(const std::string &name, Json::Value &value);
 
-    void setTableNum(int table){mTableNum = table;}
-    int tableNum(){return mTableNum;}
+    void setTableNum(int table);
+    int tableNum();
 
-    void setCodingNum(int coding){mCodingNum = coding;}
-    int codingNum(){return mCodingNum;}
+    void setCodingNum(int coding);
+    int codingNum();
 
     /**
      * @brief getKey    获取关键字（cmd 、param、param_group）
@@ -128,9 +145,7 @@ public:
     std::string getKey();
     Json::Value getJson();
 private:
-    Json::Value mDefalultProperty;
-    int mTableNum;
-    int mCodingNum;
+    Json::Value mDefalultProperty;    
     std::vector<std::shared_ptr<property>> mProperty;
 };
 

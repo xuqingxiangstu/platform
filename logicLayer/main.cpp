@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
         decode.initPrograme();
 
         Json::Value tmp;
-        tmp.append("1");
+        tmp.append("{f1bd7b8b-143b-4840-9049-07292dc80b2e}");
         Json::Value fJs;
         fJs["flows"] = tmp;
         decode.initFlow(fJs);

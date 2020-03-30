@@ -99,6 +99,38 @@ bool systemTable::getDevDescribe(QSqlRecord systemRec,QString &Describe,QString 
      return result;
  }
 
+Json::Value systemTable::getSysInfoByUuid(const std::string &uuid)
+{
+    Json::Value value;
+    bool Ok = false;
+    QString sql = "SELECT * from " + mTableName + " where " + SYSTEM_TABLE_UUID + "=\"";
+    sql += QString::fromStdString(uuid);
+    sql += "\"";
+
+    QSqlQuery query(sql, mDb);
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+    {
+        rec = query.record();
+
+        for(int index = 0; index < rec.count(); index++)
+        {
+            QVariant::Type type = query.record().field(index).type();
+            if(QVariant::Int == type)
+            {
+                value[rec.fieldName(index).toStdString()] = rec.value(index).toInt(&Ok);
+            }
+            else
+            {
+                value[rec.fieldName(index).toStdString()] = rec.value(index).toString().toStdString();
+            }
+        }
+    }
+
+    return value;
+}
+
 Json::Value systemTable::getSysGroups()
 {
     Json::Value value;

@@ -63,6 +63,8 @@ void propertyWidget::showProperty(Json::Value value)
     qDebug() << value.toStyledString().c_str();
 #endif
     Json::Value propertyJs = value["property"];
+    if(propertyJs.isNull())
+        return ;
     for(int index = 0; index < propertyJs.size(); index++)
     {
         Json::Value groupJs = propertyJs[index];
@@ -86,7 +88,7 @@ void propertyWidget::showProperty(Json::Value value)
 
             if(PROPERTY_INT == type)
             {
-                item = createIntProperty(isReadOnly, attr, initValue, curValue);
+                item = createIntProperty(isReadOnly, attr, initValue, curValue, nodeJs[nodeIndex]["minValue"], nodeJs[nodeIndex]["maxValue"]);
             }
             else if(PROPERTY_DOUBLE == type)
             {
@@ -173,7 +175,29 @@ QtProperty *propertyWidget::createEnumProperty(const bool &isReadOnlay, const st
         v = curValue.asString();
 
     QStringList listName;
+    QMap<int, QVariant> enumDatas;
+/*
+ * QMap<int, QVariant> enumDatas;
 
+    for(int index = 0; index < initValue.size(); index++)
+    {
+        std::string tmp = initValue[index][TRIGGER_NAME].asString();
+
+        if(!curValue.isNull())
+        {
+            if(initValue[index] == curValue)
+            {
+                curIndex = index;
+            }
+        }
+        listName.append(tmp.c_str());
+
+        QVariant var;
+        var.setValue(initValue[index]);
+
+        enumDatas[index] = var;
+    }
+ */
     for(int index = 0; index < initValue.size(); index++)
     {
         std::string tmp = initValue[index].asString();
@@ -181,17 +205,22 @@ QtProperty *propertyWidget::createEnumProperty(const bool &isReadOnlay, const st
         if(tmp == v)
             curIndex = index;
 
+        QVariant var;
+        var.setValue(initValue[index]);
+
+        enumDatas[index] = var;
+
         listName.append(tmp.c_str());
     }
 
     mEnumManager->setEnumNames(property, listName);
-
+    mEnumManager->setData(property, enumDatas);
     mEnumManager->setValue(property, curIndex);
 
     return property;
 }
 
-QtProperty *propertyWidget::createIntProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
+QtProperty *propertyWidget::createIntProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue, const Json::Value &minValue, const Json::Value &maxValue)
 {
     QtProperty *property = mIntManager->addProperty(attrName.c_str());
 
@@ -204,6 +233,12 @@ QtProperty *propertyWidget::createIntProperty(const bool &isReadOnlay, const std
         mIntManager->setValue(property, curValue.asInt());
     else
         mIntManager->setValue(property, initValue.asInt());
+
+    if(!minValue.isNull() && minValue.isInt())
+        mIntManager->setMinimum(property, minValue.asInt());
+
+    if(!maxValue.isNull() && maxValue.isInt())
+        mIntManager->setMaximum(property, maxValue.asInt());
 
     return property;
 }
@@ -343,7 +378,8 @@ void propertyWidget::setChange(std::string type)
                 //更新参数值
                 foreach (QtProperty *subPro, pro->subProperties())
                 {
-                    emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                    if(isUpDate)
+                        emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
                     //qDebug() << "[FIX]" << subPro->propertyName() << ":" << subPro->valueText();
                 }
                 pro->setEnabled(true);
@@ -364,7 +400,8 @@ void propertyWidget::setChange(std::string type)
                 //更新参数值
                 foreach (QtProperty *subPro, pro->subProperties())
                 {
-                    emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                    if(isUpDate)
+                        emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
                     //qDebug() << "[RAND]" << subPro->propertyName() << ":" << subPro->valueText();
                 }
                 pro->setEnabled(true);
@@ -385,7 +422,8 @@ void propertyWidget::setChange(std::string type)
                 //更新参数值
                 foreach (QtProperty *subPro, pro->subProperties())
                 {
-                    emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                    if(isUpDate)
+                        emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
                     //qDebug() << "[LINE]" << subPro->propertyName() << ":" << subPro->valueText();
                 }
                 pro->setEnabled(true);
@@ -407,18 +445,19 @@ void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
 
     if(isUpDate)
     {
+        emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());
+#if 0
         if((property->propertyName().compare(PROPERTY_START_CONDITION) == 0)
             ||(property->propertyName().compare(PROPERTY_STOP_CONDITION) == 0)
             ||(property->propertyName().compare(PROPERTY_DESTDEVICE) == 0))
-        {
-            //Json::Value tmpJs = mEnumManager->data(property).value<Json::Value>();
-            emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());
-            //qDebug() << tmpJs.toStyledString().c_str();
+        {            
+            emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());           
         }
         else
         {
             emit valueChange(property->propertyName(), Json::Value(mEnumManager->enumNames(property).at(val).toStdString()));
         }
+#endif
     }
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();
@@ -435,4 +474,37 @@ void propertyWidget::onPropertyChange(QtProperty *property)
     qDebug() << property->propertyName();
     qDebug() << mstrManager->value(property);
 #endif
+}
+
+void propertyWidget::onUpdateProperty(QString propertyName, Json::Value value)
+{
+    isUpDate = false;
+
+    foreach(QtProperty *groupPro, mEditorProperty->properties())
+    {
+        foreach (QtProperty *pro, groupPro->subProperties())
+        {
+            if(pro->propertyName().compare(propertyName) == 0)
+            {
+                if(dynamic_cast<QtStringPropertyManager*>(pro->propertyManager()))
+                {
+                    if(value.isString())
+                        dynamic_cast<QtStringPropertyManager*>(pro->propertyManager())->setValue(pro, value.asString().c_str());
+                }
+                else if(dynamic_cast<QtIntPropertyManager*>(pro->propertyManager()))
+                {
+                    if(value.isInt())
+                        dynamic_cast<QtIntPropertyManager*>(pro->propertyManager())->setValue(pro, value.asInt());
+                }
+                else if(dynamic_cast<QtBoolPropertyManager*>(pro->propertyManager()))
+                {
+                    if(value.isBool())
+                        dynamic_cast<QtBoolPropertyManager*>(pro->propertyManager())->setValue(pro, value.asBool());
+                }
+                break;
+            }
+        }
+    }
+
+    isUpDate = true;
 }

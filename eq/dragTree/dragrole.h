@@ -63,14 +63,19 @@ public:
 
     //int tableNum(){return mCurTable;}
     //int codingNum(){return mCurCoding;}
+    void setUuid(std::string uuid){mCurUuid = uuid;}
+    std::string uuid(){return mCurUuid;}
 private:
     nodeType mCurCmdType;
     int mCurTable;
     int mCurCoding;
+    std::string mCurUuid;
     std::shared_ptr<nodeProperty> mNodeProperty;
 };
 
 //Q_DECLARE_METATYPE(dragRole)
 Q_DECLARE_METATYPE(std::shared_ptr<dragRole>)
+
+//Q_DECLARE_METATYPE(std::vector<std::shared_ptr<dragRole>>)
 
 #endif // DRAGROLE_H

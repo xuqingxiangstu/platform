@@ -16,6 +16,7 @@
 #define FLOW_RECORD_TABLE_FLOW_NAME         "FLOW_NAME"
 #define FLOW_RECORD_TABLE_CREATE_TIME       "CREATE_TIME"
 #define FLOW_RECORD_TABLE_RECENT_OPEN_TIME  "RECENT_OPEN_TIME"
+#define FLOW_RECORD_TABLE_NODE_INFO         "NODE_INFO"
 #define FLOW_RECORD_TABLE_NOTE              "NOTE"
 
 class PARAMSTABLESHARED_EXPORT flowRecordTable
@@ -31,6 +32,14 @@ public:
 
     ~flowRecordTable();
 public:
+
+    /**
+     * @brief updateNodeInfo    更新节点信息
+     * @param uuid  uuid
+     * @param value 待更新值
+     */
+    void updateNodeInfo(const std::string &uuid, const std::string &value);
+
     Json::Value getValue(std::string uuid);
 
     Json::Value getValueBySystemUuid(const std::string &sysUuid);

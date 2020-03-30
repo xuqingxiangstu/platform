@@ -5,5 +5,7 @@
         <file>icon/cut.png</file>
         <file>icon/paste.png</file>
         <file>icon/save.png</file>
+        <file>icon/loading.gif</file>
+        <file>icon/waiting.gif</file>
     </qresource>
 </RCC>

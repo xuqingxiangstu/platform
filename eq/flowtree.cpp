@@ -2,18 +2,29 @@
 #include "ui_flowtree.h"
 
 #include <iostream>
-
+#include "./toXml/savexml.h"
 #include "property/templateproperty.h"
 #include "dragTree/dragrole.h"
 #include "property/nodeproperty.h"
 #include "toXml/createsubflow.h"
 #include "newdialog.h"
+#include "progresswidget.h"
+#include "../src/PfSql/paramsTable/flowrecordtable.h"
+#include "recordnavigation.h"
+#include "progresswidget.h"
+#include "../src/PfSql/paramsTable/systemtable.h"
+#include "../src/PfSql/paramsTable/sysinterfacetable.h"
+#include "./fromXml/readxml.h"
 #include <QDebug>
+#include <QMessageBox>
+#include <QFileInfo>
 
-flowTree::flowTree(QString uuid, QWidget *parent) :
+flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::flowTree),
-    mCurProjectUuid(uuid)
+    mCurProjectUuid(uuid),
+    mIsUpdateTree(false),
+    mCurSystemType(sysType)
 {
     ui->setupUi(this);
 
@@ -26,7 +37,7 @@ flowTree::flowTree(QString uuid, QWidget *parent) :
 
     mPopMenu = new QMenu(this);
     mPopMenu->addAction(ui->actionNewFlow);
-    mPopMenu->addAction(ui->actionNewSubFlow);
+    //mPopMenu->addAction(ui->actionNewSubFlow);
     mPopMenu->addAction(ui->actionCopy);
     mPopMenu->addAction(ui->actionPase);
     mPopMenu->addAction(ui->actionDelete);
@@ -51,19 +62,21 @@ flowTree::flowTree(QString uuid, QWidget *parent) :
                 ui->actionCopy->setEnabled(false);
                 ui->actionDelete->setEnabled(false);
                 ui->actionPase->setEnabled(false);
-                ui->actionNewSubFlow->setEnabled(true);
+                //ui->actionNewSubFlow->setEnabled(true);
                 ui->actionNewFlow->setEnabled(true);
                 ui->actionTestSend->setEnabled(false);
             }
+#if 0
             else if(dragRole::Node_SubFlow == data->getNodeType())
             {
                 ui->actionCopy->setEnabled(false);
                 ui->actionDelete->setEnabled(false);
                 ui->actionPase->setEnabled(false);
-                ui->actionNewSubFlow->setEnabled(true);
+                //ui->actionNewSubFlow->setEnabled(true);
                 ui->actionNewFlow->setEnabled(false);
                 ui->actionTestSend->setEnabled(false);
             }
+#endif
             else if( (dragRole::Node_Cmd == data->getNodeType()) || (dragRole::Node_Param_Group == data->getNodeType()))
             {
                 ui->actionCopy->setEnabled(false);
@@ -78,7 +91,7 @@ flowTree::flowTree(QString uuid, QWidget *parent) :
                 ui->actionCopy->setEnabled(false);
                 ui->actionDelete->setEnabled(false);
                 ui->actionPase->setEnabled(false);
-                ui->actionNewSubFlow->setEnabled(false);
+                //ui->actionNewSubFlow->setEnabled(false);
                 ui->actionNewFlow->setEnabled(false);
                 ui->actionTestSend->setEnabled(false);
             }
@@ -88,14 +101,14 @@ flowTree::flowTree(QString uuid, QWidget *parent) :
             ui->actionCopy->setEnabled(false);
             ui->actionDelete->setEnabled(false);
             ui->actionPase->setEnabled(false);
-            ui->actionNewSubFlow->setEnabled(false);
+            //ui->actionNewSubFlow->setEnabled(false);
             ui->actionNewFlow->setEnabled(true);
             ui->actionTestSend->setEnabled(false);
         }
 
         mPopMenu->exec(QCursor::pos());
     });
-#if 1
+#if 0
     QTreeWidgetItem *item = new QTreeWidgetItem();
 
     QString showText = "发射测试";
@@ -165,18 +178,8 @@ QTreeWidgetItem *flowTree::newItem(QTreeWidgetItem *dropItem)
     return dropItem;
 }
 
-QTreeWidgetItem *flowTree::newCmdItem(QTreeWidgetItem *dropItem)
+void flowTree::updateCmdOrParamGroupItemValue(QTreeWidgetItem *item, std::shared_ptr<dragRole> drapData)
 {
-    std::shared_ptr<dragRole> drapData = dropItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
-
-    QTreeWidgetItem *item = new QTreeWidgetItem();
-
-    QVariant variant;
-    std::shared_ptr<dragRole> newData = drapData->clone();
-    variant.setValue(newData);
-
-    item->setData(0, Qt::UserRole, variant);
-
     Json::Value desJs;
     drapData->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
     if(!desJs.isNull())
@@ -220,10 +223,100 @@ QTreeWidgetItem *flowTree::newCmdItem(QTreeWidgetItem *dropItem)
     {
         item->setText(Dest_Dev_Index, desDevJs[PROPERTY_DEV_VALUE_NAME].asString().c_str());
     }
+}
+
+QTreeWidgetItem *flowTree::newCmdItem(QTreeWidgetItem *dropItem)
+{
+    std::shared_ptr<dragRole> drapData = dropItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+    QTreeWidgetItem *item = new QTreeWidgetItem();
+
+    QVariant variant;
+    std::shared_ptr<dragRole> newData = drapData->clone();
+    variant.setValue(newData);
+
+    item->setData(0, Qt::UserRole, variant);
+
+    updateCmdOrParamGroupItemValue(item, newData);
 
     item->setExpanded(true);
 
     return item;
+}
+
+void flowTree::updateParamItemValue(QTreeWidgetItem *newChildItem, std::shared_ptr<dragRole> drapData)
+{
+    Json::Value desJs;
+    drapData->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
+    if(!desJs.isNull())
+    {
+        newChildItem->setText(Name_Index, desJs.asString().c_str());
+    }
+
+    Json::Value changeJs;
+    drapData->getProperty()->getProperty(PROPERTY_SIM_MODEL, changeJs);
+    if(!changeJs.isNull())
+    {
+        newChildItem->setText(Param_Change_Index, changeJs.asString().c_str());
+
+        std::string strV;
+
+        if(PROPERTY_MODEL_FIX == changeJs.asString())
+        {
+            Json::Value tmpJs;
+            drapData->getProperty()->getProperty(PROPERTY_FIX_VALUE, tmpJs);
+            if(!tmpJs.isNull())
+            {
+                strV = tmpJs.asString();
+            }
+        }
+        else if(PROPERTY_MODEL_RAND == changeJs.asString())
+        {
+            Json::Value minJs;
+            std::string min, max;
+            drapData->getProperty()->getProperty(PROPERTY_RAND_MIN, minJs);
+            if(!minJs.isNull())
+            {
+                min = minJs.asString();
+            }
+
+            Json::Value maxJs;
+            drapData->getProperty()->getProperty(PROPERTY_RAND_MAX, maxJs);
+            if(!maxJs.isNull())
+            {
+                max = maxJs.asString();
+            }
+            strV = "[" + min + "," + max + "]";
+        }
+        else if(PROPERTY_MODEL_LINE == changeJs.asString())
+        {
+            Json::Value minJs;
+            std::string min, max, step;
+            drapData->getProperty()->getProperty(PROPERTY_LINE_MIN, minJs);
+            if(!minJs.isNull())
+            {
+                min = minJs.asString();
+            }
+
+            Json::Value maxJs;
+            drapData->getProperty()->getProperty(PROPERTY_LINE_MAX, maxJs);
+            if(!maxJs.isNull())
+            {
+                max = maxJs.asString();
+            }
+
+            Json::Value stepJs;
+            drapData->getProperty()->getProperty(PROPERTY_LINE_STEP, stepJs);
+            if(!stepJs.isNull())
+            {
+                step = stepJs.asString();
+            }
+
+            strV = "[" + min + "," + max + "]:" + step;
+        }
+        newChildItem->setText(Value_Index, strV.c_str());
+        newChildItem->setExpanded(true);
+    }
 }
 
 QTreeWidgetItem *flowTree::newParamItem(QTreeWidgetItem *dropItem)
@@ -248,77 +341,7 @@ QTreeWidgetItem *flowTree::newParamItem(QTreeWidgetItem *dropItem)
 
         newChildItem->setData(0, Qt::UserRole, variant);
 
-        Json::Value desJs;
-        drapData->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
-        if(!desJs.isNull())
-        {
-            newChildItem->setText(Name_Index, desJs.asString().c_str());
-        }
-
-        Json::Value changeJs;
-        drapData->getProperty()->getProperty(PROPERTY_SIM_MODEL, changeJs);
-        if(!changeJs.isNull())
-        {
-            newChildItem->setText(Param_Change_Index, changeJs.asString().c_str());
-
-            std::string strV;
-
-            if(PROPERTY_MODEL_FIX == changeJs.asString())
-            {
-                Json::Value tmpJs;
-                drapData->getProperty()->getProperty(PROPERTY_FIX_VALUE, tmpJs);
-                if(!tmpJs.isNull())
-                {
-                    strV = tmpJs.asString();
-                }
-            }
-            else if(PROPERTY_MODEL_RAND == changeJs.asString())
-            {
-                Json::Value minJs;
-                std::string min, max;
-                drapData->getProperty()->getProperty(PROPERTY_RAND_MIN, minJs);
-                if(!minJs.isNull())
-                {
-                    min = minJs.asString();
-                }
-
-                Json::Value maxJs;
-                drapData->getProperty()->getProperty(PROPERTY_RAND_MAX, maxJs);
-                if(!maxJs.isNull())
-                {
-                    max = maxJs.asString();
-                }
-                strV = "[" + min + "," + max + "]";
-            }
-            else if(PROPERTY_MODEL_LINE == changeJs.asString())
-            {
-                Json::Value minJs;
-                std::string min, max, step;
-                drapData->getProperty()->getProperty(PROPERTY_LINE_MIN, minJs);
-                if(!minJs.isNull())
-                {
-                    min = minJs.asString();
-                }
-
-                Json::Value maxJs;
-                drapData->getProperty()->getProperty(PROPERTY_LINE_MAX, maxJs);
-                if(!maxJs.isNull())
-                {
-                    max = maxJs.asString();
-                }
-
-                Json::Value stepJs;
-                drapData->getProperty()->getProperty(PROPERTY_LINE_STEP, stepJs);
-                if(!stepJs.isNull())
-                {
-                    step = stepJs.asString();
-                }
-
-                strV = "[" + min + "," + max + "]:" + step;
-            }
-            newChildItem->setText(Value_Index, strV.c_str());
-            newChildItem->setExpanded(true);
-        }
+        updateParamItemValue(newChildItem, newData);
 
         parentItem->addChild(newChildItem);        
     }
@@ -352,7 +375,6 @@ void flowTree::onDropDrag(QTreeWidgetItem *parentItem, QTreeWidgetItem *curItem,
     ui->treeWidget->expandItem(parentItem);
     ui->treeWidget->update();
 
-    mIsModify = true;
     emit projectModify(mCurProjectUuid);
 }
 
@@ -367,7 +389,7 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
 }
 
 void flowTree::onPropertyValueChange(QString attr, Json::Value value)
-{
+{    
     QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
     if(!curItem)
         return ;
@@ -379,8 +401,31 @@ void flowTree::onPropertyValueChange(QString attr, Json::Value value)
     //更新节点关联属性
     drapData->getProperty()->setProperty(propertyName, value);
 
+    //接口选择后需要更新系统类型,从数据库中获取
+    if((dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType()))
+    {
+        if(propertyName == PROPERTY_DESTDEVICE)
+        {
+            Json::Value devJs;
+            drapData->getProperty()->getProperty(PROPERTY_DESTDEVICE, devJs);
+            if(devJs.isObject())
+            {
+                std::string devUuid = devJs[PROPERTY_DEV_VALUE_UUID].asString();
+                Json::Value devJs = sysInterfaceTable::getInstance()->getValue(devUuid);
+
+                Json::Value sysInfoJs = systemTable::getInstance()->getSysInfoByUuid(devJs[SYSTEM_INTERFACE_TABLE_SYSTEM_UUID].asString());
+
+                if(!sysInfoJs.isNull())
+                {
+                    emit updateProperty(PROPERTY_SRC_SYS_TYPE, sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE]);
+
+                    drapData->getProperty()->setProperty(PROPERTY_SRC_SYS_TYPE, sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE]);
+                }
+            }
+        }
+    }
      //更改树节点显示
-    if( (dragRole::Node_Flow == drapData->getNodeType()) || (dragRole::Node_SubFlow == drapData->getNodeType()))
+    if( (dragRole::Node_Flow == drapData->getNodeType()))
     {
         if(PROPERTY_DESCRIBE == propertyName)
         {
@@ -473,13 +518,7 @@ void flowTree::onPropertyValueChange(QString attr, Json::Value value)
         }
     }
 
-    mIsModify = true;
     emit projectModify(mCurProjectUuid);
-}
-
-void flowTree::updateProject()
-{
-    //TODO:获取数据库，获取文件解析显示
 
 }
 
@@ -487,14 +526,14 @@ void flowTree::onActionTestSend(QTreeWidgetItem *item)
 {
     dragRole *role = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
 
-   auto type = role->getNodeType();
-   if(dragRole::Node_Cmd == type)
-   {
-        createSubFlow subFlow;
-        subFlow.setProperty(role->getProperty());
-   }
-   else if(dragRole::Node_Param_Group == type)
-   {
+    auto type = role->getNodeType();
+    if(dragRole::Node_Cmd == type)
+    {
+        //createSubFlow subFlow;
+        //subFlow.setProperty(role->getProperty());
+    }
+    else if(dragRole::Node_Param_Group == type)
+    {
        std::vector<nodeProperty*> subRoles;
        //获取子信息
        for(int index = 0; index < item->childCount(); index++)
@@ -502,9 +541,9 @@ void flowTree::onActionTestSend(QTreeWidgetItem *item)
            dragRole *tmpRole = (item->child(index))->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
            subRoles.push_back(tmpRole->getProperty());
        }
-       createSubFlow subFlow;
-       subFlow.setProperty(role->getProperty(), subRoles);
-   }
+      // createSubFlow subFlow;
+       //subFlow.setProperty(role->getProperty(), subRoles);
+    }
 }
 
 void flowTree::onMenuTrigger(QAction *action)
@@ -538,6 +577,7 @@ void flowTree::onMenuTrigger(QAction *action)
             }
         }
     }
+#if 0
     else if("actionNewSubFlow" == actionObjName)
     {
         newDialog dlg;
@@ -571,6 +611,7 @@ void flowTree::onMenuTrigger(QAction *action)
             }
          }
     }
+#endif
     else if("actionTestSend" == actionObjName)
     {
         if(mCurItem)
@@ -580,11 +621,221 @@ void flowTree::onMenuTrigger(QAction *action)
     }
 }
 
-void flowTree::saveProject()
+
+int flowTree::getItemSize(QTreeWidget *curWidget)
 {
-    qDebug() << "save project";
-    if(!mIsModify)
+    if(!curWidget)
+        return 0;
+
+    int size = 0;
+
+    QTreeWidgetItemIterator Itor(curWidget);
+
+    while (*Itor)
+    {
+        size++;
+        ++Itor;
+    }
+
+    return size;
+}
+
+void flowTree::onSaveProject(QTreeWidgetItem *item)
+{
+    recordRole role = item->data(0, Qt::UserRole).value<recordRole>();
+
+    if(mCurProjectUuid.toStdString() != role.uuid)
         return ;
 
-    mIsModify = false;
+    //获取item总数
+    int itemSize = getItemSize(ui->treeWidget);
+
+    QString filePath = "./flowFile/" + QString::fromStdString(role.uuid) + ".xml";
+
+    saveXml xmlObj;
+    xmlObj.setFilePath(filePath);
+    xmlObj.setTreeWidget(ui->treeWidget);
+    xmlObj.setSystemInfo(item);
+    progressWidget dlg;
+    dlg.onMinMaxValue(0, itemSize);
+
+    connect(&xmlObj, &saveXml::saveOver, &dlg, &progressWidget::onClose);
+    connect(&xmlObj, &saveXml::saveProgress, &dlg, &progressWidget::onCurValue);
+
+    xmlObj.startTask();
+
+    dlg.exec();
+
+    emit saveProjectOver(mCurProjectUuid);    
+}
+
+void flowTree::onUpdateProject(QString uuid)
+{
+    if(mIsUpdateTree)
+        return ;
+
+    if(mCurProjectUuid.compare(uuid) != 0)
+        return ;
+
+    QString filePath = "./flowFile/" + mCurProjectUuid + ".xml";
+    QFileInfo fileObj(filePath);
+
+    if(!fileObj.exists())
+        QMessageBox::information(this, "提示", "文件不存在：" + filePath);
+
+    readXml readObj;
+    readObj.setFilePath(filePath);
+
+    progressWidget dlg;
+    //dlg.onMinMaxValue(0, itemSize);
+
+    connect(&readObj, &readXml::readOver, &dlg, &progressWidget::onClose);
+    connect(&readObj, &readXml::readProgress, &dlg, &progressWidget::onCurValue);
+
+    connect(&readObj, &readXml::flowItemValue, this, &flowTree::setFlowItemValue);
+    connect(&readObj, &readXml::subFlowItemValue, this, &flowTree::setSubFlowItemValue);
+    connect(&readObj, &readXml::cmdItemValue, this, flowTree::setCmdItemValue);
+    connect(&readObj, &readXml::paramItemValue, this, flowTree::setParamItemValue);
+
+    readObj.startTask();
+
+    dlg.exec();
+
+    mIsUpdateTree = true;
+}
+
+QTreeWidgetItem *flowTree::findItem(QString uuid)
+{
+    QTreeWidgetItem *item = nullptr;
+    QTreeWidgetItemIterator Itor(ui->treeWidget);
+    while (*Itor)
+    {
+        std::shared_ptr<dragRole> role = (*Itor)->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+        if(uuid.toStdString() == role->uuid())
+        {
+            item = *Itor;
+            break;
+        }
+
+        ++Itor;
+    }
+
+    return item;
+}
+
+void flowTree::setFlowItemValue(std::shared_ptr<dragRole> role)
+{
+    QTreeWidgetItem *item = new QTreeWidgetItem();
+
+    Json::Value desJs;
+    role->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
+
+    if(!desJs.isNull())
+        item->setText(0, desJs.asString().c_str());
+
+    //关联数据
+    QVariant variant;
+    variant.setValue(role);
+    item->setData(0,Qt::UserRole,variant);
+
+    ui->treeWidget->addTopLevelItem(item);
+}
+
+void flowTree::setSubFlowItemValue(QString flowUuid, std::shared_ptr<dragRole> role)
+{
+    //查找UUID
+    QTreeWidgetItem *flowItem = findItem(flowUuid);
+    if(flowItem)
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem();
+
+        Json::Value desJs;
+        role->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
+
+        if(!desJs.isNull())
+            item->setText(0, desJs.asString().c_str());
+
+        //关联数据
+        QVariant variant;
+        variant.setValue(role);
+        item->setData(0,Qt::UserRole,variant);
+
+        flowItem->addChild(item);
+    }
+
+    ui->treeWidget->expandItem(flowItem);
+
+}
+
+void flowTree::setCmdItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role)
+{
+    QTreeWidgetItem *subFlowItem = findItem(subFlowUuid);
+    if(subFlowItem)
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem();
+
+        Json::Value desJs;
+        role->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
+
+        if(!desJs.isNull())
+            item->setText(0, desJs.asString().c_str());
+
+        //关联数据
+        QVariant variant;
+        variant.setValue(role);
+        item->setData(0,Qt::UserRole,variant);
+
+        updateCmdOrParamGroupItemValue(item, role);
+
+        subFlowItem->addChild(item);
+    }
+
+    ui->treeWidget->expandItem(subFlowItem);
+}
+
+void flowTree::setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRoles)
+{
+    QTreeWidgetItem *subFlowItem = findItem(subFlowUuid);
+    if(subFlowItem)
+    {
+        QTreeWidgetItem *groupItem = new QTreeWidgetItem();
+
+        Json::Value desJs;
+        role->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
+
+        if(!desJs.isNull())
+            groupItem->setText(0, desJs.asString().c_str());
+
+        //关联数据
+        QVariant variant;
+        variant.setValue(role);
+        groupItem->setData(0,Qt::UserRole,variant);
+
+        updateCmdOrParamGroupItemValue(groupItem, role);
+
+        for(std::shared_ptr<dragRole> subRole : subRoles)
+        {
+            QTreeWidgetItem *paramItem = new QTreeWidgetItem();
+
+            Json::Value paramDesJs;
+            subRole->getProperty()->getProperty(PROPERTY_DESCRIBE, paramDesJs);
+
+            if(!paramDesJs.isNull())
+                paramItem->setText(0, paramDesJs.asString().c_str());
+
+            //关联数据
+            QVariant variant1;
+            variant1.setValue(subRole);
+            paramItem->setData(0,Qt::UserRole,variant1);
+
+            updateParamItemValue(paramItem, subRole);
+
+            groupItem->addChild(paramItem);
+        }
+
+        subFlowItem->addChild(groupItem);
+    }
+
+    ui->treeWidget->expandItem(subFlowItem);
 }

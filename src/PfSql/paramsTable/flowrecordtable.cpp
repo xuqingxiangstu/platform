@@ -98,7 +98,9 @@ Json::Value flowRecordTable::getValueBySystemUuid(const std::string &sysUuid)
     Json::Value value;
     bool Ok = false;
     QString sql = "SELECT * from " + mTableName + " where " + FLOW_RECORD_TABLE_SYSTEM_UUID + "=";
+    sql += "'";
     sql += QString::fromStdString(sysUuid);
+    sql += "'";
 
     QSqlQuery query(sql, mDb);
     QSqlRecord rec = query.record();
@@ -126,12 +128,29 @@ Json::Value flowRecordTable::getValueBySystemUuid(const std::string &sysUuid)
     return value;
 }
 
+void flowRecordTable::updateNodeInfo(const std::string &uuid, const std::string &value)
+{
+    QString sql = "update " + mTableName + " set " + FLOW_RECORD_TABLE_NODE_INFO + " = '" + value.c_str() + "' "
+        + " where " + FLOW_RECORD_TABLE_UUID + " = ";
+    sql += "'";
+    sql += QString::fromStdString(uuid);
+    sql += "'";
+    QSqlQuery query(mDb);
+    bool result = query.exec(sql);
+    if(!result)
+    {
+        qDebug() << mDb.lastError();
+    }
+}
+
 Json::Value flowRecordTable::getValue(std::string uuid)
 {
     Json::Value value;
     bool Ok = false;
     QString sql = "SELECT * from " + mTableName + " where " + FLOW_RECORD_TABLE_UUID + "=";
+    sql += "'";
     sql += QString::fromStdString(uuid);
+    sql += "'";
 
     QSqlQuery query(sql, mDb);
     QSqlRecord rec = query.record();

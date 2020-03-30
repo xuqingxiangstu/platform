@@ -554,10 +554,11 @@ void cmdDecode::initFlow(const Json::Value &msg)
         {
             std::string flowName = js[FLOW_RECORD_TABLE_FLOW_NAME].asString();
             std::string time = js[FLOW_RECORD_TABLE_CREATE_TIME].asString();
+            std::string dbUuid = js[FLOW_RECORD_TABLE_UUID].asString();
 
-            std::string file = flowName + "_" + time + ".xml";
+            std::string file = dbUuid + ".xml";
 
-            std::string path = "/cfgfile/" + file;
+            std::string path = "/flowFile/" + file;
 
             //校验文件是否存在
 
@@ -647,7 +648,7 @@ void cmdDecode::resetAdapter()
                 tmpV.insert(subFlow[subIndex]["dest_system_uuid"].asString());
             }
         }
-        adapters[uuid] = tmpV;
+        adapters["local"] = tmpV;
     }
 
     //初始化各系统
@@ -737,7 +738,7 @@ void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
             }
             else
             {
-                errInfo << "[ERROR] system_table:" << sys_uuid << "，DEV_UUID:" << devUuid
+                errInfo << "[ERROR] system_interface_table:" << sys_uuid << "，DEV_UUID:" << devUuid
                         << ", udp_table not find ";
 
                 THROW_EXCEPTION(errInfo.str());
@@ -745,14 +746,14 @@ void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
         }
         else
         {
-            errInfo << "[ERROR] system_table:" << sys_uuid << "，unknown type:" << type;
+            errInfo << "[ERROR] system_interface_table:" << sys_uuid << "，unknown type:" << type;
 
             THROW_EXCEPTION(errInfo.str());
         }
     }
     else
     {
-        errInfo << "[ERROR] not find system_table:" << sys_uuid << "，record!";
+        errInfo << "[ERROR] not find system_interface_table:" << sys_uuid << "，record!";
 
         THROW_EXCEPTION(errInfo.str());
     }

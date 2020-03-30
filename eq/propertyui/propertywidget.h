@@ -44,6 +44,13 @@ public:
 public slots:
     void showProperty(Json::Value value);
 
+    /**
+     * @brief updateProperty    更新属性值
+     * @param propertyName      属性名称
+     * @param value             值
+     */
+    void onUpdateProperty(QString propertyName, Json::Value value);
+
     void onIntValueChanged(QtProperty *property, int val);
     void onDoubleValueChanged(QtProperty *property, double val);
     void onStringValueChanged(QtProperty *property, QString val);
@@ -56,7 +63,7 @@ signals:
     void valueChange(QString attr, Json::Value val);
 private:
     QtProperty *createEnumProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);
-    QtProperty *createIntProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);
+    QtProperty *createIntProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue, const Json::Value &minValue, const Json::Value &maxValue);
     QtProperty *createStringProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);
     QtProperty *createBoolProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);
     QtProperty *createDoubleProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);

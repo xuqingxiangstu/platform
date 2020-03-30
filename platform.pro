@@ -4,5 +4,5 @@ SUBDIRS += \
       src \
 #  examples \
     #template \
-    #logicLayer \
+    logicLayer \
     eq

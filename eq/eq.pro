@@ -23,21 +23,24 @@ SOURCES += main.cpp\
     flowtree.cpp \
     newdialog.cpp \
     recordnavigation.cpp \
-    newprojectdialog.cpp
+    newprojectdialog.cpp \
+    progresswidget.cpp
 
 HEADERS  += mainwindow.h \
     templatetree.h \
     flowtree.h \
     newdialog.h \
     recordnavigation.h \
-    newprojectdialog.h
+    newprojectdialog.h \
+    progresswidget.h
 
 FORMS    += mainwindow.ui \
     templatetree.ui \
     flowtree.ui \
     newdialog.ui \
     recordnavigation.ui \
-    newprojectdialog.ui
+    newprojectdialog.ui \
+    progresswidget.ui
 
 LIBS += -L$$OUT_PWD/../ -ljsoncpp
 
@@ -47,6 +50,7 @@ include($$PWD/dragTree/dragTree.pri)
 include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)
 include($$PWD/toXml/toXml.pri)
+include($$PWD/fromXml/fromXml.pri)
 
 QT       += sql
 

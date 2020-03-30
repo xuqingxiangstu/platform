@@ -241,9 +241,10 @@ void PfTreeWidget::dragMoveEvent(QDragMoveEvent *event)
     if(currentItem != nullptr)
     {
         std::shared_ptr<dragRole> stData = currentItem->data(0,Qt::UserRole).value<std::shared_ptr<dragRole>>();
-        if((dragRole::Node_Flow == stData->getNodeType())
+        if(
+                //(dragRole::Node_Flow == stData->getNodeType())
                // || (dragRole::Node_Cmd == stData.getNodeType())
-                || (dragRole::Node_Param == stData->getNodeType())
+                (dragRole::Node_Param == stData->getNodeType())
                 )
         {
             event->ignore();
@@ -274,7 +275,7 @@ void PfTreeWidget::dragMoveEvent(QDragMoveEvent *event)
                 }
             }
 
-            if( (dragRole::Node_SubFlow == stData->getNodeType())
+            if( (dragRole::Node_Flow == stData->getNodeType())
                      )
              {
                  //子流程节点如果没有前兄弟节点则上面不允许，否则允许
@@ -317,10 +318,10 @@ void PfTreeWidget::dragMoveEvent(QDragMoveEvent *event)
     else//空白处
     {
 
-        //如果没有节点则不允许，如果有至少一个则允许
+        //如果没有节点则不允许
         if(this->topLevelItemCount() != 0)
         {
-            if(this->topLevelItem(this->topLevelItemCount() - 1)->childCount() > 0)
+            //if(this->topLevelItem(this->topLevelItemCount() - 1)->childCount() > 0)
             {
                 mLineType = Line_Permit;
 
@@ -353,11 +354,8 @@ QTreeWidgetItem *PfTreeWidget::getLastSubFlowItem()
     if(count > 0)
     {
         QTreeWidgetItem *lastFlowItem = this->topLevelItem(count - 1);
-        int flowCount = lastFlowItem->childCount();
-        if(count > 0)
-        {
-            return lastFlowItem->child(flowCount - 1);
-        }
+
+        return lastFlowItem;
     }
 
     return lastItem;
@@ -404,7 +402,7 @@ void PfTreeWidget::dropEvent(QDropEvent *event)
         {
             std::shared_ptr<dragRole> role = currentItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
 
-            if( dragRole::Node_SubFlow == role->getNodeType())
+            if( dragRole::Node_Flow == role->getNodeType())
             {
                 if(m_bFrontInsert)//前面插入属于上个兄弟节点的最后一个
                 {

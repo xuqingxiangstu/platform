@@ -4,15 +4,120 @@
 #include <QUuid>
 #include <QDebug>
 
-#define DEBUG_CLASS     0
+//#define DEBUG_CLASS     0
 
-createSubFlow::createSubFlow()
+/*****************config****************************/
+
+TiXmlElement *createRoot::element()
 {
-    mSubFlowXmlEle = new TiXmlElement(FLOW_ELEMENT);
+    return  new TiXmlElement(CONFIG_ELEMENT);
 }
 
-void createSubFlow::setProperty(nodeProperty *node, std::vector<nodeProperty *> subNode)
+/*****************equivalent****************************/
+
+TiXmlElement *createEquivalent::element(nodeProperty *node)
 {
+    TiXmlElement *eqEle = new TiXmlElement(EQ_ELEMENT);
+
+    //接口uuid
+    Json::Value devJs;
+    node->getProperty(PROPERTY_RECORD_DEV_SEL, devJs);
+    if(!devJs.isNull())
+    {
+        if(!devJs[PROPERTY_DEV_VALUE_UUID].isNull())
+        {
+            eqEle->LinkEndChild(createTextElement(EQ_SYSTEM_UUID_ELEMENT, devJs[PROPERTY_DEV_VALUE_UUID].asString()));
+        }
+    }
+
+    //系统类型
+    Json::Value sysTypeJs;
+    node->getProperty(PROPERTY_SRC_SYS_TYPE, sysTypeJs);
+    if(!sysTypeJs.isNull())
+    {
+        eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_TYPE_ELEMENT, sysTypeJs.asString()));
+    }
+
+
+    //系统编码
+    Json::Value sysCodeJs;
+    node->getProperty(PROPERTY_SRC_SYS_CODING, sysCodeJs);
+    if(!sysCodeJs.isNull())
+    {
+        eqEle->LinkEndChild(createTextElement(EQ_SRC_SYS_CODE_ELEMENT, sysCodeJs.asString()));
+    }
+
+
+    //节点编码
+    Json::Value nodeCodeJs;
+    node->getProperty(PROPERTY_SRC_NODE_CODING, nodeCodeJs);
+    if(!nodeCodeJs.isNull())
+    {
+        eqEle->LinkEndChild(createTextElement(EQ_SRC_NODE_CODE_ELEMENT, nodeCodeJs.asString()));
+    }
+
+
+    return  eqEle;
+}
+
+TiXmlElement *createEquivalent::createTextElement(const std::string &eleName, const std::string &text)
+{
+    TiXmlElement *tixmlgEle = new TiXmlElement(eleName.c_str());
+
+    TiXmlText *tixmlText = new TiXmlText(text.c_str());
+
+    tixmlgEle->LinkEndChild(tixmlText);
+
+    return tixmlgEle;
+}
+
+
+/*****************createFlow****************************/
+
+
+TiXmlElement *createFlow::element(nodeProperty *node)
+{
+    TiXmlElement *mFlowXmlEle = new TiXmlElement(FLOW_ELEMENT);
+
+    if(!node)
+        return mFlowXmlEle;
+
+    //描述
+    Json::Value desJs;
+    node->getProperty(PROPERTY_DESCRIBE, desJs);
+    if(!desJs.isNull())
+        mFlowXmlEle->SetAttribute(FLOW_ATTR_DESCRIBE, desJs.asString().c_str());
+    else
+        mFlowXmlEle->SetAttribute(FLOW_ATTR_DESCRIBE, "");
+
+    //uuid
+    std::string flowUuid = QUuid::createUuid().toString().toStdString();
+    mFlowXmlEle->SetAttribute(FLOW_ATTR_UUID, flowUuid.c_str());
+
+    return mFlowXmlEle;
+}
+
+/*****************createSubFlow****************************/
+
+TiXmlElement *createSubFlow::element(nodeProperty *node, std::vector<nodeProperty*> subNode)
+{
+    TiXmlElement *XmlEle = new TiXmlElement(SUB_FLOW_ELEMENT);
+
+    //存储Json subJson
+    //TiXmlElement *jsonEle = new TiXmlElement(JSON_ELEMENT);
+    XmlEle->LinkEndChild(createTextElement(JSON_ELEMENT, node->getJson().toStyledString()));
+
+    if(subNode.size() > 0)
+    {
+        Json::Value arrayJs;
+        for(nodeProperty *pro : subNode)
+        {
+            arrayJs.append(pro->getJson());
+        }
+
+        XmlEle->LinkEndChild(createTextElement(SUB_JSON_ELEMENT, arrayJs.toStyledString()));
+    }
+
     //从节点中获取 时机、启动条件、停止条件、目的设备、延时等参数
 
     std::string text;
@@ -22,13 +127,13 @@ void createSubFlow::setProperty(nodeProperty *node, std::vector<nodeProperty *> 
     Json::Value desJs;
     node->getProperty(PROPERTY_DESCRIBE, desJs);
     if(!desJs.isNull())
-        mSubFlowXmlEle->SetAttribute(FLOW_ATTR_DESCRIBE, desJs.asString().c_str());
+        XmlEle->SetAttribute(TEST_ITEM_ATTR_DESCRIBE, desJs.asString().c_str());
     else
-        mSubFlowXmlEle->SetAttribute(FLOW_ATTR_DESCRIBE, "");
+        XmlEle->SetAttribute(TEST_ITEM_ATTR_DESCRIBE, "");
 
     //uuid
     std::string flowUuid = QUuid::createUuid().toString().toStdString();
-    mSubFlowXmlEle->SetAttribute(FLOW_ATTR_UUID, flowUuid.c_str());
+    XmlEle->SetAttribute(TEST_ITEM_ATTR_UUID, flowUuid.c_str());
 
     //timing
     Json::Value timingJs;
@@ -39,7 +144,7 @@ void createSubFlow::setProperty(nodeProperty *node, std::vector<nodeProperty *> 
     else
         text = "";
 
-    mSubFlowXmlEle->LinkEndChild(createTextElement(TIMING_ELEMENT, text));
+    XmlEle->LinkEndChild(createTextElement(TIMING_ELEMENT, text));
 
     //startCondition
 
@@ -56,7 +161,7 @@ void createSubFlow::setProperty(nodeProperty *node, std::vector<nodeProperty *> 
             startCondiEle->LinkEndChild(createTextElement(TABLE_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_TABLE_NUM].asString()));
             startCondiEle->LinkEndChild(createTextElement(CODING_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_CODING_NUM].asString()));
 
-            mSubFlowXmlEle->LinkEndChild(startCondiEle);
+            XmlEle->LinkEndChild(startCondiEle);
         }
     }
 
@@ -75,7 +180,7 @@ void createSubFlow::setProperty(nodeProperty *node, std::vector<nodeProperty *> 
             stopCondiEle->LinkEndChild(createTextElement(TABLE_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_TABLE_NUM].asString()));
             stopCondiEle->LinkEndChild(createTextElement(CODING_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_CODING_NUM].asString()));
 
-            mSubFlowXmlEle->LinkEndChild(stopCondiEle);
+            XmlEle->LinkEndChild(stopCondiEle);
         }
     }
 
@@ -112,19 +217,22 @@ void createSubFlow::setProperty(nodeProperty *node, std::vector<nodeProperty *> 
 
     actionEle->LinkEndChild(frameEle);
 
-    mSubFlowXmlEle->LinkEndChild(actionEle);
+    XmlEle->LinkEndChild(actionEle);
 
     //从字节点中获取 action 中的datafields信息
 #ifdef DEBUG_CLASS
 
     TiXmlDocument *myDocument = new TiXmlDocument();
 
-    myDocument->LinkEndChild(mSubFlowXmlEle);
+    myDocument->LinkEndChild(XmlEle);
 
     //myDocument->Print();
     myDocument->SaveFile("E:/test.xml");
 #endif
+
+    return XmlEle;
 }
+
 
 TiXmlElement *createSubFlow::createDataFieldsElement(nodeProperty *node, std::vector<nodeProperty *>subNodes)
 {
@@ -235,8 +343,6 @@ TiXmlElement *createSubFlow::createDataFieldsElement(nodeProperty *node, std::ve
         }
     }
 
-
-
     return dataFileldEle;
 }
 
@@ -257,8 +363,3 @@ TiXmlElement *createSubFlow::createTextElement(const std::string &eleName, const
     return tixmlgEle;
 }
 
-TiXmlElement *createSubFlow::toXml()
-{
-
-    return nullptr;
-}
