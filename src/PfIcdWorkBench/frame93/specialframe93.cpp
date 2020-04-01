@@ -168,7 +168,7 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
-        std::string specialFrame93::parse(const unsigned char *u8Msg, const unsigned int u32Size)
+        std::string specialFrame93::parse(unsigned char *u8Msg, const unsigned int u32Size)
         {
             if(u32Size <= 0)
                 return "";

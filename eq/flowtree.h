@@ -34,7 +34,7 @@ public slots:
 
     void onItemClicked(QTreeWidgetItem * item, int column);
 
-    void onPropertyValueChange(QString attr, Json::Value value);
+    void onPropertyValueChange(QString uuid, QString attr, Json::Value value);
 
     /**
      * @brief onUpdateProject 根据UUID读取文件并显示
@@ -84,8 +84,13 @@ public slots:
      * @param subRole       子值
      */
     void setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRole);
+
+    /**
+     * @brief onShowCurItemProperty 显示当前选择节点属性
+     */
+    void onShowCurItemProperty(QString uuid);
 signals:
-    void toShowProperty(Json::Value);
+    void toShowProperty(QString uuid, Json::Value);
 
     void updateProperty(QString propertyName, Json::Value value);
 
@@ -110,9 +115,13 @@ private:
     QTreeWidgetItem *newCmdItem(QTreeWidgetItem *dropItem);
     QTreeWidgetItem *newParamItem(QTreeWidgetItem *dropItem);
 
+    void deleteItem(QTreeWidgetItem *item);
+
     void onMenuTrigger(QAction * action);
 
     void onActionTestSend(QTreeWidgetItem *);
+
+    void onActionDelete(QTreeWidgetItem *);
 
     /**
      * @brief getItemSize   获取item总数
@@ -146,6 +155,7 @@ private:
     QString mCurProjectUuid;    //当前工程uuid
     int mCurSystemType;         //当前系统类型
     bool mIsUpdateTree;         //是否更新树
+    QString mUiUuid;    //界面UUID(唯一标识)
 private:
     Ui::flowTree *ui;
 };

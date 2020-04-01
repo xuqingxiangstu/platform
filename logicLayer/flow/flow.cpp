@@ -9,7 +9,8 @@
 #include <thread>
 
 flowManager::flowManager():
-    mIsRunning(false)
+    mIsRunning(false),
+    mEqSystemUuid("")
 {
 }
 
@@ -37,6 +38,8 @@ void flowManager::setAdapterManager(Pf::PfAdapter::PfAdapterManager *adapterMana
     {
         std::get<Flow_Index>(flow)->setAdapterManager(adapterManagerObj);
     }
+    //获取发送UI句柄
+    adapterManagerObj->getAdapter("UI", &mUiAdapter);
 }
 
 void flowManager::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
@@ -70,7 +73,7 @@ Json::Value flowManager::getRunItems()
         tmpJs["sub_flow"] = std::get<Flow_Index>(flow)->getRunItems();
 
         flowJs.append(tmpJs);
-    }
+    }    
 
     return flowJs;
 }
@@ -78,13 +81,20 @@ Json::Value flowManager::getRunItems()
 void flowManager::exeOver()
 {
     //运行结束
-#if 0
+
     Json::Value js;
     js["msgType"] = "testOver";
 
     Json::Value tmp;
-    tmp["record_uuid"] =
-#endif
+    tmp["record_uuid"] = mRecordUuid;
+
+    tmp["result"] = true;
+
+    js["msg"] = tmp;
+
+    if(mUiAdapter)
+        mUiAdapter->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
+
     mIsRunning = false;
 }
 
@@ -149,6 +159,16 @@ void flowManager::init(std::string strFilePath)
     {
         TiXmlElement *mRoot = mXmlDoc->RootElement();
 
+        TiXmlElement *mEqEle = mRoot->FirstChildElement("equivalent");
+        if(mEqEle)
+        {
+            TiXmlElement *uuidEle = mEqEle->FirstChildElement("system_uuid");
+            if(uuidEle)
+            {
+                mEqSystemUuid = uuidEle->GetText();
+            }
+        }
+
         TiXmlElement *mChildEle = mRoot->FirstChildElement("flow");
 
         for (mChildEle; mChildEle; mChildEle = mChildEle->NextSiblingElement("flow"))
@@ -169,7 +189,10 @@ void flowManager::init(std::string strFilePath)
                 des = std::string(point);
             }
 
-            mFlowsObj.emplace_back(std::make_tuple(uuid, des, std::make_shared<flow>(mChildEle)));
+            std::shared_ptr<flow> obj = std::make_shared<flow>(mChildEle);
+            obj->setFlowUuid(uuid);
+
+            mFlowsObj.emplace_back(std::make_tuple(uuid, des, obj));
         }
     }
 }
@@ -182,8 +205,16 @@ flow::flow(TiXmlElement *xmlEle)
     {
         std::string uuid = mChildEle->Attribute("uuid");
 
-        mSubFlowObjs.push_back(std::make_tuple(uuid, std::make_shared<subFlow>(mChildEle)));
+        std::shared_ptr<subFlow> obj = std::make_shared<subFlow>(mChildEle);
+
+        mUuid = uuid;
+
+        obj->setFlowUuid(mUuid);
+
+        mSubFlowObjs.push_back(std::make_tuple(uuid, obj));
     }
+
+    isStop = false;
 }
 
  void flow::setAdapterManager(Pf::PfAdapter::PfAdapterManager *adapterManagerObj)
@@ -218,6 +249,8 @@ void flow::exit()
     {
         std::get<SubFlow_Index>(obj)->exit();
     }
+
+    isStop = true;
 }
 
 Json::Value flow::getRunItems()
@@ -269,6 +302,9 @@ void flow::exe(flowManager *manager, std::string subFlowUuid)
         //顺序执行
         for(auto obj : orderExes)
         {
+            if(isStop)
+                break;
+
             obj->exe();
         }
 

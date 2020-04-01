@@ -34,7 +34,7 @@ namespace Pf
 
         }
 
-        std::string generalFrame::parse(const unsigned char *u8Msg, const unsigned int u32Size)
+        std::string generalFrame::parse(unsigned char *u8Msg, const unsigned int u32Size)
         {
             std::ostringstream strErr;
             Json::Value rootJson;
@@ -838,7 +838,7 @@ namespace Pf
             return tmp;
         }
 
-        void generalFrame::frameCheck(const unsigned char *u8Msg, const unsigned int u32Size)
+        void generalFrame::frameCheck(unsigned char *u8Msg, const unsigned int u32Size)
         {
             std::ostringstream strErr;
             int i32Pos = 0;
@@ -880,6 +880,15 @@ namespace Pf
                 UT_THROW_EXCEPTION(strErr.str());
             }
 
+            unsigned int calCrc = data.getData(u8Msg, u32Size,
+                                               mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>(),
+                                                  mProtocolCfg->getMessage<protocolConfigure::general_frame_check_size_index>(), 0, 0);
+
+            if(u32Size > mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>())
+            {
+                u8Msg[mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>()] = 0;
+            }
+
             //帧校验
             int crc = 0;
             int checkStartPos = mProtocolCfg->getMessage<protocolConfigure::general_cal_check_start_index>();
@@ -899,15 +908,10 @@ namespace Pf
             }
             else if (cType == SUM_CHECK)
             {
-                crc = PfCommon::Crc::calSum((unsigned char*)(&u8Msg[checkStartPos]), checkSize);
+                crc = PfCommon::Crc::calSum(u8Msg, checkSize);
                 //modify xqx 20200211
                 crc &= 0xFF;
             }
-
-
-            unsigned int calCrc = data.getData(u8Msg, u32Size,
-                                               mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>(),
-                                               mProtocolCfg->getMessage<protocolConfigure::general_frame_check_size_index>(), 0, 0);
 
             if (calCrc != crc)
             {
@@ -993,6 +997,16 @@ namespace Pf
         {
             if(outValue.size() >= 25)
                 outValue.at(25) = outValue.at(25) + 1;
+
+            if(outValue.size() > 33)
+                outValue.at(mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>()) = 0;
+
+            unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(0)), outValue.size());
+            dataStorage data;
+            data.setData(&outValue.at(0), outValue.size(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>(),
+                         mProtocolCfg->getMessage<protocolConfigure::general_frame_check_size_index>(),
+                         0, 0, crc);
         }
 
         void generalFrame::_simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack)
@@ -1076,9 +1090,10 @@ namespace Pf
                                      mProtocolCfg->getMessage<protocolConfigure::general_frame_len_byte_size_index>(),
                                      0, 0, int(outValue.size() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_start_index>() - mProtocolCfg->getMessage<protocolConfigure::general_cal_len_to_end_index>()));
 
-            //step4：更新校验和
-            unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(mProtocolCfg->getMessage<protocolConfigure::general_cal_check_start_index>())),
-                                    outValue.size() - mProtocolCfg->getMessage<protocolConfigure::general_cal_check_start_index>() - mProtocolCfg->getMessage<protocolConfigure::general_cal_check_to_end_index>());
+            //step4：更新校验和(除自身外其余累加和)
+            outValue.at(mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>()) = 0;
+
+            unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(0)), outValue.size());
 
             data.setData(&outValue.at(0), outValue.size(),
                          mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>(),

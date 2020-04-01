@@ -39,7 +39,7 @@ namespace Pf
             std::string getFrameName() override{return VAR_NAME(specialFrame93);}
             std::string version() override {return VERSION;}
             void simulation(byteArray &outValue, const std::string &json) override;
-            std::string parse(const unsigned char *inBuf, const unsigned int inSize) override;
+            std::string parse(unsigned char *inBuf, const unsigned int inSize) override;
         private:
             void _parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue);
             void _fillRegion(byteArray &outValue, const Json::Value &jsValue);

@@ -78,7 +78,7 @@ void saveXml::run()
             auto type = cmdOrParamRole->getNodeType();
             if(dragRole::Node_Cmd == type)  //指令
             {
-                testItemElement = createSubFlow::element(cmdOrParamRole->getProperty());
+                testItemElement = createSubFlow::element(mCurSystemItem->data(0, Qt::UserRole).value<recordRole>().mNodeProperty.get(), cmdOrParamRole->getProperty());
 
                 emit saveProgress(processIndex++);
             }
@@ -91,7 +91,7 @@ void saveXml::run()
                     dragRole *tmpRole = (cmdOrParamItem->child(index))->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
                     subRoles.push_back(tmpRole->getProperty());
                 }
-                testItemElement = createSubFlow::element(cmdOrParamRole->getProperty(), subRoles);
+                testItemElement = createSubFlow::element(mCurSystemItem->data(0, Qt::UserRole).value<recordRole>().mNodeProperty.get(), cmdOrParamRole->getProperty(), subRoles);
 
                 emit saveProgress(processIndex++);
             }

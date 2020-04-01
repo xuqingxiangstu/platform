@@ -24,6 +24,7 @@ public:
     flow(TiXmlElement *);
     void setAdapterManager(Pf::PfAdapter::PfAdapterManager *adapterManagerObj);
     void setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter);
+    void setFlowUuid(const std::string uuid){mUuid = uuid;}
     void setRecordUuid(std::string uuid);
     Json::Value getRunItems();
     void exe(flowManager *manager, std::string subFlowUuid);
@@ -31,7 +32,9 @@ public:
 private:
     std::vector<std::tuple<std::string, std::shared_ptr<subFlow>>> mSubFlowObjs;
     flowManager *mFlowManagerObj;
+    std::atomic_bool isStop;
     std::string mRecordUuid;
+    std::string mUuid;
 };
 
 class flowManager
@@ -55,10 +58,13 @@ public:
     void exe(std::string flowUuid, std::string subFlowUuid);
     void exit();    
     void exeOver();
+    std::string eqSystemUuid(){return mEqSystemUuid;}
 private:
     std::vector<std::tuple<std::string, std::string, std::shared_ptr<flow>>> mFlowsObj;
     std::atomic_bool mIsRunning;
+    Pf::PfAdapter::Adapter *mUiAdapter;
     std::string mRecordUuid;
+    std::string mEqSystemUuid;  //等效系统UUID
 
     //std::vector<std::thread> mRunThreadObj;
 };

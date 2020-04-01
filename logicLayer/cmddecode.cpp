@@ -248,8 +248,7 @@ void cmdDecode::getRunItems()
     for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); itor++)
     {
         Json::Value flow;
-        flow["record_uuid"] = itor->first;
-
+        flow["record_uuid"] = itor->first;        
         flow["flow"] = (itor->second)->getRunItems();
 
         msg.append(flow);
@@ -629,27 +628,25 @@ void cmdDecode::resetAdapter()
     std::map<std::string, std::set<std::string>> adapters;
 
     for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); itor++)
-    {
-        //获取记录UUID，通过记录UUID获取等效设备
-        std::string uuid = itor->first;
-
+    {      
         //获取各目的设备信息
         std::set<std::string> tmpV;
 
         Json::Value info = (itor->second)->getRunItems();
 
-        qDebug() << info.toStyledString().c_str();
-
         for(int index = 0; index < info.size(); index++)
         {
             Json::Value subFlow = info[index]["sub_flow"];
+
             for(int subIndex = 0; subIndex < subFlow.size(); subIndex++)
             {
                 tmpV.insert(subFlow[subIndex]["dest_system_uuid"].asString());
             }
         }
-        adapters["local"] = tmpV;
+        adapters[(itor->second)->eqSystemUuid()] = tmpV;
     }
+
+
 
     //初始化各系统
 
@@ -667,7 +664,7 @@ void cmdDecode::resetAdapter()
         Json::Value devInfo;
         getDevInfo(eqSysUuid, devInfo);
 
-        if(SYSTEM_INTERFACE_TABLE_UUID == devInfo["type"].asString())
+        if(SYSTEM_INTERFACE_TABLE_UDP == devInfo["type"].asString())
         {
             if(mAdpterManagerObj->isExist(eqSysUuid))
                 continue;
@@ -687,7 +684,7 @@ void cmdDecode::resetAdapter()
             //初始化各发送系统
             auto sendSyss = itor->second;
             for(auto send_uuid : sendSyss)
-            {
+            {                
                 Json::Value sendInfo;
                 getDevInfo(send_uuid, sendInfo);
 

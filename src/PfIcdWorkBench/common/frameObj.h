@@ -99,7 +99,7 @@ namespace Pf
              * @param[in] inSize 数据长度
              * @return json帧
              */
-            virtual std::string parse(const unsigned char *inBuf, const unsigned int inSize){return "";}
+            virtual std::string parse(unsigned char *inBuf, const unsigned int inSize){return "";}
         };
 
         /** 类导出函数指针 **/

@@ -123,10 +123,14 @@ void subFlow::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
 void subFlow::setRecordUuid(std::string uuid)
 {
     mRecordUuid = uuid;
+    mAction->setRecordUuid(uuid);
 }
 
 void subFlow::exe()
 {  
+    bool res = false;
+    uiTestStatus(TESTING);
+
     //如果有启动条件则判断
     if(mStartCond)
     {
@@ -139,6 +143,9 @@ void subFlow::exe()
     if(isStop)
     {
         isStop = false;
+
+        uiTestStatus(TEST_ERROR);
+
         return ;
     }
 
@@ -150,7 +157,7 @@ void subFlow::exe()
         while(!isStop) //强制退出
         {
             //执行
-            perform();
+            res = perform();
 
             //判断是否结束
             if(mStopCond)
@@ -163,22 +170,50 @@ void subFlow::exe()
     else
     {
         //立即发送及手动发送执行一次(手动发送时设置启动条件)
-        perform();
+        res = perform();
     }
+
+    if(res)
+        uiTestStatus(TEST_NORMAL);
+    else
+        uiTestStatus(TEST_ERROR);
 }
 
-void subFlow::perform()
+bool subFlow::perform()
 {
+    bool res = false;
     ///执行动作
     if(mAction.get() != nullptr)
     {
-        toUi(mDescribe);
+        uiShowMsg(mDescribe);
 
-        mAction->exe();   
+        res = mAction->exe();
     }
+
+    return res;
 }
 
-void subFlow::toUi(const std::string &msg, bool state)
+void subFlow::uiTestStatus(const std::string &status)
+{
+    Json::Value js;
+    js["msgType"] = "testStatus";
+
+    Json::Value tmp;
+    tmp["record_uuid"] = mRecordUuid;
+
+    tmp["flow_uuid"] = mFLowUuid;
+
+    tmp["sub_flow_uuid"] = mUuid;
+
+    tmp["status"] = status;
+
+    js["msg"] = tmp;
+
+    if(mUiAdapter)
+        mUiAdapter->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
+}
+
+void subFlow::uiShowMsg(const std::string &msg, bool state)
 {
     Json::Value js;
     js["msgType"] = "showMsg";

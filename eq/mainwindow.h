@@ -23,6 +23,7 @@ public:
 private:
     void onSave();
 
+    void closeEvent( QCloseEvent * event);
 public slots:
     /**
      * @brief onFlowChange  流程变化
@@ -36,10 +37,12 @@ public slots:
 
     void onDeleteFlow(QString uuid);
 
-signals:
-    void valueChange(QString attr, Json::Value val);
+    void onProjectAlreadySave(QString uuid);
 
-    void toShowProperty(Json::Value);
+signals:
+    void valueChange(QString uuid, QString attr, Json::Value val);
+    void showCurItemProperty(QString uuid);
+    void toShowProperty(QString, Json::Value);
 
     void setGroupPropertyEnable(QString propertyName, bool isEnable);
 
@@ -64,6 +67,8 @@ private:
     propertyWidget *mPropertyWidgetObj; //流程属性
     QMap<QString, QWidget*> mFlowWidgetManager; //流程管理
     QString mCurFlowWidgetUuid; //当前流程UUID
+    bool isExit;
+    QStringList mSaveProjectUuid;
 private:
     Ui::MainWindow *ui;
 };

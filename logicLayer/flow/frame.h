@@ -14,6 +14,10 @@
 class value;
 class head;
 
+#define FRAME_BE    "BE"
+#define FRAME_FE    "FE"
+#define FRAME_93    "93"
+
 class frame
 {
     enum{
@@ -106,10 +110,7 @@ private:
     int mCurParamType;
     std::map<std::string, std::shared_ptr<Pf::PfIcdWorkBench::frameObj>> mIcdFrameObj;
     std::string mCurFrameType;
-private:
-    const std::string frame93 = "93";
-    const std::string frameFE = "FE";
-    const std::string frameBE = "BE";
+
 };
 
 class Algorithm;
@@ -133,6 +134,7 @@ class head
 public:
     virtual void init(TiXmlElement *){}
     virtual Json::Value serialize(){return nullptr;}
+    virtual std::string frameType(){return "";}
 };
 
 class headBe : public head
@@ -140,6 +142,7 @@ class headBe : public head
 public:
     void init(TiXmlElement *) override;
     Json::Value serialize() override;
+    std::string frameType() override {return FRAME_BE;}
 private:
     Json::Value mJsonV;
 };
@@ -149,6 +152,17 @@ class headFe : public head
 public:
     void init(TiXmlElement *) override;
     Json::Value serialize() override;
+    std::string frameType() override {return FRAME_FE;}
+private:
+    Json::Value mJsonV;
+};
+
+class head93 : public head
+{
+public:
+    void init(TiXmlElement *) override;
+    Json::Value serialize() override;
+    std::string frameType() override {return FRAME_93;}
 private:
     Json::Value mJsonV;
 };

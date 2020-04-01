@@ -18,7 +18,7 @@ public:
 public:
     void init(TiXmlElement *);
     bool isConform();
-    void exe();
+    bool exe();
     void setAdapterManager(Pf::PfAdapter::PfAdapterManager *adapterManagerObj);
     void setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter);
     void setRecordUuid(std::string uuid);

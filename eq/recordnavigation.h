@@ -2,7 +2,7 @@
 #define RECORDNAVIGATION_H
 
 #include <QWidget>
-
+#include <QMap>
 #include <QMenu>
 #include <QTreeWidget>
 #include "./property/nodeproperty.h"
@@ -52,7 +52,7 @@ public slots:
      */
     void onProjectAlreadySave(QString uuid);
 
-    void onPropertyValueChange(QString attr, Json::Value value);
+    void onPropertyValueChange(QString uuid, QString attr, Json::Value value);
 
     void onSaveProject(QTreeWidgetItem *item);
 signals:
@@ -68,7 +68,9 @@ signals:
     void deleteFlow(QString uuid);
 
 
-    void toShowProperty(Json::Value);
+    void toShowProperty(QString uuid, Json::Value);
+
+    void clearFlowProperty(QString uuid, Json::Value);
 
     void setSelfGroupPropertyEnable(QString propertyName, bool isEnable);
 
@@ -76,10 +78,13 @@ signals:
 public:
     void buildTree();
 
-    bool isModify(){return mIsModify;}
-
-
-    QTreeWidgetItem *curItem();
+    bool isModify(QString uuid);
+    /**
+     * @brief getModifyProject  获取已修改的工程
+     * @return
+     */
+    QStringList getModifyProject();
+    QTreeWidgetItem *curItem(QString uuid);
 private:    
     /**
      * @brief findItem  根据Uuid查找item
@@ -101,7 +106,8 @@ private:
     QVector<QString> mNewUuid;          //新创建的uuid
     QMap<std::string, Json::Value> mDestDevInitValue;   //设备初始表属性
     const QString mModifyFlag = "[* 已修改]";   //已修改标志
-    bool mIsModify; //是否修改
+    QMap<QString, bool> mIsModify; //是否修改
+    QString mUiUuid;    //界面UUID
 private:
     Ui::recordNavigation *ui;
 };

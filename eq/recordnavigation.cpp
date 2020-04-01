@@ -11,13 +11,15 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QFileInfo>
+#include <QUuid>
 
 recordNavigation::recordNavigation(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::recordNavigation),
-    mIsModify(false)
+    ui(new Ui::recordNavigation)
 {
     ui->setupUi(this);
+
+    mUiUuid = QUuid::createUuid().toString();
 
     mPopMenu = new QMenu(this);
     mPopMenu->addAction(ui->actionNewProject);
@@ -66,7 +68,12 @@ void recordNavigation::onSaveProject(QTreeWidgetItem *item)
     if(!item)
         return ;
 
-    if(mIsModify)
+    if(!mIsModify.contains(mCurSelectUuid))
+    {
+        mIsModify[mCurSelectUuid] = false;
+    }
+
+    if(mIsModify[mCurSelectUuid])
     {
         recordRole role = item->data(0, Qt::UserRole).value<recordRole>();
 
@@ -74,7 +81,7 @@ void recordNavigation::onSaveProject(QTreeWidgetItem *item)
         {
             //记录中增加节点
             flowRecordTable::getInstance()->updateNodeInfo(role.uuid, role.mNodeProperty->getJson().toStyledString());
-        }
+        }       
     }
 }
 
@@ -96,6 +103,29 @@ QTreeWidgetItem *recordNavigation::findItem(QString uuid)
     }
 
     return item;
+}
+
+QStringList recordNavigation::getModifyProject()
+{
+    QStringList modifyUuid;
+
+    foreach(const QString &key, mIsModify.keys())
+    {
+        if(mIsModify[key])
+            modifyUuid.append(key);
+    }
+
+    return modifyUuid;
+}
+
+bool recordNavigation::isModify(QString uuid)
+{
+    if(!mIsModify.contains(uuid))
+    {
+        mIsModify[uuid] = false;
+    }
+
+    return mIsModify[uuid];
 }
 
 void recordNavigation::buildTree()
@@ -142,7 +172,7 @@ void recordNavigation::buildTree()
             mCurSelectUuid = role.uuid.c_str();
 
             //属性变化
-            emit toShowProperty(role.mNodeProperty->getJson());
+            emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());
 
             emit flowChange((*Itor)->parent()->text(Name_Index), role.sysType, (*Itor)->text(Name_Index), mCurSelectUuid, false);
 
@@ -155,8 +185,13 @@ void recordNavigation::buildTree()
 
 
 void recordNavigation::onProjectAlreadySave(QString uuid)
-{
-    if(!mIsModify)
+{  
+    if(!mIsModify.contains(uuid))
+    {
+        mIsModify[uuid] = false;
+    }
+
+    if(!mIsModify[uuid])
         return ;
 
     QTreeWidgetItemIterator Itor(ui->treeWidget);
@@ -181,12 +216,17 @@ void recordNavigation::onProjectAlreadySave(QString uuid)
         ++Itor;
     }
 
-    mIsModify = false;
+    mIsModify[uuid]  = false;
 }
 
 void recordNavigation::onProjectModify(QString uuid)
-{
-    if(mIsModify)
+{    
+    if(!mIsModify.contains(uuid))
+    {
+        mIsModify[uuid] = false;
+    }
+
+    if(mIsModify[uuid])
         return ;
 
     QTreeWidgetItemIterator Itor(ui->treeWidget);
@@ -203,7 +243,7 @@ void recordNavigation::onProjectModify(QString uuid)
         }
         ++Itor;
     }
-    mIsModify = true;
+    mIsModify[uuid] = true;
 }
 
 QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, const std::string &uuid, const std::string &name, NodeType type)
@@ -316,13 +356,16 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
     return item;
 }
 
-QTreeWidgetItem *recordNavigation::curItem()
+QTreeWidgetItem *recordNavigation::curItem(QString uuid)
 {
-    return ui->treeWidget->currentItem();
+    return findItem(uuid);
 }
 
-void recordNavigation::onPropertyValueChange(QString attr, Json::Value value)
+void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::Value value)
 {
+    if(mUiUuid.compare(uuid) != 0)
+        return ;
+
     QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
     if(!curItem)
         return ;
@@ -404,9 +447,16 @@ void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
             emit flowChange(item->parent()->text(Name_Index), role.sysType, item->text(Name_Index),mCurSelectUuid, mNewUuid.contains(mCurSelectUuid));
         }
     }
+    else
+    {
+        //清空流程属性
+        emit clearFlowProperty(mUiUuid, Json::Value());
+    }
+
+    mCurSelectUuid = role.uuid.c_str();
 
     //属性变化
-    emit toShowProperty(role.mNodeProperty->getJson());
+    emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());
 
     //更新帧类型属性框
     Json::Value frameJs;

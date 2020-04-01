@@ -89,7 +89,17 @@ Json::Value headBe::serialize()
 {
     return mJsonV;
 }
+/***********************************************/
 
+void head93::init(TiXmlElement *xmlEle)
+{
+    mJsonV = "";
+}
+
+Json::Value head93::serialize()
+{
+    return mJsonV;
+}
 /***********************************************/
 
 void headFe::init(TiXmlElement *xmlEle)
@@ -204,26 +214,26 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
 
     std::shared_ptr<Pf::PfIcdWorkBench::frameObj> tmpObj = nullptr;
 
-    tmpObj = icdAdapter->getFrameObj(frame93);
+    tmpObj = icdAdapter->getFrameObj(FRAME_93);
     if(tmpObj == nullptr)
     {
         UT_THROW_EXCEPTION("get 93 frame obj faild!");
     }
-    mIcdFrameObj[frame93] = tmpObj;
+    mIcdFrameObj[FRAME_93] = tmpObj;
 
-    tmpObj = icdAdapter->getFrameObj(frameBE);
+    tmpObj = icdAdapter->getFrameObj(FRAME_BE);
     if(tmpObj == nullptr)
     {
         UT_THROW_EXCEPTION("get BE frame obj faild!");
     }
-    mIcdFrameObj[frameBE] = tmpObj;
+    mIcdFrameObj[FRAME_BE] = tmpObj;
 
-    tmpObj = icdAdapter->getFrameObj(frameFE);
+    tmpObj = icdAdapter->getFrameObj(FRAME_FE);
     if(tmpObj == nullptr)
     {
         UT_THROW_EXCEPTION("get FE frame obj faild!");
     }
-    mIcdFrameObj[frameFE] = tmpObj;
+    mIcdFrameObj[FRAME_FE] = tmpObj;
 }
 
 void frame::init(TiXmlElement *xmlEle)
@@ -232,18 +242,31 @@ void frame::init(TiXmlElement *xmlEle)
     TiXmlElement *headEle = xmlEle->FirstChildElement("head");
     if(headEle)
     {
-        TiXmlElement *beEle = headEle->FirstChildElement("BE");
+        TiXmlElement *beEle = headEle->FirstChildElement(FRAME_BE);
         if(beEle)
         {
             mHeadObj = std::make_shared<headBe>();
             mHeadObj->init(beEle);
+
+            mCurFrameType = FRAME_BE;
         }
 
-        TiXmlElement *feEle = headEle->FirstChildElement("FE");
+        TiXmlElement *feEle = headEle->FirstChildElement(FRAME_FE);
         if(feEle)
         {
             mHeadObj = std::make_shared<headFe>();
             mHeadObj->init(feEle);
+
+            mCurFrameType = FRAME_FE;
+        }
+
+        TiXmlElement *noEle = headEle->FirstChildElement(FRAME_93);
+        if(noEle)
+        {
+            mHeadObj = std::make_shared<head93>();
+            mHeadObj->init(noEle);
+
+            mCurFrameType = FRAME_93;
         }
     }
 
@@ -353,10 +376,10 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
     Json::Value info;
     paramsTable::getInstance()->getValue(table, coding, info);
     if(!info.isNull())
-    {
-        std::string frameType = info[PARAM_TABLE_FRAME_TYPE].asString();
-        mCurFrameType = frameType;
+    {        
+        std::string frameType = mCurFrameType;
         std::string infoWordType = info[PARAM_TABLE_INFO_WORD_TYPE].asString();
+        std::string cmdType = info[PARAM_TABLE_CMD_TYPE].asString();
 
         std::string ackStr = info[PARAM_TABLE_IS_ACK].asString();
         if(IS_ACK_YES == ackStr)
@@ -371,8 +394,25 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
         if(mHeadObj)
         {
             regionJs["head"] = mHeadObj->serialize();
-            //填充信息字类型字段
-            regionJs["head"]["head_info_word_type"] = std::atoi(infoWordType.c_str());
+            if(FRAME_BE == mHeadObj->frameType())
+            {
+                //填充信息字类型字段
+                regionJs["head"]["head_info_word_type"] = std::atoi(infoWordType.c_str());
+
+                //填充帧类型
+                if(CMD_TYPE_CMD == cmdType)
+                {
+                    regionJs["head"]["head_frame_type"] = 2;
+                }
+                else if(CMD_TYPE_STATE == cmdType)
+                {
+                    regionJs["head"]["head_frame_type"] = 1;
+                }
+                else if(CMD_TYPE_DATA == cmdType)
+                {
+                    regionJs["head"]["head_frame_type"] = 0;
+                }
+            }
         }
 
 #ifdef DEBUG_FRAME
@@ -399,15 +439,15 @@ Json::Value frame::fill(const std::string &frameType, const std::string &infoWor
 {
     Json::Value regionJs;
 
-    if(frameType == frame93)
+    if(frameType == FRAME_93)
     {
         regionJs = fill93();
     }
-    else if(frameType == frameFE)
+    else if(frameType == FRAME_FE)
     {
         regionJs = fillFe();
     }
-    else if(frameType == frameBE)
+    else if(frameType == FRAME_BE)
     {
         regionJs = fillBe(infoWordType);
     }

@@ -116,11 +116,18 @@ int main(int argc, char *argv[])
         //decode.load("E:\\work\\[43]地面测发控系统仿真系统\\flow.xml");
         decode.initPrograme();
 
+        std::string uuid = "{4428ab38-8874-4705-a7f7-a0db54ed267b}";
+
         Json::Value tmp;
-        tmp.append("{f1bd7b8b-143b-4840-9049-07292dc80b2e}");
+        tmp.append(uuid);
+        tmp.append("{f7b24908-b0d0-4c30-b92f-c228fddc536a}");
         Json::Value fJs;
-        fJs["flows"] = tmp;
+        fJs["flows"] = tmp;       
         decode.initFlow(fJs);
+
+        Json::Value value;
+        value["record_uuid"] = uuid;
+        decode.startTest(value);
     }
     catch(std::runtime_error err)
     {

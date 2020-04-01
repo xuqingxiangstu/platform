@@ -46,6 +46,12 @@ namespace Pf
         {
             if(outValue.size() >= 15)
                 outValue.at(15) = outValue.at(15) + 1;
+
+            //更新CRC
+
+            unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(3), outValue.size() - 3);
+            outValue.at(1) = crc >> 8;
+            outValue.at(2) = crc & 0xFF;
         }
 
         void frameFE::simulation(byteArray &outValue, const std::string &json)
@@ -236,7 +242,7 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
-        std::string frameFE::parse(const unsigned char *u8Msg, const unsigned int u32Size)
+        std::string frameFE::parse(unsigned char *u8Msg, const unsigned int u32Size)
         {
             if(u32Size <= 0)
                 return "";

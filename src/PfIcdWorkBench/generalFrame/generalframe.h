@@ -43,7 +43,7 @@ namespace Pf
             std::string version() override {return VERSION;}
             void simulation(byteArray &outValue, const std::string &json) override;
             //void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
-            std::string parse(const unsigned char *inBuf, const unsigned int inSize) override;
+            std::string parse(unsigned char *inBuf, const unsigned int inSize) override;
             void resendMsg(byteArray &outValue) override;
         private:
             /**
@@ -77,7 +77,7 @@ namespace Pf
              * @param[in] inBuf         校验首地址
              * @param[in] inSize        校验长度
              */
-            void frameCheck(const unsigned char *inBuf, const unsigned int inSize);
+            void frameCheck(unsigned char *inBuf, const unsigned int inSize);
 
             /**
              * @brief upDataCrc 更新crc

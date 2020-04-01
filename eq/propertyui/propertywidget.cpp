@@ -53,9 +53,11 @@ void propertyWidget::showProperty(QString json)
 
 }
 #endif
-void propertyWidget::showProperty(Json::Value value)
+void propertyWidget::showProperty(QString uuid, Json::Value value)
 {
     isUpDate = false;
+
+    mCurUuid = uuid;
 
     //显示之前先删除之前属性
     deleteAllExistProperty();
@@ -315,7 +317,7 @@ void propertyWidget::deleteAllExistProperty()
 void propertyWidget::onIntValueChanged(QtProperty *property, int val)
 {
     if(isUpDate)
-        emit valueChange(property->propertyName(), Json::Value(val));
+        emit valueChange(mCurUuid, property->propertyName(), Json::Value(val));
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();
     qDebug() << QString::number(val, 10);
@@ -325,7 +327,7 @@ void propertyWidget::onIntValueChanged(QtProperty *property, int val)
 void propertyWidget::onDoubleValueChanged(QtProperty *property, double val)
 {
     if(isUpDate)
-        emit valueChange(property->propertyName(), Json::Value(val));
+        emit valueChange(mCurUuid, property->propertyName(), Json::Value(val));
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();
     qDebug() << QString::number(val);
@@ -335,7 +337,7 @@ void propertyWidget::onDoubleValueChanged(QtProperty *property, double val)
 void propertyWidget::onStringValueChanged(QtProperty *property, QString val)
 {
     if(isUpDate)
-        emit valueChange(property->propertyName(), Json::Value(val.toStdString()));
+        emit valueChange(mCurUuid, property->propertyName(), Json::Value(val.toStdString()));
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();
     qDebug() << val;
@@ -345,7 +347,7 @@ void propertyWidget::onStringValueChanged(QtProperty *property, QString val)
 void propertyWidget::onBoolValueChanged(QtProperty *property, bool val)
 {
     if(isUpDate)
-        emit valueChange(property->propertyName(), Json::Value(val));
+        emit valueChange(mCurUuid, property->propertyName(), Json::Value(val));
 
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();
@@ -433,7 +435,7 @@ void propertyWidget::setChange(std::string type)
                 foreach (QtProperty *subPro, pro->subProperties())
                 {
                     if(isUpDate)
-                        emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                        emit valueChange(mCurUuid, subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
                     //qDebug() << "[FIX]" << subPro->propertyName() << ":" << subPro->valueText();
                 }
                 pro->setEnabled(true);
@@ -455,7 +457,7 @@ void propertyWidget::setChange(std::string type)
                 foreach (QtProperty *subPro, pro->subProperties())
                 {
                     if(isUpDate)
-                        emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                        emit valueChange(mCurUuid, subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
                     //qDebug() << "[RAND]" << subPro->propertyName() << ":" << subPro->valueText();
                 }
                 pro->setEnabled(true);
@@ -477,7 +479,7 @@ void propertyWidget::setChange(std::string type)
                 foreach (QtProperty *subPro, pro->subProperties())
                 {
                     if(isUpDate)
-                        emit valueChange(subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
+                        emit valueChange(mCurUuid, subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
                     //qDebug() << "[LINE]" << subPro->propertyName() << ":" << subPro->valueText();
                 }
                 pro->setEnabled(true);
@@ -507,7 +509,7 @@ void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
 #endif
     if(isUpDate)
     {
-        emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());
+        emit valueChange(mCurUuid, property->propertyName(), mEnumManager->data(property).value<Json::Value>());
 #if 0
         if((property->propertyName().compare(PROPERTY_START_CONDITION) == 0)
             ||(property->propertyName().compare(PROPERTY_STOP_CONDITION) == 0)
@@ -531,7 +533,7 @@ void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
 void propertyWidget::onPropertyChange(QtProperty *property)
 {
     if(isUpDate)
-        emit valueChange(property->propertyName(), Json::Value(mstrManager->value(property).toStdString()));
+        emit valueChange(mCurUuid, property->propertyName(), Json::Value(mstrManager->value(property).toStdString()));
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();
     qDebug() << mstrManager->value(property);

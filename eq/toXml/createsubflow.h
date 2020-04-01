@@ -85,11 +85,11 @@ private:
 class createSubFlow
 {
 public:  
-    static TiXmlElement *element(nodeProperty *node, std::vector<nodeProperty*> subNode = {});
+    static TiXmlElement *element(nodeProperty *headeNode, nodeProperty *node, std::vector<nodeProperty*> subNode = {});
 private:
     static TiXmlElement *createTextElement(const std::string &eleName, const std::string &text);
     static TiXmlElement *createDataFieldsElement(nodeProperty *node, std::vector<nodeProperty *>subNode);
-    static TiXmlElement *createHeadElement(nodeProperty *node, std::vector<nodeProperty *>subNode);
+    static TiXmlElement *createHeadElement(nodeProperty *headNode, nodeProperty *node, std::vector<nodeProperty *>subNode);
 };
 
 class createFlow

@@ -6,11 +6,13 @@
 #include "../src/PfSql/paramsTable/flowrecordtable.h"
 
 #include <QDebug>
+#include <QMessageBox>
 #include <QDir>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    isExit(false)
 {
     ui->setupUi(this);
 
@@ -48,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mPropertyWidgetObj = new propertyWidget();
     ui->propertyWidgetHorizontalLayout->addWidget(mPropertyWidgetObj);
 
-
+    connect(mRecordNavigationObj, &recordNavigation::clearFlowProperty, mPropertyWidgetObj, &propertyWidget::showProperty);
     connect(mRecordNavigationObj, &recordNavigation::setGroupPropertyEnable, mPropertyWidgetObj, &propertyWidget::setGroupPropertyEnable);
 
     connect(mPropertyWidgetObj, &propertyWidget::valueChange, this, &MainWindow::valueChange);
@@ -89,8 +91,8 @@ void MainWindow::initNavigationProperty()
 void MainWindow::onSave()
 {
     //发送保存信号
-    if(mRecordNavigationObj->isModify())
-        emit saveProject(mRecordNavigationObj->curItem());
+    if(mRecordNavigationObj->isModify(mCurFlowWidgetUuid))
+        emit saveProject(mRecordNavigationObj->curItem(mCurFlowWidgetUuid));
 }
 
 void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QString uuid, bool isNew)
@@ -99,7 +101,7 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
     if(mFlowWidgetManager.contains(uuid))
     {
         //已有则切
-        ui->stackedWidget->setCurrentWidget(mFlowWidgetManager[uuid]);        
+        ui->stackedWidget->setCurrentWidget(mFlowWidgetManager[uuid]);
     }
     else
     {
@@ -111,17 +113,21 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
         connect(this, &MainWindow::valueChange, flowWidget, &flowTree::onPropertyValueChange);
 
         connect(this, &MainWindow::saveProject, flowWidget, &flowTree::onSaveProject);
+        connect(this, &MainWindow::showCurItemProperty, flowWidget, &flowTree::onShowCurItemProperty);
         connect(flowWidget, &flowTree::toShowProperty, this, &MainWindow::toShowProperty);
         connect(flowWidget, &flowTree::projectModify, mRecordNavigationObj, &recordNavigation::onProjectModify);
         connect(flowWidget, &flowTree::saveProjectOver, mRecordNavigationObj, &recordNavigation::onProjectAlreadySave);
         connect(this, &MainWindow::updateProject, flowWidget, &flowTree::onUpdateProject);
         connect(flowWidget, &flowTree::updateProperty, this, &MainWindow::updateProperty);
+        connect(flowWidget, &flowTree::saveProjectOver, this, &MainWindow::onProjectAlreadySave);
 
         mFlowWidgetManager[uuid] = flowWidget;
 
         ui->stackedWidget->addWidget(flowWidget);
         ui->stackedWidget->setCurrentWidget(flowWidget);
     }    
+
+    emit showCurItemProperty(uuid);
 
     //更新树(新创建的则不用更新)
     if(!isNew)
@@ -133,4 +139,41 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(mRecordNavigationObj)
+    {
+        mSaveProjectUuid.clear();
+        mSaveProjectUuid = mRecordNavigationObj->getModifyProject();
+        if(mSaveProjectUuid.size() > 0)
+        {
+            if(QMessageBox::Yes == QMessageBox::warning(this, "提示", "有未保存的更改，是否保存",QMessageBox::Yes | QMessageBox::No))
+            {
+                isExit = true;
+
+                foreach (QString uuid, mSaveProjectUuid)
+                {
+                    //保存
+                    emit saveProject(mRecordNavigationObj->curItem(uuid));
+                }
+
+                event->ignore();
+                return ;
+            }
+        }
+    }
+    event->accept();
+}
+
+void MainWindow::onProjectAlreadySave(QString uuid)
+{
+    if(isExit)
+    {
+        mSaveProjectUuid.removeOne(uuid);
+
+        if(mSaveProjectUuid.size() == 0)
+            exit(1);
+    }
 }

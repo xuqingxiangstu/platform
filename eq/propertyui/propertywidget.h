@@ -42,7 +42,7 @@ public:
     explicit propertyWidget(QWidget *parent = 0);
     ~propertyWidget();
 public slots:
-    void showProperty(Json::Value value);
+    void showProperty(QString uuid, Json::Value value);
 
     /**
      * @brief updateProperty    更新属性值
@@ -67,7 +67,7 @@ public slots:
      */
     void setGroupPropertyEnable(QString propertyName, bool isEnable);
 signals:
-    void valueChange(QString attr, Json::Value val);
+    void valueChange(QString uuid, QString attr, Json::Value val);
 private:
     QtProperty *createEnumProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);
     QtProperty *createIntProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue, const Json::Value &minValue, const Json::Value &maxValue);
@@ -100,6 +100,7 @@ private:
     bool isUpDate;
 private:
     QMap<QString, bool> mUserSetGroupProperty;  //用户设置属性（作用域为软件活动时间）
+    QString mCurUuid;
 private:
     Ui::propertyWidget *ui;
 

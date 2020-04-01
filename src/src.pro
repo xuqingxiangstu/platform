@@ -6,8 +6,8 @@ SUBDIRS += \
     #PfAdapter \
     #PfNi \
     #PfFlow \
-    #PfIcdWorkBench \
+    PfIcdWorkBench \
     #PfSmlModel \
-    PfSql
+    #PfSql
 
 HEADERS += platform.h

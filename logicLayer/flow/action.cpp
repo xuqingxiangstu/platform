@@ -29,7 +29,7 @@ void action::init(TiXmlElement *xmlEle)
 {
     TiXmlElement *tmpEle = nullptr;
 
-    tmpEle = xmlEle->FirstChildElement("dest_system");
+    tmpEle = xmlEle->FirstChildElement("dest_system_uuid");
     if(tmpEle)
     {
         const char *point = tmpEle->GetText();
@@ -61,8 +61,10 @@ void action::init(TiXmlElement *xmlEle)
 #endif
 }
 
-void action::exe()
+bool action::exe()
 {
+    bool res = false;
+
 #ifdef DEBUG_ACTION
 
     if(mTimeOut > 0)
@@ -108,7 +110,7 @@ void action::exe()
         if(msg.size() == 0)
         {
             UT_SHOW("send msg size == 0");
-            return ;
+            return res;
         }
 
         if(isAck)   //需要应答(400ms内没有收到则重发2次)
@@ -133,11 +135,15 @@ void action::exe()
                     }
                 }
             }
+            else
+            {
+                res = true;
+            }
         }
         else    //不需要应答
         {
             //step4：发送
-            obj->sendMsg((const char*)&msg.at(0), msg.size());
+            res = obj->sendMsg((const char*)&msg.at(0), msg.size());
         }
     }
     catch(std::runtime_error err)
@@ -145,6 +151,8 @@ void action::exe()
         UT_SHOW("[ERROR]" + std::string(err.what()));
     }
 #endif
+
+    return res;
 }
 
 bool action::isConform()

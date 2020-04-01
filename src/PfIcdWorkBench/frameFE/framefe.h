@@ -32,7 +32,7 @@ namespace Pf
             std::string version() override {return VERSION;}
             void simulation(byteArray &outValue, const std::string &json) override;
             void resendMsg(byteArray &outValue) override;
-            std::string parse(const unsigned char *inBuf, const unsigned int inSize) override;
+            std::string parse(unsigned char *inBuf, const unsigned int inSize) override;
         private:
             void _parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue);
             void _fillRegion(byteArray &outValue, const Json::Value &jsValue);

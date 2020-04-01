@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QUuid>
 
 flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     QWidget(parent),
@@ -27,6 +28,8 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     mCurSystemType(sysType)
 {
     ui->setupUi(this);
+
+    mUiUuid = QUuid::createUuid().toString();
 
     //ui->treeWidget->header()->setSectionResizeMode(QHeaderView::Stretch);
     ui->treeWidget->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -60,7 +63,7 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
             if(dragRole::Node_Flow == data->getNodeType())
             {
                 ui->actionCopy->setEnabled(false);
-                ui->actionDelete->setEnabled(false);
+                //ui->actionDelete->setEnabled(false);
                 ui->actionPase->setEnabled(false);
                 //ui->actionNewSubFlow->setEnabled(true);
                 ui->actionNewFlow->setEnabled(true);
@@ -80,7 +83,7 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
             else if( (dragRole::Node_Cmd == data->getNodeType()) || (dragRole::Node_Param_Group == data->getNodeType()))
             {
                 ui->actionCopy->setEnabled(false);
-                ui->actionDelete->setEnabled(false);
+                //ui->actionDelete->setEnabled(false);
                 ui->actionPase->setEnabled(false);
                 ui->actionNewSubFlow->setEnabled(false);
                 ui->actionNewFlow->setEnabled(true);
@@ -89,7 +92,7 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
             else if((dragRole::Node_Param == data->getNodeType()))
             {
                 ui->actionCopy->setEnabled(false);
-                ui->actionDelete->setEnabled(false);
+                //ui->actionDelete->setEnabled(false);
                 ui->actionPase->setEnabled(false);
                 //ui->actionNewSubFlow->setEnabled(false);
                 ui->actionNewFlow->setEnabled(false);
@@ -99,7 +102,7 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
         else
         {
             ui->actionCopy->setEnabled(false);
-            ui->actionDelete->setEnabled(false);
+            //ui->actionDelete->setEnabled(false);
             ui->actionPase->setEnabled(false);
             //ui->actionNewSubFlow->setEnabled(false);
             ui->actionNewFlow->setEnabled(true);
@@ -385,11 +388,14 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
 
     std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
     //qDebug() << drapData.getProperty()->getJson().toStyledString().c_str();
-    emit toShowProperty(drapData->getProperty()->getJson());
+    emit toShowProperty(mUiUuid, drapData->getProperty()->getJson());
 }
 
-void flowTree::onPropertyValueChange(QString attr, Json::Value value)
-{    
+void flowTree::onPropertyValueChange(QString uuid, QString attr, Json::Value value)
+{
+    if(mUiUuid.compare(uuid) != 0)
+        return ;
+
     QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
     if(!curItem)
         return ;
@@ -522,6 +528,61 @@ void flowTree::onPropertyValueChange(QString attr, Json::Value value)
 
 }
 
+void flowTree::onShowCurItemProperty(QString uuid)
+{
+    if(mCurProjectUuid.compare(uuid) != 0)
+        return ;
+
+    QTreeWidgetItem *item = ui->treeWidget->currentItem();
+    if(item)
+    {
+        std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+        //qDebug() << drapData->getProperty()->getJson().toStyledString().c_str();
+        emit toShowProperty(mUiUuid, drapData->getProperty()->getJson());
+    }
+    else
+    {
+        //清空
+        emit toShowProperty(mUiUuid, Json::Value());
+    }
+}
+
+void flowTree::onActionDelete(QTreeWidgetItem *item)
+{
+    if(QMessageBox::Yes == QMessageBox::warning(this, "提示", "是否删除",QMessageBox::Yes | QMessageBox::No))
+    {
+        //删除item
+        deleteItem(item);
+
+        //清空属性窗体
+        emit toShowProperty(mUiUuid, Json::Value());
+
+        //增加修改提示
+        emit projectModify(mCurProjectUuid);
+    }
+}
+
+void flowTree::deleteItem(QTreeWidgetItem *item)
+{
+    if(!item)
+        return ;
+
+    QTreeWidgetItem *parentItem = item->parent();
+    if(parentItem)
+    {
+        QTreeWidgetItem *del = parentItem->takeChild(parentItem->indexOfChild(item));
+        if(del)
+            delete del;
+    }
+    else
+    {
+        QTreeWidgetItem *del = ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(item));
+        if(del)
+            delete del;
+    }
+}
+
+
 void flowTree::onActionTestSend(QTreeWidgetItem *item)
 {
     dragRole *role = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
@@ -617,6 +678,13 @@ void flowTree::onMenuTrigger(QAction *action)
         if(mCurItem)
         {
             onActionTestSend(mCurItem);
+        }
+    }
+    else if("actionDelete" == actionObjName)
+    {
+        if(mCurItem)
+        {
+            onActionDelete(mCurItem);
         }
     }
 }
