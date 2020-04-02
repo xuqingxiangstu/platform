@@ -2,6 +2,7 @@
 
 
 #include "../src/PfCommon/tools/ut_error.h"
+#include "../src/PfCommon/jsoncpp/json.h"
 #include "condition.h"
 #include "action.h"
 #include <thread>
@@ -91,7 +92,7 @@ Json::Value subFlow::getRunItems()
         subFlowJs["table"] = subFlowJs["info"][0]["table"].asString();
     }
 
-    subFlowJs["uuid"] = mUuid;
+    subFlowJs["sub_flow_uuid"] = mUuid;
     subFlowJs["describe"] = mDescribe;
     subFlowJs["timing"] = mTiming->getTimingStr();
 
@@ -127,9 +128,36 @@ void subFlow::setRecordUuid(std::string uuid)
 }
 
 void subFlow::exe()
-{  
+{
     bool res = false;
     uiTestStatus(TESTING);
+
+    try
+    {
+        res = _exe();
+    }
+    catch(std::runtime_error err)
+    {
+        uiShowMsg(INFO_STR(err.what()), false);
+    }
+    catch(Json::LogicError err)
+    {
+        uiShowMsg(INFO_STR(err.what()), false);
+    }
+    catch(...)
+    {
+
+    }
+
+    if(res)
+        uiTestStatus(TEST_NORMAL);
+    else
+        uiTestStatus(TEST_ERROR);
+}
+
+bool subFlow::_exe()
+{  
+    bool res = false;
 
     //如果有启动条件则判断
     if(mStartCond)
@@ -144,9 +172,7 @@ void subFlow::exe()
     {
         isStop = false;
 
-        uiTestStatus(TEST_ERROR);
-
-        return ;
+        return res;
     }
 
     //发送时机
@@ -172,11 +198,6 @@ void subFlow::exe()
         //立即发送及手动发送执行一次(手动发送时设置启动条件)
         res = perform();
     }
-
-    if(res)
-        uiTestStatus(TEST_NORMAL);
-    else
-        uiTestStatus(TEST_ERROR);
 }
 
 bool subFlow::perform()

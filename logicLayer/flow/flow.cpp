@@ -68,7 +68,7 @@ Json::Value flowManager::getRunItems()
     {
         Json::Value tmpJs;
 
-        tmpJs["uuid"] = std::get<Uuid_Index>(flow);
+        tmpJs["flow_uuid"] = std::get<Uuid_Index>(flow);
         tmpJs["describe"] = std::get<Des_Index>(flow);
         tmpJs["sub_flow"] = std::get<Flow_Index>(flow)->getRunItems();
 
@@ -78,7 +78,7 @@ Json::Value flowManager::getRunItems()
     return flowJs;
 }
 
-void flowManager::exeOver()
+void flowManager::exeOver(bool status, std::string info)
 {
     //运行结束
 
@@ -88,7 +88,9 @@ void flowManager::exeOver()
     Json::Value tmp;
     tmp["record_uuid"] = mRecordUuid;
 
-    tmp["result"] = true;
+    tmp["result"] = status;
+
+    tmp["info"] = info;
 
     js["msg"] = tmp;
 
@@ -314,7 +316,7 @@ void flow::exe(flowManager *manager, std::string subFlowUuid)
             thread.join();
         }
 
-        mFlowManagerObj->exeOver();
+        mFlowManagerObj->exeOver(true, "");
     }
     else//执行某一个，此时不需要开启线程，上级已经开线程
     {
@@ -328,7 +330,7 @@ void flow::exe(flowManager *manager, std::string subFlowUuid)
         }
         else
         {
-            throw std::runtime_error("[ERROR] not exist sub flow (" + subFlowUuid + ")");
+            mFlowManagerObj->exeOver(false, "[ERROR] not exist sub flow (" + subFlowUuid + ")");
         }
     }
 }

@@ -40,6 +40,7 @@ private:
     void init(TiXmlElement *);
     void uiShowMsg(const std::string &msg, bool state = true);
     void uiTestStatus(const std::string &status);
+    bool _exe();
 private:
     std::shared_ptr<startCondition> mStartCond;
     std::shared_ptr<stopCondition> mStopCond;

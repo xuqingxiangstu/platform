@@ -13,10 +13,12 @@
 #include "../src/PfBus/zeroMq/zmqsend.h"
 #include "../src/PfCommon/jsoncpp/json.h"
 #include "./flow/flow.h"
+#include "./task/rcvtask.h"
 #define MSG_TYPE    "msgType"
 
 #define INIT_FLOW       "init_flow"
 #define INIT_TEST       "init"
+#define MANUALTRIGGER   "manualTrigger"
 #define START_TEST      "start"
 #define STOP_TEST       "stop"
 #define SUSPEND_TEST    "suspend"
@@ -36,6 +38,10 @@
 #define FAULT_FLOW  "fault"
 
 #define DEBUG_SHOW  0
+
+//#undef QT_NO_DEBUG
+
+#undef QT_NO_DEBUG
 
 using namespace Pf;
 
@@ -132,7 +138,7 @@ private:
      */
     void getRunItems();
 
-    std::string resultMsg(std::string type, const std::string &msg);
+    std::string resultMsg(std::string type, const std::string &msg, std::string uuid = "");
 
     void resetAdapter();
 
@@ -167,8 +173,10 @@ private:
     //PfAdapter::Adapter *mAnalogSendObj;   ///< 模拟量输入发送对象
     std::shared_ptr<PfAdapter::PfAdapterManager> mAdpterManagerObj; ///<硬件设备管理对象
     std::shared_ptr<PfIcdWorkBench::icdFrameAdapter> mIcdFrameAdpter; ///<组帧、解帧协议适配对象
-
+    std::atomic_bool mIsInitSuccessful;     ///<初始化是否成功
+    std::atomic_bool mIsInitFlow;           ///<流程是否初始化
     std::map<std::string, std::shared_ptr<flowManager>> mFLowsObj;    ///< 流程句柄
+    std::shared_ptr<rcvTask> mRcvMsgTask;      ///< 接收消息任务
 };
 
 #endif // CMDDECODE_H

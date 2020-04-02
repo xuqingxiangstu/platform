@@ -430,7 +430,9 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
         }
         else
         {
+#ifdef DEBUG_FRAME
             UT_SHOW("获取帧ICD失败(" + frameType + ")");
+#endif
         }
     }
 }
@@ -593,7 +595,10 @@ Json::Value frame::fillBe(const std::string &infoWord)
     {
         //step1：填充infoWord信息
         int coding = std::atoi(std::get<Param_Coding_Index>(mParamsVec[0]).c_str());
-        otherJs["infoWord"] = fillInfoTwo(std::atoi(table.c_str()), coding);
+        Json::Value tmpJs;
+        tmpJs.append(fillInfoTwo(std::atoi(table.c_str()), coding));
+
+        otherJs["infoWord"] = tmpJs;
 
         //step2：填充region信息
         otherJs["region"] = fillRegion();

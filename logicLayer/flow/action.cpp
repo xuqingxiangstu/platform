@@ -148,8 +148,17 @@ bool action::exe()
     }
     catch(std::runtime_error err)
     {
-        UT_SHOW("[ERROR]" + std::string(err.what()));
+        UT_THROW_EXCEPTION("[ERROR]" + std::string(err.what()));
     }
+    catch(Json::LogicError err)
+    {
+        UT_THROW_EXCEPTION("[ERROR]" + std::string(err.what()));
+    }
+    catch(...)
+    {
+        UT_THROW_EXCEPTION("[ERROR]");
+    }
+
 #endif
 
     return res;
@@ -188,7 +197,13 @@ Json::Value action::getRunItems()
     }
 
     if(mFrameObj)
+    {
+        if(frame::Cmd == mFrameObj->getFrameType())
+            tmpJs["cmdOrParam"] = "cmd";
+        else if(frame::Param == mFrameObj->getFrameType())
+            tmpJs["cmdOrParam"] = "param";
         tmpJs["info"] = mFrameObj->getRunItems();
+    }
 
     return tmpJs;
 }

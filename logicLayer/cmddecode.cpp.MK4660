@@ -810,16 +810,16 @@ void cmdDecode::resetAdapter()
 
         if(errorInfo.str() != "")
         {
-            for(auto tmpItor = mAdapterUuids.begin(); tmpItor != mAdapterUuids.end(); )
+            for(auto itor = mAdapterUuids.begin(); itor != mAdapterUuids.end(); )
             {
-                if(std::get<0>((*tmpItor)) == itor->first)
+                if(std::get<0>(*itor) == itor->first)
                 {
-                    respond(resultMsg(INIT_FLOW, errorInfo.str(), std::get<1>(*tmpItor)));
-                    mAdapterUuids.erase(tmpItor++);
+                    respond(resultMsg(INIT_FLOW, errorInfo.str(), mAdapterUuids.at(index)));
+                    mAdapterUuids.erase(itor++);
                 }
                 else
                 {
-                    tmpItor++;
+                    itor++;
                 }
             }
         }

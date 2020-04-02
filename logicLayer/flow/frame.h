@@ -20,15 +20,18 @@ class head;
 
 class frame
 {
+public:
+    enum {
+        Cmd,
+        Param
+    };
+private:
     enum{
         InfoWord_One = 0,
         InfoWord_Two,
         InfoWord_Three
     };
-    enum {
-        Cmd,
-        Param
-    };
+
     enum{
         Cmd_Table_Index,
         Cmd_Coding_Index
@@ -50,6 +53,8 @@ public:
     void setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter);
 
     Json::Value getRunItems();
+
+    int getFrameType(){return mCurParamType;}
 private:
     /**
      * @brief fill    数据域填充

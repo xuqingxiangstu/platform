@@ -1,7 +1,7 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    #PfCommon \
+    PfCommon \
     #PfBus \
     #PfAdapter \
     #PfNi \

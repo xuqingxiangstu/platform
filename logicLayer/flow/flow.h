@@ -57,7 +57,7 @@ public:
     //void exe();
     void exe(std::string flowUuid, std::string subFlowUuid);
     void exit();    
-    void exeOver();
+    void exeOver(bool status, std::string info);
     std::string eqSystemUuid(){return mEqSystemUuid;}
 private:
     std::vector<std::tuple<std::string, std::string, std::shared_ptr<flow>>> mFlowsObj;
