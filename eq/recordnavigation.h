@@ -76,8 +76,11 @@ signals:
 
     void frameTypeChange(QString uuid, QString type);
 
+    void removeGroupProperty(QString propertyName);
     void removeProperty(QString propertyName);
+
     void addProperty(QString propertyName, Json::Value v);
+    void addGroupProperty(QString propertyName);
 public:
     void buildTree();
 

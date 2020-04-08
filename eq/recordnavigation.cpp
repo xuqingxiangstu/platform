@@ -176,6 +176,11 @@ void recordNavigation::buildTree()
 
             emit flowChange((*Itor)->parent()->text(Name_Index), role.sysType, (*Itor)->text(Name_Index), mCurSelectUuid, false);
 
+            //通知流程树类型变化
+            Json::Value tmJs;
+            role.mNodeProperty->getProperty(PROPERTY_FRAME, tmJs);
+            emit frameTypeChange(mCurSelectUuid, QString(tmJs.toStyledString().c_str()));
+
             ui->treeWidget->setCurrentItem(*Itor);
             break;
         }
@@ -374,52 +379,90 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
     role.mNodeProperty->setProperty(attr.toStdString(), value);
 
     if(attr.compare(PROPERTY_FRAME) == 0)
-    {
-        Json::Value userParamJs;
-        Json::Value versionParamJs;
+    {        
         std::string type = value.asString();
-        bool isReadOnly = false;
-        bool isVisable = false;
 
         if( (type == PROPERTY_FRAME_BE))
         {
-            isReadOnly = false;
-            isVisable = false;
+            emit removeGroupProperty(PROPERTY_SRC);
 
-            emit removeProperty(PROPERTY_USER);
-            emit removeProperty(PROPERTY_SOFT_VERSION);
+            //创建组
+            emit addGroupProperty(PROPERTY_SRC);
+
+            //加入属性
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_SYS_TYPE));
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_SYS_CODING));
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_NODE_CODING));
+
+
+            role.mNodeProperty->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+            role.mNodeProperty->setVisible(PROPERTY_SRC_SYS_CODING, true);
+            role.mNodeProperty->setVisible(PROPERTY_SRC_NODE_CODING, true);
+
+            role.mNodeProperty->setVisible(PROPERTY_USER, false);
+            role.mNodeProperty->setVisible(PROPERTY_SOFT_VERSION, false);
+
+            role.mNodeProperty->setReadOnly(PROPERTY_SRC, false);
+            role.mNodeProperty->setVisible(PROPERTY_SRC, true);
         }
-        else if( (PROPERTY_FRAME_FE == type ) || (PROPERTY_FRAME_93 == type))
+        else if( (PROPERTY_FRAME_FE == type ))
         {
-            isReadOnly = true;
-            isVisable = false;
+            emit removeGroupProperty(PROPERTY_SRC);
 
-            emit removeProperty(PROPERTY_USER);
-            emit removeProperty(PROPERTY_SOFT_VERSION);
+            //创建组
+            emit addGroupProperty(PROPERTY_SRC);
+
+            //加入属性
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_SYS_TYPE));
+
+            role.mNodeProperty->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+            role.mNodeProperty->setVisible(PROPERTY_SRC_SYS_CODING, false);
+            role.mNodeProperty->setVisible(PROPERTY_SRC_NODE_CODING, false);
+
+            role.mNodeProperty->setVisible(PROPERTY_USER, false);
+            role.mNodeProperty->setVisible(PROPERTY_SOFT_VERSION, false);
+
+            role.mNodeProperty->setReadOnly(PROPERTY_SRC, false);
+            role.mNodeProperty->setVisible(PROPERTY_SRC, true);
+
+        }
+        else if( (PROPERTY_FRAME_93 == type ))
+        {
+            //删除属性，并设置隐藏
+            emit removeGroupProperty(PROPERTY_SRC);
+            role.mNodeProperty->setVisible(PROPERTY_SRC, false);
         }
         else if(type == PROPERTY_FRAME_MIDDLE)
         {
-            isReadOnly = false;
-            isVisable = true;
+            emit removeGroupProperty(PROPERTY_SRC);
 
-            userParamJs = role.mNodeProperty->curAttr(PROPERTY_USER);
-            versionParamJs = role.mNodeProperty->curAttr(PROPERTY_SOFT_VERSION);
+            //创建组
+            emit addGroupProperty(PROPERTY_SRC);
 
-            emit addProperty(PROPERTY_SRC, userParamJs);
-            emit addProperty(PROPERTY_SRC, versionParamJs);
+            //加入属性
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_SYS_TYPE));
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_SYS_CODING));
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SRC_NODE_CODING));
+
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_USER));
+            emit addProperty(PROPERTY_SRC, role.mNodeProperty->curAttr(PROPERTY_SOFT_VERSION));
+
+            role.mNodeProperty->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+            role.mNodeProperty->setVisible(PROPERTY_SRC_SYS_CODING, true);
+            role.mNodeProperty->setVisible(PROPERTY_SRC_NODE_CODING, true);
+
+            role.mNodeProperty->setVisible(PROPERTY_USER, true);
+            role.mNodeProperty->setVisible(PROPERTY_SOFT_VERSION, true);
+
+            role.mNodeProperty->setReadOnly(PROPERTY_SRC, false);
+            role.mNodeProperty->setVisible(PROPERTY_SRC, true);
         }
-
-        //是否使能
-
-        role.mNodeProperty->setVisible(PROPERTY_USER, isVisable);
-        role.mNodeProperty->setVisible(PROPERTY_SOFT_VERSION, isVisable);
-
-        emit setGroupPropertyEnable(PROPERTY_SRC, isReadOnly);
-
-        role.mNodeProperty->setReadOnly(PROPERTY_SRC, isReadOnly);
 
         //通知流程树类型变化
         emit frameTypeChange(mCurSelectUuid, QString(type.c_str()));
+
+        //属性变化
+        emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());
     }
 
     onProjectModify(role.uuid.c_str());

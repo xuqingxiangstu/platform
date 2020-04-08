@@ -391,29 +391,7 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
 
     if( ( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
     {
-        bool isReadOnly = false;
-        bool isVisable = false;
-
-        if( (mCurFrameType == PROPERTY_FRAME_BE))
-        {
-            isReadOnly = false;
-            isVisable = false;
-        }
-        else if( (PROPERTY_FRAME_FE == mCurFrameType ) || (PROPERTY_FRAME_93 == mCurFrameType))
-        {
-            isReadOnly = true;
-            isVisable = false;
-        }
-        else if(mCurFrameType == PROPERTY_FRAME_MIDDLE)
-        {
-            isReadOnly = false;
-            isVisable = true;
-        }
-
-        drapData->getProperty()->setReadOnly(PROPERTY_DST, isReadOnly);
-
-        drapData->getProperty()->setVisible(PROPERTY_USER, isVisable);
-        drapData->getProperty()->setVisible(PROPERTY_SOFT_VERSION, isVisable);
+        updateFrameAttr(drapData);
     }
 
     //qDebug() << drapData.getProperty()->getJson().toStyledString().c_str();
@@ -946,6 +924,87 @@ void flowTree::setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> 
     ui->treeWidget->expandItem(subFlowItem);
 }
 
+void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
+{
+    //更新当前节点变化
+
+    if( (mCurFrameType == PROPERTY_FRAME_BE))
+    {
+        emit removeGroupProperty(PROPERTY_DST);
+
+        //创建组
+        emit addGroupProperty(PROPERTY_DST);
+
+        //加入属性
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_SYS_TYPE));
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_SYS_CODING));
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_NODE_CODING));
+
+
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_CODING, true);
+        role->getProperty()->setVisible(PROPERTY_SRC_NODE_CODING, true);
+
+        role->getProperty()->setVisible(PROPERTY_USER, false);
+        role->getProperty()->setVisible(PROPERTY_SOFT_VERSION, false);
+
+        role->getProperty()->setReadOnly(PROPERTY_DST, false);
+        role->getProperty()->setVisible(PROPERTY_DST, true);
+    }
+    else if( (PROPERTY_FRAME_FE == mCurFrameType ))
+    {
+        emit removeGroupProperty(PROPERTY_DST);
+
+        //创建组
+        emit addGroupProperty(PROPERTY_DST);
+
+        //加入属性
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_SYS_TYPE));
+
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_CODING, false);
+        role->getProperty()->setVisible(PROPERTY_SRC_NODE_CODING, false);
+
+        role->getProperty()->setVisible(PROPERTY_USER, false);
+        role->getProperty()->setVisible(PROPERTY_SOFT_VERSION, false);
+
+        role->getProperty()->setReadOnly(PROPERTY_DST, false);
+        role->getProperty()->setVisible(PROPERTY_DST, true);
+
+    }
+    else if( (PROPERTY_FRAME_93 == mCurFrameType ))
+    {
+        //删除属性，并设置隐藏
+        emit removeGroupProperty(PROPERTY_DST);
+        role->getProperty()->setVisible(PROPERTY_DST, false);
+    }
+    else if(mCurFrameType == PROPERTY_FRAME_MIDDLE)
+    {
+        emit removeGroupProperty(PROPERTY_DST);
+
+        //创建组
+        emit addGroupProperty(PROPERTY_DST);
+
+        //加入属性
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_SYS_TYPE));
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_SYS_CODING));
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_NODE_CODING));
+
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_USER));
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SOFT_VERSION));
+
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_CODING, true);
+        role->getProperty()->setVisible(PROPERTY_SRC_NODE_CODING, true);
+
+        role->getProperty()->setVisible(PROPERTY_USER, true);
+        role->getProperty()->setVisible(PROPERTY_SOFT_VERSION, true);
+
+        role->getProperty()->setReadOnly(PROPERTY_DST, false);
+        role->getProperty()->setVisible(PROPERTY_DST, true);
+    }
+}
+
 void flowTree::onFrameTypeChange(QString uuid, QString type)
 {
     if(mCurProjectUuid.compare(uuid) != 0)
@@ -957,50 +1016,12 @@ void flowTree::onFrameTypeChange(QString uuid, QString type)
     if(!item)
         return ;
 
-    std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+    std::shared_ptr<dragRole> role = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
 
-    if( !( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
+    if( !( (dragRole::Node_Cmd == role->getNodeType()) || (dragRole::Node_Param_Group == role->getNodeType())))
         return ;
 
-    //更新当前节点变化
+    updateFrameAttr(role);
 
-    Json::Value userParamJs;
-    Json::Value versionParamJs;
-
-    bool isReadOnly = false;
-    bool isVisable = false;
-
-    if( (mCurFrameType == PROPERTY_FRAME_BE))
-    {
-        isReadOnly = false;
-        isVisable = false;
-
-        emit removeProperty(PROPERTY_USER);
-        emit removeProperty(PROPERTY_SOFT_VERSION);
-    }
-    else if( (PROPERTY_FRAME_FE == mCurFrameType ) || (PROPERTY_FRAME_93 == mCurFrameType))
-    {
-        isReadOnly = true;
-        isVisable = false;
-
-        emit removeProperty(PROPERTY_USER);
-        emit removeProperty(PROPERTY_SOFT_VERSION);
-    }
-    else if(mCurFrameType == PROPERTY_FRAME_MIDDLE)
-    {
-        isReadOnly = false;
-        isVisable = true;
-
-        userParamJs = drapData->getProperty()->curAttr(PROPERTY_USER);
-        versionParamJs = drapData->getProperty()->curAttr(PROPERTY_SOFT_VERSION);
-
-        emit addProperty(PROPERTY_DST, userParamJs);
-        emit addProperty(PROPERTY_DST, versionParamJs);
-    }
-    drapData->getProperty()->setVisible(PROPERTY_USER, isVisable);
-    drapData->getProperty()->setVisible(PROPERTY_SOFT_VERSION, isVisable);
-
-    emit setGroupPropertyEnable(PROPERTY_DST, isReadOnly);
-
-    drapData->getProperty()->setReadOnly(PROPERTY_DST, isReadOnly);
+    emit toShowProperty(mUiUuid, role->getProperty()->getJson());
 }

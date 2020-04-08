@@ -72,6 +72,10 @@ void propertyWidget::showProperty(QString uuid, Json::Value value)
         Json::Value groupJs = propertyJs[index];
         std::string groupName = groupJs["group"].asString();
         bool isEnable = groupJs["readOnly"].asBool();
+        bool isShow = groupJs["isVisible"].asBool();
+
+        if(!isShow)
+            continue;
 
         QtProperty *groupItem = mGroupManager->addProperty(groupName.c_str());
 
@@ -377,9 +381,29 @@ void propertyWidget::setGroupPropertyEnable(QString propertyName, bool isEnable)
     }    
 }
 
+void propertyWidget::addGroupProperty(QString name)
+{
+    bool notFind = true;
+
+    foreach(QtProperty *pro, mEditorProperty->properties())
+    {
+        if( (pro->propertyName().compare(name) == 0))
+        {
+            notFind = false;
+        }
+    }
+
+    if(notFind)
+    {
+        QtProperty *groupItem = mGroupManager->addProperty(name);
+
+        mEditorProperty->addProperty(groupItem);
+    }
+}
+
 void propertyWidget::addProperty(QString fatherName, Json::Value json)
 {
-    foreach(QtProperty *pro, mGroupManager->properties())
+    foreach(QtProperty *pro, mEditorProperty->properties())
     {
         if( (pro->propertyName().compare(fatherName) == 0))
         {
@@ -404,7 +428,21 @@ void propertyWidget::removeProperty(QString propertyName)
             if( (pro->propertyName().compare(propertyName) == 0))
             {
                groupPro->removeSubProperty(pro);
+               return ;
             }
+        }
+    }
+}
+
+void propertyWidget::removeGroupProperty(QString propertyName)
+{
+    foreach(QtProperty *groupPro, mEditorProperty->properties())
+    {
+        if( (groupPro->propertyName().compare(propertyName) == 0))
+        {
+            mEditorProperty->removeProperty(groupPro);
+
+            return ;
         }
     }
 }

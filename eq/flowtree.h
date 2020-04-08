@@ -103,7 +103,10 @@ signals:
     void setGroupPropertyEnable(QString propertyName, bool isEnable);
 
     void removeProperty(QString propertyName);
+    void removeGroupProperty(QString propertyName);
+
     void addProperty(QString propertyName, Json::Value v);
+    void addGroupProperty(QString propertyName);
 
     /**
      * @brief projectModify
@@ -165,6 +168,8 @@ private:
      * @param role  数据
      */
     void updateParamItemValue(QTreeWidgetItem *item, std::shared_ptr<dragRole> role);
+
+    void updateFrameAttr(std::shared_ptr<dragRole> role);
 private:
     QMenu *mPopMenu;
     QPoint mRightMousePoint;

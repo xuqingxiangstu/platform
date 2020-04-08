@@ -47,8 +47,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mRecordNavigationObj, &recordNavigation::toShowProperty, mNavigationPropertyObj, &propertyWidget::showProperty);
 
     connect(mRecordNavigationObj, &recordNavigation::setGroupPropertyEnable, mNavigationPropertyObj, &propertyWidget::setGroupPropertyEnable);
+
     connect(mRecordNavigationObj, &recordNavigation::removeProperty, mNavigationPropertyObj, &propertyWidget::removeProperty);
+    connect(mRecordNavigationObj, &recordNavigation::removeGroupProperty, mNavigationPropertyObj, &propertyWidget::removeGroupProperty);
     connect(mRecordNavigationObj, &recordNavigation::addProperty, mNavigationPropertyObj, &propertyWidget::addProperty);
+    connect(mRecordNavigationObj, &recordNavigation::addGroupProperty, mNavigationPropertyObj, &propertyWidget::addGroupProperty);
+
     connect(mNavigationPropertyObj, &propertyWidget::valueChange, mRecordNavigationObj, &recordNavigation::onPropertyValueChange);
 
 
@@ -130,7 +134,11 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
         connect(flowWidget, &flowTree::setGroupPropertyEnable, mPropertyWidgetObj, &propertyWidget::setGroupPropertyEnable);
 
         connect(flowWidget, &flowTree::removeProperty, mPropertyWidgetObj, &propertyWidget::removeProperty);
+        connect(flowWidget, &flowTree::removeGroupProperty, mPropertyWidgetObj, &propertyWidget::removeGroupProperty);
+
+        connect(flowWidget, &flowTree::addGroupProperty, mPropertyWidgetObj, &propertyWidget::addGroupProperty);
         connect(flowWidget, &flowTree::addProperty, mPropertyWidgetObj, &propertyWidget::addProperty);
+
 
         connect(mCmdDecodeObj.get(), &cmdDecode::testMsg, this, &MainWindow::onTestMsg);
         mFlowWidgetManager[uuid] = flowWidget;

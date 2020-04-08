@@ -79,6 +79,19 @@ public slots:
      * @param json          属性值
      */
     void addProperty(QString fatherName, Json::Value json);
+
+    /**
+     * @brief removeProperty    删除属性
+     * @param propertyName      属性名称
+     */
+    void removeGroupProperty(QString propertyName);
+
+    /**
+     * @brief addProperty   添加属性
+     * @param fatherName    父名称
+     * @param json          属性值
+     */
+    void addGroupProperty(QString name);
 signals:
     void valueChange(QString uuid, QString attr, Json::Value val);
 private:

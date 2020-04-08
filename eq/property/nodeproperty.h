@@ -111,6 +111,7 @@ public:
         property *obj = new property();
         obj->mCurValue = this->mCurValue;
         obj->mInitValue = this->mInitValue;
+        obj->mCurAttr = this->mCurAttr;
         obj->mName = mName;
         obj->mIsRead = mIsRead;
         obj->mIsVisible = mIsVisible;

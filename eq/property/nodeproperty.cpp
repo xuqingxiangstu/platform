@@ -18,10 +18,12 @@ nodeProperty::nodeProperty(const Json::Value &v)
     {
         Json::Value groupJs = propertyJs[index]["group"];
         Json::Value readOnlyJs = propertyJs[index]["readOnly"];
+        Json::Value isVisibleJs = propertyJs[index]["isVisible"];
 
         std::shared_ptr<property> groupObj = std::make_shared<property>();
         groupObj->setName(groupJs.asString());
         groupObj->setReadOnly(readOnlyJs.asBool());
+        groupObj->setVisible(isVisibleJs.asBool());
 
         mProperty.emplace_back(groupObj);
 
@@ -327,6 +329,7 @@ Json::Value nodeProperty::getJson()
         if(itor != mProperty.end())
         {
             propertyJs[index]["readOnly"] = (*itor)->isReadOnly();
+            propertyJs[index]["isVisible"] = (*itor)->isVisible();
         }
 
         propertyJs[index]["node"] = nodeJs;
