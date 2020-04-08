@@ -89,10 +89,21 @@ public slots:
      * @brief onShowCurItemProperty 显示当前选择节点属性
      */
     void onShowCurItemProperty(QString uuid);
+
+    /**
+     * @brief onFrameTypeChange 帧类型改变
+     * @param type 类型
+     */
+    void onFrameTypeChange(QString uuid, QString type);
 signals:
     void toShowProperty(QString uuid, Json::Value);
 
     void updateProperty(QString propertyName, Json::Value value);
+
+    void setGroupPropertyEnable(QString propertyName, bool isEnable);
+
+    void removeProperty(QString propertyName);
+    void addProperty(QString propertyName, Json::Value v);
 
     /**
      * @brief projectModify
@@ -162,6 +173,7 @@ private:
     int mCurSystemType;         //当前系统类型
     bool mIsUpdateTree;         //是否更新树
     QString mUiUuid;    //界面UUID(唯一标识)
+    std::string mCurFrameType;  //当前帧类型
 private:
     Ui::flowTree *ui;
 };

@@ -16,6 +16,15 @@ nodeProperty::nodeProperty(const Json::Value &v)
 
     for(int index = 0; index < propertyJs.size(); index++)
     {
+        Json::Value groupJs = propertyJs[index]["group"];
+        Json::Value readOnlyJs = propertyJs[index]["readOnly"];
+
+        std::shared_ptr<property> groupObj = std::make_shared<property>();
+        groupObj->setName(groupJs.asString());
+        groupObj->setReadOnly(readOnlyJs.asBool());
+
+        mProperty.emplace_back(groupObj);
+
         Json::Value nodeJs = propertyJs[index]["node"];
         for(int nodeIndex = 0; nodeIndex < nodeJs.size(); nodeIndex++)
         {
@@ -23,9 +32,11 @@ nodeProperty::nodeProperty(const Json::Value &v)
 
             std::shared_ptr<property> obj = std::make_shared<property>();
 
+            obj->setAttr(proJs);
             obj->setType(proJs["type"].asString());
             obj->setName(proJs["attr"].asString());
             obj->setReadOnly(proJs["readOnly"].asBool());
+            obj->setVisible(proJs["isVisible"].asBool());
             obj->setInitValue(proJs["initValue"]);
             if(proJs["curValue"].isNull())
             {
@@ -67,6 +78,22 @@ void nodeProperty::setType(const std::string &name, const std::string &type)
     }
 }
 
+Json::Value nodeProperty::curAttr(const std::string &name)
+{
+    Json::Value tmpV;
+
+    auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+        {
+            return pro->name() == name;
+        });
+
+    if(itor != mProperty.end())
+    {
+        tmpV = (*itor)->curAttr();
+    }
+    return tmpV;
+}
+
 std::string nodeProperty::type(const std::string &name)
 {
     std::string tmp = "";
@@ -94,6 +121,35 @@ void nodeProperty::setCurValue(const std::string &name, const Json::Value &curVa
     {
         (*itor)->setCurValue(curValue);
     }
+}
+
+void nodeProperty::setVisible(const std::string &name, bool isVisible)
+{
+    auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+        {
+            return pro->name() == name;
+        });
+
+    if(itor != mProperty.end())
+    {
+        (*itor)->setVisible(isVisible);
+    }
+}
+
+bool nodeProperty::isVisible(const std::string &name)
+{
+    bool res = false;
+    auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+        {
+            return pro->name() == name;
+        });
+
+    if(itor != mProperty.end())
+    {
+        res = (*itor)->isVisible();
+    }
+
+    return res;
 }
 
 void nodeProperty::setReadOnly(const std::string &name, bool isRead)
@@ -249,25 +305,28 @@ Json::Value nodeProperty::getJson()
 
             if(itor != mProperty.end())
             {
-#if 0
-                //更新初值
-                if( (PROPERTY_START_CONDITION == name)
-                        || (PROPERTY_STOP_CONDITION == name)
-                        || (PROPERTY_DESTDEVICE == name)
-                        )
-                {
-                    proJs["initValue"] = (*itor)->initValue();
-                }
-#endif
-
                 proJs["initValue"] = (*itor)->initValue();
                 proJs["readOnly"] = (*itor)->isReadOnly();
                 proJs["type"] = (*itor)->type();
-
+                proJs["isVisible"] = (*itor)->isVisible();
                 proJs["curValue"] = (*itor)->curValue();                
 
             }
             nodeJs[nodeIndex] = proJs;
+        }
+
+        //modify xqx 更新gourp readOnly
+
+        std::string name = propertyJs[index]["group"].asString();
+
+        auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+            {
+                return pro->name() == name;
+            });
+
+        if(itor != mProperty.end())
+        {
+            propertyJs[index]["readOnly"] = (*itor)->isReadOnly();
         }
 
         propertyJs[index]["node"] = nodeJs;

@@ -30,6 +30,9 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug() << err.what();
     }
 
+    mPropertyWidgetObj = new propertyWidget();
+    ui->propertyWidgetHorizontalLayout->addWidget(mPropertyWidgetObj);
+
     mTemplateTreeObj = new templateTree();
     ui->templateTreeHorizontalLayout->addWidget(mTemplateTreeObj);
 
@@ -43,18 +46,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(mRecordNavigationObj, &recordNavigation::toShowProperty, mNavigationPropertyObj, &propertyWidget::showProperty);
 
-    connect(mRecordNavigationObj, &recordNavigation::setSelfGroupPropertyEnable, mNavigationPropertyObj, &propertyWidget::setGroupPropertyEnable);
+    connect(mRecordNavigationObj, &recordNavigation::setGroupPropertyEnable, mNavigationPropertyObj, &propertyWidget::setGroupPropertyEnable);
+    connect(mRecordNavigationObj, &recordNavigation::removeProperty, mNavigationPropertyObj, &propertyWidget::removeProperty);
+    connect(mRecordNavigationObj, &recordNavigation::addProperty, mNavigationPropertyObj, &propertyWidget::addProperty);
     connect(mNavigationPropertyObj, &propertyWidget::valueChange, mRecordNavigationObj, &recordNavigation::onPropertyValueChange);
 
 
     mRecordNavigationObj->buildTree();
     ui->navigationVerticalLayout->addWidget(mRecordNavigationObj);
 
-    mPropertyWidgetObj = new propertyWidget();
-    ui->propertyWidgetHorizontalLayout->addWidget(mPropertyWidgetObj);
 
-    connect(mRecordNavigationObj, &recordNavigation::clearFlowProperty, mPropertyWidgetObj, &propertyWidget::showProperty);
-    connect(mRecordNavigationObj, &recordNavigation::setGroupPropertyEnable, mPropertyWidgetObj, &propertyWidget::setGroupPropertyEnable);
+    connect(mRecordNavigationObj, &recordNavigation::clearFlowProperty, mPropertyWidgetObj, &propertyWidget::showProperty);    
 
     connect(mPropertyWidgetObj, &propertyWidget::valueChange, this, &MainWindow::valueChange);
     connect(this, &MainWindow::toShowProperty, mPropertyWidgetObj, &propertyWidget::showProperty);
@@ -62,7 +64,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionSave, &QAction::triggered, [=](){
         onSave();
-    });    
+    });
 }
 
 
@@ -124,6 +126,12 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
         connect(flowWidget, &flowTree::updateProperty, this, &MainWindow::updateProperty);
         connect(flowWidget, &flowTree::saveProjectOver, this, &MainWindow::onProjectAlreadySave);
         connect(flowWidget, &flowTree::singleTeset, mCmdDecodeObj.get(), &cmdDecode::onSendJson);
+        connect(mRecordNavigationObj, &recordNavigation::frameTypeChange, flowWidget, &flowTree::onFrameTypeChange);
+        connect(flowWidget, &flowTree::setGroupPropertyEnable, mPropertyWidgetObj, &propertyWidget::setGroupPropertyEnable);
+
+        connect(flowWidget, &flowTree::removeProperty, mPropertyWidgetObj, &propertyWidget::removeProperty);
+        connect(flowWidget, &flowTree::addProperty, mPropertyWidgetObj, &propertyWidget::addProperty);
+
         connect(mCmdDecodeObj.get(), &cmdDecode::testMsg, this, &MainWindow::onTestMsg);
         mFlowWidgetManager[uuid] = flowWidget;
 

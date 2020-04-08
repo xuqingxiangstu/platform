@@ -71,43 +71,18 @@ void propertyWidget::showProperty(QString uuid, Json::Value value)
     {
         Json::Value groupJs = propertyJs[index];
         std::string groupName = groupJs["group"].asString();
+        bool isEnable = groupJs["readOnly"].asBool();
 
         QtProperty *groupItem = mGroupManager->addProperty(groupName.c_str());
+
+        groupItem->setEnabled(!isEnable);
 
         Json::Value nodeJs = groupJs["node"];
 
         for(int nodeIndex = 0; nodeIndex < nodeJs.size(); nodeIndex++)
         {
-            QtProperty *item = nullptr;
+            QtProperty *item = createProperty(nodeJs[nodeIndex]);
 
-            std::string attr = nodeJs[nodeIndex]["attr"].asString();
-            std::string type = nodeJs[nodeIndex]["type"].asString();
-            bool isReadOnly = nodeJs[nodeIndex]["readOnly"].asBool();
-
-            Json::Value initValue = nodeJs[nodeIndex]["initValue"];
-
-            Json::Value curValue = nodeJs[nodeIndex]["curValue"];
-
-            if(PROPERTY_INT == type)
-            {
-                item = createIntProperty(isReadOnly, attr, initValue, curValue, nodeJs[nodeIndex]["minValue"], nodeJs[nodeIndex]["maxValue"]);
-            }
-            else if(PROPERTY_DOUBLE == type)
-            {
-                item = createDoubleProperty(isReadOnly, attr, initValue, curValue);
-            }
-            else if(PROPERTY_STRING == type)
-            {
-                item = createStringProperty(isReadOnly, attr, initValue, curValue);
-            }
-            else if(PROPERTY_ENUM == type)
-            {
-                item = createEnumProperty(isReadOnly, attr, initValue, curValue);
-            }
-            else if(PROPERTY_TRIGGER == type)
-            {
-                item = createTriggerProperty(isReadOnly, attr, initValue, curValue);
-            }
             if(item)
                 groupItem->addSubProperty(item);
         }
@@ -116,15 +91,47 @@ void propertyWidget::showProperty(QString uuid, Json::Value value)
     }
 
     //更新仿真变化
-    updateSimChange();
-
-    //恢复长时间属性
-    for(auto itor = mUserSetGroupProperty.begin(); itor != mUserSetGroupProperty.end(); itor++)
-    {
-        setGroupPropertyEnable(itor.key(), itor.value());
-    }
+    //updateSimChange();
 
     isUpDate = true;
+}
+
+QtProperty *propertyWidget::createProperty(const Json::Value &nodeJs)
+{
+    QtProperty *item = nullptr;
+
+    bool isShow = nodeJs["isVisible"].asBool();
+    if(!isShow)
+        return item;
+
+    std::string attr = nodeJs["attr"].asString();
+    std::string type = nodeJs["type"].asString();
+    bool isReadOnly = nodeJs["readOnly"].asBool();
+    Json::Value initValue = nodeJs["initValue"];
+    Json::Value curValue = nodeJs["curValue"];
+
+    if(PROPERTY_INT == type)
+    {
+        item = createIntProperty(isReadOnly, attr, initValue, curValue, nodeJs["minValue"], nodeJs["maxValue"]);
+    }
+    else if(PROPERTY_DOUBLE == type)
+    {
+        item = createDoubleProperty(isReadOnly, attr, initValue, curValue);
+    }
+    else if(PROPERTY_STRING == type)
+    {
+        item = createStringProperty(isReadOnly, attr, initValue, curValue);
+    }
+    else if(PROPERTY_ENUM == type)
+    {
+        item = createEnumProperty(isReadOnly, attr, initValue, curValue);
+    }
+    else if(PROPERTY_TRIGGER == type)
+    {
+        item = createTriggerProperty(isReadOnly, attr, initValue, curValue);
+    }
+
+    return item;
 }
 
 QtProperty *propertyWidget::createTriggerProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue)
@@ -364,12 +371,42 @@ void propertyWidget::setGroupPropertyEnable(QString propertyName, bool isEnable)
     {
         if( (pro->propertyName().compare(propertyName) == 0))
         {
-            pro->setEnabled(isEnable);
+            pro->setEnabled(!isEnable);
             break;
         }
-    }
+    }    
+}
 
-    mUserSetGroupProperty[propertyName] = isEnable;
+void propertyWidget::addProperty(QString fatherName, Json::Value json)
+{
+    foreach(QtProperty *pro, mGroupManager->properties())
+    {
+        if( (pro->propertyName().compare(fatherName) == 0))
+        {
+            if(!json.isNull())
+            {
+                QtProperty *item= createProperty(json);
+                if(item != nullptr)
+                    pro->addSubProperty(item);
+            }
+
+            break;
+         }
+    }
+}
+
+void propertyWidget::removeProperty(QString propertyName)
+{
+    foreach(QtProperty *groupPro, mGroupManager->properties())
+    {
+        foreach(QtProperty *pro, groupPro->subProperties())
+        {
+            if( (pro->propertyName().compare(propertyName) == 0))
+            {
+               groupPro->removeSubProperty(pro);
+            }
+        }
+    }
 }
 
 void propertyWidget::updateSimChange()
@@ -381,40 +418,6 @@ void propertyWidget::updateSimChange()
             std::string type = pro->valueText().toStdString();
 
             setChange(type);
-        }
-#if 0
-        if(pro->propertyName().compare(PROPERTY_FRAME) == 0)
-        {
-            std::string type = pro->valueText().toStdString();
-
-            setFrameChange(type);
-        }
-#endif
-    }
-}
-
-void propertyWidget::setFrameChange(const std::string &type)
-{
-    if(PROPERTY_FRAME_BE == type)
-    {
-        foreach(QtProperty *pro, mGroupManager->properties())
-        {
-            if( (pro->propertyName().compare(PROPERTY_SRC) == 0))
-            {
-                pro->setEnabled(true);
-                break;
-            }
-        }
-    }
-    else if((PROPERTY_FRAME_FE == type) || (PROPERTY_FRAME_93 == type))
-    {
-        foreach(QtProperty *pro, mGroupManager->properties())
-        {
-            if( (pro->propertyName().compare(PROPERTY_SRC) == 0))
-            {
-                pro->setEnabled(false);
-                break;
-            }
         }
     }
 }
@@ -498,30 +501,10 @@ void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
 
         setChange(type);
     }
-#if 0
-    //选择帧类型时管理属性
-    if(property->propertyName().compare(PROPERTY_FRAME) == 0)
-    {
-        std::string type = mEnumManager->enumNames(property).at(val).toStdString();
 
-        setFrameChange(type);
-    }
-#endif
     if(isUpDate)
     {
         emit valueChange(mCurUuid, property->propertyName(), mEnumManager->data(property).value<Json::Value>());
-#if 0
-        if((property->propertyName().compare(PROPERTY_START_CONDITION) == 0)
-            ||(property->propertyName().compare(PROPERTY_STOP_CONDITION) == 0)
-            ||(property->propertyName().compare(PROPERTY_DESTDEVICE) == 0))
-        {            
-            emit valueChange(property->propertyName(), mEnumManager->data(property).value<Json::Value>());           
-        }
-        else
-        {
-            emit valueChange(property->propertyName(), Json::Value(mEnumManager->enumNames(property).at(val).toStdString()));
-        }
-#endif
     }
 #ifdef DEBUG_PRINT
     qDebug() << property->propertyName();

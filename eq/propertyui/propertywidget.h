@@ -66,6 +66,19 @@ public slots:
      * @param isEnable      是否使能
      */
     void setGroupPropertyEnable(QString propertyName, bool isEnable);
+
+    /**
+     * @brief removeProperty    删除属性
+     * @param propertyName      属性名称
+     */
+    void removeProperty(QString propertyName);
+
+    /**
+     * @brief addProperty   添加属性
+     * @param fatherName    父名称
+     * @param json          属性值
+     */
+    void addProperty(QString fatherName, Json::Value json);
 signals:
     void valueChange(QString uuid, QString attr, Json::Value val);
 private:
@@ -77,17 +90,13 @@ private:
 
     QtProperty *createTriggerProperty(const bool &isReadOnlay, const std::string &attrName, const Json::Value &initValue, const Json::Value &curValue);
 
+    QtProperty *createProperty(const Json::Value &json);
+
     void deleteAllExistProperty();
 
     void updateSimChange();
 
-    void setChange(std::string type);
-
-    /**
-     * @brief setFrameChange    帧类型选择变化
-     * @param type
-     */
-    void setFrameChange(const std::string &type);
+    void setChange(std::string type);   
 private:
     QtAbstractPropertyBrowser *mEditorProperty; //属性树
     QtGroupPropertyManager *mGroupManager; //组管理
@@ -98,8 +107,7 @@ private:
     QtDoublePropertyManager *mDoubleManager;//浮点管理
 
     bool isUpDate;
-private:
-    QMap<QString, bool> mUserSetGroupProperty;  //用户设置属性（作用域为软件活动时间）
+private:    
     QString mCurUuid;
 private:
     Ui::propertyWidget *ui;

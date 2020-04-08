@@ -72,9 +72,12 @@ signals:
 
     void clearFlowProperty(QString uuid, Json::Value);
 
-    void setSelfGroupPropertyEnable(QString propertyName, bool isEnable);
-
     void setGroupPropertyEnable(QString propertyName, bool isEnable);
+
+    void frameTypeChange(QString uuid, QString type);
+
+    void removeProperty(QString propertyName);
+    void addProperty(QString propertyName, Json::Value v);
 public:
     void buildTree();
 

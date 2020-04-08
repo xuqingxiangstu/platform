@@ -375,18 +375,51 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
 
     if(attr.compare(PROPERTY_FRAME) == 0)
     {
+        Json::Value userParamJs;
+        Json::Value versionParamJs;
         std::string type = value.asString();
-        if(type == PROPERTY_FRAME_BE)
+        bool isReadOnly = false;
+        bool isVisable = false;
+
+        if( (type == PROPERTY_FRAME_BE))
         {
-            emit setGroupPropertyEnable(PROPERTY_DST,true);
-            emit setSelfGroupPropertyEnable(PROPERTY_SRC, true);
+            isReadOnly = false;
+            isVisable = false;
+
+            emit removeProperty(PROPERTY_USER);
+            emit removeProperty(PROPERTY_SOFT_VERSION);
         }
-        else
+        else if( (PROPERTY_FRAME_FE == type ) || (PROPERTY_FRAME_93 == type))
         {
-            emit setGroupPropertyEnable(PROPERTY_DST, false);
-            emit setSelfGroupPropertyEnable(PROPERTY_SRC, false);
+            isReadOnly = true;
+            isVisable = false;
+
+            emit removeProperty(PROPERTY_USER);
+            emit removeProperty(PROPERTY_SOFT_VERSION);
+        }
+        else if(type == PROPERTY_FRAME_MIDDLE)
+        {
+            isReadOnly = false;
+            isVisable = true;
+
+            userParamJs = role.mNodeProperty->curAttr(PROPERTY_USER);
+            versionParamJs = role.mNodeProperty->curAttr(PROPERTY_SOFT_VERSION);
+
+            emit addProperty(PROPERTY_SRC, userParamJs);
+            emit addProperty(PROPERTY_SRC, versionParamJs);
         }
 
+        //是否使能
+
+        role.mNodeProperty->setVisible(PROPERTY_USER, isVisable);
+        role.mNodeProperty->setVisible(PROPERTY_SOFT_VERSION, isVisable);
+
+        emit setGroupPropertyEnable(PROPERTY_SRC, isReadOnly);
+
+        role.mNodeProperty->setReadOnly(PROPERTY_SRC, isReadOnly);
+
+        //通知流程树类型变化
+        emit frameTypeChange(mCurSelectUuid, QString(type.c_str()));
     }
 
     onProjectModify(role.uuid.c_str());
@@ -457,25 +490,6 @@ void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
 
     //属性变化
     emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());
-
-    //更新帧类型属性框
-    Json::Value frameJs;
-    role.mNodeProperty->getProperty(PROPERTY_FRAME, frameJs);
-    if(!frameJs.isNull())
-    {
-        std::string type = frameJs.asString();
-
-        if(type == PROPERTY_FRAME_BE)
-        {
-            emit setGroupPropertyEnable(PROPERTY_DST, true);
-            emit setSelfGroupPropertyEnable(PROPERTY_SRC, true);
-        }
-        else
-        {
-            emit setGroupPropertyEnable(PROPERTY_DST, false);
-            emit setSelfGroupPropertyEnable(PROPERTY_SRC, false);
-        }
-    }
 }
 
 

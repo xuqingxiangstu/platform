@@ -388,6 +388,34 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
         return ;
 
     std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+    if( ( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
+    {
+        bool isReadOnly = false;
+        bool isVisable = false;
+
+        if( (mCurFrameType == PROPERTY_FRAME_BE))
+        {
+            isReadOnly = false;
+            isVisable = false;
+        }
+        else if( (PROPERTY_FRAME_FE == mCurFrameType ) || (PROPERTY_FRAME_93 == mCurFrameType))
+        {
+            isReadOnly = true;
+            isVisable = false;
+        }
+        else if(mCurFrameType == PROPERTY_FRAME_MIDDLE)
+        {
+            isReadOnly = false;
+            isVisable = true;
+        }
+
+        drapData->getProperty()->setReadOnly(PROPERTY_DST, isReadOnly);
+
+        drapData->getProperty()->setVisible(PROPERTY_USER, isVisable);
+        drapData->getProperty()->setVisible(PROPERTY_SOFT_VERSION, isVisable);
+    }
+
     //qDebug() << drapData.getProperty()->getJson().toStyledString().c_str();
     emit toShowProperty(mUiUuid, drapData->getProperty()->getJson());
 }
@@ -916,4 +944,63 @@ void flowTree::setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> 
     }
 
     ui->treeWidget->expandItem(subFlowItem);
+}
+
+void flowTree::onFrameTypeChange(QString uuid, QString type)
+{
+    if(mCurProjectUuid.compare(uuid) != 0)
+        return ;
+
+    mCurFrameType = type.toStdString();
+
+    QTreeWidgetItem *item = ui->treeWidget->currentItem();
+    if(!item)
+        return ;
+
+    std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+    if( !( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
+        return ;
+
+    //更新当前节点变化
+
+    Json::Value userParamJs;
+    Json::Value versionParamJs;
+
+    bool isReadOnly = false;
+    bool isVisable = false;
+
+    if( (mCurFrameType == PROPERTY_FRAME_BE))
+    {
+        isReadOnly = false;
+        isVisable = false;
+
+        emit removeProperty(PROPERTY_USER);
+        emit removeProperty(PROPERTY_SOFT_VERSION);
+    }
+    else if( (PROPERTY_FRAME_FE == mCurFrameType ) || (PROPERTY_FRAME_93 == mCurFrameType))
+    {
+        isReadOnly = true;
+        isVisable = false;
+
+        emit removeProperty(PROPERTY_USER);
+        emit removeProperty(PROPERTY_SOFT_VERSION);
+    }
+    else if(mCurFrameType == PROPERTY_FRAME_MIDDLE)
+    {
+        isReadOnly = false;
+        isVisable = true;
+
+        userParamJs = drapData->getProperty()->curAttr(PROPERTY_USER);
+        versionParamJs = drapData->getProperty()->curAttr(PROPERTY_SOFT_VERSION);
+
+        emit addProperty(PROPERTY_DST, userParamJs);
+        emit addProperty(PROPERTY_DST, versionParamJs);
+    }
+    drapData->getProperty()->setVisible(PROPERTY_USER, isVisable);
+    drapData->getProperty()->setVisible(PROPERTY_SOFT_VERSION, isVisable);
+
+    emit setGroupPropertyEnable(PROPERTY_DST, isReadOnly);
+
+    drapData->getProperty()->setReadOnly(PROPERTY_DST, isReadOnly);
 }

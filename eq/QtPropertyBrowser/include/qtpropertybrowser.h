@@ -68,6 +68,7 @@ public:
     QString whatsThis() const;
     QString propertyName() const;
     bool isEnabled() const;
+    bool isVisible() const;
     bool isModified() const;
 
     void setData(QVariant var);
@@ -84,6 +85,7 @@ public:
     void setWhatsThis(const QString &text);
     void setPropertyName(const QString &text);
     void setEnabled(bool enable);
+    void setVisible(bool visible);
     void setModified(bool modified);
 
     void addSubProperty(QtProperty *property);

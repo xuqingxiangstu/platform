@@ -10,6 +10,7 @@
 #define PROPERTY_FRAME_BE   "BE"
 #define PROPERTY_FRAME_FE   "FE"
 #define PROPERTY_FRAME_93   "93"
+#define PROPERTY_FRAME_MIDDLE   "中间件"
 
 /*************记录属性********************/
 #define PROPERTY_RECORD_NAME    "名称"
@@ -25,6 +26,9 @@
 /*************信源属性********************/
 #define PROPERTY_SRC    "信源属性"
 #define PROPERTY_DST    "信宿属性"
+
+#define PROPERTY_USER   "用户"
+#define PROPERTY_SOFT_VERSION   "软件标识"
 
 #define PROPERTY_SRC_SYS_TYPE   "系统类型"
 #define PROPERTY_SRC_SYS_CODING "系统编码"
@@ -77,11 +81,18 @@
 class property
 {
 public:
+
+    void setAttr(const Json::Value &value){mCurAttr = value;}
+    Json::Value curAttr(){return mCurAttr;}
+
     void setType(const std::string &type){mType = type;}
     std::string type(){return mType;}
 
     void setReadOnly(bool isRead){mIsRead = isRead;}
     bool isReadOnly(){return mIsRead;}
+
+    void setVisible(bool isRead){mIsVisible = isRead;}
+    bool isVisible(){return mIsVisible;}
 
     void setName(const std::string &name){mName = name;}
     std::string name(){return mName;}
@@ -102,6 +113,7 @@ public:
         obj->mInitValue = this->mInitValue;
         obj->mName = mName;
         obj->mIsRead = mIsRead;
+        obj->mIsVisible = mIsVisible;
         obj->mType = mType;
         return std::shared_ptr<property>(obj);
     }
@@ -109,8 +121,10 @@ private:
     std::string mName;
     std::string mType;
     bool mIsRead;
+    bool mIsVisible;
     Json::Value mInitValue;
     Json::Value mCurValue;
+    Json::Value mCurAttr;
 };
 
 class nodeProperty
@@ -132,8 +146,13 @@ public:
     void setCurValue(const std::string &name, const Json::Value &curValue);
     Json::Value curValue(const std::string &name);
 
+    Json::Value curAttr(const std::string &name);
+
     void setReadOnly(const std::string &name, bool isRead);
     bool isReadOnly(const std::string &name);
+
+    void setVisible(const std::string &name, bool isVisible);
+    bool isVisible(const std::string &name);
 
     void setType(const std::string &name, const std::string &type);
     std::string type(const std::string &name);
