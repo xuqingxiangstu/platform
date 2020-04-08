@@ -104,6 +104,12 @@ signals:
      * @brief saveProjectOver   保存结束
      */
     void saveProjectOver(QString uuid);
+
+    /**
+     * @brief singleTeset   单项测试
+     * @param value 测试项
+     */
+    void singleTeset(Json::Value value);
 private:
     /**
      * @brief newItem   新创建Item

@@ -148,6 +148,7 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     }
 #endif
     ui->treeWidget->expandAll();
+
 }
 
 flowTree::~flowTree()
@@ -587,24 +588,33 @@ void flowTree::onActionTestSend(QTreeWidgetItem *item)
 {
     dragRole *role = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
 
+    //发给后台逻辑进行测试，接受测试结果
+
+    Json::Value testJson;
+
+    testJson["node"] = role->getProperty()->getJson();
+
     auto type = role->getNodeType();
     if(dragRole::Node_Cmd == type)
     {
-        //createSubFlow subFlow;
-        //subFlow.setProperty(role->getProperty());
     }
     else if(dragRole::Node_Param_Group == type)
     {
-       std::vector<nodeProperty*> subRoles;
+        Json::Value tmpJson;
+
        //获取子信息
        for(int index = 0; index < item->childCount(); index++)
        {
            dragRole *tmpRole = (item->child(index))->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
-           subRoles.push_back(tmpRole->getProperty());
+
+           tmpJson.append(tmpRole->getProperty()->getJson());
        }
-      // createSubFlow subFlow;
-       //subFlow.setProperty(role->getProperty(), subRoles);
+
+       testJson["subNode"] = tmpJson;
     }
+
+    //由后台逻辑进行处理
+    emit singleTeset(testJson);
 }
 
 void flowTree::onMenuTrigger(QAction *action)

@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     newdialog.cpp \
     recordnavigation.cpp \
     newprojectdialog.cpp \
-    progresswidget.cpp
+    progresswidget.cpp \
+    cmddecode.cpp
 
 HEADERS  += mainwindow.h \
     templatetree.h \
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h \
     newdialog.h \
     recordnavigation.h \
     newprojectdialog.h \
-    progresswidget.h
+    progresswidget.h \
+    cmddecode.h
 
 FORMS    += mainwindow.ui \
     templatetree.ui \
@@ -75,3 +77,8 @@ INCLUDEPATH += $$PWD/QtPropertyBrowser/include
 DEPENDPATH += $$PWD/QtPropertyBrowser/include
 
 LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+
+LIBS += -L$$OUT_PWD/../adapterLib/ -lZmqRcvAdapter
+
+LIBS += -L$$OUT_PWD/../adapterLib/ -lZmqSendAdapter
+

@@ -16,6 +16,8 @@
 #include "./task/rcvtask.h"
 #define MSG_TYPE    "msgType"
 
+#define SINGLE_SEND_TEST    "single_send_test"
+
 #define INIT_FLOW       "init_flow"
 #define INIT_TEST       "init"
 #define MANUALTRIGGER   "manualTrigger"

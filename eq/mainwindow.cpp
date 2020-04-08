@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setWindowState(Qt::WindowMaximized);
 
+    mCmdDecodeObj = std::make_shared<cmdDecode>();
+    mCmdDecodeObj->startDecode();
+
     try
     {
         templateProperty::getInstance()->init("./cfgfile/property.json");
@@ -59,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionSave, &QAction::triggered, [=](){
         onSave();
-    });
+    });    
 }
 
 
@@ -120,7 +123,8 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
         connect(this, &MainWindow::updateProject, flowWidget, &flowTree::onUpdateProject);
         connect(flowWidget, &flowTree::updateProperty, this, &MainWindow::updateProperty);
         connect(flowWidget, &flowTree::saveProjectOver, this, &MainWindow::onProjectAlreadySave);
-
+        connect(flowWidget, &flowTree::singleTeset, mCmdDecodeObj.get(), &cmdDecode::onSendJson);
+        connect(mCmdDecodeObj.get(), &cmdDecode::testMsg, this, &MainWindow::onTestMsg);
         mFlowWidgetManager[uuid] = flowWidget;
 
         ui->stackedWidget->addWidget(flowWidget);
@@ -134,6 +138,16 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
         emit updateProject(uuid);
 
     mCurFlowWidgetUuid = uuid;
+}
+
+void MainWindow::onShowMessage(QString msg)
+{
+    this->statusBar()->showMessage(msg);
+}
+
+void MainWindow::onTestMsg(Json::Value msg)
+{
+
 }
 
 MainWindow::~MainWindow()

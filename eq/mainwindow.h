@@ -8,6 +8,7 @@
 #include "flowtree.h"
 #include "recordnavigation.h"
 #include "./propertyui/propertywidget.h"
+#include "cmddecode.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +40,9 @@ public slots:
 
     void onProjectAlreadySave(QString uuid);
 
+    void onShowMessage(QString msg);
+
+    void onTestMsg(Json::Value msg);
 signals:
     void valueChange(QString uuid, QString attr, Json::Value val);
     void showCurItemProperty(QString uuid);
@@ -69,6 +73,7 @@ private:
     QString mCurFlowWidgetUuid; //当前流程UUID
     bool isExit;
     QStringList mSaveProjectUuid;
+    std::shared_ptr<cmdDecode> mCmdDecodeObj;   //协议解析句柄
 private:
     Ui::MainWindow *ui;
 };
