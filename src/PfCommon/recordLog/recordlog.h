@@ -13,6 +13,7 @@
 #include "recordlog_global.h"
 
 #include <QThread>
+#include <QString>
 #include <QFile>
 #include <string>
 #include <memory>
@@ -65,6 +66,12 @@ namespace Pf
              * @param[in] size          文件大小
              */
             void setMaxSize(const int &size);
+
+            /**
+             * @brief setUuid   设置UUID，唯一
+             * @param uuid
+             */
+            void setUuid(const QString &uuid){mUuid = uuid;}
         public slots:
             /**
              * @brief record 记录日志操函数
@@ -73,7 +80,7 @@ namespace Pf
              * - 信号槽形式根据设置是否线程而定
              * @param[in] msg 数据
              */
-            void record(QByteArray msg);
+            void record(QString uuid, QByteArray msg);
         private slots:
             /**
              * @brief onFinished 存储结束
@@ -117,6 +124,7 @@ namespace Pf
             QString mCurFilePath; ///< 当前文件路径
             bool mIsThread; ///< 是否线程
             enRecordType mRecordType; ///< 存储方式
+            QString mUuid;
         };
     }
 }

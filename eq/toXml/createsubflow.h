@@ -13,6 +13,7 @@
 //等效
 #define EQ_ELEMENT              "equivalent"
 #define EQ_SYSTEM_UUID_ELEMENT  "system_uuid"
+#define EQ_PROTOCOL_ELEMENT "protocol"
 
 #define EQ_FRAME_TYPE   "frameType"
 

@@ -1,7 +1,7 @@
 #include "virtualUnicastAdapter.h"
 
 #include "../../PfCommon/tools/ut_error.h"
-
+#include <QDebug>
 namespace Pf
 {
   namespace PfAdapter
@@ -12,8 +12,7 @@ namespace Pf
       }
 
       virtualUnicastAdapter::~virtualUnicastAdapter()
-      {
-
+      {            
       }
 
     void virtualUnicastAdapter::init(const std::string &json)
@@ -66,7 +65,7 @@ namespace Pf
           bool res = false;
 
           if(udp)
-              udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, timeOut);
+              res = udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, timeOut);
 
           return res;
       }
@@ -76,15 +75,15 @@ namespace Pf
           return VAR_NAME(virtualUnicastAdapter);
       }
 
-      PfBus::UnicastUdp *virtualUnicastAdapter::getUdpOpt()
+      std::shared_ptr<PfBus::UnicastUdp> virtualUnicastAdapter::getUdpOpt()
       {
           if(udp != nullptr)
-              return udp.get();
+              return udp;
 
           return nullptr;
       }
 
-      void virtualUnicastAdapter::setUdpOpt(PfBus::UnicastUdp *obj)
+      void virtualUnicastAdapter::setUdpOpt(std::shared_ptr<PfBus::UnicastUdp> obj)
       {
         if(udp == nullptr)
             udp = std::shared_ptr<PfBus::UnicastUdp>(obj);

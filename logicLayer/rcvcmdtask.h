@@ -4,7 +4,6 @@
 #include <QThread>
 #include "../src/PfBus/zeroMq/zmqreceive.h"
 #include "../src/PfAdapter/adapter/Adapter.h"
-#include "../src/PfCommon/recordLog/recordlog.h"
 using namespace Pf;
 /**
 * @brief The rcvCmdTask class
@@ -65,7 +64,6 @@ signals:
     void sendLogMsg(QByteArray msg);
 private:
    PfAdapter::Adapter *mZmqRcv; /// >接收命令适配器对象
-   std::shared_ptr<PfCommon::RecordLog> mRecord; /// >继续对象
 };
 
 #endif // RCVCMDTASK_H

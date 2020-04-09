@@ -6,6 +6,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <map>
+#include <QMap>
 #include <string>
 #include "../src/PfAdapter/adapter/Adapter.h"
 #include "../src/PfAdapter/PfAdapterManager/pfadaptermanager.h"
@@ -176,7 +177,7 @@ private:
     std::shared_ptr<PfAdapter::PfAdapterManager> mAdpterManagerObj; ///<硬件设备管理对象
     std::shared_ptr<PfIcdWorkBench::icdFrameAdapter> mIcdFrameAdpter; ///<组帧、解帧协议适配对象
     std::atomic_bool mIsInitSuccessful;     ///<初始化是否成功
-    std::atomic_bool mIsInitFlow;           ///<流程是否初始化
+    QMap<std::string, bool> mIsInitFlow;           ///<流程是否初始化
     std::map<std::string, std::shared_ptr<flowManager>> mFLowsObj;    ///< 流程句柄
     std::shared_ptr<rcvTask> mRcvMsgTask;      ///< 接收消息任务
 };

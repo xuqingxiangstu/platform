@@ -10,7 +10,8 @@
 
 flowManager::flowManager():
     mIsRunning(false),
-    mEqSystemUuid("")
+    mEqSystemUuid(""),
+    mEqProtocol("")
 {
 }
 
@@ -87,7 +88,6 @@ void flowManager::exeOver(bool status, std::string info)
 
     Json::Value tmp;
     tmp["record_uuid"] = mRecordUuid;
-
     tmp["result"] = status;
 
     tmp["info"] = info;
@@ -168,6 +168,12 @@ void flowManager::init(std::string strFilePath)
             if(uuidEle)
             {
                 mEqSystemUuid = uuidEle->GetText();
+            }
+
+            TiXmlElement *ptlEle = mEqEle->FirstChildElement("protocol");
+            if(ptlEle)
+            {
+                mEqProtocol = ptlEle->GetText();
             }
         }
 

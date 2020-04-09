@@ -8,6 +8,8 @@
 #include <chrono>
 #include <thread>
 
+#include <QDebug>
+
 namespace Pf
 {
     namespace PfBus
@@ -15,12 +17,11 @@ namespace Pf
 
         UnicastUdp::UnicastUdp(void)
         {
-            mSocket = std::make_shared<QUdpSocket>();
+            mSocket = std::make_shared<QUdpSocket>();            
         }
 
         UnicastUdp::~UnicastUdp(void)
-        {
-
+        {            
         }
 
         void UnicastUdp::unInit()

@@ -8,6 +8,6 @@ SUBDIRS += \
     #PfFlow \
     PfIcdWorkBench \
     #PfSmlModel \
-    PfSql
+    #PfSql
 
 HEADERS += platform.h

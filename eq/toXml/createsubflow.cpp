@@ -28,18 +28,15 @@ TiXmlElement *createEquivalent::element(nodeProperty *node)
             eqEle->LinkEndChild(createTextElement(EQ_SYSTEM_UUID_ELEMENT, devJs[PROPERTY_DEV_VALUE_UUID].asString()));
         }
     }
-#if 0
+
     //帧类型
-    Json::Value frameTypeJs;
-    std::string type;
+    Json::Value frameTypeJs;    
     node->getProperty(PROPERTY_FRAME, frameTypeJs);
     if(!frameTypeJs.isNull())
-    {
-        type = frameTypeJs.asString();
-
-        eqEle->LinkEndChild(createTextElement(EQ_FRAME_TYPE, frameTypeJs.asString()));
+    {        
+        eqEle->LinkEndChild(createTextElement(EQ_PROTOCOL_ELEMENT, frameTypeJs.asString()));
     }
-
+#if 0
     if(PROPERTY_FRAME_BE == type)
     {
         //系统类型

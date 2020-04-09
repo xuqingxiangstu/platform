@@ -52,8 +52,11 @@ namespace Pf
         }
 
         //记录数据
-        void RecordLog::record(QByteArray Msg)
+        void RecordLog::record(QString uuid, QByteArray Msg)
         {
+            if(mUuid.compare(uuid) != 0)
+                return ;
+
             if (mFile == nullptr)
             {
                 createFile();

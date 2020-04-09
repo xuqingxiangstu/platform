@@ -24,8 +24,8 @@ cmdDecode::cmdDecode(PfAdapter::Adapter  *obj, QObject *parent )
       mCmdSendObj(obj),
       mIcdFrameAdpter(nullptr),
       mAdpterManagerObj(nullptr),
-      mIsInitSuccessful(false),
-        mIsInitFlow(false)
+      mIsInitSuccessful(false)
+
 {
     mRcvMsgTask = std::make_shared<rcvTask>();
 }
@@ -388,7 +388,12 @@ void cmdDecode::stopTest(const Json::Value &msg)
     {
         uuid = msg["record_uuid"].asString();
 
-        if(!mIsInitFlow)
+        if(!mIsInitFlow.contains(uuid))
+        {
+            mIsInitFlow[uuid] = false;
+        }
+
+        if(!mIsInitFlow[uuid])
         {
             respond(resultMsg(START_TEST, "[ERROR] 初始化流程失败，禁止停止测试!", uuid));
             return;
@@ -432,7 +437,12 @@ void cmdDecode::startTest(const Json::Value &msg)
     {
         uuid = msg["record_uuid"].asString();
 
-        if(!mIsInitFlow)
+        if(!mIsInitFlow.contains(uuid))
+        {
+            mIsInitFlow[uuid] = false;
+        }
+
+        if(!mIsInitFlow[uuid])
         {
             respond(resultMsg(START_TEST, "[ERROR] 初始化流程失败，禁止启动测试!", uuid));
             return;
@@ -609,6 +619,7 @@ void cmdDecode::initFlow(const Json::Value &msg)
             {
                 errorInfo << "[ERROR] file not exist : " << filePath.toStdString();
                 respond(resultMsg(INIT_FLOW, errorInfo.str(), uuid));
+                mIsInitFlow[uuid] = false;
                 continue;
             }
 
@@ -617,6 +628,7 @@ void cmdDecode::initFlow(const Json::Value &msg)
         else
         {
             errorInfo << "[ERROR] get uuid(" << uuid << ")record faild";
+            mIsInitFlow[uuid] = false;
             respond(resultMsg(INIT_FLOW, errorInfo.str(), uuid));
         }
     }
@@ -656,6 +668,7 @@ void cmdDecode::initFlow(const Json::Value &msg)
         if(errorInfo.str() != "")
         {
             respond(resultMsg(INIT_FLOW, errorInfo.str(), std::get<0>(info)));
+            mIsInitFlow[std::get<0>(info)] = false;
         }
     }
 
@@ -679,16 +692,6 @@ void cmdDecode::initFlow(const Json::Value &msg)
             errorInfo << "[ERROR] ...";
         }
     }
-
-    //TODO:每个record 增加
-    if(errorInfo.str() == "")
-    {
-        mIsInitFlow = true;
-    }
-    else
-    {
-        mIsInitFlow = false;
-    }
 }
 
 bool cmdDecode::resetAdapter()
@@ -698,6 +701,7 @@ bool cmdDecode::resetAdapter()
     std::ostringstream errorInfo;
 
     std::map<std::string, std::set<std::string>> adapters;
+    QMap<std::string, std::string> protocols;
     std::vector<std::tuple<std::string, std::string>> mAdapterUuids;
 
     for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); itor++)
@@ -725,8 +729,10 @@ bool cmdDecode::resetAdapter()
         {
             errorInfo << "[ERROR] 等效设备 uuid == null ";
             respond(resultMsg(INIT_FLOW, errorInfo.str(), itor->first));
+            mIsInitFlow[itor->first] = false;
             continue;
         }
+        protocols[eqUuid] = (itor->second)->eqProtocol();
         mAdapterUuids.push_back(std::make_tuple(eqUuid, itor->first));
         adapters[eqUuid] = tmpV;
     }
@@ -739,7 +745,7 @@ bool cmdDecode::resetAdapter()
 
     //step3:重新初始化各系统
 
-    std::vector<std::string> eqUuids;
+    std::vector<std::tuple<std::string, std::string, std::string>> eqUuids;
 
     for(auto itor = adapters.begin(); itor != adapters.end(); itor++)
     {
@@ -769,7 +775,7 @@ bool cmdDecode::resetAdapter()
 
                 mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
 
-                eqUuids.push_back(eqSysUuid);
+                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid]));
 
                 //初始化各发送系统
                 auto sendSyss = itor->second;
@@ -791,7 +797,8 @@ bool cmdDecode::resetAdapter()
                         paramJs["port"] = sendInfo["port"];
 
                         dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(tmpObj)->init(paramJs.toStyledString());
-                        dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(tmpObj)->setUdpOpt(dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(eqObj)->getUdpOpt());
+                        std::shared_ptr<PfBus::UnicastUdp> obj = dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(eqObj)->getUdpOpt();
+                        dynamic_cast<Pf::PfAdapter::virtualUnicastAdapter*>(tmpObj)->setUdpOpt(obj);
 
                         mAdpterManagerObj->setAdapter(send_uuid, tmpObj);
                     }
@@ -818,6 +825,7 @@ bool cmdDecode::resetAdapter()
                 if(std::get<0>((*tmpItor)) == itor->first)
                 {
                     respond(resultMsg(INIT_FLOW, errorInfo.str(), std::get<1>(*tmpItor)));
+                    mIsInitFlow[std::get<1>(*tmpItor)] = false;
                     mAdapterUuids.erase(tmpItor);
                 }
                 else
@@ -831,6 +839,7 @@ bool cmdDecode::resetAdapter()
     //向界面发送初始化成功的uuid
     for(auto uuid : mAdapterUuids)
     {
+        mIsInitFlow[std::get<1>(uuid)] = true;
         respond(resultMsg(INIT_FLOW, "", std::get<1>(uuid)));
     }
 
@@ -863,6 +872,7 @@ void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
             {
                 info["ip_addr"] = udpJs[UDP_TABLE_IP_ADDR].asString();
                 info["port"] = udpJs[UDP_TABLE_PORT].asInt();
+                info["name"] = udpJs[UDP_TABLE_DEV_NAME].asString();
             }
             else
             {

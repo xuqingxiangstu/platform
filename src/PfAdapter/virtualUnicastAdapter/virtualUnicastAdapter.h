@@ -37,8 +37,8 @@ namespace Pf
           std::string getId() override;         
           std::string version() override {return VERSION;}
 
-          PfBus::UnicastUdp *getUdpOpt();
-          void setUdpOpt(PfBus::UnicastUdp *obj);
+          std::shared_ptr<PfBus::UnicastUdp> getUdpOpt();
+          void setUdpOpt(std::shared_ptr<PfBus::UnicastUdp> obj);
 
       private:
           std::shared_ptr<PfBus::UnicastUdp> udp; ///< 单播实例
