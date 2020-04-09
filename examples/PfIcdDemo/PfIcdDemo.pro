@@ -35,4 +35,5 @@ win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lcrc
 else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lcrc
 
-LIBS += -L$$OUT_PWD/../../../ -lparamsTable
+LIBS += -L$$OUT_PWD/../../../ -lsqlTable
+LIBS += -L$$OUT_PWD/../../../ -ljsoncpp

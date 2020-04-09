@@ -454,7 +454,87 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
             frameEle->LinkEndChild(createTextElement(EQ_FE_HEAD_DST_NODE, dstTypeJs.asString()));
         }
     }
+    else if(PROPERTY_FRAME_MIDDLE == type)
+    {
+        //系统类型
+        Json::Value sysTypeJs;
+        headNode->getProperty(PROPERTY_SRC_SYS_TYPE, sysTypeJs);
+        if(!sysTypeJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_SYS_TYPE_ELEMENT, sysTypeJs.asString()));
+        }
 
+
+        //系统编码
+        Json::Value sysCodeJs;
+        headNode->getProperty(PROPERTY_SRC_SYS_CODING, sysCodeJs);
+        if(!sysCodeJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_SYS_CODE_ELEMENT, sysCodeJs.asString()));
+        }
+
+
+        //节点编码
+        Json::Value nodeCodeJs;
+        headNode->getProperty(PROPERTY_SRC_NODE_CODING, nodeCodeJs);
+        if(!nodeCodeJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_SYS_NODE_CODE_ELEMENT, nodeCodeJs.asString()));
+        }
+
+        //信宿信息
+        Json::Value dstSysType;
+        node->getProperty(PROPERTY_SRC_SYS_TYPE, dstSysType);
+        if(!dstSysType.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_DST_TYPE_ELEMENT, dstSysType.asString()));
+        }
+
+        Json::Value dstSysCode;
+        node->getProperty(PROPERTY_SRC_SYS_CODING, dstSysCode);
+        if(!dstSysCode.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_DST_CODE_ELEMENT, dstSysCode.asString()));
+        }
+
+        Json::Value dstNodeCode;
+        node->getProperty(PROPERTY_SRC_NODE_CODING, dstNodeCode);
+        if(!dstNodeCode.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_DST_NODE_CODE_ELEMENT, dstNodeCode.asString()));
+        }
+
+        //中间件增加 用户和软件标识
+
+        //源用户及软件标识
+        Json::Value srcUserJs;
+        headNode->getProperty(PROPERTY_USER, srcUserJs);
+        if(!srcUserJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_USER_ELEMENT, srcUserJs.asString()));
+        }
+
+        Json::Value srcVersionJs;
+        headNode->getProperty(PROPERTY_SOFT_VERSION, srcVersionJs);
+        if(!srcVersionJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_SRC_VERSION_ELEMENT, srcVersionJs.asString()));
+        }
+        //目的用户及标识
+        Json::Value dstUserJs;
+        node->getProperty(PROPERTY_USER, dstUserJs);
+        if(!dstUserJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_DST_USER_ELEMENT, dstUserJs.asString()));
+        }
+
+        Json::Value dstVersionJs;
+        node->getProperty(PROPERTY_SOFT_VERSION, dstVersionJs);
+        if(!dstVersionJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_DST_VERSION_ELEMENT, dstVersionJs.asString()));
+        }
+    }
 
     headEle->LinkEndChild(frameEle);
 

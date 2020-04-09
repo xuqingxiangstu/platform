@@ -25,13 +25,126 @@ namespace Pf
     {
         generalFrame::generalFrame()
             :mFrameCfgPath(""),
-             mDataRegionCfgPath("")
+             mDataRegionCfgPath(""),
+             mCurFrameType(Frame_BE)
         {
 
         }
         generalFrame::~generalFrame()
         {
 
+        }
+
+        void generalFrame::setAttribute(const Json::Value &attr)
+        {
+            if(attr.isNull())
+                return ;
+
+            if(attr["type"].isNull())
+                return ;
+
+            std::string type = attr["type"].asString();
+            if(FRAME_BE == type)
+            {
+                mCurFrameType = Frame_BE;
+            }
+            else if(FRAME_MIDDLE == type)
+            {
+                mCurFrameType = Frame_Middle;
+            }        
+        }
+
+        int generalFrame::getMiddleInfoWordSize(unsigned char *inBuf, const unsigned int inSize)
+        {
+            dataStorage data;
+
+            return data.getData(inBuf, inSize, getMiddleInfoWordIndex(inBuf, inSize) + 1, 2, 0, 0);
+        }
+
+        int generalFrame::getMiddleHeadSize(unsigned char *inBuf, const unsigned int inSize)
+        {
+            int index = getMiddleInfoWordIndex(inBuf, inSize);
+
+            //信息字类型
+            index += 1;
+
+            //信息字个数
+            index += 2;
+
+            //表号
+            index += 2;
+
+            //优先级
+            index += 1;
+
+            //备用字符串长度
+            dataStorage data;
+            int len = data.getData(inBuf, inSize, index, 1, 0, 0);
+            index += 1;
+
+            //备用字
+            index += len;
+
+            return index;
+        }
+
+        int generalFrame::getMiddleInfoWordIndex(unsigned char *u8Msg, const unsigned int u32Size)
+        {
+            dataStorage data;
+
+            //中间件时，信息字中间有可变参数
+            int index = 38;
+            int tmpLen = 0;
+            //step1:消息出发点
+            //step1-1：用户长度
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step1-2：软件标识
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step2:消息出发点
+
+            index += 4;
+
+            //step2-1：用户长度
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step2-2：软件标识
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step3:消息发送方
+
+            //step3-1：用户长度
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step3-2：软件标识
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step4:消息接收方
+
+            //step4-1：用户长度
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            //step4-2：软件标识
+            tmpLen = data.getData(u8Msg, u32Size, index, 1, 0, 0);
+            index += 1;
+            index += tmpLen;
+
+            return index;
         }
 
         std::string generalFrame::parse(unsigned char *u8Msg, const unsigned int u32Size)
@@ -45,12 +158,20 @@ namespace Pf
                 frameCheck(u8Msg, u32Size);
 
                 dataStorage data;
-                // 信息字类型
-                unsigned int frameCode = data.getData(u8Msg, u32Size,
-                                                      mProtocolCfg->getMessage<protocolConfigure::general_info_type_start_index>(),
-                                                      mProtocolCfg->getMessage<protocolConfigure::general_info_type_size_index>(),
-                                                      0, 0);
+                unsigned int frameCode = 0;
 
+                if(Frame_BE == mCurFrameType)
+                {
+                    // 信息字类型
+                    frameCode = data.getData(u8Msg, u32Size,
+                                                          mProtocolCfg->getMessage<protocolConfigure::general_info_type_start_index>(),
+                                                          mProtocolCfg->getMessage<protocolConfigure::general_info_type_size_index>(),
+                                                          0, 0);
+                }
+                else if(Frame_Middle == mCurFrameType)
+                {
+                    frameCode = data.getData(u8Msg, u32Size, getMiddleInfoWordIndex(u8Msg, u32Size), 1, 0, 0);
+                }
                 //获取信息字信息
 
                 auto itor = mInfoWordConf.find(frameCode);
@@ -73,10 +194,19 @@ namespace Pf
                 }
 
                 //获取信息字个数
-                unsigned int infoCnt = data.getData(u8Msg, u32Size,
-                                                      mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
-                                                      mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
-                                                      0, 0);
+                unsigned int infoCnt = 0;
+                if(Frame_BE == mCurFrameType)
+                {
+                    infoCnt = data.getData(u8Msg, u32Size,
+                                                          mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
+                                                          mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
+                                                          0, 0);
+                }
+                else if(Frame_Middle == mCurFrameType)
+                {
+                    infoCnt = getMiddleInfoWordSize(u8Msg, u32Size);
+                }
+
                 if(infoCnt <= 0)
                 {
                     strErr.str("");
@@ -85,7 +215,15 @@ namespace Pf
                 }
 
                 //获取信息头长度
-                unsigned int infoHeadSize = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
+                unsigned int infoHeadSize = 0;
+                if(Frame_BE == mCurFrameType)
+                {
+                    infoHeadSize = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
+                }
+                else if(Frame_Middle == mCurFrameType)
+                {
+                    infoHeadSize =getMiddleHeadSize(u8Msg, u32Size);
+                }
 
                 //step2：校验整帧个数是否满足条件
                 /**********************************************
@@ -469,11 +607,19 @@ namespace Pf
             byteArray headMsg;
             fillData(headMsg, headInfoRegion.get(), (headInfoItor->second).get(), headJs);
 
+            //如果为中间件则进行其他填充
+            Json::Value middleInfo;
+            if(Frame_Middle == mCurFrameType)
+            {
+                fillMiddleHead(headMsg, middleInfo, headJs);
+            }
+
             //获取确认标志
             //从数据库中获取参数信息
             Json::Value paramValues;
             int ack = 0;
             std::string tableKey = "info_" + std::to_string(frameCode + 1) + "_table_num";
+            int mCurTableNum = 0;
             if(wordsJs.size() > 0)
             {
                 auto tmp = wordsJs[0][tableKey].asInt();
@@ -486,10 +632,12 @@ namespace Pf
                         ack = 0x1;
                     else if(IS_ACK_NO == isAck)
                         ack = 0x0;
+
+                    mCurTableNum = paramValues[0][PARAM_TABLE_TABLE_NUM].asInt();
                 }
             }
 
-            _simFrame(outValue, headMsg, wordsMsg, regionMsg, resendJs.asInt(), ack);
+            _simFrame(outValue, headMsg, wordsMsg, regionMsg, resendJs.asInt(), ack, mCurTableNum, middleInfo);
         }
 
         void generalFrame::fillRegion(byteArray &outValue, const Json::Value &regionJs)
@@ -569,6 +717,220 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
+        void generalFrame::fillMiddleHead(byteArray &headMsg, Json::Value &info, Json::Value jsValue)
+        {
+            unsigned char tmpBuf[1024] = {0};
+            unsigned int msgSize = 512;
+
+            memcpy_s(tmpBuf, msgSize, &headMsg.at(0), headMsg.size());
+
+            dataStorage data;
+            int index = 26;
+            //step1：信息字类型 0x03
+            tmpBuf[index] = 0x3;
+            index++;
+
+            //step2：信息字格式 0x100
+            data.setData(tmpBuf, msgSize, index, 2, 0, 0, 0x100);
+            index += 2;
+
+            index += 5;
+
+            //step3：消息出发点
+            //step3-1：系统类型
+            if(!jsValue["head_src_sys_type"].isNull())
+            {
+                tmpBuf[index] = jsValue["head_src_sys_type"].asInt();
+            }
+            index++;
+
+            //step3-2：系统编码
+            if(!jsValue["head_src_sys_code"].isNull())
+            {
+                data.setData(tmpBuf, msgSize, index, 2, 0, 0, jsValue["head_src_sys_code"].asInt());
+            }
+            index += 2;
+
+            //step3-3：节点编码
+            if(!jsValue["head_src_node_code"].isNull())
+            {
+                tmpBuf[index] = jsValue["head_src_node_code"].asInt();
+            }
+            index++;
+
+            //step3-4：用户长度
+            std::string srcUser = "";
+
+            if(!jsValue["head_src_user"].isNull())
+            {
+               srcUser = jsValue["head_src_user"].asString();
+            }
+            tmpBuf[index] = srcUser.size();
+            index++;
+
+            //step3-5：用户字符串
+            if(srcUser.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", srcUser.c_str());
+            }
+            index += srcUser.size();
+
+            //step3-6：软件标识长度
+            std::string srcVersion = "";
+
+            if(!jsValue["head_src_version"].isNull())
+            {
+               srcVersion = jsValue["head_src_version"].asString();
+            }
+            tmpBuf[index] = srcVersion.size();
+            index++;
+
+            //step3-7：软件标识
+            if(srcVersion.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", srcVersion.c_str());
+            }
+            index += srcVersion.size();
+
+            //step4：消息目的地
+            //step4-1：系统类型
+            if(!jsValue["head_dst_sys_type"].isNull())
+            {
+                tmpBuf[index] = jsValue["head_dst_sys_type"].asInt();
+            }
+            index++;
+
+            //step4-2：系统编码
+            if(!jsValue["head_dst_sys_code"].isNull())
+            {
+                data.setData(tmpBuf, msgSize, index, 2, 0, 0, jsValue["head_dst_sys_code"].asInt());
+            }
+            index += 2;
+
+            //step4-3：节点编码
+            if(!jsValue["head_dst_node_code"].isNull())
+            {
+                tmpBuf[index] = jsValue["head_dst_node_code"].asInt();
+            }
+            index++;
+
+            //step4-4：用户长度
+            std::string dstUser = "";
+
+            if(!jsValue["head_dst_user"].isNull())
+            {
+               dstUser = jsValue["head_dst_user"].asString();
+            }
+            tmpBuf[index] = dstUser.size();
+            index++;
+
+            //step4-5：用户字符串
+            if(dstUser.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", dstUser.c_str());
+            }
+            index += dstUser.size();
+
+            //step4-6：软件标识长度
+            std::string dstVersion = "";
+
+            if(!jsValue["head_dst_version"].isNull())
+            {
+               dstVersion = jsValue["head_dst_version"].asString();
+            }
+            tmpBuf[index] = dstVersion.size();
+            index++;
+
+            //step3-7：软件标识
+            if(dstVersion.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", dstVersion.c_str());
+            }
+            index += dstVersion.size();
+
+            //step5：消息发送方
+            //step5-1：用户长度
+
+            tmpBuf[index] = srcUser.size();
+            index++;
+
+            //step5-2：用户字符串
+            if(srcUser.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", srcUser.c_str());
+            }
+            index += srcUser.size();
+
+            //step5-3：软件标识长度
+            tmpBuf[index] = srcVersion.size();
+            index++;
+
+            //step5-4：软件标识
+            if(srcVersion.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", srcVersion.c_str());
+            }
+            index += srcVersion.size();
+
+            //step6：消息接收方
+            //step6-1：用户长度
+
+            tmpBuf[index] = dstUser.size();
+            index++;
+
+            //step6-2：用户字符串
+            if(dstUser.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", dstUser.c_str());
+            }
+            index += dstUser.size();
+
+            //step6-3：软件标识长度
+            tmpBuf[index] = dstVersion.size();
+            index++;
+
+            //step6-4：软件标识
+            if(dstVersion.size() != 0)
+            {
+                sprintf((char*)&tmpBuf[index], "%s", dstVersion.c_str());
+            }
+            index += dstVersion.size();
+
+            //step7：信息字类型
+            if(!jsValue["head_info_word_type"].isNull())
+            {
+                tmpBuf[index] = jsValue["head_info_word_type"].asInt();
+            }
+            index++;
+
+            //step8：信息字个数
+            info["info_cnt"] = index;
+            index += 2;
+
+            //step9：表号
+            info["table"] = index;
+            index += 2;
+
+            //step10：优先级
+            tmpBuf[index] = 0x2;
+            index++;
+
+            //step11：备用字符串
+            std::string reserved = "reserved";
+            //step11-1：长度
+            tmpBuf[index] = reserved.size();
+            index++;
+
+            //step11-2：字符串
+            sprintf((char*)&tmpBuf[index], "%s", reserved.c_str());
+            index += reserved.size();
+
+            info["head_size"] = index;
+
+            headMsg.clear();
+            std::copy(tmpBuf, tmpBuf + index, std::back_inserter(headMsg));
+        }
+
         void generalFrame::fillData(byteArray &outValue, infoWordRegion *region, infoConf *conf, const Json::Value &jsValue)
         {
             if(!region || !conf)
@@ -607,7 +969,7 @@ namespace Pf
                                      value.asFloat());
                     }
                     else if(value.isString())
-                    {                        
+                    {
                         sprintf((char*)&tmpBuf[storage->getMessage<infoWordRegion::sub_param_start_post_index>()], "%s", value.asString().c_str());
                     }
                 }
@@ -908,7 +1270,8 @@ namespace Pf
             }
             else if (cType == SUM_CHECK)
             {
-                crc = PfCommon::Crc::calSum(u8Msg, checkSize);
+                u8Msg[mProtocolCfg->getMessage<protocolConfigure::general_frame_check_start_index>()] = 0;
+                crc = PfCommon::Crc::calSum(u8Msg, u32Size);
                 //modify xqx 20200211
                 crc &= 0xFF;
             }
@@ -1009,7 +1372,7 @@ namespace Pf
                          0, 0, crc);
         }
 
-        void generalFrame::_simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack)
+        void generalFrame::_simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack, const int &tableNum, const Json::Value &middleJson)
         {
             unsigned char tmpBuf[1024] = {0};
             dataStorage data;
@@ -1020,7 +1383,18 @@ namespace Pf
             std::copy(headValue.begin(), headValue.end(), std::back_inserter(outValue));
 
             //step1-1：获取信息头长度
-            int headLen = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
+            int headLen = 0;
+            if(Frame_BE == mCurFrameType)
+            {
+                headLen = mProtocolCfg->getMessage<protocolConfigure::general_infohead_size_index>();
+            }
+            else if(Frame_Middle == mCurFrameType)
+            {
+                if( !middleJson.isNull() && !middleJson["head_size"].isNull())
+                {
+                    headLen = middleJson["head_size"].asInt();
+                }
+            }
 
             //step1-2：帧同步
             data.setData(&outValue.at(0), headLen, 0, 1, 0, 0, mProtocolCfg->getMessage<protocolConfigure::general_head_init_index>());
@@ -1045,9 +1419,27 @@ namespace Pf
                          0, 0, infoWordType);
 */
             //step1-6：信息字个数
-            data.setData(&outValue.at(0), headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
-                         mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
-                         0, 0, wordsValue.size());
+            if(Frame_BE == mCurFrameType)
+            {
+                data.setData(&outValue.at(0), headLen, mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_start_index>(),
+                             mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
+                             0, 0, wordsValue.size());
+            }
+            else if(Frame_Middle == mCurFrameType)
+            {
+                if( !middleJson.isNull() && !middleJson["info_cnt"].isNull())
+                {
+                    data.setData(&outValue.at(0), headLen, middleJson["info_cnt"].asInt(),
+                                 mProtocolCfg->getMessage<protocolConfigure::general_info_cnt_size_index>(),
+                                 0, 0, wordsValue.size());
+                }
+            }
+
+            //step1-7:填充表号
+            if( (Frame_Middle == mCurFrameType) && !middleJson.isNull() && !middleJson["table"].isNull())
+            {
+                data.setData(&outValue.at(0), headLen, middleJson["table"].asInt(), 2, 0, 0, tableNum);
+            }
 
             //step1-7：帧序号(信源+新宿)
 

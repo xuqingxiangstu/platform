@@ -47,6 +47,7 @@ namespace Pf
              * - !nullptr:帧句柄
              */
             std::shared_ptr<frameObj> getFrameObj(const std::string &key);
+
         private:
             std::unordered_map<std::string, std::shared_ptr<frameObj>> mFrameManagement; ///< 帧管理适配器
         };

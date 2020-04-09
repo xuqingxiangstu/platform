@@ -16,6 +16,12 @@
 
 #define EQ_FRAME_TYPE   "frameType"
 
+#define EQ_SRC_USER_ELEMENT "head_src_user"
+#define EQ_SRC_VERSION_ELEMENT  "head_src_version"
+
+#define EQ_DST_USER_ELEMENT "head_dst_user"
+#define EQ_DST_VERSION_ELEMENT  "head_dst_version"
+
 #define EQ_SRC_SYS_TYPE_ELEMENT "head_src_sys_type"
 #define EQ_SRC_SYS_CODE_ELEMENT "head_src_sys_code"
 #define EQ_SRC_SYS_NODE_CODE_ELEMENT "head_src_node_code"

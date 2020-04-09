@@ -142,7 +142,7 @@ private:
 
     std::string resultMsg(std::string type, const std::string &msg, std::string uuid = "");
 
-    void resetAdapter();
+    bool resetAdapter();
 
     void getDevInfo(const std::string &sys_uuid, Json::Value &info);
 signals:

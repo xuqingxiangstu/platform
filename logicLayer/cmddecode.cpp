@@ -680,6 +680,7 @@ void cmdDecode::initFlow(const Json::Value &msg)
         }
     }
 
+    //TODO:每个record 增加
     if(errorInfo.str() == "")
     {
         mIsInitFlow = true;
@@ -690,8 +691,10 @@ void cmdDecode::initFlow(const Json::Value &msg)
     }
 }
 
-void cmdDecode::resetAdapter()
+bool cmdDecode::resetAdapter()
 {
+    bool res = true;
+
     std::ostringstream errorInfo;
 
     std::map<std::string, std::set<std::string>> adapters;
@@ -815,7 +818,7 @@ void cmdDecode::resetAdapter()
                 if(std::get<0>((*tmpItor)) == itor->first)
                 {
                     respond(resultMsg(INIT_FLOW, errorInfo.str(), std::get<1>(*tmpItor)));
-                    mAdapterUuids.erase(tmpItor++);
+                    mAdapterUuids.erase(tmpItor);
                 }
                 else
                 {
@@ -835,6 +838,8 @@ void cmdDecode::resetAdapter()
     mRcvMsgTask->setRcvUuid(eqUuids);
 
     mRcvMsgTask->startTask();
+
+    return res;
 }
 
 void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)

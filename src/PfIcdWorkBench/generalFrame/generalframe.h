@@ -22,6 +22,9 @@
 
 #define VERSION "1.0.1"
 
+#define FRAME_BE    "BE"
+#define FRAME_MIDDLE    "中间件"
+
 namespace Pf
 {
     namespace PfIcdWorkBench
@@ -32,11 +35,17 @@ namespace Pf
          */
         class GENERALFRAMESHARED_EXPORT generalFrame : public frameObj
         {
+            /** 帧类型  **/
+            enum frameType{
+                Frame_BE,
+                Frame_Middle
+            };
 
         public:
             generalFrame();
             ~generalFrame();
         public:
+            void setAttribute(const Json::Value &attr) override;
             std::shared_ptr<frameObj> clone() override;
             void init(const TiXmlElement *ele) override;
             std::string getFrameName() override{return VAR_NAME(variableFrame);}
@@ -46,6 +55,19 @@ namespace Pf
             std::string parse(unsigned char *inBuf, const unsigned int inSize) override;
             void resendMsg(byteArray &outValue) override;
         private:
+            /**
+             * @brief getMiddleInfoWordIndex    获取中间件信息字类型
+             * @param inBuf
+             * @param inSize
+             * @return
+             */
+            int getMiddleInfoWordIndex(unsigned char *inBuf, const unsigned int inSize);
+
+            int getMiddleInfoWordSize(unsigned char *inBuf, const unsigned int inSize);
+
+            int getMiddleHeadSize(unsigned char *inBuf, const unsigned int inSize);
+
+            void fillMiddleHead(byteArray &outValue, Json::Value &info, Json::Value jsValue);
             /**
              * @brief fillRegion    BE帧格式2域填充
              * @param[out] outValue  输出值
@@ -67,7 +89,7 @@ namespace Pf
              * @param infoWordType 信息字类型
              * @param wordsValue 信息字内容
              */
-            void _simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack);
+            void _simFrame(byteArray &outValue, const byteArray &headValue, const std::vector<byteArray> &wordsValue, const byteArray &regionValue, const int &resendCnt, const int &ack, const int &tableNum, const Json::Value &middleJs);
 
 
 
@@ -115,6 +137,7 @@ namespace Pf
             std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数
             std::unordered_map<unsigned int, std::shared_ptr<infoConf>> mInfoWordConf; ///< 信息字配置
             const unsigned int headCode = 0xFF; ///< 信息头识别吗
+            frameType mCurFrameType;    ///< 当前帧类型
         };
 
         extern "C"

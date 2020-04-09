@@ -17,6 +17,7 @@ class head;
 #define FRAME_BE    "BE"
 #define FRAME_FE    "FE"
 #define FRAME_93    "93"
+#define FRAME_MIDDLE    "中间件"
 
 class frame
 {
@@ -168,6 +169,16 @@ public:
     void init(TiXmlElement *) override;
     Json::Value serialize() override;
     std::string frameType() override {return FRAME_93;}
+private:
+    Json::Value mJsonV;
+};
+
+class headMiddle : public head
+{
+public:
+    void init(TiXmlElement *) override;
+    Json::Value serialize() override;
+    std::string frameType() override {return FRAME_MIDDLE;}
 private:
     Json::Value mJsonV;
 };

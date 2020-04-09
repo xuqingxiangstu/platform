@@ -10,7 +10,7 @@
  */
 
 #include "../../PfCommon/TinyXml/tinyxml.h"
-
+#include "../../PfCommon/jsoncpp/json.h"
 #include "./type.h"
 
 #include <string>
@@ -100,6 +100,12 @@ namespace Pf
              * @return json帧
              */
             virtual std::string parse(unsigned char *inBuf, const unsigned int inSize){return "";}
+
+            /**
+             * @brief setAttribute  设置属性
+             * @param attr  属性
+             */
+            virtual void setAttribute(const Json::Value &attr){}
         };
 
         /** 类导出函数指针 **/

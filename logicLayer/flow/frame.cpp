@@ -89,6 +89,130 @@ Json::Value headBe::serialize()
 {
     return mJsonV;
 }
+
+/***********************************************/
+
+void headMiddle::init(TiXmlElement *xmlEle)
+{
+    TiXmlElement *tmpEle = nullptr;
+    const char *point = nullptr;
+
+    tmpEle = xmlEle->FirstChildElement("head_frame_type");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_frame_type"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_src_sys_type");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_sys_type"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_src_sys_code");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_sys_code"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_src_node_code");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_node_code"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_src_user");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_user"] = point;
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_src_version");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_version"] = point;
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_sys_type");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_sys_type"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_sys_code");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_sys_code"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_node_code");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_node_code"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_user");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_user"] = point;
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_version");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_version"] = point;
+        }
+    }
+}
+
+Json::Value headMiddle::serialize()
+{
+    return mJsonV;
+}
+
 /***********************************************/
 
 void head93::init(TiXmlElement *xmlEle)
@@ -226,6 +350,9 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
     {
         UT_THROW_EXCEPTION("get BE frame obj faild!");
     }
+    Json::Value beJs;
+    beJs["type"] = FRAME_BE;
+    tmpObj->setAttribute(beJs);
     mIcdFrameObj[FRAME_BE] = tmpObj;
 
     tmpObj = icdAdapter->getFrameObj(FRAME_FE);
@@ -234,6 +361,16 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
         UT_THROW_EXCEPTION("get FE frame obj faild!");
     }
     mIcdFrameObj[FRAME_FE] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_BE);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get 中间件 frame obj faild!");
+    }
+    Json::Value middleJs;
+    middleJs["type"] = FRAME_MIDDLE;
+    tmpObj->setAttribute(middleJs);
+    mIcdFrameObj[FRAME_MIDDLE] = tmpObj;
 }
 
 void frame::init(TiXmlElement *xmlEle)
@@ -267,6 +404,15 @@ void frame::init(TiXmlElement *xmlEle)
             mHeadObj->init(noEle);
 
             mCurFrameType = FRAME_93;
+        }
+
+        TiXmlElement *middleEle = headEle->FirstChildElement(FRAME_MIDDLE);
+        if(middleEle)
+        {
+            mHeadObj = std::make_shared<headMiddle>();
+            mHeadObj->init(middleEle);
+
+            mCurFrameType = FRAME_MIDDLE;
         }
     }
 
@@ -394,7 +540,7 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
         if(mHeadObj)
         {
             regionJs["head"] = mHeadObj->serialize();
-            if(FRAME_BE == mHeadObj->frameType())
+            if( (FRAME_BE == mHeadObj->frameType()) || (FRAME_MIDDLE == mHeadObj->frameType()))
             {
                 //填充信息字类型字段
                 regionJs["head"]["head_info_word_type"] = std::atoi(infoWordType.c_str());
@@ -449,7 +595,7 @@ Json::Value frame::fill(const std::string &frameType, const std::string &infoWor
     {
         regionJs = fillFe();
     }
-    else if(frameType == FRAME_BE)
+    else if( (frameType == FRAME_BE) || (frameType == FRAME_MIDDLE))
     {
         regionJs = fillBe(infoWordType);
     }

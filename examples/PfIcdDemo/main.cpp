@@ -7,6 +7,8 @@
 #include "../../src/PfSql/paramsTable/paramstable.h"
 #include "../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
 #include "../../src/PfCommon/crc/crc.h"
+#include "../../src/PfCommon/jsoncpp/json.h"
+
 using namespace Pf;
 #pragma execution_character_set("utf-8")
 /**
@@ -31,7 +33,7 @@ int main(int argc, char *argv[])
         qDebug() << "init Ok\n";
 
         //step3：获取待解析的帧句柄
-        auto obj = frameAdapter->getFrameObj("FE");
+        auto obj = frameAdapter->getFrameObj("BE");
 
         if(obj != nullptr)
         {
@@ -318,6 +320,7 @@ int main(int argc, char *argv[])
               }\
                                   ";
 #endif
+#if 0
             obj->simulation(sendMsg, msgJson);
             qDebug() << "仿真测试->";
 
@@ -326,13 +329,19 @@ int main(int argc, char *argv[])
                 std::cout << std::hex << (int)v << " ";
             }
             std::cout << "\n";
-
+#endif
 //#else
             //step5：根据Excel中的数据进行解析
             std::vector<PfIcdWorkBench::icdOutConvertValueType> outV;
             qDebug() << "解析测试->\n";
 
-            std::string jsonStr = obj->parse(&sendMsg.at(0), sendMsg.size());
+            Json::Value middleJs;
+            middleJs["type"] = "中间件";
+            obj->setAttribute(middleJs);
+
+            std::vector<unsigned char> tmpMsg{0xBE,0x00,0x61,0x02,0x01,0x00,0x02,0x03,0x01,0x00,0x04,0x02,0x07,0xE4,0x04,0x09,0x03,0x5F,0x22,0x57,0x00,0x00,0x00,0x00,0x01,0x00,0x03,0x01,0x00,0x00,0x00,0x00,0x00,0x3D,0x01,0x00,0x02,0x03,0x02,0x31,0x32,0x02,0x32,0x31,0x01,0x00,0x04,0x02,0x02,0x39,0x38,0x04,0x31,0x32,0x33,0x34,0x02,0x31,0x32,0x02,0x32,0x31,0x02,0x39,0x38,0x04,0x31,0x32,0x33,0x34,0x00,0x00,0x01,0x04,0x4F,0x02,0x08,0x72,0x65,0x73,0x65,0x72,0x76,0x65,0x64,0x04,0x4F,0x00,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+
+            std::string jsonStr = obj->parse(&tmpMsg.at(0), tmpMsg.size());
 
             std::cout << jsonStr << std::endl;
 

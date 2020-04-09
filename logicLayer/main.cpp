@@ -116,8 +116,8 @@ int main(int argc, char *argv[])
         //decode.load("E:\\work\\[43]地面测发控系统仿真系统\\flow.xml");
         decode.initPrograme();
 //#ifndef QT_NO_DEBUG
-#if 0
-        std::string uuid = "{d5960261-9ab1-4e3f-9bbb-23c14272bd67}";
+#if 1
+        std::string uuid = "{a4ef8ea7-3544-47ec-9208-af343eee69d8}";
 
         Json::Value tmp;
         tmp.append(uuid);
