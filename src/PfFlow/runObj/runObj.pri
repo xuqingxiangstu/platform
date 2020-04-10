@@ -1,0 +1,2 @@
+HEADERS += \
+    $$PWD/runobj.h

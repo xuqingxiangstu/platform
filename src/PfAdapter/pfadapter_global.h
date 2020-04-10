@@ -1,0 +1,12 @@
+#ifndef PFADAPTER_GLOBAL_H
+#define PFADAPTER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(PFADAPTER_LIBRARY)
+#  define PFADAPTERSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define PFADAPTERSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // PFADAPTER_GLOBAL_H

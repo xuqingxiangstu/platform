@@ -1,0 +1,12 @@
+#ifndef CONDITION_GLOBAL_H
+#define CONDITION_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(CONDITION_LIBRARY)
+#  define CONDITIONSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define CONDITIONSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // CONDITION_GLOBAL_H

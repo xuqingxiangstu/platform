@@ -1,0 +1,14 @@
+#ifndef SNDUDPSTEP_GLOBAL_H
+#define SNDUDPSTEP_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(SNDUDPSTEP_LIBRARY)
+#  define SNDUDPSTEPSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define SNDUDPSTEPSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // SNDUDPSTEP_GLOBAL_H
+    
+    

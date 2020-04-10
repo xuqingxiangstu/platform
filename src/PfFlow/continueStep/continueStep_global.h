@@ -1,0 +1,14 @@
+#ifndef CONTINUESTEP_GLOBAL_H
+#define CONTINUESTEP_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(CONTINUESTEP_LIBRARY)
+#  define CONTINUESTEPSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define CONTINUESTEPSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // CONTINUESTEP_GLOBAL_H
+    
+    
