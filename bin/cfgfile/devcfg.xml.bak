@@ -1,0 +1,12 @@
+<?xml version="1.0"?>	
+<configure>
+		 <dev id="send" class="MulticastAdapter">      
+      
+       <!-- ض˿ں -->
+       <localPort>2205</localPort>
+       <!-- 鲥ַ-->
+       <remoteIp>224.0.0.100</remoteIp>
+       <!-- Ŀ˿ں-->
+       <remotePort>2206</remotePort>
+      </dev>
+</configure>

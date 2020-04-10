@@ -1,3 +1,4 @@
-
-bin/
-!bin/cfgFile
+**/bin/*
+!**/bin/cfgFile/
+!**/bin/frameCfg/
+bin/frameCfg/General/~$GeneralDateRegionConfig.xlsx

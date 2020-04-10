@@ -1,0 +1,29 @@
+<?xml version="1.0"?>	
+<configure>
+	<!--
+	继电器控制适配器
+	id：全局唯一，需按实际更改
+	class：固定不变
+	-->
+	<dev id="send" model="temperatureModel">			
+		<!-- 设备名称，Ni-Max中查看 -->
+		<rname>send</rname>
+		<!--最小值-->
+        <min>0</min>
+        <!-- 最大值 -->
+        <max>9</max>
+	    <!-- 初始值 -->
+        <initValue>3</initValue>
+	    <!-- 步长 -->
+        <changeStep>1</changeStep>
+	    <!-- 变化类型(Rising-Falling-Keep) -->
+        <changeType>Rising</changeType>
+	</dev>
+	
+	 <dev id="send" model="randaModel">
+       <!--最小值-->
+       <min>4</min>
+       <!-- 最大值 -->
+       <max>9</max>
+   </dev>
+</configure>

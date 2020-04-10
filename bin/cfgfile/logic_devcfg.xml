@@ -1,0 +1,24 @@
+<?xml version="1.0"?>	
+<configure>
+    <dev id="send" class="MulticastAdapter">
+        <!--绑定本地IP地址，如无需绑定则不配置此项-->       
+        
+        <!-- 本地端口号 -->
+        <localPort>8001</localPort>
+        <!-- 目标地址-->
+        <remoteIp>224.0.0.1</remoteIp>
+        <!-- 目标端口号-->
+        <remotePort>8002</remotePort>
+    </dev>
+
+    <dev id="send1" class="UnicastAdapter">
+        <!--绑定本地IP地址，如无需绑定则不配置此项-->       
+        
+        <!-- 本地端口号 -->
+        <localPort>4001</localPort>
+        <!-- 目标地址-->
+        <remoteIp>192.168.34.2</remoteIp>
+        <!-- 目标端口号-->
+        <remotePort>4002</remotePort>
+    </dev>
+</configure>

@@ -449,6 +449,7 @@ void cmdDecode::startTest(const Json::Value &msg)
 
     try
     {
+
         uuid = msg["record_uuid"].asString();
 
         if(!mIsInitFlow.contains(uuid))
