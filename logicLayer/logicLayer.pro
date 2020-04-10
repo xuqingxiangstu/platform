@@ -62,4 +62,5 @@ HEADERS += \
 include (./flow/flow.pri)
 include (./task/task.pri)
 include (./decoding/decoding.pri)
+include (./singleTest/singleTest.pri)
 include (./virtualParams/virtualParams.pri)

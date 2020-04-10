@@ -47,12 +47,6 @@ namespace Pf
           mRcvObj = std::make_shared<PfBus::zmqReceive>();
           mRcvObj->init(strRemoteIp, strRemotePort);
       }
-
-      bool ZmqRcvAdapter::sendMsg(const char *msg, const int &msgSize)
-      {
-          return false;
-      }
-
       bool ZmqRcvAdapter::receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize, const unsigned int &timeOut)
       {
           std::lock_guard<std::mutex> lk(mMutex);

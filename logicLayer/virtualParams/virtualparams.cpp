@@ -51,7 +51,7 @@ bool virtualParams::isMeet(const keyType &key)
     auto findItor = mParamsManager.find(key);
     if(findItor != mParamsManager.end())
     {
-        res = (findItor->second).isMeet();
+        res = (findItor->second).isMeet();        
     }
 
     return res;

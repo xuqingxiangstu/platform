@@ -1,20 +1,23 @@
 #include "rcvcmdtask.h"
 #include<QDateTime>
+#include <QDebug>
+
 rcvCmdTask::rcvCmdTask(QObject *parent)
 :QThread(parent),mZmqRcv(nullptr)
 {       
 }
 void rcvCmdTask::run()
 {
-    char rcvBuf[1024] = {0};
+    const int maxSize = 20480;
+    char rcvBuf[maxSize] = {0};
     int rcvSize = 0;
  
      while(1)
     {
-        if(mZmqRcv->receiveMsg(rcvBuf, rcvSize))
+        if(mZmqRcv->receiveMsg(rcvBuf, rcvSize,maxSize ))
         {
             if(rcvSize > 0)
-            {
+            {                
                 emit toParse(QString::fromUtf8((const char*)rcvBuf, rcvSize));
             }
         }

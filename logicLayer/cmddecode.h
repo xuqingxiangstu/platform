@@ -111,6 +111,8 @@ private:
      */
     void startTest(const Json::Value &msg);
 
+    void manualTrigger(const Json::Value &msg);
+
     /**
      * @brief stopTest  停止测试
      * @param flowType  流程类型（normal：正常、fault：故障)
@@ -146,6 +148,8 @@ private:
     bool resetAdapter();
 
     void getDevInfo(const std::string &sys_uuid, Json::Value &info);
+
+    void singleSendTest(Json::Value value);
 signals:
 
     /**
@@ -156,6 +160,8 @@ signals:
      * @param max           最大值
      */
     void setAnalogOut(std::string cardId, int channel, double min, double max);
+
+    void singleTestSig(Json::Value value);
 public slots:
 
     /**
@@ -179,7 +185,7 @@ private:
     std::atomic_bool mIsInitSuccessful;     ///<初始化是否成功
     QMap<std::string, bool> mIsInitFlow;           ///<流程是否初始化
     std::map<std::string, std::shared_ptr<flowManager>> mFLowsObj;    ///< 流程句柄
-    std::shared_ptr<rcvTask> mRcvMsgTask;      ///< 接收消息任务
+    std::shared_ptr<rcvTask> mRcvMsgTask;      ///< 接收消息任务  
 };
 
 #endif // CMDDECODE_H

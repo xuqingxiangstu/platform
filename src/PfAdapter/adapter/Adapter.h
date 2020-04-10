@@ -50,7 +50,9 @@ namespace Pf
              * - true：成功
              * - false：失败
              */
-            virtual bool sendMsg(const char *msg, const int &msgSize) { return false; }
+            //virtual bool sendMsg(const char *msg, const int &msgSize) { return false; }
+
+            virtual bool sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr = "", const int &port = 0) { return false; }
 
             /**
              * @brief receiveMsg    接收消息
@@ -63,6 +65,8 @@ namespace Pf
              * - false：失败
              */
             virtual bool receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF) { return false; }
+
+            virtual bool receiveMsg(char *msg, int &rcvSize, std::string &rcvIp, unsigned short &rcvPort, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF){return false;}
 
             /**
              * @brief atomicTrMsg   原子发送接收数据（send rcv）

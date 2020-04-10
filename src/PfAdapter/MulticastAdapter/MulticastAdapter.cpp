@@ -53,7 +53,7 @@ namespace Pf
 
       }
 
-      bool MulticastAdapter::sendMsg(const char *msg, const int &msgSize)
+      bool MulticastAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr, const int &port)
       {
           std::unique_lock<std::mutex> lk(mMutex);
           return udp->sendMsg((unsigned char*)msg, msgSize);

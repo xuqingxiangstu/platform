@@ -147,11 +147,116 @@ namespace Pf
             return index;
         }
 
-        std::string generalFrame::parse(unsigned char *u8Msg, const unsigned int u32Size)
+        void generalFrame::getMiddleOtherHeadInfo(unsigned char *inBuf, const unsigned int inSize, Json::Value &headInfo)
         {
-            std::ostringstream strErr;
-            Json::Value rootJson;
+            dataStorage data;
+            int len = 0;
+            int pos = 0;
+            //step1：消息出发点-用户字符串，软件标识
+            pos = 38;
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_out_user"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
 
+            pos += 1;
+            pos += len;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_out_version"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+            //step2：消息目的地用户字符串、软件标识
+
+            pos += 1;
+            pos += len;
+            pos += 4;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_in_user"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+            pos += 1;
+            pos += len;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_in_version"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+            //step3：消息发送方的地用户字符串、软件标识
+            pos += 1;
+            pos += len;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_send_user"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+            pos += 1;
+            pos += len;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_send_version"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+            //step4：消息接收送方的地用户字符串、软件标识
+
+            pos += 1;
+            pos += len;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_rcv_user"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+            pos += 1;
+            pos += len;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_msg_rcv_version"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+
+
+            //step5：更新信息字类型
+
+            pos += 1;
+            pos += len;
+
+            headInfo["head_info_word_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
+
+            //step6：表号
+            pos += 1;
+            pos += 2;
+
+            headInfo["head_table"] = data.getData(inBuf, inSize, pos, 2, 0, 0);
+
+            //step7：备用字符串
+            pos += 2;
+            pos += 1;
+
+            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            if(pos + 1 + len <= inSize)
+            {
+                headInfo["head_reserve"] = std::string((const char*)&inBuf[pos + 1], len);
+            }
+        }
+
+        bool generalFrame::parse(unsigned char *u8Msg, const unsigned int u32Size, Json::Value &result)
+        {
+            std::ostringstream strErr;           
             try
             {
                 //step1：帧校验
@@ -247,8 +352,12 @@ namespace Pf
                 {
                     _parseInfo(headRegion.get(), u8Msg, u32Size, headJson);
                 }
-
-                rootJson["head"] = headJson;
+                if(Frame_Middle == mCurFrameType)
+                {
+                    //获取中间件其它头信息
+                    getMiddleOtherHeadInfo(u8Msg, u32Size, headJson);
+                }
+                result["head"] = headJson;
 
                 //step4：获取各个信息字数据并解析
                 int residueSize = u32Size - infoHeadSize;
@@ -294,10 +403,10 @@ namespace Pf
                     _parseRegion(wordJsons, &u8Msg[infoHeadSize + tmpLen], residueSize, tmpJson);
 
                     if(!tmpJson.isNull())
-                        rootJson["region"] = tmpJson;
+                        result["region"] = tmpJson;
                 }
                 if(!wordJsons.isNull())
-                    rootJson["infoWord"] = wordJsons;
+                    result["infoWord"] = wordJsons;
             }
             catch(std::runtime_error err)
             {
@@ -305,7 +414,7 @@ namespace Pf
                 UT_THROW_EXCEPTION(errCode);
             }
 
-            return rootJson.toStyledString();
+            return !result.isNull();
         }
 
         void generalFrame::_parseRegion(const Json::Value &wordJsons, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
@@ -523,6 +632,393 @@ namespace Pf
             //获取重传标志
             resendJson = root["resendCnt"];
         }
+
+        bool generalFrame::beAskMsg(byteArray &outValue, const Json::Value &json)
+        {
+            //step1：根据输入，判断是否要应答
+            if(json["head_is_ask"].isNull() || (json["head_is_ask"].asInt() != 0x1))
+                return false;
+
+            //step2：需要应答，则组帧
+
+            outValue.clear();
+
+            //step2-1：帧同步
+            outValue.push_back(0xBE);
+
+            //step2-2：帧长度，先占位
+            outValue.push_back(0x0);
+            outValue.push_back(0x0);
+
+            //step2-3：帧类型
+            if(!json["head_frame_type"].isNull())
+            {
+                outValue.push_back(json["head_frame_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-4：信源 系统类型，系统编码，节点编码
+            if(!json["head_src_sys_type"].isNull())
+            {
+                outValue.push_back(json["head_src_sys_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_src_sys_code"].isNull())
+            {
+                unsigned short tmp = json["head_src_sys_code"].asInt();
+                outValue.push_back(tmp >> 8);
+                outValue.push_back(tmp & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_src_node_code"].isNull())
+            {
+                outValue.push_back(json["head_src_node_code"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-5：信宿 系统类型，系统编码，节点编码
+            if(!json["head_dst_sys_type"].isNull())
+            {
+                outValue.push_back(json["head_dst_sys_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_dst_sys_code"].isNull())
+            {
+                unsigned short tmp = json["head_dst_sys_code"].asInt();
+                outValue.push_back(tmp >> 8);
+                outValue.push_back(tmp & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_dst_node_code"].isNull())
+            {
+                outValue.push_back(json["head_dst_node_code"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-6：时间
+
+            QDateTime current = QDateTime::currentDateTime();
+
+            outValue.push_back(current.date().year() >> 8);
+            outValue.push_back(current.date().year() & 0xFF);
+
+            outValue.push_back(current.date().month());
+            outValue.push_back(current.date().day());
+
+            unsigned int time = current.time().hour() * 3600000 + current.time().minute() * 60000 + current.time().second() * 1000 + current.time().msec();
+            outValue.push_back(time);
+
+            //step2-7：确认帧序号
+            if(!json["head_cmd_cnt"].isNull())
+            {
+                int cnt = json["head_cmd_cnt"].asInt();
+                outValue.push_back(cnt >> 24);
+                outValue.push_back(cnt >> 16);
+                outValue.push_back(cnt >> 8);
+                outValue.push_back(cnt & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            //step2-8：确认标志
+            outValue.push_back(0x2);
+
+            //step2-9：重传次数
+            if(!json["head_retry_cnt"].isNull())
+            {
+                outValue.push_back(json["head_retry_cnt"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-10：信息字类型
+            if(!json["head_info_word_type"].isNull())
+            {
+                outValue.push_back(json["head_info_word_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-11：信息字个数
+            outValue.push_back(0);
+            outValue.push_back(0);
+
+            //step2-12：备用字节
+            outValue.push_back(0);
+            outValue.push_back(0);
+            outValue.push_back(0);
+            outValue.push_back(0);
+
+            //step2-14：更新长度
+            int len = outValue.size() + 1;
+            outValue[1] = len >> 8;
+            outValue[2] = len & 0xFF;
+
+            //step2-13：校验和
+
+            unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(0)), outValue.size());
+            outValue.push_back(crc & 0xFF);
+
+            return true;
+        }
+
+        bool generalFrame::middleAskMsg(byteArray &outValue, const Json::Value &json)
+        {
+            //step1：根据输入，判断是否要应答
+            if(json["head_is_ask"].isNull() || (json["head_is_ask"].asInt() != 0x1))
+                return false;
+
+            //step2：需要应答，则组帧
+
+            outValue.clear();
+
+            //step2-1：帧同步
+            outValue.push_back(0xBE);
+
+            //step2-2：帧长度，先占位
+            outValue.push_back(0x0);
+            outValue.push_back(0x0);
+
+            //step2-3：帧类型
+            if(!json["head_frame_type"].isNull())
+            {
+                outValue.push_back(json["head_frame_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-4：信源 系统类型，系统编码，节点编码
+            if(!json["head_src_sys_type"].isNull())
+            {
+                outValue.push_back(json["head_src_sys_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_src_sys_code"].isNull())
+            {
+                unsigned short tmp = json["head_src_sys_code"].asInt();
+                outValue.push_back(tmp >> 8);
+                outValue.push_back(tmp & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_src_node_code"].isNull())
+            {
+                outValue.push_back(json["head_src_node_code"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-5：信宿 系统类型，系统编码，节点编码
+            if(!json["head_dst_sys_type"].isNull())
+            {
+                outValue.push_back(json["head_dst_sys_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_dst_sys_code"].isNull())
+            {
+                unsigned short tmp = json["head_dst_sys_code"].asInt();
+                outValue.push_back(tmp >> 8);
+                outValue.push_back(tmp & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            if(!json["head_dst_node_code"].isNull())
+            {
+                outValue.push_back(json["head_dst_node_code"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-6：时间
+
+            QDateTime current = QDateTime::currentDateTime();
+
+            outValue.push_back(current.date().year() >> 8);
+            outValue.push_back(current.date().year() & 0xFF);
+
+            outValue.push_back(current.date().month());
+            outValue.push_back(current.date().day());
+
+            unsigned int time = current.time().hour() * 3600000 + current.time().minute() * 60000 + current.time().second() * 1000 + current.time().msec();
+            outValue.push_back(time);
+
+            //step2-7：确认帧序号
+            if(!json["head_cmd_cnt"].isNull())
+            {
+                int cnt = json["head_cmd_cnt"].asInt();
+                outValue.push_back(cnt >> 24);
+                outValue.push_back(cnt >> 16);
+                outValue.push_back(cnt >> 8);
+                outValue.push_back(cnt & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            //step2-8：确认标志
+            outValue.push_back(0x2);
+
+            //step2-9：重传次数
+            if(!json["head_retry_cnt"].isNull())
+            {
+                outValue.push_back(json["head_retry_cnt"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-10：信息字类型
+            if(!json["head_info_word_type"].isNull())
+            {
+                outValue.push_back(json["head_info_word_type"].asInt());
+            }
+            else
+            {
+                outValue.push_back(0x0);
+            }
+
+            //step2-11：信息字个数
+            outValue.push_back(0);
+            outValue.push_back(0);
+
+            //step2-12：备用字节
+            outValue.push_back(0);
+            outValue.push_back(0);
+            outValue.push_back(0);
+            outValue.push_back(0);
+
+            //step2-14：更新长度
+            int len = outValue.size() + 1;
+            outValue[1] = len >> 8;
+            outValue[2] = len & 0xFF;
+
+
+            //step2-15：校验和
+
+            unsigned short crc = PfCommon::Crc::calSum((unsigned char*)(&outValue.at(0)), outValue.size());
+            outValue.push_back(crc & 0xFF);
+
+            return true;
+        }
+
+        bool generalFrame::getValidValue(const Json::Value &result, Json::Value &value)
+        {
+            bool res = false;
+
+            //获取表号+编码
+            //获取信息字类型
+            if(!result["head"]["head_info_word_type"].isNull())
+            {
+                int type = result["head"]["head_info_word_type"].asInt();
+
+                std::string codeKey = "info_" + std::to_string(type + 1) + "_code";
+                std::string tableKey = "info_" + std::to_string(type + 1) + "_table_num";
+
+                if(!result["infoWord"].isNull())
+                {
+                    Json::Value infoWord = result["infoWord"];
+
+                    for(int index = 0; index < infoWord.size(); index++)
+                    {
+                        Json::Value tmpJs;
+
+                        if(!infoWord[index][codeKey].isNull())
+                        {
+                            tmpJs["coding"] = infoWord[index][codeKey].asInt();
+                        }
+
+                        if(!infoWord[index][tableKey].isNull())
+                        {
+                            tmpJs["table"] = infoWord[index][tableKey].asInt();
+                        }
+
+                        value.append(tmpJs);
+                    }
+                }
+            }
+
+            return !value.isNull();
+        }
+
+        bool generalFrame::getAskMsg(byteArray &outValue, const Json::Value &resultJs)
+        {
+            Json::Value json = resultJs["head"];
+
+            if(Frame_BE == mCurFrameType)
+            {
+                return beAskMsg(outValue, json);
+            }
+            else if(Frame_Middle == mCurFrameType)
+            {
+                return middleAskMsg(outValue, json);
+            }
+
+            return false;
+        }
+
 
         void generalFrame::simulation(byteArray &outValue, const std::string &json)
         {

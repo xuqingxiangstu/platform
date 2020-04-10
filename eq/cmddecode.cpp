@@ -1,6 +1,6 @@
 #include "cmddecode.h"
 
-
+#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -17,8 +17,9 @@ cmdDecode::cmdDecode(QObject *parent)
       mSendObj(nullptr),
       mRcvObj(nullptr)
 {
+#ifndef DEBUG_DECODE
     std::string sendIp = "127.0.0.1";
-    std::string sendPort = "2202";
+    std::string sendPort = "2203";
 
     std::string rcvIp = "";
     std::string rcvPort = "2204";
@@ -28,10 +29,12 @@ cmdDecode::cmdDecode(QObject *parent)
 
     mRcvObj = new PfAdapter::ZmqRcvAdapter();
     dynamic_cast<PfAdapter::ZmqRcvAdapter*>(mRcvObj)->init(rcvIp, rcvPort);
+#endif
 }
 
 cmdDecode::~cmdDecode()
 {
+#ifndef DEBUG_DECODE
     if(isRunning())
     {
         isStop = true;
@@ -39,26 +42,32 @@ cmdDecode::~cmdDecode()
         wait();
         isStop = false;
     }
+#endif
 }
 
 void cmdDecode::startDecode()
 {
+#ifndef DEBUG_DECODE
     if(!isRunning())
     {
         isStop = false;
         start();
     }
+#endif
 }
 
 
 void cmdDecode::onSendCmd(QString json)
 {
+#ifndef DEBUG_DECODE
     if(mSendObj)
         mSendObj->sendMsg(json.toStdString().c_str(), json.toStdString().size());
+#endif
 }
 
 void cmdDecode::onSendJson(Json::Value jsonObj)
 {
+#ifndef DEBUG_DECODE
     //加协议
     if(mSendObj)
     {
@@ -67,12 +76,16 @@ void cmdDecode::onSendJson(Json::Value jsonObj)
 
         sendJs["msg"] = jsonObj;
 
+        //qDebug() << "[" << sendJs.toStyledString().size() << "]" << sendJs.toStyledString().c_str();
+
         mSendObj->sendMsg(sendJs.toStyledString().c_str(), sendJs.toStyledString().size());
     }
+#endif
 }
 
 void cmdDecode::run()
 {
+#ifndef DEBUG_DECODE
     if(mRcvObj == nullptr)
         return ;
 
@@ -100,5 +113,6 @@ void cmdDecode::run()
 
         }
     }
+#endif
 }
 

@@ -114,8 +114,9 @@ namespace Pf
             std::unique_lock<std::mutex> lk(mMutex);
 
             _send((unsigned char*)sMsg, sMsgSize, remotIp, remotPort);
-
-            return _receive((unsigned char*)rMsg, (unsigned int*)&rcvSize, 1024, interval);
+            std::string rcvIp;
+            unsigned short rcvPort;
+            return _receive((unsigned char*)rMsg, (unsigned int*)&rcvSize, 1024, rcvIp, rcvPort, interval);
         }
 
         bool UnicastUdp::sendMsg(unsigned char *u8Msg, unsigned int u32MsgLen)
@@ -125,29 +126,41 @@ namespace Pf
             return _send(u8Msg, u32MsgLen, sendaddrees, sendPort);
         }
 
-        bool UnicastUdp::receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut)
+        bool UnicastUdp::receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, std::string &rcvIp, unsigned short &rcvPort,const unsigned int u32TimeOut)
         {            
             std::unique_lock<std::mutex> lk(mMutex);
 
-            return _receive(u8Msg, u32MsgLen, u32RcvMax, u32TimeOut);
+            return _receive(u8Msg, u32MsgLen, u32RcvMax, rcvIp, rcvPort, u32TimeOut);
         }
 
-        bool UnicastUdp::_receive(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut)
+        bool UnicastUdp::receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut)
+        {
+            std::unique_lock<std::mutex> lk(mMutex);
+            std::string rcvIp;
+            unsigned short rcvPort;
+            return _receive(u8Msg, u32MsgLen, u32RcvMax, rcvIp, rcvPort, u32TimeOut);
+        }
+
+        bool UnicastUdp::_receive(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, std::string &rcvIp, unsigned short &rcvPort, const unsigned int u32TimeOut)
         {
             int RecvLen = 0;
 
             auto beginTime = std::chrono::high_resolution_clock::now();
 
             bool bRes = false;
+            QHostAddress host;
+            quint16 port;
             QByteArray baRecv;
             while(1)
             {
                 if(mSocket->hasPendingDatagrams())
                 {
                     baRecv.resize(mSocket->pendingDatagramSize());
-                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size());
+                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size(), &host, &port);
                     *u32MsgLen = RecvLen;
                     bRes = true;
+                    rcvIp = host.toString().toStdString();
+                    rcvPort = port;
                     break;
                 }
 

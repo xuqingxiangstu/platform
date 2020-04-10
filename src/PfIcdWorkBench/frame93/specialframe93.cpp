@@ -168,7 +168,7 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
-        std::string specialFrame93::parse(unsigned char *u8Msg, const unsigned int u32Size)
+        bool specialFrame93::parse(unsigned char *u8Msg, const unsigned int u32Size, Json::Value &result)
         {
             if(u32Size <= 0)
                 return "";
@@ -207,15 +207,19 @@ namespace Pf
 
             tableNum = data.getData(u8Msg, u32Size, 2, 2, 0, 0);
 
-            Json::Value regionValue;
             //首地址除去表号
 #if CHECK_CRC
-            _parseRegion(tableNum, &u8Msg[2 + 2], u32Size - 2 - CRC_SIZE - 2, regionValue);
+            _parseRegion(tableNum, &u8Msg[2 + 2], u32Size - 2 - CRC_SIZE - 2, result);
 #else
-            _parseRegion(tableNum, &u8Msg[2 + 2], u32Size - 2 - CRC_SIZE - 2, regionValue);
+            _parseRegion(tableNum, &u8Msg[2 + 2], u32Size - 2 - CRC_SIZE - 2, result);
 #endif
 
-            return regionValue.toStyledString();
+            return !result.isNull();
+        }
+
+        bool specialFrame93::getAskMsg(byteArray &outValue, const Json::Value &json)
+        {
+            return false;
         }
 
         void specialFrame93::_parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)

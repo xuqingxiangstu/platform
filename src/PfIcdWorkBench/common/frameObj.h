@@ -79,6 +79,21 @@ namespace Pf
             virtual void simulation(byteArray &outValue, const std::string &json){}
 
             /**
+             * @brief getAskMsg 获取应答帧
+             * @param outValue  应答数据
+             * @param json  协议
+             * @return
+             */
+            virtual bool getAskMsg(byteArray &outValue, const Json::Value &json){return false;}
+
+            /**
+             * @brief getValidValue 获取有效值
+             * @param json  值
+             * @return
+             */
+            virtual bool getValidValue(const Json::Value &result, Json::Value &value){return false;}
+
+            /**
              * @brief resendMsg 重传消息，只改变重传次数
              * @param outValue  数据
              */
@@ -99,7 +114,7 @@ namespace Pf
              * @param[in] inSize 数据长度
              * @return json帧
              */
-            virtual std::string parse(unsigned char *inBuf, const unsigned int inSize){return "";}
+            virtual bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &value){return false;}
 
             /**
              * @brief setAttribute  设置属性

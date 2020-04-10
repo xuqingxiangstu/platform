@@ -8,6 +8,8 @@
 #include "../src/PfAdapter/PfAdapterManager/pfadaptermanager.h"
 #include "../src/PfAdapter/adapter/Adapter.h"
 #include "../src/PfCommon/recordLog/recordlog.h"
+#include "../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
+#include "../decoding/decoding.h"
 
 class rcvTask : public QThread
 {
@@ -28,7 +30,13 @@ public:
      * @brief setPfAdapterManager   设置适配器管理
      * @param manager   管理句柄
      */
-    void setPfAdapterManager(Pf::PfAdapter::PfAdapterManager *manager){mPfAdapterManager = manager;}
+    void setPfAdapterManager(std::shared_ptr<Pf::PfAdapter::PfAdapterManager> manager);
+
+    /**
+     * @brief setIcdFrameAdpter 设置ICD管理句柄
+     * @param obj   句柄
+     */
+    void setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> obj);
 signals:
     /**
      * @brief record    数据存储
@@ -42,8 +50,16 @@ signals:
      * @param uuid      UUID
      * @param protocol  协议
      * @param msg       消息
+     * @param rcvIp     接收IP地址
+     * @param rcvPort   接收端口号
      */
-    void decoding(QString uuid, QString protocol, QByteArray msg);
+    void decode(QString uuid, QString protocol, QByteArray msg, QString rcvIp, int rcvPort);
+
+    /**
+     * @brief decodeResult  解码结果
+     * @param v 结果
+     */
+    void decodeResult(Json::Value v);
 private:
     /**
      * @brief qt的run 线程虚函数
@@ -61,8 +77,9 @@ private:
         Adapter_Ptl_Index
     };
     std::vector<std::tuple<std::string, std::string, Pf::PfAdapter::Adapter*, std::string>> mAdapters;
-    Pf::PfAdapter::PfAdapterManager *mPfAdapterManager;
+    std::shared_ptr<Pf::PfAdapter::PfAdapterManager> mPfAdapterManager;
     std::vector<std::shared_ptr<Pf::PfCommon::RecordLog>> mRecordsObj; //日志记录
+    std::shared_ptr<decodingPool> mDecodingPoolObj;    //解码    
     std::atomic_bool mIsStop;
 };
 

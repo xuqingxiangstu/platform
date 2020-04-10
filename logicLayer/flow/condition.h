@@ -17,6 +17,7 @@ public:
     bool isConform();
     static std::string className(){return "startCondition";}
     Json::Value getRunItems();
+    static bool isConform(const std::string &uuid, const std::string &table, const std::string &coding);
 private:
     //std::vector<std::tuple<inValueType, outValueType>> mParams;
     std::string mId;

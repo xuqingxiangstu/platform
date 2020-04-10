@@ -50,10 +50,12 @@ namespace Pf
             void init(const TiXmlElement *ele) override;
             std::string getFrameName() override{return VAR_NAME(variableFrame);}
             std::string version() override {return VERSION;}
+            bool getAskMsg(byteArray &outValue, const Json::Value &json) override;
             void simulation(byteArray &outValue, const std::string &json) override;
             //void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
-            std::string parse(unsigned char *inBuf, const unsigned int inSize) override;
+            bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &result) override;
             void resendMsg(byteArray &outValue) override;
+            bool getValidValue(const Json::Value &result, Json::Value &value) override;
         private:
             /**
              * @brief getMiddleInfoWordIndex    获取中间件信息字类型
@@ -66,6 +68,17 @@ namespace Pf
             int getMiddleInfoWordSize(unsigned char *inBuf, const unsigned int inSize);
 
             int getMiddleHeadSize(unsigned char *inBuf, const unsigned int inSize);
+
+            /**
+             * @brief getMiddleOtherHeadInfo    获取中间件其它头信息
+             * @param inBuf     首地址
+             * @param inSize    长度
+             * @param headInfo  头信息
+             */
+            void getMiddleOtherHeadInfo(unsigned char *inBuf, const unsigned int inSize, Json::Value &headInfo);
+
+            bool beAskMsg(byteArray &outValue, const Json::Value &json);
+            bool middleAskMsg(byteArray &outValue, const Json::Value &json);
 
             void fillMiddleHead(byteArray &outValue, Json::Value &info, Json::Value jsValue);
             /**

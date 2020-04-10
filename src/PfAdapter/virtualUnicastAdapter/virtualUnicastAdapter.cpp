@@ -41,15 +41,16 @@ namespace Pf
         }
     }
 
-      bool virtualUnicastAdapter::sendMsg(const char *msg, const int &msgSize)
+      bool virtualUnicastAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr, const int &port)
       {
           bool res = false;
 
           if(udp)
-              res = udp->sendMsg((unsigned char*)msg, msgSize, mIpAddr, mPort);
+              res = udp->sendMsg((unsigned char*)msg, msgSize, ipAddr, std::to_string(port));
 
           return res;
       }
+
 
       bool virtualUnicastAdapter::atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, const int &rMaxRcvSize)
       {
@@ -66,6 +67,16 @@ namespace Pf
 
           if(udp)
               res = udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, timeOut);
+
+          return res;
+      }
+
+      bool virtualUnicastAdapter::receiveMsg(char *msg, int &rcvSize, std::string &rcvIp, unsigned short &rcvPort, const int &maxRcvSize, const unsigned int &timeOut)
+      {
+          bool res = false;
+
+          if(udp)
+              res = udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, rcvIp, rcvPort, timeOut);
 
           return res;
       }

@@ -178,6 +178,17 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
         {
             TiXmlElement *startCondiEle = new TiXmlElement(START_CONDITION_ELEMENT);
 
+            //接口uuid
+            Json::Value devJs;
+            headNode->getProperty(PROPERTY_RECORD_DEV_SEL, devJs);
+            if(!devJs.isNull())
+            {
+                if(!devJs[PROPERTY_DEV_VALUE_UUID].isNull())
+                {
+                    startCondiEle->LinkEndChild(createTextElement(SYSTEM_UUID_ELEMENT, devJs[PROPERTY_DEV_VALUE_UUID].asString()));
+                }
+            }
+
             startCondiEle->LinkEndChild(createTextElement(TABLE_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_TABLE_NUM].asString()));
             startCondiEle->LinkEndChild(createTextElement(CODING_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_CODING_NUM].asString()));
 
@@ -196,6 +207,17 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
         if(PROPERTY_CONDITION_NO != conName)
         {
             TiXmlElement *stopCondiEle = new TiXmlElement(STOP_CONDITION_ELEMENT);
+
+            //接口uuid
+            Json::Value devJs;
+            headNode->getProperty(PROPERTY_RECORD_DEV_SEL, devJs);
+            if(!devJs.isNull())
+            {
+                if(!devJs[PROPERTY_DEV_VALUE_UUID].isNull())
+                {
+                    stopCondiEle->LinkEndChild(createTextElement(SYSTEM_UUID_ELEMENT, devJs[PROPERTY_DEV_VALUE_UUID].asString()));
+                }
+            }
 
             stopCondiEle->LinkEndChild(createTextElement(TABLE_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_TABLE_NUM].asString()));
             stopCondiEle->LinkEndChild(createTextElement(CODING_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_CODING_NUM].asString()));

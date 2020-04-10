@@ -8,7 +8,21 @@ rcvTask::rcvTask(QObject *parent):
     QThread(parent),
     mIsStop(false)
 {
+    mDecodingPoolObj = std::make_shared<decodingPool>();
 
+    connect(this, &rcvTask::decode, mDecodingPoolObj.get(), &decodingPool::decode);
+    connect(mDecodingPoolObj.get(), &decodingPool::result, this, &rcvTask::decodeResult);
+}
+
+void rcvTask::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> obj)
+{
+    mDecodingPoolObj->setIcdFrameAdpter(obj);
+}
+
+void rcvTask::setPfAdapterManager(std::shared_ptr<Pf::PfAdapter::PfAdapterManager> manager)
+{
+    mPfAdapterManager = manager;
+    mDecodingPoolObj->setPfAdapterManager(manager);
 }
 
 rcvTask::~rcvTask()
@@ -78,13 +92,13 @@ void rcvTask::deleteObj()
 
 void rcvTask::initObj()
 {
-    //初始化日志及解析模块
+    //初始化日志模块
 
     mRecordsObj.clear();
 
+    //日志
     for(auto adapter : mAdapters)
-    {
-         //日志
+    {         
         std::shared_ptr<Pf::PfCommon::RecordLog> rd = std::make_shared<Pf::PfCommon::RecordLog>();
 
         rd->setUuid(std::get<Adapter_Uuid_Index>(adapter).c_str());
@@ -92,9 +106,7 @@ void rcvTask::initObj()
 
         connect(this, &rcvTask::record, rd.get(), &Pf::PfCommon::RecordLog::record);
 
-        mRecordsObj.emplace_back(rd);
-
-        //解析
+        mRecordsObj.emplace_back(rd);        
     }
 }
 
@@ -103,13 +115,15 @@ void rcvTask::run()
     const int rcvMaxSize = 2048;
     char rcvBuf[rcvMaxSize] = {0};
     int rcvSize = 0;
+    std::string rcvIp;
+    unsigned short rcvPort;
 #ifndef DEBUG_TASK
     while(!mIsStop)
     {
         //遍历接收        
         for(auto adapter : mAdapters)
         {
-            if(std::get<Adapter_Obj_Index>(adapter)->receiveMsg(rcvBuf, rcvSize, rcvMaxSize, 0))
+            if(std::get<Adapter_Obj_Index>(adapter)->receiveMsg(rcvBuf, rcvSize, rcvIp, rcvPort, rcvMaxSize, 0))
             {
 #ifndef DEBUG_TASK
                 QString msg = "[" + QDateTime::currentDateTime().toString("hh:mm.ss.zzz") + "]#";
@@ -124,9 +138,9 @@ void rcvTask::run()
                 }
 
                 SHOW(msg.toStdString());
-#endif
+#endif                
                 //step1：解析
-                emit decoding(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Ptl_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize));
+                emit decode(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Ptl_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize), rcvIp.c_str(), rcvPort);
 
                 //step2：存日志
                 emit record(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize));

@@ -51,9 +51,13 @@ public:
         using std::size_t;
         using std::hash;
 
+        //modify xqx 20200410 不判设备UUID
         return ((hash<std::string>()(key.first)
             ^ (hash<std::string>()(key.second) << 1)) >> 1)
             ^ (hash<std::string>()(key.three) << 1);
+
+        //return ((hash<std::string>()(key.second)
+         //   ^ (hash<std::string>()(key.three) << 1)) >> 1);
     }
 };
 
@@ -62,7 +66,9 @@ class mapEqualTo
 public:
     bool operator()(const mapKey& key1, const mapKey& key2) const
     {
+        //modify xqx 20200410 不判设备UUID
         return (key1.first == key2.first) && (key1.second == key2.second) && (key1.three == key2.three);
+       // return (key1.second == key2.second) && (key1.three == key2.three);
     }
 };
 

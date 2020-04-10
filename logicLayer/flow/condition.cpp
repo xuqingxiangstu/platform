@@ -48,6 +48,15 @@ Json::Value startCondition::getRunItems()
     return js;
 }
 
+bool startCondition::isConform(const std::string &uuid, const std::string &table, const std::string &coding)
+{
+    bool res = true;
+
+    res = virtualParams::getInstance()->isMeet({uuid, table, coding});
+
+    return res;
+}
+
 bool startCondition::isConform()
 {
     bool res = true;

@@ -620,7 +620,7 @@ void flowTree::onActionTestSend(QTreeWidgetItem *item)
     }
 
     //由后台逻辑进行处理
-    emit singleTeset(testJson);
+    //emit singleTeset(testJson);
 }
 
 void flowTree::onMenuTrigger(QAction *action)

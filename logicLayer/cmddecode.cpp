@@ -46,38 +46,13 @@ void cmdDecode::parse(QString srcJson)
 {
     ///将接收到的消息转化为Json对象
 #ifndef QT_NO_DEBUG
-    qDebug() << srcJson;
+    //qDebug() << srcJson;
 #endif
     Json::Value root;
     Json::Reader reader;
     if(reader.parse(srcJson.toStdString(),root))
     {        
         cmdMsg(root);
-#if 0
-        ///类型检查
-       if((msgType.compare(CMD_TYPE) == 0))
-       {
-           cmdMsg(root[CMD_MSG]);
-       }
-       else if((msgType.compare(SWITCH_TYPE) == 0))
-       {
-           switchOutMsg(root[CMD_MSG]);
-       }
-       else if((msgType.compare(ANALOG_TYPE) == 0))
-       {
-           analogOutMsg(root[CMD_MSG]);
-       }
-       else if((msgType.compare(RS422_TYPE) == 0))
-       {
-           rs422OutMsg(root[CMD_MSG]);
-       }
-       else
-       {
-           std::string strErrInfo= "命令类型错误，类型(" + msgType + " )不存在";
-           std::string strTemp = PfCommon::cmdToJson::replyErrorCmd((const std::string&)strErrInfo);
-           respond(strTemp);
-       }
-#endif
     }
     else
     {
@@ -118,7 +93,7 @@ void cmdDecode::cmdMsg(Json::Value jsValue)
     }
     else if(type == MANUALTRIGGER)
     {
-        //startTest(jsValue["msg"]);
+        manualTrigger(jsValue["msg"]);
     }
     else if(type == STOP_TEST)
     {
@@ -135,6 +110,10 @@ void cmdDecode::cmdMsg(Json::Value jsValue)
     else if(type == EXIT_TEST)
     {
         exitTest(jsValue["flow"].asString());
+    }
+    else if(type == SINGLE_SEND_TEST)
+    {
+        singleSendTest(jsValue["msg"]);
     }
     else if(type == GET_RUNITES)
     {
@@ -274,6 +253,10 @@ void cmdDecode::getRunItems()
     }
 }
 
+void cmdDecode::singleSendTest(Json::Value value)
+{
+    emit singleTestSig(value);
+}
 
 void cmdDecode::exitTest(std::string flowType)
 {
@@ -427,6 +410,37 @@ void cmdDecode::stopTest(const Json::Value &msg)
     respond(resultMsg(STOP_TEST, errCode, uuid));
 }
 
+void cmdDecode::manualTrigger(const Json::Value &msg)
+{
+    std::string errCode;
+    std::string uuid = "";
+    try
+    {
+        uuid = msg["record_uuid"].asString();
+
+        if(!mIsInitFlow.contains(uuid))
+        {
+            mIsInitFlow[uuid] = false;
+        }
+
+        if(!mIsInitFlow[uuid])
+        {
+            respond(resultMsg(START_TEST, "[ERROR] 初始化流程失败，禁止启动测试!", uuid));
+            return;
+        }
+
+        virtualParams::getInstance()->setValue({uuid, "UI", ""}, mapValue());
+    }
+    catch(std::runtime_error err)
+    {
+        errCode = err.what();
+    }
+
+    ///返回结果
+
+    respond(resultMsg(MANUALTRIGGER, errCode, uuid));
+}
+
 void cmdDecode::startTest(const Json::Value &msg)
 {
     std::string errCode;
@@ -544,7 +558,7 @@ void cmdDecode::initPrograme()
 
             mAdpterManagerObj = std::make_shared<PfAdapter::PfAdapterManager>();
 
-            mRcvMsgTask->setPfAdapterManager(mAdpterManagerObj.get());
+            mRcvMsgTask->setPfAdapterManager(mAdpterManagerObj);
             //mAdpterManagerObj->init("./cfgfile/logic_devcfg.xml");
 
             //将发送UI适配器加入管理
@@ -552,6 +566,10 @@ void cmdDecode::initPrograme()
 
             mIcdFrameAdpter = std::make_shared<PfIcdWorkBench::icdFrameAdapter>();
             mIcdFrameAdpter->init("./cfgfile/icd.xml");
+            mRcvMsgTask->setIcdFrameAdpter(mIcdFrameAdpter);
+
+            //mSingleTestObj = std::make_shared<singleTest>();
+            //connect(this, &cmdDecode::singleTestSig, mSingleTestObj, &singleTest::onTest);
 
             mIsInitSuccessful = true;
         }

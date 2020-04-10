@@ -193,6 +193,15 @@ bool subFlow::_exe()
             }
         }
     }
+    else if(timing::MANUAL == type)
+    {
+        while( (!startCondition::isConform(mRecordUuid, "UI", "")) && (!isStop) ) //判断是否满足触发条件
+        {
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+        }
+
+        res = perform();
+    }
     else
     {
         //立即发送及手动发送执行一次(手动发送时设置启动条件)

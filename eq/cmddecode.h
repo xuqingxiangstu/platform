@@ -11,6 +11,7 @@
 
 #define MSG_TYPE    "msgType"
 
+#define DEBUG_DECODE    0
 
 class cmdDecode : public QThread
 {

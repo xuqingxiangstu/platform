@@ -5,4 +5,4 @@ SUBDIRS += \
     #examples \
     #template \
     logicLayer \
-    #eq
+    eq

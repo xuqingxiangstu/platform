@@ -242,14 +242,95 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
-        std::string frameFE::parse(unsigned char *u8Msg, const unsigned int u32Size)
+        bool frameFE::getAskMsg(byteArray &outValue, const Json::Value &json)
+        {
+            Json::Value headJs = json["head"];
+            if(headJs.isNull() || headJs["head_is_ask"] != 0x1)
+                return false;
+
+            //step1：帧头
+            outValue.push_back(0xFE);
+
+            //step2：校验码
+            outValue.push_back(0x0);
+            outValue.push_back(0x0);
+
+            //step3：数据长度
+            outValue.push_back(0x0);
+            outValue.push_back(0x0);
+
+            //step4：源节点编号
+            if(!headJs["head_src_node"].isNull())
+                outValue.push_back(headJs["head_src_node"].asInt());
+            else
+                outValue.push_back(0x0);
+
+            //step5：目的节点编号
+            if(!headJs["head_dst_node"].isNull())
+                outValue.push_back(headJs["head_dst_node"].asInt());
+            else
+                outValue.push_back(0x0);
+
+            //step6：数据种类标识吗
+            if(!headJs["data_type"].isNull())
+            {
+                int type = headJs["data_type"].asInt();
+                outValue.push_back(type >> 24);
+                outValue.push_back(type >> 16);
+                outValue.push_back(type >> 8);
+                outValue.push_back(type & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            //step7：预留
+            outValue.push_back(0x0);
+
+            //step8：确认标志
+            outValue.push_back(0x3);
+
+            //step9：序号
+            if(!headJs["head_cmd_cnt"].isNull())
+            {
+                int cnt = headJs["head_cmd_cnt"].asInt();
+                outValue.push_back(cnt >> 8);
+                outValue.push_back(cnt & 0xFF);
+            }
+            else
+            {
+                outValue.push_back(0x0);
+                outValue.push_back(0x0);
+            }
+
+            //step10：重传次数
+            if(!headJs["head_retry_cnt"].isNull())
+                outValue.push_back(headJs["head_retry_cnt"].asInt());
+            else
+                outValue.push_back(0x0);
+
+            //step11：更新长度及校验
+            int dataLen = outValue.size() - 5;
+            outValue[3] = dataLen >> 8;
+            outValue[4] = dataLen & 0xFF;
+
+            unsigned short calCrc = PfCommon::Crc::calCrc16(&outValue.at(0), outValue.size() - 3);
+            outValue[1] = calCrc >> 8;
+            outValue[2] = calCrc & 0xFF;
+
+            return true;
+        }
+
+        bool frameFE::parse(unsigned char *u8Msg, const unsigned int u32Size, Json::Value &result)
         {
             if(u32Size <= 0)
                 return "";
             dataStorage data;
-            std::ostringstream strErr;
-
-            Json::Value frameJs;
+            std::ostringstream strErr;            
             Json::Value headJs;
 
             //step1：帧头校验
@@ -288,8 +369,11 @@ namespace Pf
             headJs["head_src_node"] = data.getData(u8Msg, u32Size, 5, 1, 0, 0);
             headJs["head_dst_node"] = data.getData(u8Msg, u32Size, 6, 1, 0, 0);
             headJs["data_type"] = data.getData(u8Msg, u32Size, 7, 4, 0, 0);
+            headJs["head_is_ask"] = data.getData(u8Msg, u32Size, 12, 1, 0, 0);
+            headJs["head_cmd_cnt"] = data.getData(u8Msg, u32Size, 13, 2, 0, 0);
+            headJs["head_retry_cnt"] = data.getData(u8Msg, u32Size, 15, 1, 0, 0);
 
-            frameJs["head"] = headJs;
+            result["head"] = headJs;
 
             //step3：获取表号
             int tableNum = 0;
@@ -302,9 +386,9 @@ namespace Pf
             _parseRegion(tableNum, &u8Msg[18], u32Size -18, regionValue);
 
             if(!regionValue.isNull())
-                frameJs["region"] = regionValue;
+                result["region"] = regionValue;
 
-            return frameJs.toStyledString();
+            return !result.isNull();
         }
 
         void frameFE::_parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
