@@ -68,7 +68,7 @@ border: 1px solid gray;
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>导航</string>
+    <string>工程</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -173,7 +173,7 @@ border: 1px solid gray;
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>属性</string>
+    <string>工程属性</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
