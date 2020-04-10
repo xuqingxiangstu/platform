@@ -158,7 +158,7 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
 
 void MainWindow::onShowMessage(QString msg)
 {
-    this->statusBar()->showMessage(msg);
+    //this->statusBar()->showMessage(msg);
 }
 
 void MainWindow::onTestMsg(Json::Value msg)
