@@ -516,12 +516,15 @@ namespace Pf
                 regionValue["data"] = dataJs;
         }
 
-        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &value)
+        void generalFrame::_parseInfo(const infoWordRegion *region, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
         {
             dataStorage data;
             dataCalc calc;
             __int64 pValue;
             std::ostringstream showStr;
+
+            int preValue = 0;
+            int preStartPos = 0;
 
             for(auto subStorage : region->mStorages)
             {
@@ -536,53 +539,43 @@ namespace Pf
 
                 std::string calResult = "";
 
-                try
-                {
-                    if(strCategory == ncharType)
-                    {
-                        if(byte_start >= u32Size)
-                        {
-                            throw std::runtime_error("起始字符异常");
-                        }
-                        calResult = std::string((const char*)&u8Msg[byte_start], u32Size - byte_start);
+                if(byte_start == -1)
+                    byte_start = preStartPos;
 
-                        value[pId] = calResult;
+                if(strCategory == ncharType)
+                {
+                    if(byte_start >= u32Size)
+                    {
+                        throw std::runtime_error("起始字符异常");
+                    }
+                    calResult = std::string((const char*)&u8Msg[byte_start], u32Size - byte_start);
+
+                    regionValue[pId] = calResult;
+
+                    preStartPos = byte_start + preValue;
+                }
+                else
+                {
+                    unDataConvert pValue = data.getAutoData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
+
+                    preValue = pValue.i32Value;
+                    preStartPos = byte_start + byte_size;
+
+                    if( (strCategory == ieee32Type))
+                    {
+                        regionValue[pId] = pValue.f32Value;
+                    }
+                    else if( (strCategory == ieee64Type))
+                    {
+                        regionValue[pId] = pValue.d64Value;
                     }
                     else
                     {
-                        unDataConvert pValue = data.getAutoData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
-                        //pValue = data.getData(u8Msg, u32Size, byte_start, byte_size, bit_start, bit_size, bigSmall);
-
-                        //calResult =  calc.getData(strCategory, pValue, 1, 0, 1, 3);
-
-                        if( (strCategory == ieee32Type))
-                        {
-                            value[pId] = pValue.f32Value;
-                        }
-                        else if( (strCategory == ieee64Type))
-                        {
-                            value[pId] = pValue.d64Value;
-                        }
-                        else
-                        {
-                            value[pId] = pValue.i32Value;
-                        }
+                        regionValue[pId] = pValue.i32Value;
                     }
+                }
 
-#ifdef DEBUG_ICD
-                    //showStr << pId << ":" << pName << ":" << calResult << " ";
-#endif
-                }
-                catch(std::runtime_error err)
-                {
-#ifdef DEBUG_ICD
-                //qDebug() << err.what();
-#endif
-                }
             }
-#ifdef DEBUG_ICD
-                qDebug() << showStr.str().c_str();
-#endif
         }
 
         void generalFrame::init(const TiXmlElement *xmlEle)
@@ -1030,7 +1023,7 @@ namespace Pf
             return !value.isNull();
         }
 
-        bool generalFrame::getAskMsg(byteArray &outValue, const Json::Value &resultJs)
+        bool generalFrame::getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &resultJs)
         {
             Json::Value json = resultJs["head"];
 

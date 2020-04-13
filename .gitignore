@@ -2,3 +2,5 @@
 !**/bin/cfgFile/
 !**/bin/frameCfg/
 bin/frameCfg/General/~$GeneralDateRegionConfig.xlsx
+bin/frameCfg/General/~$GeneralConfig.xlsx
+bin/frameCfg/middle/~$middleDateRegionConfig.xlsx

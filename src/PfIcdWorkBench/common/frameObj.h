@@ -84,7 +84,7 @@ namespace Pf
              * @param json  协议
              * @return
              */
-            virtual bool getAskMsg(byteArray &outValue, const Json::Value &json){return false;}
+            virtual bool getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json){return false;}
 
             /**
              * @brief getValidValue 获取有效值

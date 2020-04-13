@@ -7,6 +7,8 @@
 
 #include "../../src/PfCommon/tools/ut_error.h"
 
+#include <qDebug>
+
 /***********************************************/
 
 void headBe::init(TiXmlElement *xmlEle)
@@ -213,6 +215,7 @@ Json::Value headMiddle::serialize()
     return mJsonV;
 }
 
+
 /***********************************************/
 
 void head93::init(TiXmlElement *xmlEle)
@@ -261,12 +264,10 @@ void headFe::init(TiXmlElement *xmlEle)
         }
     }
 }
-
 Json::Value headFe::serialize()
 {
     return mJsonV;
 }
-
 /***********************************************/
 
 value::value():
@@ -349,10 +350,7 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
     if(tmpObj == nullptr)
     {
         UT_THROW_EXCEPTION("get BE frame obj faild!");
-    }
-    Json::Value beJs;
-    beJs["type"] = FRAME_BE;
-    tmpObj->setAttribute(beJs);
+    }    
     mIcdFrameObj[FRAME_BE] = tmpObj;
 
     tmpObj = icdAdapter->getFrameObj(FRAME_FE);
@@ -362,14 +360,11 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
     }
     mIcdFrameObj[FRAME_FE] = tmpObj;
 
-    tmpObj = icdAdapter->getFrameObj(FRAME_BE);
+    tmpObj = icdAdapter->getFrameObj(FRAME_MIDDLE);
     if(tmpObj == nullptr)
     {
         UT_THROW_EXCEPTION("get 中间件 frame obj faild!");
-    }
-    Json::Value middleJs;
-    middleJs["type"] = FRAME_MIDDLE;
-    tmpObj->setAttribute(middleJs);
+    }   
     mIcdFrameObj[FRAME_MIDDLE] = tmpObj;
 }
 
@@ -535,11 +530,12 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
 
         //获取域信息
         Json::Value regionJs = fill(frameType, infoWordType);
-
+        qDebug() << regionJs.toStyledString().c_str();
         //获取头信息
         if(mHeadObj)
         {
             regionJs["head"] = mHeadObj->serialize();
+
             if( (FRAME_BE == mHeadObj->frameType()) || (FRAME_MIDDLE == mHeadObj->frameType()))
             {
                 //填充信息字类型字段
@@ -558,6 +554,8 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
                 {
                     regionJs["head"]["head_frame_type"] = 0;
                 }
+
+                regionJs["head"]["head_table"] = std::atoi(table.c_str());
             }
         }
 
@@ -595,9 +593,13 @@ Json::Value frame::fill(const std::string &frameType, const std::string &infoWor
     {
         regionJs = fillFe();
     }
-    else if( (frameType == FRAME_BE) || (frameType == FRAME_MIDDLE))
+    else if( (frameType == FRAME_BE))
     {
         regionJs = fillBe(infoWordType);
+    }
+    else if( (frameType == FRAME_MIDDLE))
+    {
+        regionJs = fillMiddle(infoWordType);
     }
     return regionJs;
 }
@@ -633,8 +635,6 @@ Json::Value frame::fillRegion()
         //从数据库中获取参数信息
         Json::Value paramValues;
         paramsTable::getInstance()->getValues(table, paramValues);
-
-
 
         for(int index = 0; index < paramValues.size(); index++)
         {
@@ -722,6 +722,194 @@ Json::Value frame::getRunItems()
     }
 
     return infoJs;
+}
+
+Json::Value frame::fillMiddle(const std::string &infoWord)
+{
+    Json::Value otherJs;
+    Json::Value infoWordJs;
+
+    if(!(mParamsVec.size() > 0))
+        return infoWordJs;
+
+    //获取表号
+    std::string table = std::get<Param_Table_Index>( mParamsVec[0]);
+
+    int infoWordType = std::atoi(infoWord.c_str());
+    if(InfoWord_Two == infoWordType)    //信息字格式为2时需要填充 infoWord 及 region
+    {
+        //step1：填充infoWord信息
+        int coding = std::atoi(std::get<Param_Coding_Index>(mParamsVec[0]).c_str());
+        Json::Value tmpJs;
+        tmpJs.append(fillMiddleInfoWord1(coding, 0, ""));
+
+        otherJs["infoWord"] = tmpJs;
+
+        //step2：填充region信息
+        otherJs["region"] = fillRegion();
+    }
+    else    //其它信息字只需填充infoWord
+    {
+        if(Cmd == mCurParamType) //指令则按需填充
+        {
+            for(auto params : mParamsVec)
+            {
+                int coding = std::atoi(std::get<Param_Coding_Index>(params).c_str());
+
+                Json::Value tmpJs;
+
+                if(InfoWord_One == infoWordType)
+                {
+                    tmpJs = fillMiddleInfoWord0(coding, 0, 1, 4, Json::Value(0), false, "");
+                }
+                else if(InfoWord_Three == infoWordType)
+                {
+                    tmpJs = fillMiddleInfoWord2(coding, 0, 0, 0, 1, 4, Json::Value(0), false, "");
+                }
+
+                infoWordJs.append(tmpJs);
+            }
+        }
+        else //非指令则按数据库顺序进行填充（防止填充顺序不一致）
+        {
+            //从数据库中获取参数信息
+            Json::Value paramValues;
+            paramsTable::getInstance()->getValues(table, paramValues);
+
+            for(int index = 0; index < paramValues.size(); index++)
+            {
+                int coding = paramValues[index][PARAM_TABLE_CODING_NUM].asInt();
+
+                double min = std::atof(paramValues[index][PARAM_TABLE_MIN_VALUE].asString().c_str());
+                double max = std::atof(paramValues[index][PARAM_TABLE_MAX_VALUE].asString().c_str());
+
+                std::string cmdType = paramValues[index][PARAM_TABLE_CMD_TYPE].asString();
+                std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                int sendDataType = 0;
+                int sendDataLen = 0;
+                Json::Value sendData;
+
+                auto findItor = std::find_if(mParamsVec.begin(), mParamsVec.end(), [=](const paramsType &v){
+                    return (table == std::get<Param_Table_Index>(v)) && (std::to_string(coding) == std::get<Param_Coding_Index>(v));
+                });
+
+                bool isOver = false;
+
+                if(findItor != mParamsVec.end())
+                {
+                    initValue = std::get<Param_Value_Index>(*findItor)->getValue();
+                }
+
+                if(Pf::PfIcdWorkBench::ncharType == dataType)
+                {
+                    sendDataType = Pf::PfIcdWorkBench::String_Type;
+                    sendDataLen = initValue.size();
+                    sendData = initValue;
+                }
+                else if(Pf::PfIcdWorkBench::ieee64Type == dataType)
+                {
+                    sendDataType = Pf::PfIcdWorkBench::Ieee64_Type;
+                    sendDataLen = 8;
+                    sendData = (double)std::atof(initValue.c_str());
+                }
+                else if(Pf::PfIcdWorkBench::ieee32Type == dataType)
+                {
+                    sendDataType = Pf::PfIcdWorkBench::Ieee32_Type;
+                    sendDataLen = 4;
+                    sendData = (float)std::atof(initValue.c_str());
+                }
+                else if(Pf::PfIcdWorkBench::uint32Type == dataType)
+                {
+                    sendDataType = Pf::PfIcdWorkBench::Uint32_Type;
+                    sendDataLen = 4;
+                    sendData = std::atoi(initValue.c_str());
+                }
+                else
+                {
+                    sendDataType = Pf::PfIcdWorkBench::Int32_Type;
+                    sendDataLen = 4;
+                    sendData = std::atoi(initValue.c_str());
+                }
+
+                if(!(Pf::PfIcdWorkBench::ncharType == dataType))
+                {
+                    //判断是否超差
+                    double v = std::atof(initValue.c_str());
+                    if( (v >= min) && (v <= max))
+                    {
+                        isOver = false;
+                    }
+                    else
+                    {
+                        isOver = true;
+                    }
+                }
+
+                Json::Value tmpJs;
+
+                if(InfoWord_One == infoWordType)
+                {
+                    tmpJs = fillMiddleInfoWord0(coding, 0, sendDataType, sendDataLen, sendData, isOver, "");
+                }
+                else if(InfoWord_Three == infoWordType)
+                {
+                    tmpJs = fillMiddleInfoWord2(coding, 0, 0, 0, sendDataType, sendDataLen, sendData, isOver, "");
+                }
+
+                infoWordJs.append(tmpJs);
+            }
+        }
+
+        otherJs["infoWord"] = infoWordJs;
+    }
+    return otherJs;
+}
+
+Json::Value frame::fillMiddleInfoWord0(int coding, int num, int dataType, int dataLen, Json::Value data, bool isOver, std::string reserve)
+{
+    Json::Value value;
+
+    value["info_1_code"] = coding;
+    value["info_1_data_type"] = dataType;
+    value["info_1_over"] = (int)isOver;
+    value["info_1_num"] = num;
+    value["info_1_data_len"] = dataLen;
+    value["info_1_data"] = data;
+    value["info_1_reserve_len"] = reserve.size();
+    value["info_1_reserve"] = reserve;
+
+    return value;
+}
+
+Json::Value frame::fillMiddleInfoWord1(int coding, int num, std::string reserve)
+{
+    Json::Value value;
+
+    value["info_2_code"] = coding;
+    value["info_2_num"] = num;
+    value["info_2_reserve_len"] = reserve.size();
+    value["info_2_reserve"] = reserve;
+
+    return value;
+}
+
+Json::Value frame::fillMiddleInfoWord2(int coding, int dNum, int devNum, int modelNum, int dataType, int dataLen, Json::Value data, bool isOver, std::string reserve)
+{
+    Json::Value value;
+
+    value["info_3_code"] = coding;
+    value["info_3_dev_num"] = devNum;
+    value["info_3_module"] = modelNum;
+    value["info_3_data_type"] = dataType;
+    value["info_3_over"] = (int)isOver;
+    value["info_3_num"] = dNum;
+    value["info_3_data_len"] = dataLen;
+    value["info_3_data"] = data;
+    value["info_3_reserve_len"] = reserve.size();
+    value["info_3_reserve"] = reserve;
+
+    return value;
 }
 
 Json::Value frame::fillBe(const std::string &infoWord)

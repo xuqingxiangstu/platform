@@ -68,7 +68,7 @@ private:
     Json::Value fill93();
     Json::Value fillFe();
     Json::Value fillBe(const std::string &infoWordType);
-
+    Json::Value fillMiddle(const std::string &infoWordType);
     Json::Value fillRegion();
 
     /**
@@ -109,6 +109,10 @@ private:
      * @return JSON
      */
     Json::Value fillInfoThree(int table, int coding, std::string v, std::string dataType, bool isOver, int devNum, int modelNum);
+
+    Json::Value fillMiddleInfoWord0(int coding, int num, int dataType, int dataLen, Json::Value data, bool isOver, std::string reserve);
+    Json::Value fillMiddleInfoWord1(int coding, int num, std::string reserve);
+    Json::Value fillMiddleInfoWord2(int coding, int dNum, int devNum, int modelNum, int dataType, int dataLen, Json::Value data, bool isOver, std::string reserve);
 private:
     using paramsType = std::tuple<std::string, std::string, std::shared_ptr<value>>;
     std::vector<paramsType> mParamsVec;

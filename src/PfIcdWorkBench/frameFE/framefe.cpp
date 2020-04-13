@@ -178,9 +178,9 @@ namespace Pf
             int tableNum = regionJs["table_num"].asInt();
             //通过表号 从数据库中获取参数信息
 
-            //添加表号
-            outValue.push_back(tableNum >> 8);
+            //添加表号            
             outValue.push_back(tableNum & 0xFF);
+            outValue.push_back(tableNum >> 8);
 
             //从数据库中获取参数信息
             Json::Value paramValues;
@@ -242,10 +242,10 @@ namespace Pf
             std::copy(tmpBuf, tmpBuf + outSize, std::back_inserter(outValue));
         }
 
-        bool frameFE::getAskMsg(byteArray &outValue, const Json::Value &json)
+        bool frameFE::getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json)
         {
             Json::Value headJs = json["head"];
-            if(headJs.isNull() || headJs["head_is_ask"] != 0x1)
+            if(headJs.isNull() || headJs["head_is_ask"].asInt() != 0x1)
                 return false;
 
             //step1：帧头

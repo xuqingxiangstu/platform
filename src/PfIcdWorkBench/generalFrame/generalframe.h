@@ -50,7 +50,7 @@ namespace Pf
             void init(const TiXmlElement *ele) override;
             std::string getFrameName() override{return VAR_NAME(variableFrame);}
             std::string version() override {return VERSION;}
-            bool getAskMsg(byteArray &outValue, const Json::Value &json) override;
+            bool getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json) override;
             void simulation(byteArray &outValue, const std::string &json) override;
             //void simulation(byteArray &outValue, const unsigned int frameCode, const unsigned int insideCode = 0, const std::vector<icdInValueType> inValue = {}) override;
             bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &result) override;

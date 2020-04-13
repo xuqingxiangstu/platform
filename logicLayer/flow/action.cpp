@@ -152,6 +152,7 @@ bool action::exe()
     }
     catch(Json::LogicError err)
     {
+        UT_SHOW(std::string(err.what()));
         UT_THROW_EXCEPTION("[ERROR]" + std::string(err.what()));
     }
     catch(...)

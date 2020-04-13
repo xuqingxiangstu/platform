@@ -670,18 +670,15 @@ void cmdDecode::initFlow(const Json::Value &msg)
         }
         catch(std::runtime_error err)
         {
-            errorInfo << err.what();
-            break;
+            errorInfo << "[ERROR]" << err.what();
         }
         catch(Json::LogicError err)
         {
             errorInfo << err.what();
-            break;
         }
         catch(...)
         {
             errorInfo << "[ERROR] ...";
-            break;
         }
 
         if(errorInfo.str() != "")

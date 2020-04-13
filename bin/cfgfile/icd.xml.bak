@@ -1,9 +1,13 @@
-<?xml version="1.0"?>	
+<?xml version="1.0" encoding="utf-8"?>	
 <configure>
 	<icd key="BE" frame="generalFrame">
 		<frameconfig>General/GeneralConfig.xlsx</frameconfig>
 		<dataRegionConfig>General/GeneralDateRegionConfig.xlsx</dataRegionConfig>
 	</icd>
+	<icd key="中间件" frame="generalFrame">
+		<frameconfig>middle/middleConfig.xlsx</frameconfig>
+		<dataRegionConfig>middle/middleDateRegionConfig.xlsx</dataRegionConfig>
+	</icd>
 	<icd key="93" frame="frame93"/>
-	<icd key="93" frame="frame93"/>
+	<icd key="FE" frame="frameFE"/>
 </configure>

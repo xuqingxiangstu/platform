@@ -8,4 +8,5 @@ SUBDIRS += \
     variableFrame \
     generalFrame \
     frame93 \
-    frameFE
+    frameFE \
+    frameMiddle

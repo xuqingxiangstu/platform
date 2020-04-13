@@ -42,10 +42,6 @@ void decodingPool::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFram
     std::shared_ptr<Pf::PfIcdWorkBench::frameObj> beObj = mIcdWorkBench->getFrameObj(FRAME_BE);
     if(beObj)
     {
-        Json::Value beJs;
-        beJs["type"] = FRAME_BE;
-        beObj->setAttribute(beJs);
-
         mParseObj[FRAME_BE] = beObj;
     }
 
@@ -61,13 +57,9 @@ void decodingPool::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFram
         mParseObj[FRAME_93] = f93Obj;
     }
 
-    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> middleObj = mIcdWorkBench->getFrameObj(FRAME_BE);
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> middleObj = mIcdWorkBench->getFrameObj(FRAME_MIDDLE);
     if(middleObj)
     {
-        Json::Value js;
-        js["type"] = FRAME_MIDDLE;
-        middleObj->setAttribute(js);
-
         mParseObj[FRAME_MIDDLE] = middleObj;
     }
 }
@@ -103,8 +95,11 @@ void decoding::run()
         mFrameObj->parse((unsigned char*)mCurMsg.data(), mCurMsg.size(), result);
 
         //step2：是否应答
+        Pf::PfIcdWorkBench::byteArray readMsg;
+        std::copy((unsigned char*)mCurMsg.data(), (unsigned char*)mCurMsg.data() + mCurMsg.size(), std::back_inserter(readMsg));
+
         Pf::PfIcdWorkBench::byteArray askMsg;
-        if(mFrameObj->getAskMsg(askMsg, result))
+        if(mFrameObj->getAskMsg(readMsg, askMsg, result))
         {
             mBusObj->sendMsg((const char*)&askMsg.at(0), askMsg.size(), mDstIp, mDstPort);
         }

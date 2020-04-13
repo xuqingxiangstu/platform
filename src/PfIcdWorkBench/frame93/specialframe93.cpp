@@ -217,7 +217,7 @@ namespace Pf
             return !result.isNull();
         }
 
-        bool specialFrame93::getAskMsg(byteArray &outValue, const Json::Value &json)
+        bool specialFrame93::getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json)
         {
             return false;
         }
