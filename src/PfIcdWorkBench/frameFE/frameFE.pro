@@ -10,7 +10,7 @@ QT       += sql
 win32:CONFIG(release, debug|release): TARGET = ../../../../frameLib/frameFE
 else:win32:CONFIG(debug, debug|release): TARGET = ../../../../frameLib/frameFE
 else:unix:!macx: TARGET = ../../../frameLib/frameFE
-CONFIG += C++11
+CONFIG += c++11
 
 TEMPLATE = lib
 

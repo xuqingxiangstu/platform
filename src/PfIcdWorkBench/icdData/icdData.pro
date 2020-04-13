@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-CONFIG += C++14
+CONFIG += c++14
 QT       += xlsx
 
 win32:CONFIG(release, debug|release): TARGET = ../../../../icdData

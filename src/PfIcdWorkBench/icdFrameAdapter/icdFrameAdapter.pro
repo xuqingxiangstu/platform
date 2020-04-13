@@ -5,8 +5,7 @@
 #-------------------------------------------------
 
 QT       -= gui
-CONFIG += C++11
-
+CONFIG += c++14
 
 win32:CONFIG(release, debug|release): TARGET = ../../../../icdFrameAdapter
 else:win32:CONFIG(debug, debug|release): TARGET = ../../../../icdFrameAdapter

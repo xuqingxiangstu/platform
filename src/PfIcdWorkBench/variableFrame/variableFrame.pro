@@ -15,7 +15,7 @@ else:unix:!macx: TARGET = ../../../frameLib/variableFrame
 TEMPLATE = lib
 
 
-CONFIG += C++14
+CONFIG += c++14
 
 DEFINES += VARIABLEFRAME_LIBRARY
 

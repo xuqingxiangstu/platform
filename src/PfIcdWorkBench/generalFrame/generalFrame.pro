@@ -12,7 +12,7 @@ else:win32:CONFIG(debug, debug|release): TARGET = ../../../../frameLib/generalFr
 else:unix:!macx: TARGET = ../../../frameLib/generalFrame
 
 TEMPLATE = lib
-CONFIG += C++14
+CONFIG += c++14
 
 DEFINES += GENERALFRAME_LIBRARY
 

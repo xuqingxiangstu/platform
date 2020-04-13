@@ -85,6 +85,9 @@ namespace Pf
             //备用字
             index += len;
 
+            //信息字类型
+            index += 1;
+
             return index;
         }
 
@@ -153,7 +156,17 @@ namespace Pf
             int len = 0;
             int pos = 0;
             //step1：消息出发点-用户字符串，软件标识
-            pos = 38;
+
+            pos = 34;
+            headInfo["head_msg_out_sys_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            pos += 1;
+
+            headInfo["head_msg_out_sys_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            pos += 2;
+
+            headInfo["head_msg_out_node_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            pos += 1;
+
             len = data.getData(inBuf, inSize, pos, 1, 0, 0);
             if(pos + 1 + len <= inSize)
             {
@@ -168,12 +181,19 @@ namespace Pf
             {
                 headInfo["head_msg_out_version"] = std::string((const char*)&inBuf[pos + 1], len);
             }
+            pos += 1;
+            pos += len;
 
             //step2：消息目的地用户字符串、软件标识
 
+            headInfo["head_msg_in_sys_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
             pos += 1;
-            pos += len;
-            pos += 4;
+
+            headInfo["head_msg_in_sys_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            pos += 2;
+
+            headInfo["head_msg_in_node_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
+            pos += 1;
 
             len = data.getData(inBuf, inSize, pos, 1, 0, 0);
             if(pos + 1 + len <= inSize)
@@ -230,12 +250,8 @@ namespace Pf
             }
 
 
-            //step5：更新信息字类型
-
+            //step5：消息类型（0：带表号的数据；1：自定义消息；2：日志消息）
             pos += 1;
-            pos += len;
-
-            headInfo["head_info_word_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
 
             //step6：表号
             pos += 1;
@@ -252,6 +268,13 @@ namespace Pf
             {
                 headInfo["head_reserve"] = std::string((const char*)&inBuf[pos + 1], len);
             }
+
+            //step8：更新信息字类型
+
+            pos += 1;
+            pos += len;
+
+            headInfo["head_info_word_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
         }
 
         bool generalFrame::parse(unsigned char *u8Msg, const unsigned int u32Size, Json::Value &result)
@@ -672,9 +695,9 @@ namespace Pf
 
             if(!json["head_src_sys_code"].isNull())
             {
-                unsigned short tmp = json["head_src_sys_code"].asInt();
-                outValue.push_back(tmp >> 8);
+                unsigned short tmp = json["head_src_sys_code"].asInt();                
                 outValue.push_back(tmp & 0xFF);
+                outValue.push_back(tmp >> 8);
             }
             else
             {
@@ -704,8 +727,9 @@ namespace Pf
             if(!json["head_dst_sys_code"].isNull())
             {
                 unsigned short tmp = json["head_dst_sys_code"].asInt();
-                outValue.push_back(tmp >> 8);
+
                 outValue.push_back(tmp & 0xFF);
+                outValue.push_back(tmp >> 8);
             }
             else
             {
@@ -726,8 +750,9 @@ namespace Pf
 
             QDateTime current = QDateTime::currentDateTime();
 
-            outValue.push_back(current.date().year() >> 8);
             outValue.push_back(current.date().year() & 0xFF);
+            outValue.push_back(current.date().year() >> 8);
+
 
             outValue.push_back(current.date().month());
             outValue.push_back(current.date().day());
@@ -739,10 +764,10 @@ namespace Pf
             if(!json["head_cmd_cnt"].isNull())
             {
                 int cnt = json["head_cmd_cnt"].asInt();
-                outValue.push_back(cnt >> 24);
-                outValue.push_back(cnt >> 16);
-                outValue.push_back(cnt >> 8);
                 outValue.push_back(cnt & 0xFF);
+                outValue.push_back(cnt >> 8);
+                outValue.push_back(cnt >> 16);
+                outValue.push_back(cnt >> 24);
             }
             else
             {
@@ -787,8 +812,8 @@ namespace Pf
 
             //step2-14：更新长度
             int len = outValue.size() + 1;
-            outValue[1] = len >> 8;
             outValue[2] = len & 0xFF;
+            outValue[1] = len >> 8;
 
             //step2-13：校验和
 
@@ -838,8 +863,8 @@ namespace Pf
             if(!json["head_src_sys_code"].isNull())
             {
                 unsigned short tmp = json["head_src_sys_code"].asInt();
-                outValue.push_back(tmp >> 8);
                 outValue.push_back(tmp & 0xFF);
+                outValue.push_back(tmp >> 8);
             }
             else
             {
@@ -869,8 +894,8 @@ namespace Pf
             if(!json["head_dst_sys_code"].isNull())
             {
                 unsigned short tmp = json["head_dst_sys_code"].asInt();
-                outValue.push_back(tmp >> 8);
                 outValue.push_back(tmp & 0xFF);
+                outValue.push_back(tmp >> 8);
             }
             else
             {
@@ -891,8 +916,9 @@ namespace Pf
 
             QDateTime current = QDateTime::currentDateTime();
 
-            outValue.push_back(current.date().year() >> 8);
             outValue.push_back(current.date().year() & 0xFF);
+            outValue.push_back(current.date().year() >> 8);
+
 
             outValue.push_back(current.date().month());
             outValue.push_back(current.date().day());
@@ -904,10 +930,10 @@ namespace Pf
             if(!json["head_cmd_cnt"].isNull())
             {
                 int cnt = json["head_cmd_cnt"].asInt();
-                outValue.push_back(cnt >> 24);
-                outValue.push_back(cnt >> 16);
-                outValue.push_back(cnt >> 8);
                 outValue.push_back(cnt & 0xFF);
+                outValue.push_back(cnt >> 8);
+                outValue.push_back(cnt >> 16);
+                outValue.push_back(cnt >> 24);
             }
             else
             {
@@ -952,8 +978,9 @@ namespace Pf
 
             //step2-14：更新长度
             int len = outValue.size() + 1;
-            outValue[1] = len >> 8;
             outValue[2] = len & 0xFF;
+            outValue[1] = len >> 8;
+
 
 
             //step2-15：校验和
