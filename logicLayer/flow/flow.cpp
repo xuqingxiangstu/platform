@@ -330,13 +330,18 @@ void flow::exe(flowManager *manager, std::string subFlowUuid)
            return std::get<Uuid_Index>(v) == subFlowUuid;
         });
 
+        bool res = false;
+        std::string errInfo = "";
         if(findItor != mSubFlowObjs.end())
         {
-            std::get<SubFlow_Index>(*findItor)->exe();
+           std::get<SubFlow_Index>(*findItor)->exe();
+           res = true;
         }
         else
         {
-            mFlowManagerObj->exeOver(false, "[ERROR] not exist sub flow (" + subFlowUuid + ")");
+            errInfo =  "[ERROR] not exist sub flow (" + subFlowUuid + ")";
         }
+
+        mFlowManagerObj->exeOver(res, errInfo);
     }
 }

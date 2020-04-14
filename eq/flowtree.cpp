@@ -25,7 +25,8 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     ui(new Ui::flowTree),
     mCurProjectUuid(uuid),
     mIsUpdateTree(false),
-    mCurSystemType(sysType)
+    mCurSystemType(sysType),
+    mCurSelectItem(nullptr)
 {
     ui->setupUi(this);
 
@@ -384,18 +385,29 @@ void flowTree::onDropDrag(QTreeWidgetItem *parentItem, QTreeWidgetItem *curItem,
 
 void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
 {
-    if(!item)
-        return ;
+    if(!item || mCurSelectItem == item)
+        return ;   
 
     std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
 
     if( ( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
     {
         updateFrameAttr(drapData);
+
+        //更新信息字相关属性
+        updateInfoWordAttr(drapData);
+    }
+    else if(dragRole::Node_Param == drapData->getNodeType())
+    {
+        //更新参数变化属性
+        updateParamSelAttr(drapData);
     }
 
-    //qDebug() << drapData.getProperty()->getJson().toStyledString().c_str();
+    //qDebug() << drapData->getProperty()->getJson().toStyledString().c_str();
+
     emit toShowProperty(mUiUuid, drapData->getProperty()->getJson());
+
+    mCurSelectItem = item;
 }
 
 void flowTree::onPropertyValueChange(QString uuid, QString attr, Json::Value value)
@@ -532,7 +544,6 @@ void flowTree::onPropertyValueChange(QString uuid, QString attr, Json::Value val
     }
 
     emit projectModify(mCurProjectUuid);
-
 }
 
 void flowTree::onShowCurItemProperty(QString uuid)
@@ -924,14 +935,134 @@ void flowTree::setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> 
     ui->treeWidget->expandItem(subFlowItem);
 }
 
+void flowTree::updateParamSelAttr(std::shared_ptr<dragRole> role)
+{
+    Json::Value infoJs;
+    role->getProperty()->getProperty(PROPERTY_SIM_MODEL, infoJs);
+    if(infoJs.isNull() || !infoJs.isString())
+        return ;
+
+    std::string changeType = infoJs.asString();
+
+    if(PROPERTY_MODEL_FIX == changeType)
+    {
+        emit setGroupPropertyEnable(PROPERTY_MODEL_FIX, true);
+        emit setGroupPropertyEnable(PROPERTY_MODEL_RAND, false);
+        emit setGroupPropertyEnable(PROPERTY_MODEL_LINE, false);
+
+        //role->getProperty()->setVisible(PROPERTY_MODEL_FIX, true);
+        //role->getProperty()->setVisible(PROPERTY_MODEL_RAND, false);
+        //role->getProperty()->setVisible(PROPERTY_MODEL_LINE, false);
+    }
+    else if(PROPERTY_MODEL_RAND == changeType)
+    {
+        emit setGroupPropertyEnable(PROPERTY_MODEL_FIX, false);
+        emit setGroupPropertyEnable(PROPERTY_MODEL_RAND, true);
+        emit setGroupPropertyEnable(PROPERTY_MODEL_LINE, false);
+
+       // role->getProperty()->setVisible(PROPERTY_MODEL_FIX, false);
+       // role->getProperty()->setVisible(PROPERTY_MODEL_RAND, true);
+        //role->getProperty()->setVisible(PROPERTY_MODEL_LINE, false);
+    }
+    else if(PROPERTY_MODEL_LINE == changeType)
+    {
+        emit setGroupPropertyEnable(PROPERTY_MODEL_FIX, false);
+        emit setGroupPropertyEnable(PROPERTY_MODEL_RAND, false);
+        emit setGroupPropertyEnable(PROPERTY_MODEL_LINE, true);
+
+        //role->getProperty()->setVisible(PROPERTY_MODEL_FIX, false);
+        //role->getProperty()->setVisible(PROPERTY_MODEL_RAND, false);
+        //role->getProperty()->setVisible(PROPERTY_MODEL_LINE, true);
+    }
+}
+
+void flowTree::updateInfoWordAttr(std::shared_ptr<dragRole> role)
+{
+    if( (mCurFrameType == PROPERTY_FRAME_BE))
+    {
+        //删除其它属性
+        emit removeGroupProperty(PROPERTY_OTHER);
+        emit addGroupProperty(PROPERTY_OTHER);
+
+        emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_D_NUM));
+
+        role->getProperty()->setVisible(PROPERTY_OTHER, true);
+        role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, true);
+        role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, false);
+
+    }
+    else if( (PROPERTY_FRAME_FE == mCurFrameType ))
+    {
+        //删除其它属性
+        emit removeGroupProperty(PROPERTY_OTHER);
+
+        role->getProperty()->setVisible(PROPERTY_OTHER, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, false);
+    }
+    else if( (PROPERTY_FRAME_93 == mCurFrameType ))
+    {
+        //删除其它属性
+        emit removeGroupProperty(PROPERTY_OTHER);
+
+        role->getProperty()->setVisible(PROPERTY_OTHER, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, false);
+    }
+    else if( (PROPERTY_FRAME_MIDDLE == mCurFrameType ))
+    {
+        //删除其它属性
+        emit removeGroupProperty(PROPERTY_OTHER);
+        emit addGroupProperty(PROPERTY_OTHER);
+
+        qDebug() << role->getProperty()->curAttr(PROPERTY_OTHER_D_NUM).toStyledString().c_str();
+
+
+        emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_D_NUM));
+
+        int infoType = 0;
+        Json::Value infoJs;
+        role->getProperty()->getProperty(PROPERTY_BASE_INFO_WORD, infoJs);
+        if(!infoJs.isNull() && infoJs.isInt())
+        {
+            infoType = infoJs.asInt();
+        }
+
+        if(2 == infoType)
+        {
+            emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_DEV_INDEX));
+            emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_MODLE_INDEX));
+            role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, true);
+            role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, true);
+        }
+        else
+        {
+            role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
+            role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
+        }
+        emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_RESERVE));
+
+        role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, true);
+        role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, true);
+
+        role->getProperty()->setVisible(PROPERTY_OTHER, true);
+    }
+}
+
 void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
 {
     //更新当前节点变化
 
     if( (mCurFrameType == PROPERTY_FRAME_BE))
     {
+        //删除信宿属性
         emit removeGroupProperty(PROPERTY_DST);
-
         //创建组
         emit addGroupProperty(PROPERTY_DST);
 
@@ -950,6 +1081,7 @@ void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
 
         role->getProperty()->setReadOnly(PROPERTY_DST, false);
         role->getProperty()->setVisible(PROPERTY_DST, true);
+
     }
     else if( (PROPERTY_FRAME_FE == mCurFrameType ))
     {
@@ -1021,7 +1153,14 @@ void flowTree::onFrameTypeChange(QString uuid, QString type)
     if( !( (dragRole::Node_Cmd == role->getNodeType()) || (dragRole::Node_Param_Group == role->getNodeType())))
         return ;
 
+    //更新帧类型相关属性
     updateFrameAttr(role);
+
+    //更新信息字相关属性
+    updateInfoWordAttr(role);
+
+    //更新参数变化属性
+    //updateParamSelAttr(role);
 
     emit toShowProperty(mUiUuid, role->getProperty()->getJson());
 }

@@ -5,6 +5,9 @@
 
 #include "../src/PfCommon/jsoncpp/json.h"
 
+/*************基本属性********************/
+#define PROPERTY_BASE_INFO_WORD "信息字格式"
+
 /*************帧类型属性********************/
 #define PROPERTY_FRAME  "帧类型"
 #define PROPERTY_FRAME_BE   "BE"
@@ -33,6 +36,14 @@
 #define PROPERTY_SRC_SYS_TYPE   "系统类型"
 #define PROPERTY_SRC_SYS_CODING "系统编码"
 #define PROPERTY_SRC_NODE_CODING    "节点编码"
+
+/*************其它属性********************/
+#define PROPERTY_OTHER  "其它属性"
+#define PROPERTY_OTHER_D_NUM    "弹编号"
+#define PROPERTY_OTHER_DEV_INDEX    "设备序号"
+#define PROPERTY_OTHER_MODLE_INDEX  "模块序号"
+#define PROPERTY_OTHER_RESERVE      "备用字符串"
+
 
 
 /*************属性宏定义**********************/
@@ -103,6 +114,7 @@ public:
     void setCurValue(const Json::Value &v)
     {
         mCurValue = v;
+        mCurAttr["curValue"] = v;
     }
     Json::Value curValue(){return mCurValue;}
 

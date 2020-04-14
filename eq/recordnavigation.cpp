@@ -179,7 +179,8 @@ void recordNavigation::buildTree()
             //通知流程树类型变化
             Json::Value tmJs;
             role.mNodeProperty->getProperty(PROPERTY_FRAME, tmJs);
-            emit frameTypeChange(mCurSelectUuid, QString(tmJs.toStyledString().c_str()));
+
+            emit frameTypeChange(mCurSelectUuid, QString::fromStdString(tmJs.asString()));
 
             ui->treeWidget->setCurrentItem(*Itor);
             break;
@@ -459,7 +460,7 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
         }
 
         //通知流程树类型变化
-        emit frameTypeChange(mCurSelectUuid, QString(type.c_str()));
+        emit frameTypeChange(mCurSelectUuid, QString::fromStdString(type));
 
         //属性变化
         emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());

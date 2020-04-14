@@ -1,0 +1,39 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>img/light_off.png</file>
+        <file>img/light_on.png</file>
+        <file>img/high.png</file>
+        <file>img/light_off1.png</file>
+        <file>img/loading.gif</file>
+        <file>img/pause.ico</file>
+        <file>img/play.ico</file>
+        <file>img/runing.gif.gif</file>
+        <file>img/stop.ico</file>
+        <file>img/switchOff.png</file>
+        <file>img/switchOn.png</file>
+        <file>img/low.png</file>
+        <file>img/owe.png</file>
+        <file>img/closeHover.png</file>
+        <file>img/closePass.png</file>
+        <file>img/checkbox.png</file>
+        <file>img/checkbox_check.png</file>
+        <file>img/checkbox_part_check.png</file>
+        <file>img/out_hover.png</file>
+        <file>img/out_normal.png</file>
+        <file>img/mainWindow.png</file>
+        <file>img/scroll_handle.png</file>
+        <file>img/scroll_subpage.png</file>
+        <file>img/pass.png</file>
+        <file>img/unpass.png</file>
+        <file>img/loding_hover.png</file>
+        <file>img/loding_normal.png</file>
+        <file>img/send_hover.png</file>
+        <file>img/send_normal.png</file>
+        <file>img/choice_hover.png</file>
+        <file>img/choice_normal.png</file>
+        <file>img/add.png</file>
+        <file>img/DoubleLeft.png</file>
+        <file>img/DoubleRight.png</file>
+        <file>img/otherWindow.png</file>
+    </qresource>
+</RCC>

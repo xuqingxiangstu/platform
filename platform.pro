@@ -5,4 +5,5 @@ SUBDIRS += \
     #examples \
     #template \
     logicLayer \
-    eq
+    #EquivalentDevice\
+    #eq

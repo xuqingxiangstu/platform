@@ -1,0 +1,12 @@
+#ifndef DIGITALIO_GLOBAL_H
+#define DIGITALIO_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(DIGITALIO_LIBRARY)
+#  define DIGITALIOSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define DIGITALIOSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // DIGITALIO_GLOBAL_H

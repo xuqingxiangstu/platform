@@ -207,6 +207,8 @@ bool subFlow::_exe()
         //立即发送及手动发送执行一次(手动发送时设置启动条件)
         res = perform();
     }
+
+    return res;
 }
 
 bool subFlow::perform()

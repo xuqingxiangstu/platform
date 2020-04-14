@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon/fastforward.ico</file>
+        <file>icon/pause.ico</file>
+        <file>icon/play.ico</file>
+        <file>icon/repeat.ico</file>
+        <file>icon/stop.ico</file>
+        <file>icon/control.ico</file>
+        <file>icon/shutdown.ico</file>
+        <file>icon/qt.ico</file>
+        <file>icon/comp.ico</file>
+        <file>icon/newfile.ico</file>
+        <file>icon/open.ico</file>
+        <file>icon/close.ico</file>
+        <file>icon/save.ico</file>
+        <file>icon/right.ico</file>
+        <file>icon/error.ico</file>
+        <file>icon/hand.ico</file>
+        <file>icon/pass.ico</file>
+        <file>icon/cb_fail.png</file>
+        <file>icon/cb_pass.png</file>
+        <file>icon/movedown.ico</file>
+        <file>icon/moveup.ico</file>
+        <file>icon/remove.ico</file>
+        <file>icon/export.ico</file>
+        <file>icon/import.ico</file>
+        <file>icon/about.ico</file>
+        <file>icon/device.ico</file>
+        <file>icon/keyparaconfig.ico</file>
+        <file>icon/deviceOn.ico</file>
+        <file>icon/deviceOff.ico</file>
+        <file>icon/cmdedit.ico</file>
+        <file>icon/saveas.ico</file>
+        <file>icon/dbsync.ico</file>
+        <file>icon/dberror.ico</file>
+        <file>icon/configDB.ico</file>
+    </qresource>
+</RCC>

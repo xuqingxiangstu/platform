@@ -16,7 +16,10 @@ namespace Pf
 
         PfAdapterManager::~PfAdapterManager()
         {
-
+            for(auto itor = mManagement.begin(); itor != mManagement.end();)
+            {                
+                mManagement.erase(itor++);
+            }
         }
 
         void PfAdapterManager::init(const std::string &xmlPath)

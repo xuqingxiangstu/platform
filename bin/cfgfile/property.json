@@ -21,7 +21,7 @@
                       {
                         "attr":"系统类型",
                         "type":"int", 
-                        "readOnly":true,  
+                        "readOnly":false,  
                         "initValue":1,
                         "isVisible":true
                     }
@@ -114,7 +114,7 @@
                         {
                               "attr":"系统类型",
                               "type":"int", 
-                              "readOnly":true,  
+                              "readOnly":false,  
                               "initValue":1,
                               "isVisible":true
                           },
@@ -216,6 +216,13 @@
                           "readOnly":true,  
                           "initValue":"qingxiangxu",
                           "isVisible":true
+                      },
+                      {
+                        "attr":"信息字格式",
+                        "type":"int", 
+                        "readOnly":true,  
+                        "initValue":0,
+                        "isVisible":true
                       }
                   ]
                 },
@@ -282,7 +289,7 @@
                           {
                               "attr":"系统类型",
                               "type":"int", 
-                              "readOnly":true,  
+                              "readOnly":false,  
                               "initValue":1,
                               "isVisible":true
                           },
@@ -323,6 +330,52 @@
                             "isVisible":true
                           }
                     ]
+                },
+                {
+                    "group":"其它属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [       
+                        {
+                            "attr":"弹编号",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":65536,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"设备序号",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":256,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"模块序号",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":256,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"备用字符串",
+                            "type":"string", 
+                            "initValue":"",
+                            "curValue":"",
+                            "readOnly":false,
+                            "isVisible":true
+                        }
+                    ]
                 }
             ]
         },
@@ -342,6 +395,13 @@
                           "readOnly":true,  
                           "initValue":"xxxx测试",
                           "isVisible":true
+                      },
+                      {
+                        "attr":"信息字格式",
+                        "type":"int", 
+                        "readOnly":true,  
+                        "initValue":0,
+                        "isVisible":true
                       }
                   ]
                 },
@@ -408,7 +468,7 @@
                           {
                               "attr":"系统类型",
                               "type":"int", 
-                              "readOnly":true,  
+                              "readOnly":false,  
                               "initValue":1,
                               "isVisible":true
                           },
@@ -431,7 +491,69 @@
                               "initValue":1,
                               "curValue":1,
                               "isVisible":true
+                          },
+                          {
+                            "attr":"用户",
+                            "type":"string", 
+                            "readOnly":false,                              
+                            "initValue":"",
+                            "curValue":"",
+                            "isVisible":true
+                          },
+                          {
+                            "attr":"软件标识",
+                            "type":"string", 
+                            "readOnly":false,                              
+                            "initValue":"",
+                            "curValue":"",
+                            "isVisible":true
                           }
+                    ]
+                },
+                {
+                    "group":"其它属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [       
+                        {
+                            "attr":"弹编号",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":65536,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"设备序号",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":256,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"模块序号",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":256,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"备用字符串",
+                            "type":"string", 
+                            "initValue":"",
+                            "curValue":"",
+                            "readOnly":false,
+                            "isVisible":true
+                        }
                     ]
                 }
             ]

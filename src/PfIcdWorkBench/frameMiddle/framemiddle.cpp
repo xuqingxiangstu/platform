@@ -511,7 +511,6 @@ namespace Pf
             index += byteSize;
 
             //step7：帧序号(信源+新宿)
-            byteSize = 4;
 
             unsigned int src = data.getData(tmpBuf, msgSize, 4, 4, 0, 0);
             unsigned int dst = data.getData(tmpBuf, msgSize, 8, 4, 0, 0);
@@ -521,6 +520,7 @@ namespace Pf
                 mProtocolCnt[std::make_pair(src, dst)] = 0;
             }
 
+            byteSize = 4;
             data.setData(tmpBuf, msgSize, index, byteSize, 0, 0, mProtocolCnt[std::make_pair(src, dst)]);
 
             mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
@@ -1110,180 +1110,234 @@ namespace Pf
             dataStorage data;
             int len = 0;
             int pos = 0;
+            int byteSize = 0;
 
             pos = 3;
             //step1：帧类型
-            headInfo["head_frame_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_frame_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
             //step2：信源 系统类型、系统编码、节点编码
-            headInfo["head_src_sys_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_src_sys_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_src_sys_code"] = data.getData(inBuf, inSize, pos, 2, 0, 0);
-            pos += 2;
+            byteSize = 2;
+            headInfo["head_src_sys_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_src_node_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_src_node_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
             //step3：信宿 系统类型、系统编码、节点编码
-            headInfo["head_dst_sys_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_dst_sys_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_dst_sys_code"] = data.getData(inBuf, inSize, pos, 2, 0, 0);
-            pos += 2;
+            byteSize = 2;
+            headInfo["head_dst_sys_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_dst_node_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_dst_node_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
             //step3：日期+时间
-            headInfo["head_year"] = data.getData(inBuf, inSize, pos, 2, 0, 0);
-            pos += 2;
+            byteSize = 2;
+            headInfo["head_year"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_mon"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_mon"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_day"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_day"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_time"] = data.getData(inBuf, inSize, pos, 4, 0, 0);
-            pos += 4;
+            byteSize = 4;
+            headInfo["head_time"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
             //step4：命令技术+确认标志、重传次数
-            headInfo["head_cmd_cnt"] = data.getData(inBuf, inSize, pos, 4, 0, 0);
-            pos += 4;
+            byteSize = 4;
+            headInfo["head_cmd_cnt"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_is_ask"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_is_ask"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_retry_cnt"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_retry_cnt"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            pos += 1;
-            pos += 2;
-            pos += 4;
-            pos += 1;
+            byteSize = 1;
+            pos += byteSize;
+
+            byteSize = 2;
+            pos += byteSize;
+
+            byteSize = 4;
+            pos += byteSize;
+
+            byteSize = 1;
+            pos += byteSize;
 
             //step1：消息出发点-用户字符串，软件标识
 
-            //pos = 34;
-            headInfo["head_msg_out_sys_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_msg_out_sys_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_msg_out_sys_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 2;
+            byteSize = 2;
+            headInfo["head_msg_out_sys_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_msg_out_node_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_msg_out_node_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
+
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_out_user"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_out_user"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
-            pos += 1;
-            pos += len;
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_out_version"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_out_version"] = std::string((const char*)&inBuf[pos], byteSize);
             }
-            pos += 1;
-            pos += len;
+            pos += byteSize;
+
 
             //step2：消息目的地用户字符串、软件标识
 
-            headInfo["head_msg_in_sys_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_msg_in_sys_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_msg_in_sys_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 2;
+            byteSize = 2;
+            headInfo["head_msg_in_sys_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            headInfo["head_msg_in_node_code"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            pos += 1;
+            byteSize = 1;
+            headInfo["head_msg_in_node_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
+
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_in_user"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_in_user"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
-            pos += 1;
-            pos += len;
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_in_version"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_in_version"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
             //step3：消息发送方的地用户字符串、软件标识
-            pos += 1;
-            pos += len;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
+
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_send_user"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_send_user"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
-            pos += 1;
-            pos += len;
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_send_version"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_send_version"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
             //step4：消息接收送方的地用户字符串、软件标识
 
-            pos += 1;
-            pos += len;
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_rcv_user"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_rcv_user"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
-            pos += 1;
-            pos += len;
+            byteSize = 1;
+            len = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
 
-            len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_msg_rcv_version"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_msg_rcv_version"] = std::string((const char*)&inBuf[pos], byteSize);
             }
-
+            pos += byteSize;
 
             //step5：消息类型（0：带表号的数据；1：自定义消息；2：日志消息）
-            pos += 1;
+            byteSize = 1;
+            pos += byteSize;
 
-            //step6：表号
-            pos += 1;
-            pos += 2;
+            byteSize = 2;
+            pos += byteSize;
 
-            headInfo["head_table"] = data.getData(inBuf, inSize, pos, 2, 0, 0);
+            byteSize = 2;
+            headInfo["head_table"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            pos += byteSize;
+
+            byteSize = 1;
+            pos += byteSize;
 
             //step7：备用字符串
-            pos += 2;
-            pos += 1;
 
+            byteSize = 1;
             len = data.getData(inBuf, inSize, pos, 1, 0, 0);
-            if(pos + 1 + len <= inSize)
+            pos += byteSize;
+
+            byteSize = len;
+            if(pos + len <= inSize)
             {
-                headInfo["head_reserve"] = std::string((const char*)&inBuf[pos + 1], len);
+                headInfo["head_reserve"] = std::string((const char*)&inBuf[pos], byteSize);
             }
+            pos += byteSize;
 
             //step8：更新信息字类型
+            byteSize = 1;
+            headInfo["head_info_word_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
 
-            pos += 1;
-            pos += len;
-
-            headInfo["head_info_word_type"] = data.getData(inBuf, inSize, pos, 1, 0, 0);
         }
 
         bool frameMiddle::getInfoLen(unsigned char *inBuf, const unsigned int inSize, int infoType, int &len)

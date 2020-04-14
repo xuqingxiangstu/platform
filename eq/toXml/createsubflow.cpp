@@ -454,6 +454,14 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
         {
             frameEle->LinkEndChild(createTextElement(EQ_SRC_DST_NODE_CODE_ELEMENT, dstNodeCode.asString()));
         }
+
+        //弹编号
+        Json::Value dNumJs;
+        node->getProperty(PROPERTY_OTHER_D_NUM, dNumJs);
+        if(!dNumJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_D_NUM_ELEMENT, dNumJs.asString()));
+        }
     }
     else if(PROPERTY_FRAME_FE == type)
     {
@@ -552,6 +560,51 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
         if(!dstVersionJs.isNull())
         {
             frameEle->LinkEndChild(createTextElement(EQ_DST_VERSION_ELEMENT, dstVersionJs.asString()));
+        }
+
+        //信息字类型
+        Json::Value infoWordTypeJs;
+        node->getProperty(PROPERTY_BASE_INFO_WORD, infoWordTypeJs);
+
+        if(!infoWordTypeJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_INFO_WORD_TYPE_ELEMENT, infoWordTypeJs.asString()));
+        }
+
+        //弹编号
+        Json::Value dNumJs;
+        node->getProperty(PROPERTY_OTHER_D_NUM, dNumJs);
+        if(!dNumJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_D_NUM_ELEMENT, dNumJs.asString()));
+        }
+
+        //设备编号
+        Json::Value devNumJs;
+        node->getProperty(PROPERTY_OTHER_DEV_INDEX, devNumJs);
+        if(!devNumJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_DEV_NUM_ELEMENT, devNumJs.asString()));
+        }
+
+        //模块编号
+        Json::Value modelNumJs;
+        node->getProperty(PROPERTY_OTHER_MODLE_INDEX, modelNumJs);
+        if(!modelNumJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_MODLE_NUM_ELEMENT, modelNumJs.asString()));
+        }
+
+        //预留字符串
+        Json::Value reserveJs;
+        node->getProperty(PROPERTY_OTHER_RESERVE, reserveJs);
+        if(!reserveJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_RESERVE_ELEMENT, reserveJs.asString()));
+        }
+        else
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_RESERVE_ELEMENT, ""));
         }
     }
 

@@ -207,6 +207,56 @@ void headMiddle::init(TiXmlElement *xmlEle)
         {
             mJsonV["head_dst_version"] = point;
         }
+    }    
+
+    tmpEle = xmlEle->FirstChildElement("head_info_word_type");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_info_word_type"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_d_num");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_d_num"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dev_num");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dev_num"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_modle_num");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_modle_num"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_reserve");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_reserve"] = point;
+        }
     }
 }
 
@@ -732,6 +782,35 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
     if(!(mParamsVec.size() > 0))
         return infoWordJs;
 
+    Json::Value headJs = mHeadObj->serialize();
+
+    //获取弹编号、设备序号、模块序号、备用字符串
+    int dNum = 0, devNum = 0, modelNum = 0;
+    std::string reserveStr = "";
+
+    if(!headJs.isNull())
+    {
+        if(!headJs["head_d_num"].isNull())
+        {
+            dNum = headJs["head_d_num"].asInt();
+        }
+
+        if(!headJs["head_dev_num"].isNull())
+        {
+            devNum = headJs["head_dev_num"].asInt();
+        }
+
+        if(!headJs["head_modle_num"].isNull())
+        {
+            modelNum = headJs["head_modle_num"].asInt();
+        }
+
+        if(!headJs["head_reserve"].isNull())
+        {
+            reserveStr = headJs["head_reserve"].asString();
+        }
+    }
+
     //获取表号
     std::string table = std::get<Param_Table_Index>( mParamsVec[0]);
 
@@ -741,7 +820,8 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
         //step1：填充infoWord信息
         int coding = std::atoi(std::get<Param_Coding_Index>(mParamsVec[0]).c_str());
         Json::Value tmpJs;
-        tmpJs.append(fillMiddleInfoWord1(coding, 0, ""));
+
+        tmpJs.append(fillMiddleInfoWord1(coding, dNum,  reserveStr));
 
         otherJs["infoWord"] = tmpJs;
 
@@ -760,11 +840,11 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
 
                 if(InfoWord_One == infoWordType)
                 {
-                    tmpJs = fillMiddleInfoWord0(coding, 0, 1, 4, Json::Value(0), false, "");
+                    tmpJs = fillMiddleInfoWord0(coding, dNum, 1, 4, Json::Value(0), false, reserveStr);
                 }
                 else if(InfoWord_Three == infoWordType)
                 {
-                    tmpJs = fillMiddleInfoWord2(coding, 0, 0, 0, 1, 4, Json::Value(0), false, "");
+                    tmpJs = fillMiddleInfoWord2(coding, dNum, devNum, modelNum, 1, 4, Json::Value(0), false, reserveStr);
                 }
 
                 infoWordJs.append(tmpJs);
@@ -850,11 +930,11 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
 
                 if(InfoWord_One == infoWordType)
                 {
-                    tmpJs = fillMiddleInfoWord0(coding, 0, sendDataType, sendDataLen, sendData, isOver, "");
+                    tmpJs = fillMiddleInfoWord0(coding, dNum, sendDataType, sendDataLen, sendData, isOver, reserveStr);
                 }
                 else if(InfoWord_Three == infoWordType)
                 {
-                    tmpJs = fillMiddleInfoWord2(coding, 0, 0, 0, sendDataType, sendDataLen, sendData, isOver, "");
+                    tmpJs = fillMiddleInfoWord2(coding, dNum, devNum, modelNum, sendDataType, sendDataLen, sendData, isOver, reserveStr);
                 }
 
                 infoWordJs.append(tmpJs);

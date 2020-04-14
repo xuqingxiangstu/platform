@@ -64,6 +64,7 @@ namespace Pf
             std::shared_ptr<zmq::socket_t> mSocket; ///< 网络句柄
             std::string mIpAddr;    ///< 远程IP地址
             std::string mPort;      ///< 远程端口
+
         };
     }
 }

@@ -32,7 +32,7 @@ namespace Pf
                 addr += mPort;
 
                 mSocket = std::make_shared<zmq::socket_t>(mCtx, ZMQ_PUSH);
-
+                mConAddr = addr;
                 mSocket->connect(addr);
             }
             catch(zmq::error_t err)
@@ -42,7 +42,7 @@ namespace Pf
         }
 
         bool zmqSend::sendMsg(unsigned char *u8Msg, const unsigned int &u32MsgLen)
-        {
+        {            
             std::lock_guard<std::mutex> lk(m_Mutex);
 
             return mSocket->send(u8Msg, u32MsgLen);

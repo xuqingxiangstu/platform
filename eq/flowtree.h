@@ -170,15 +170,28 @@ private:
     void updateParamItemValue(QTreeWidgetItem *item, std::shared_ptr<dragRole> role);
 
     void updateFrameAttr(std::shared_ptr<dragRole> role);
+
+    /**
+     * @brief updateInfoWordAttr    更新信息字相关属性
+     * @param role
+     */
+    void updateInfoWordAttr(std::shared_ptr<dragRole> role);
+
+    /**
+     * @brief updateParamSelAttr    更新参数选择相关属性
+     * @param role
+     */
+    void updateParamSelAttr(std::shared_ptr<dragRole> role);
 private:
     QMenu *mPopMenu;
     QPoint mRightMousePoint;
     QTreeWidgetItem *mCurItem;    
-    QString mCurProjectUuid;    //当前工程uuid
-    int mCurSystemType;         //当前系统类型
-    bool mIsUpdateTree;         //是否更新树
-    QString mUiUuid;    //界面UUID(唯一标识)
-    std::string mCurFrameType;  //当前帧类型
+    QString mCurProjectUuid;    ///< 当前工程uuid
+    int mCurSystemType;         ///< 当前系统类型
+    bool mIsUpdateTree;         ///< 是否更新树
+    QString mUiUuid;    ///< 界面UUID(唯一标识)
+    std::string mCurFrameType;  ///< 当前帧类型
+    QTreeWidgetItem *mCurSelectItem;    ///< 当前选择item
 private:
     Ui::flowTree *ui;
 };

@@ -12,6 +12,7 @@ namespace Pf
 
         zmqReceive::~zmqReceive()
         {
+
         }
 
         void zmqReceive::init(const std::string &remoteIp, const std::string &remotePort)
@@ -34,6 +35,10 @@ namespace Pf
 
                 mSocket->bind(addr);
 
+                int timeout = 10;//ms
+
+                mSocket->setsockopt(ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
+
                 ///清空之前消息
                 clearMsg();
             }
@@ -46,7 +51,7 @@ namespace Pf
         void zmqReceive::clearMsg()
         {
             return ;
-            int timeout = 500;//ms
+            int timeout = 10;//ms
 
             mSocket->setsockopt(ZMQ_RCVTIMEO, &timeout, sizeof(timeout));
 
@@ -68,10 +73,13 @@ namespace Pf
             bool res = false;
 
             std::lock_guard<std::mutex> lk(m_Mutex);
-            *u32MsgLen = mSocket->recv(u8Msg, u32RcvSize);
+            if(mSocket)
+            {
+                *u32MsgLen = mSocket->recv(u8Msg, u32RcvSize);
 
-            if(*u32MsgLen > 0)
-                res = true;
+                if(*u32MsgLen > 0)
+                    res = true;
+            }
 
             return res;
         }

@@ -95,7 +95,7 @@ void propertyWidget::showProperty(QString uuid, Json::Value value)
     }
 
     //更新仿真变化
-    //updateSimChange();
+    updateSimChange();
 
     isUpDate = true;
 }

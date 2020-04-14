@@ -337,8 +337,9 @@ void templateTree::buildTree()
                     //itemSubSub->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
                 }else{
                     dragData->setNodeType(dragRole::Node_Param_Group);
-                    dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Param_Group])));
+                    dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Param_Group])));                    
 
+                    dragData->getProperty()->setProperty(PROPERTY_BASE_INFO_WORD, groupN[h][PARAM_TABLE_INFO_WORD_TYPE]);
                     updateConditionInit(dragData.get());
                     updateDestDevInitValue(dragData.get());
 
@@ -383,8 +384,8 @@ void templateTree::buildTree()
                         dragData->setNodeType(dragRole::Node_Cmd);
                         dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Cmd])));
 
-                        dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asInt(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());
-
+                        dragData->getProperty()->setProperty(PROPERTY_BASE_INFO_WORD, paramN[g][PARAM_TABLE_INFO_WORD_TYPE]);
+                        dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asInt(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());                        
                         updateConditionInit(dragData.get());
                         updateDestDevInitValue(dragData.get());
 

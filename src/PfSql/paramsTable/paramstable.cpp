@@ -75,7 +75,7 @@ bool paramsTable::getValueFrameParamCMD(QString system,Json::Value &value)
 bool paramsTable::getValueFrameParamGroup(QString cmdType, Json::Value &value)
 {
     bool Ok = false;
-    QString sql  = "SELECT GROUP_NAME,CMD_TYPE,TABLE_NUM FROM params_table WHERE CMD_TYPE ="+QString("'%1'").arg(cmdType);
+    QString sql  = "SELECT * FROM params_table WHERE CMD_TYPE ="+QString("'%1'").arg(cmdType);
             sql += "GROUP BY GROUP_NAME";
             sql += " ORDER BY params_table.\"INDEX\" ASC";
     QSqlQuery query(sql, mDb);

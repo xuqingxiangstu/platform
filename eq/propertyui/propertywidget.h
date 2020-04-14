@@ -48,6 +48,7 @@ public slots:
      * @brief updateProperty    更新属性值
      * @param propertyName      属性名称
      * @param value             值
+     * @param isToUi            是否改变Ui
      */
     void onUpdateProperty(QString propertyName, Json::Value value);
 

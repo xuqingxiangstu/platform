@@ -33,6 +33,13 @@
 
 #define EQ_HEAD_FRAME_TYPE_ELEMENT       "head_frame_type"
 
+#define EQ_D_NUM_ELEMENT    "head_d_num"
+#define EQ_DEV_NUM_ELEMENT  "head_dev_num"
+#define EQ_MODLE_NUM_ELEMENT    "head_modle_num"
+#define EQ_RESERVE_ELEMENT  "head_reserve"
+
+#define EQ_INFO_WORD_TYPE_ELEMENT    "head_info_word_type"
+
 //FE帧源节点，目的节点
 #define EQ_FE_HEAD_SRC_NODE         "head_src_node"
 #define EQ_FE_HEAD_DST_NODE         "head_dst_node"
