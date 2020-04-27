@@ -4,7 +4,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
-#include "../include/PfCommon/tools/ut_error.h"
+#include "../../src/PfCommon/tools/ut_error.h"
 #include <QDebug>
 #include <QMessageBox>
 
@@ -23,15 +23,14 @@ cmdDecode::~cmdDecode()
     if(isRunning())
     {
         isStop = true;
-        //terminate();
-        quit();
+        terminate();
         wait();
         isStop = false;
     }
 }
 
 void cmdDecode::startDecode()
-{    
+{
     if(!isRunning())
     {
         isStop = false;
@@ -57,7 +56,7 @@ void cmdDecode::run()
 
     while(!isStop)
     {
-        if(mRcvObj->receiveMsg(buf, rcvSize, BUF_SIZE, 10))
+        if(mRcvObj->receiveMsg(buf, rcvSize, BUF_SIZE))
         {
 #ifndef QT_NO_DEBUG
             SHOW(std::string((const char*)buf, rcvSize));
@@ -85,11 +84,8 @@ void cmdDecode::run()
             }else{
                 qDebug()<<error->errorString();
             }
-            qDebug() << "..";
+
         }
     }
-
-    qDebug() << "exit rcv";
-    isStop = false;
 }
 

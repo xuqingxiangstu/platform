@@ -1,5 +1,8 @@
 #include "crc.h"
 
+#include <QCryptographicHash>
+#include <QByteArray>
+
 namespace Pf
 {
     namespace PfCommon
@@ -67,6 +70,25 @@ namespace Pf
             for (int i = 0; i < dwNumOfBytes; i++)
             {
                 u8Crc += DataBuf[i];
+            }
+            return u8Crc;
+        }
+
+        std::string Crc::calMd5(const unsigned char *DataBuf, unsigned int dwNumOfBytes)
+        {
+            QCryptographicHash md(QCryptographicHash::Md5);
+
+            md.addData((const char*)DataBuf, dwNumOfBytes);
+
+            return md.result().toStdString();
+        }
+
+        unsigned char Crc::xOr(const unsigned char *dataBuf, unsigned int dwNumOfBytes)
+        {
+            unsigned char u8Crc = 0;
+            for (int i = 0; i < dwNumOfBytes; i++)
+            {
+                u8Crc ^= dataBuf[i];
             }
             return u8Crc;
         }

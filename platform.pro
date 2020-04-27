@@ -1,9 +1,9 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    src \
+    #src \
     #examples \
     #template \
-    logicLayer \
+    #logicLayer \
     #EquivalentDevice\
-    #eq
+    eq

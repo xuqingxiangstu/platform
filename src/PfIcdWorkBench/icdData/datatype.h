@@ -18,7 +18,8 @@ namespace Pf
             Int32_Type,
             Ieee32_Type,
             Ieee64_Type,
-            String_Type
+            String_Type,
+            Raw_Type
         };
 
         const std::string floatType = "连续量";    ///< 浮点类型
@@ -31,6 +32,7 @@ namespace Pf
         const std::string ieee64Type = "IEEE64";
         const std::string nuint = "NUINT";      ///< 根据上一个变量进行取数
         const std::string ncharType = "NCHAR";
+        const std::string nRawType = "NRAW";    ///< 原始数据流
     }
 }
 

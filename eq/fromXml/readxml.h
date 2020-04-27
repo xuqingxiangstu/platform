@@ -78,10 +78,22 @@ signals:
      */
     void paramItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRole);
 private:
+    void initConditionValue();
+    void initDestDevInitValue();
+    void initFeInitValue();
+
+    void updateConditionInit(dragRole *role);
+    void updateDestDevInitValue(dragRole *role);
+    void updateFeSysInitValue(dragRole *role);
+private:
     void readFlow(TiXmlElement *ele);
     void readSubFlow(std::string subFlowUuid, TiXmlElement *ele);
 private:
     void run();
+private:
+    Json::Value mConditionInitValue;
+    Json::Value mFeInitValue;
+    Json::Value mDestDevInitValue;
 private:
     QString mCurPath;
 };

@@ -1,0 +1,139 @@
+<config>
+    <!-- 流程名称 -->
+    <flow uuid="123" name="热待发测试">        
+        <!-- 子流程名称 -->
+        <subFlow uuid="23" name="下发前端发射控制组合加电">
+            <!-- 测试项 -->
+            <testItem uuid="23" name="下发前端发射控制组合加电">
+                <!-- 发送时机：
+                            CYCLE：周期发送
+                            NOW：立即发送（或不配置此节点）
+                            MANUAL：手动发送
+                -->
+                <timing>CYCLE</timing>
+
+                <!-- 启动条件:
+                            无条件：则不需要配置此节点
+                            指令触发：则填充此节点
+                                    system_uuid:代表接收哪个设备的指令
+                                    table:表号
+                                    coding：编码
+                -->
+                <startCondition>
+                    <system_uuid>12</system_uuid>           
+                    <table>4401</table>
+                    <coding>02</coding>
+                </startCondition>
+
+                <!-- 执行动作 
+                    描述：
+                        1）发送到哪个分系统
+                        2）是否延时
+                        3）帧结构（BE、93、FE）
+                        4）帧信息（帧头+域信息）
+                -->
+                <action>
+                    <!-- 指令发送至哪个分系统 
+                    内容为系统表内的UUID
+                    -->
+                    <dest_system></dest_system>
+                    <!-- 延时 -->
+                    <sleep></sleep>
+                    <!-- 帧信息 -->
+                    <frame>
+                        <!-- 待发送帧头描述 
+                            分为BE帧及FE帧描述，只能为其中之一
+                        -->
+                        <head>
+                            <BE>
+                                <head_frame_type>1</head_frame_type>
+                                <head_src_sys_type>2</head_src_sys_type>
+                                <head_src_sys_code>3</head_src_sys_code>
+                                <head_src_node_code>11</head_src_node_code>
+                                <head_dst_sys_type>12</head_dst_sys_type>
+                                <head_dst_sys_code>13</head_dst_sys_code>
+                                <head_dst_node_code>14</head_dst_node_code>
+                            </BE>
+
+                            <FE>
+                                <head_src_node>12</head_src_node>
+                                <head_dst_node>34</head_dst_node>
+                                <data_type>1234</data_type>
+                            </FE>
+                        </head>
+                        <!-- 待发送数据域描述
+                            发送数据分为指令数据cmd节点、参数数据param节点，两个节点只可能为一个（或）
+                            由数据域组成一帧数据进行发送
+                        -->
+                        <datafields>
+                            <!-- 命令数据主要包括表号table、编码coding -->
+                            <cmd>         
+                                <table></table>       
+                                <coding></coding>
+                            </cmd>
+                            <cmd>         
+                                <table></table>       
+                                <coding></coding>
+                            </cmd>
+                            <!-- 参数数据包括表号table、编码coding、
+                                数据值：
+                                    init节点描述初始化值
+                                    数值包括固定值、随机变化、直线变化
+                                        固定值：只需配置init节点即可
+                                        随机变化：只需配置random节点，填充min最小值、max最大值
+                                        直线变化：只需配置line节点，填充y= ax + b 中的 a值及b值
+                            -->
+                            <param>                
+                                <table></table>       
+                                <coding></coding>
+                                <value>
+                                    <init>10</init>
+                                    <random>
+                                        <min>1</min>
+                                        <max>20</max>
+                                    </random>
+                                    <line>
+                                        <min>4</min>                                    
+                                        <max>9</max>                                    
+                                        <!-- 步长 -->
+                                        <changeStep>9</changeStep>
+                                    </line>
+                                </value>
+                            </param>
+                            <param>                
+                                <table></table>       
+                                <coding></coding>
+                                <value>
+                                    <init>10</init>
+                                    <random>
+                                        <min>1</min>
+                                        <max>20</max>
+                                    </random>
+                                    <line>
+                                        <min>4</min>                                    
+                                        <max>9</max>                                    
+                                        <!-- 步长 -->
+                                        <changeStep>9</changeStep>
+                                    </line>
+                                </value>
+                            </param>
+                        </datafields>     
+                    </frame>               
+                </action>
+
+                <!-- 停止条件:
+                        无条件：则不需要配置此节点
+                        指令触发：则填充此节点
+                                system_uuid:代表接收哪个设备的指令
+                                table:表号
+                                coding：编码
+                -->
+                <stopCondition>
+                    <system_uuid>34</system_uuid>           
+                    <table>4401</table>
+                    <coding>02</coding>
+                </stopCondition>          
+            </testItem>
+        </subFlow>
+    </flow>
+</config>

@@ -20,7 +20,7 @@ class decoding : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    decoding(std::string uuid, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg);
+    decoding(Json::Value param, std::string recordUuid, std::string uuid, std::string ptl, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg);
     ~decoding();
 signals:
     /**
@@ -28,15 +28,22 @@ signals:
      * @param v     结果
      */
     void result(Json::Value v);
-protected:
+public:
     void run();
+private:
+    bool package(QByteArray &srcMsg, QByteArray &curMsg);
+    void toUi(const std::string &msg, bool state = true);
 private:
     std::shared_ptr<Pf::PfIcdWorkBench::frameObj> mFrameObj;
     Pf::PfAdapter::Adapter *mBusObj;    ///< 总线句柄
     QByteArray mCurMsg; ///< 当前消息
     std::string mDstIp;
     int mDstPort;
+    std::string mCurPtrl;
     std::string mUuid;
+    std::string mRecordUuid;
+    Pf::PfAdapter::Adapter *mUiBus;
+    Json::Value mParam;
 };
 
 class decodingPool : public QObject
@@ -53,7 +60,7 @@ public:
 
     void setPfAdapterManager(std::shared_ptr<Pf::PfAdapter::PfAdapterManager> manager){mPfAdapterManager = manager;}
 public slots:
-    void decode(QString uuid, QString ptl, QByteArray msg, QString rcvIp, int rcvPort);
+    void decode(Json::Value param, QString recordUuid, QString uuid, QString ptl, QByteArray msg, QString rcvIp, int rcvPort);
 signals:
     /**
      * @brief result    解析结果
@@ -66,5 +73,7 @@ private:
     std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> mIcdWorkBench; ///< ICD解析器
     QMap<QString, std::shared_ptr<Pf::PfIcdWorkBench::frameObj>> mParseObj; ///< 解析器
 };
+
+Q_DECLARE_METATYPE(Json::Value)
 
 #endif // DECODING_H

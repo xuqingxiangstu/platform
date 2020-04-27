@@ -4,6 +4,8 @@
 
 #include "../virtualParams/virtualparams.h"
 
+#include "frame.h"
+
 void startCondition::init(TiXmlElement *xmlEle)
 {
     TiXmlElement *ele = nullptr;
@@ -23,7 +25,14 @@ void startCondition::init(TiXmlElement *xmlEle)
     {
         point = ele->GetText();
         if(point)
+        {
             mTable = std::string(point);
+
+            if(UI_CUSTOM_MSG == mTable) //界面内容消息触发
+            {
+               mId = "UI";
+            }
+        }
     }
 
     ele = xmlEle->FirstChildElement("coding");
@@ -44,6 +53,8 @@ Json::Value startCondition::getRunItems()
 
     if(paramsTable::getInstance()->getValue(mTable, mCoding, paramValue))
         js["trigger"] = paramValue[PARAM_TABLE_PARAM_NAME].asString();
+    else
+        js["trigger"] = "";
 
     return js;
 }

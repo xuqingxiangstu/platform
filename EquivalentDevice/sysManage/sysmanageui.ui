@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,3">
@@ -44,6 +47,16 @@
          <width>300</width>
          <height>330</height>
         </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QTableWidget{
+	border:1px solid #1e75ff;
+	color:#fff;
+	alternate-background-color:red;
+	background:white;
+
+}
+</string>
        </property>
        <column>
         <property name="text">

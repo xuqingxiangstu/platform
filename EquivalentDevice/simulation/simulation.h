@@ -5,7 +5,7 @@
 #include <QTreeWidgetItem>
 #include <QMenu>
 #include <QTableWidgetItem>
-#include "../include/PfCommon/jsoncpp/json.h"
+#include "../../src/PfCommon/jsoncpp/json.h"
 #include "../mainwindow.h"
 
 namespace Ui {
@@ -23,7 +23,8 @@ public:
     void initSystemTree();
     void initFlowTable();
     void getSimTest(Json::Value &value);
-
+private:
+    bool checkSimTree(QString record_uuid);
 private slots:
     void delTest();
     void addSimTree();

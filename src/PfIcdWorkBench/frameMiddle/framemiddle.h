@@ -75,10 +75,10 @@ namespace Pf
 
             void fillHead(byteArray &outValue, const std::vector<byteArray> &wordMsg, Json::Value jsValue);
 
-            void _fillInfo(int infoType, byteArray &outValue, Json::Value wordsJs, Json::Value regionJs);
+            void _fillInfo(int infoType, byteArray &outValue, Json::Value headJs, Json::Value wordsJs, Json::Value regionJs);
 
             void _fillInfoWord0(byteArray &outValue, Json::Value wordsJs);
-            void _fillInfoWord1(byteArray &outValue, Json::Value wordsJs, Json::Value regionJs);
+            void _fillInfoWord1(byteArray &outValue, Json::Value headJs, Json::Value wordsJs, Json::Value regionJs);
             void _fillInfoWord2(byteArray &outValue, Json::Value wordsJs);
         private:
             std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数

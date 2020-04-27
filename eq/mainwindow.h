@@ -25,6 +25,8 @@ private:
     void onSave();
 
     void closeEvent( QCloseEvent * event);
+
+    void keyPressEvent(QKeyEvent *event);
 public slots:
     /**
      * @brief onFlowChange  流程变化

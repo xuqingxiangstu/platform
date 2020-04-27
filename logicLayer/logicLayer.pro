@@ -21,11 +21,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     rcvcmdtask.cpp \
-    cmddecode.cpp
+    cmddecode.cpp \
+    uibus.cpp
 
 LIBS += -L$$OUT_PWD/../ -lrecordLog
 
-LIBS += -L$$OUT_PWD/../stepLib/ -lRunFlow
+#LIBS += -L$$OUT_PWD/../stepLib/ -lRunFlow
 
 LIBS += -L$$OUT_PWD/../ -lPfAdapterManager
 
@@ -33,7 +34,10 @@ LIBS += -L$$OUT_PWD/../adapterLib/ -lZmqRcvAdapter
 
 LIBS += -L$$OUT_PWD/../adapterLib/ -lZmqSendAdapter
 
-LIBS += -L$$OUT_PWD/../adapterLib/ -lvirtualUnicastAdapter
+LIBS += -L$$OUT_PWD/../adapterLib/ -lUnicastAdapter
+LIBS += -L$$OUT_PWD/../adapterLib/ -ltcpAdapter
+LIBS += -L$$OUT_PWD/../adapterLib/ -ltcpServerAdapter
+LIBS += -L$$OUT_PWD/../adapterLib/ -lm1553Adapter
 
 LIBS += -L$$OUT_PWD/../ -ljsoncpp
 
@@ -55,12 +59,17 @@ LIBS += -L$$OUT_PWD/../algorithmLib/ -ltemperatureModel
 
 LIBS += -L$$OUT_PWD/../ -lsqlTable
 
+LIBS += -L$$OUT_PWD/../../../ -lcrc
+
 HEADERS += \
     rcvcmdtask.h \
-    cmddecode.h
+    cmddecode.h \
+    uibus.h
 
 include (./flow/flow.pri)
 include (./task/task.pri)
 include (./decoding/decoding.pri)
 include (./singleTest/singleTest.pri)
+include (./custom/custom.pri)
+include (./business/business.pri)
 include (./virtualParams/virtualParams.pri)

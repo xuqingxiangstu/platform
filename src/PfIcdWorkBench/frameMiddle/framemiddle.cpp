@@ -111,7 +111,7 @@ namespace Pf
             for(int index = 0; index < wordsJs.size(); index++)
             {
                 byteArray infoMsg;
-                _fillInfo(infoType, infoMsg, wordsJs[index], regionJs);
+                _fillInfo(infoType, infoMsg, headJs, wordsJs[index], regionJs);
 
                 wordsMsg.push_back(infoMsg);
             }
@@ -121,7 +121,7 @@ namespace Pf
             fillHead(outValue, wordsMsg, headJs);
         }
 
-        void frameMiddle::_fillInfo(int infoType, byteArray &outValue, Json::Value wordsJs, Json::Value regionJs)
+        void frameMiddle::_fillInfo(int infoType, byteArray &outValue, Json::Value headJs, Json::Value wordsJs, Json::Value regionJs)
         {
             if(Info_Word_0 == infoType)
             {
@@ -129,7 +129,7 @@ namespace Pf
             }
             else if(Info_Word_1 == infoType)
             {
-                _fillInfoWord1(outValue, wordsJs, regionJs);
+                _fillInfoWord1(outValue, headJs, wordsJs, regionJs);
             }
             else if(Info_Word_2 == infoType)
             {
@@ -138,7 +138,7 @@ namespace Pf
         }
 
 
-        void frameMiddle::_fillInfoWord1(byteArray &outValue, Json::Value wordsJs, Json::Value regionJs)
+        void frameMiddle::_fillInfoWord1(byteArray &outValue, Json::Value headJs, Json::Value wordsJs, Json::Value regionJs)
         {
             dataStorage data;
             unsigned char tmpBuf[1024] = {0};
@@ -149,18 +149,23 @@ namespace Pf
 
             byteArray regionMsg;
 
+            //note:帧格式类型在帧头里进行填充，此处不进行填充 2020-4-24 15:35:36
+           // byteSize = 1;
+            //data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, 1);
+            //pos += byteSize;
+
             //step1：D编号
             byteSize = 2;
-            if(!wordsJs["info_2_num"].isNull())
+            if(!headJs["head_d_num"].isNull())
             {
-                data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, wordsJs["info_3_num"].asInt());
+                data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, headJs["head_d_num"].asInt());
             }
             pos += byteSize;
 
             _fillRegion(regionMsg, regionJs);
 
             //step2：数据长度
-            byteSize = 1;
+            byteSize = 2;
             data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, regionMsg.size());
             pos += byteSize;
 
@@ -533,7 +538,7 @@ namespace Pf
             if(!jsValue["head_table"].isNull())
             {
                 Json::Value paramValues;
-                paramsTable::getInstance()->getValues(jsValue["head_table"].asInt(), paramValues);
+                paramsTable::getInstance()->getValues(jsValue["head_table"].asUInt(), paramValues);
 
                 if(paramValues.size() > 0)
                 {
@@ -805,7 +810,7 @@ namespace Pf
 
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues(tableNum, paramValues);
+            paramsTable::getInstance()->getValues((unsigned int)tableNum, paramValues);
 
             //qDebug() << paramValues.toStyledString().c_str();
 
@@ -818,7 +823,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 if(startPos == -1)
                     startPos = preStartPos;
@@ -847,10 +852,58 @@ namespace Pf
                 }
                 else if(ncharType == dataType)
                 {
-                    //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
-                    preStartPos = startPos + initValue.size();
-                    outSize += initValue.size();
+                    //modify xqx 20200423 当为字符串时，如果设置大小则按照设置填充，否则按照字符串大小进行填充
+                    if(0 == byteSize)//按照字符串填充
+                    {
+                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                        preStartPos = startPos + initValue.size();
+                        outSize += initValue.size();
+                    }
+                    else//按大小填充
+                    {
+                        //先清空，再填充
+                        memset(tmpBuf + startPos, 0, byteSize);
+                        int cpySize = 0;
+                        if(byteSize > initValue.size())
+                        {
+                            cpySize = initValue.size();
+                        }
+                        else
+                        {
+                            cpySize = byteSize;
+                        }
+                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), cpySize);
+                        preStartPos = startPos + byteSize;
+                        outSize += byteSize;
+                    }
+                }
+                else if(nRawType == dataType)   //十六进制原始数据
+                {
+                    QByteArray msg = QByteArray::fromHex(initValue.c_str());
+
+                    int maxSize = 0;
+                    if(0 == byteSize)
+                    {
+                        maxSize = msg.size();
+                    }
+                    else
+                    {
+                        maxSize = byteSize;
+                    }
+
+                    int pos = startPos;
+                    for(int index = 0; index < maxSize; index++)
+                    {
+                        if(index < msg.size())
+                            data.setData(tmpBuf, msgSize, pos, 1, 0, 0, msg.at(index));
+                        else
+                            data.setData(tmpBuf, msgSize, pos, 1, 0, 0, 0);
+
+                        pos += 1;
+                    }
+
+                    preStartPos = startPos + maxSize;
+                    outSize += maxSize;
                 }
                 else
                 {
@@ -1371,6 +1424,8 @@ namespace Pf
                 pos += 1;
                 pos += dataLen;
 
+                pos += 1;
+
                 int reserveLen = data.getData(inBuf, inSize, pos, 1, 0, 0);
                 pos += 1;
                 pos += reserveLen;
@@ -1511,7 +1566,7 @@ namespace Pf
             pos += byteSize;
 
             //step2：数据长度
-            byteSize = 1;
+            byteSize = 2;
             value["info_2_data_len"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
@@ -1739,14 +1794,12 @@ namespace Pf
                     //step5-3：下一帧
                     residueSize -= tmpLen;
                     msgPos += tmpLen;
-
-                    infoCnt--;
                 }
                 else
                 {
                     break;
                 }
-            }while(infoCnt > 0);
+            }while(residueSize > 0);
 
             if(!regionJsons.isNull())
                 result["region"] = regionJsons;
@@ -1781,7 +1834,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 tmpValue["coding"] = coding;
 

@@ -12,12 +12,18 @@
 
 #include <QDebug>
 #include "flow/flow.h"
+#include "../src/PfCommon/jsoncpp/json.h"
+#include "./custom/zy.h"
 
 #define DEBUG_ZMQ   0
+
+using namespace Json;
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    qRegisterMetaType<Value>("Value");
 #if 0
     try
     {
@@ -108,27 +114,27 @@ int main(int argc, char *argv[])
     rcvCmdTask *rcvTask = new rcvCmdTask();
     rcvTask->setRcvAdapter(zmqRcv);
 
-    cmdDecode decode(zmqSend);
-    QObject::connect(rcvTask, &rcvCmdTask::toParse, &decode, &cmdDecode::parse);
+    std::shared_ptr<cmdDecode> decode = std::make_shared<cmdDecode>(zmqSend);
+    QObject::connect(rcvTask, &rcvCmdTask::toParse, decode.get(),&cmdDecode::parse);
 
     try
     {
         //decode.load("E:\\work\\[43]地面测发控系统仿真系统\\flow.xml");
-        decode.initPrograme();
+        decode->initPrograme();
 //#ifndef QT_NO_DEBUG
-#if 1
-        std::string uuid = "{a4ef8ea7-3544-47ec-9208-af343eee69d8}";
+#if 0
+        std::string uuid = "{5eebc27a-20aa-4bd5-8e57-cecbe00c8a93}";
 
         Json::Value tmp;
         tmp.append(uuid);
         //tmp.append("{f7b24908-b0d0-4c30-b92f-c228fddc536a}");
         Json::Value fJs;
         fJs["flows"] = tmp;       
-        decode.initFlow(fJs);
+        decode->initFlow(fJs);
 
         Json::Value value;
         value["record_uuid"] = uuid;
-        decode.startTest(value);
+        decode->startTest(value);
 #endif
     }
     catch(std::runtime_error err)
@@ -144,5 +150,8 @@ int main(int argc, char *argv[])
     }
 
     rcvTask->startTask();
-    return a.exec();
+
+    a.exec();
+
+    return true;
 }

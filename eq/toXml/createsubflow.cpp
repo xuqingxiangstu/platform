@@ -20,12 +20,22 @@ TiXmlElement *createEquivalent::element(nodeProperty *node)
 
     //接口uuid
     Json::Value devJs;
-    node->getProperty(PROPERTY_RECORD_DEV_SEL, devJs);
+    node->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devJs);
     if(!devJs.isNull())
     {
         if(!devJs[PROPERTY_DEV_VALUE_UUID].isNull())
         {
             eqEle->LinkEndChild(createTextElement(EQ_SYSTEM_UUID_ELEMENT, devJs[PROPERTY_DEV_VALUE_UUID].asString()));
+        }
+    }
+
+    Json::Value dstdevJs;
+    node->getProperty(PROPERTY_RECORD_DEST_DEVICE, dstdevJs);
+    if(!dstdevJs.isNull())
+    {
+        if(!dstdevJs[PROPERTY_DEV_VALUE_UUID].isNull())
+        {
+            eqEle->LinkEndChild(createTextElement(EQ_DST_SYSTEM_UUID_ELEMENT, dstdevJs[PROPERTY_DEV_VALUE_UUID].asString()));
         }
     }
 
@@ -125,7 +135,7 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
 
     //存储Json subJson
     //TiXmlElement *jsonEle = new TiXmlElement(JSON_ELEMENT);
-    XmlEle->LinkEndChild(createTextElement(JSON_ELEMENT, node->getJson().toStyledString()));
+    XmlEle->LinkEndChild(createTextElement(JSON_ELEMENT, node->getSaveJson().toStyledString()));
 
     if(subNode.size() > 0)
     {
@@ -180,7 +190,7 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
 
             //接口uuid
             Json::Value devJs;
-            headNode->getProperty(PROPERTY_RECORD_DEV_SEL, devJs);
+            headNode->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devJs);
             if(!devJs.isNull())
             {
                 if(!devJs[PROPERTY_DEV_VALUE_UUID].isNull())
@@ -210,7 +220,7 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
 
             //接口uuid
             Json::Value devJs;
-            headNode->getProperty(PROPERTY_RECORD_DEV_SEL, devJs);
+            headNode->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devJs);
             if(!devJs.isNull())
             {
                 if(!devJs[PROPERTY_DEV_VALUE_UUID].isNull())
@@ -230,8 +240,9 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
     TiXmlElement *actionEle = new TiXmlElement(ACTION_ELEMENT);
 
     //dest_system
+
     Json::Value destSysJs;
-    node->getProperty(PROPERTY_DESTDEVICE, destSysJs);
+    headNode->getProperty(PROPERTY_LOCAL_DEVICE, destSysJs);
 
     if(!destSysJs.isNull())
         text = destSysJs[PROPERTY_DEV_VALUE_UUID].asString().c_str();
@@ -289,7 +300,7 @@ TiXmlElement *createSubFlow::createDataFieldsElement(nodeProperty *node, std::ve
         //指令
         cmdEle = new TiXmlElement(CMD_ELEMENT);
 
-        cmdEle->LinkEndChild(createTextElement(TABLE_ELEMENT, std::to_string(node->tableNum())));
+        cmdEle->LinkEndChild(createTextElement(TABLE_ELEMENT, node->tableNum()));
 
         cmdEle->LinkEndChild(createTextElement(CODING_ELEMENT,std::to_string(node->codingNum())));
 
@@ -304,7 +315,7 @@ TiXmlElement *createSubFlow::createDataFieldsElement(nodeProperty *node, std::ve
         {
             TiXmlElement *paramEle = new TiXmlElement(PARAM_ELEMENT);
 
-            paramEle->LinkEndChild(createTextElement(TABLE_ELEMENT, std::to_string(subNode->tableNum())));
+            paramEle->LinkEndChild(createTextElement(TABLE_ELEMENT, subNode->tableNum()));
 
             paramEle->LinkEndChild(createTextElement(CODING_ELEMENT,std::to_string(subNode->codingNum())));
 
@@ -319,8 +330,17 @@ TiXmlElement *createSubFlow::createDataFieldsElement(nodeProperty *node, std::ve
                 Json::Value tmpJs;
                 subNode->getProperty(PROPERTY_FIX_VALUE, tmpJs);
 
+                //modify xqx 20200419 固定值时用户选择有含义，需去除含义
+                QString tmp = tmpJs.asString().c_str();
+
+                int pos = tmp.indexOf(":");
+                if(-1 != pos)
+                {
+                    tmp = tmp.mid(0, pos);
+                }
+
                 if(!tmpJs.isNull())
-                    valueEle->LinkEndChild(createTextElement(INIT_ELEMENT, tmpJs.asString().c_str()));
+                    valueEle->LinkEndChild(createTextElement(INIT_ELEMENT, tmp.toStdString().c_str()));
                 else
                     valueEle->LinkEndChild(createTextElement(INIT_ELEMENT, ""));
 
@@ -475,10 +495,53 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
 
         //目标节点
         Json::Value dstTypeJs;
-        headNode->getProperty(PROPERTY_SRC_SYS_TYPE, dstTypeJs);
+        node->getProperty(PROPERTY_SRC_SYS_TYPE, dstTypeJs);
         if(!dstTypeJs.isNull())
         {
             frameEle->LinkEndChild(createTextElement(EQ_FE_HEAD_DST_NODE, dstTypeJs.asString()));
+        }
+
+        //发起系统
+        Json::Value sendSysJs;
+        node->getProperty(PROPERTY_FE_DATA_TYPE_SEND_SYS, sendSysJs);
+        if(!sendSysJs.isNull())
+        {
+            QString tmp = sendSysJs.asString().c_str();
+            int index = tmp.indexOf(":");
+            if(index != -1)
+                tmp = tmp.left(index);
+
+            frameEle->LinkEndChild(createTextElement(EQ_FE_HEAD_SEND_SYS_NODE, tmp.toStdString().c_str()));
+        }
+
+        //接收系统
+        Json::Value rcvSysJs;
+        node->getProperty(PROPERTY_FE_DATA_TYPE_RCV_SYS, rcvSysJs);
+        if(!rcvSysJs.isNull())
+        {
+            QString tmp = rcvSysJs.asString().c_str();
+            int index = tmp.indexOf(":");
+            if(index != -1)
+                tmp = tmp.left(index);
+            frameEle->LinkEndChild(createTextElement(EQ_FE_HEAD_RCV_SYS_NODE, tmp.toStdString().c_str()));
+        }
+    }
+    else if(PROPERTY_FRAME_1553B == type)
+    {
+        //RT地址
+        Json::Value rtJs;
+        node->getProperty(PROPERTY_1553B_RT_GROUP_RT_ADDR, rtJs);
+        if(!rtJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(RT_ELEMENT, rtJs.asString()));
+        }
+
+        //SA地址
+        Json::Value saJs;
+        node->getProperty(PROPERTY_1553B_RT_GROUP_SA_ADDR, saJs);
+        if(!saJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(SA_ELEMENT, saJs.asString()));
         }
     }
     else if(PROPERTY_FRAME_MIDDLE == type)

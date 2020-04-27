@@ -50,7 +50,7 @@ namespace Pf
           mSendObj->init(strRemoteIp, strRemotePort);
       }
 
-      bool ZmqSendAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr, const int &port)
+      bool ZmqSendAdapter::sendMsg(const char *msg, const int &msgSize)
       {          
           std::unique_lock<std::mutex> lk(mMutex);
           return mSendObj->sendMsg((unsigned char*)msg, msgSize);

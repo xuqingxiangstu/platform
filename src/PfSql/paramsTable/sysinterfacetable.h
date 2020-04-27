@@ -20,6 +20,8 @@
 
 /****************设备类型定义*************************/
 #define SYSTEM_INTERFACE_TABLE_UDP    "UDP"
+#define SYSTEM_INTERFACE_TABLE_TCP    "TCP"
+#define SYSTEM_INTERFACE_TABLE_TCP_SERVER    "TCP_SERVER"
 #define SYSTEM_INTERFACE_TABLE_1553B  "1553B"
 #define SYSTEM_INTERFACE_TABLE_UART   "UART"
 

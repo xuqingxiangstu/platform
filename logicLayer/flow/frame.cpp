@@ -7,7 +7,41 @@
 
 #include "../../src/PfCommon/tools/ut_error.h"
 
+#include <QString>
 #include <qDebug>
+
+/***********************************************/
+
+void head1553B::init(TiXmlElement *xmlEle)
+{
+    TiXmlElement *tmpEle = nullptr;
+    const char *point = nullptr;
+
+    tmpEle = xmlEle->FirstChildElement("RT");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["RT"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("SA");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["SA"] = std::atoi(point);
+        }
+    }
+}
+
+Json::Value head1553B::serialize()
+{
+    return mJsonV;
+}
 
 /***********************************************/
 
@@ -83,6 +117,36 @@ void headBe::init(TiXmlElement *xmlEle)
         if(point)
         {
             mJsonV["head_dst_node_code"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_d_num");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_d_num"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dev_num");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dev_num"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_modle_num");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_modle_num"] = std::atoi(point);
         }
     }
 }
@@ -304,13 +368,27 @@ void headFe::init(TiXmlElement *xmlEle)
         }
     }
 
-    tmpEle = xmlEle->FirstChildElement("data_type");
+    tmpEle = xmlEle->FirstChildElement("head_send_sys");
     if(tmpEle)
     {
         point = tmpEle->GetText();
         if(point)
         {
-            mJsonV["data_type"] = std::atoi(point);
+            QString tmp(point);
+            bool isOk;
+            mJsonV["head_send_sys"] = tmp.toUInt(&isOk, 16);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_rcv_sys");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            QString tmp(point);
+            bool isOk;
+            mJsonV["head_rcv_sys"] = tmp.toUInt(&isOk, 16);
         }
     }
 }
@@ -374,7 +452,8 @@ std::string value::getValue()
 /*****************************************/
 
 frame::frame():
-    mHeadObj(nullptr)
+    mHeadObj(nullptr),
+    mCurMsgType(GeneralMsg)
 {
 
 }
@@ -416,6 +495,41 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
         UT_THROW_EXCEPTION("get 中间件 frame obj faild!");
     }   
     mIcdFrameObj[FRAME_MIDDLE] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_XK);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get 信控协议 frame obj faild!");
+    }
+    mIcdFrameObj[FRAME_XK] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_DM);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get 定位瞄准协议 frame obj faild!");
+    }
+    mIcdFrameObj[FRAME_DM] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_CZXK);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get 车长显控通讯协议 frame obj faild!");
+    }
+    mIcdFrameObj[FRAME_CZXK] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_C3);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get C3通讯协议 frame obj faild!");
+    }
+    mIcdFrameObj[FRAME_C3] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_M1553B);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get M1553B协议 frame obj faild!");
+    }
+    mIcdFrameObj[FRAME_M1553B] = tmpObj;
 }
 
 void frame::init(TiXmlElement *xmlEle)
@@ -423,7 +537,7 @@ void frame::init(TiXmlElement *xmlEle)
     //获取帧头
     TiXmlElement *headEle = xmlEle->FirstChildElement("head");
     if(headEle)
-    {
+    {        
         TiXmlElement *beEle = headEle->FirstChildElement(FRAME_BE);
         if(beEle)
         {
@@ -459,6 +573,50 @@ void frame::init(TiXmlElement *xmlEle)
 
             mCurFrameType = FRAME_MIDDLE;
         }
+
+        TiXmlElement *xkEle = headEle->FirstChildElement(FRAME_XK);
+        if(xkEle)
+        {
+            //mHeadObj = std::make_shared<headMiddle>();
+            //mHeadObj->init(middleEle);
+
+            mCurFrameType = FRAME_XK;
+        }
+
+        TiXmlElement *dmEle = headEle->FirstChildElement(FRAME_DM);
+        if(dmEle)
+        {
+            //mHeadObj = std::make_shared<headMiddle>();
+            //mHeadObj->init(middleEle);
+
+            mCurFrameType = FRAME_DM;
+        }
+
+        TiXmlElement *czxkEle = headEle->FirstChildElement(FRAME_CZXK);
+        if(czxkEle)
+        {
+            //mHeadObj = std::make_shared<headMiddle>();
+            //mHeadObj->init(middleEle);
+
+            mCurFrameType = FRAME_CZXK;
+        }
+        TiXmlElement *c3Ele = headEle->FirstChildElement(FRAME_C3);
+        if(c3Ele)
+        {
+            //mHeadObj = std::make_shared<headMiddle>();
+            //mHeadObj->init(middleEle);
+
+            mCurFrameType = FRAME_C3;
+        }
+
+        TiXmlElement *m1553BEle = headEle->FirstChildElement(FRAME_M1553B);
+        if(m1553BEle)
+        {
+            mHeadObj = std::make_shared<head1553B>();
+            mHeadObj->init(m1553BEle);
+
+            mCurFrameType = FRAME_M1553B;
+        }
     }
 
 
@@ -484,6 +642,8 @@ void frame::init(TiXmlElement *xmlEle)
                     if(point)
                     {
                         tableStr = std::string(point);
+
+                        setCustomMsgFromTable(tableStr);
                     }
                 }
 
@@ -518,7 +678,10 @@ void frame::init(TiXmlElement *xmlEle)
                 {
                     point = tmpEle->GetText();
                     if(point)
+                    {
                         tableStr = std::string(point);
+                        setCustomMsgFromTable(tableStr);
+                    }
                 }
 
                 tmpEle = paramEle->FirstChildElement("coding");
@@ -544,6 +707,35 @@ void frame::init(TiXmlElement *xmlEle)
     }
 }
 
+bool frame::getRtAndSa(std::string &rtAddr, std::string &saAddr)
+{
+    if(FRAME_M1553B != mHeadObj->frameType())
+        return false;
+
+    Json::Value tmpJs = mHeadObj->serialize();
+    if(tmpJs["RT"].isNull() || tmpJs["SA"].isNull())
+        return false;
+
+    rtAddr = tmpJs["RT"].asString();
+    saAddr = tmpJs["SA"].asString();
+}
+
+void frame::setCustomMsgFromTable(std::string table)
+{
+    if(XK_CUSTOM_MSG == table)
+    {
+        mCurMsgType = CustomMsg;
+    }
+    else if(UI_CUSTOM_MSG == table)
+    {
+        mCurMsgType = CustomMsg;
+    }
+    else
+    {
+        mCurMsgType = GeneralMsg;
+    }
+}
+
 void frame::getResendMsg(std::vector<unsigned char> &msg)
 {
     auto findItor = mIcdFrameObj.find(mCurFrameType);
@@ -551,6 +743,26 @@ void frame::getResendMsg(std::vector<unsigned char> &msg)
     {
         (findItor->second)->resendMsg(msg);
     }
+}
+
+std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frame::getCurFrameObj()
+{
+    auto findItor = mIcdFrameObj.find(mCurFrameType);
+    if(findItor != mIcdFrameObj.end())
+    {
+        return (findItor->second);
+    }
+
+    return nullptr;
+}
+
+void frame::getCustomMsg(std::string &table, std::string &coding)
+{
+    if(mParamsVec.size() <= 0)
+        return ;
+
+    table = std::get<Param_Table_Index>(mParamsVec.at(0));
+    coding = std::get<Param_Coding_Index>(mParamsVec.at(0));
 }
 
 void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resendCnt)
@@ -625,7 +837,7 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
         else
         {
 #ifdef DEBUG_FRAME
-            UT_SHOW("获取帧ICD失败(" + frameType + ")");
+            UT_SHOW("get ICD faild(" + frameType + ")");
 #endif
         }
     }
@@ -635,7 +847,7 @@ Json::Value frame::fill(const std::string &frameType, const std::string &infoWor
 {
     Json::Value regionJs;
 
-    if(frameType == FRAME_93)
+    if( (frameType == FRAME_M1553B) || (frameType == FRAME_93) || (frameType == FRAME_XK) || (frameType == FRAME_DM) || (frameType == FRAME_CZXK)|| (frameType == FRAME_C3))
     {
         regionJs = fill93();
     }
@@ -664,8 +876,10 @@ Json::Value frame::fillRegion()
     //获取表号
     std::string table = std::get<Param_Table_Index>( mParamsVec[0]);
 
-    jsV["table_num"] = std::atoi(table.c_str());
+    QString tmpTable = QString::fromStdString(table);
 
+    bool isOk;
+    jsV["table_num"] = tmpTable.toUInt(&isOk, 16);;
 
     Json::Value dataJs;
 
@@ -684,7 +898,7 @@ Json::Value frame::fillRegion()
     {
         //从数据库中获取参数信息
         Json::Value paramValues;
-        paramsTable::getInstance()->getValues(table, paramValues);
+        paramsTable::getInstance()->getValues(jsV["table_num"].asUInt(), paramValues);
 
         for(int index = 0; index < paramValues.size(); index++)
         {
@@ -694,7 +908,7 @@ Json::Value frame::fillRegion()
             tmpJs["coding"] = coding;
 
             std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-            std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+            std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
             auto findItor = std::find_if(mParamsVec.begin(), mParamsVec.end(), [=](const paramsType &v){
                 return (table == std::get<Param_Table_Index>(v)) && (std::to_string(coding) == std::get<Param_Coding_Index>(v));
@@ -706,16 +920,29 @@ Json::Value frame::fillRegion()
             }
 
             if( (Pf::PfIcdWorkBench::ieee32Type == dataType) || (Pf::PfIcdWorkBench::ieee64Type == dataType))
-            {
+            {               
                 tmpJs["value"] = std::atof(initValue.c_str());
             }
-            else if(Pf::PfIcdWorkBench::ncharType == dataType)
+            else if( (Pf::PfIcdWorkBench::ncharType == dataType) || (Pf::PfIcdWorkBench::nRawType == dataType))
             {
                 tmpJs["value"] = initValue;
             }
             else
             {
-                tmpJs["value"] = std::atoi(initValue.c_str());
+                QString tmpConvert = initValue.c_str();
+
+                unsigned long tmpV = tmpConvert.toULong(&isOk, 10);
+
+                if(!isOk)
+                    tmpV = tmpConvert.toULong(&isOk, 16);
+
+                if(!isOk)
+                    tmpV = 0;
+
+                if(!isOk)
+                    tmpV = tmpConvert.toDouble(&isOk);
+
+                tmpJs["value"] = (unsigned long long)tmpV;
             }
 
             dataJs.append(tmpJs);
@@ -865,7 +1092,7 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
 
                 std::string cmdType = paramValues[index][PARAM_TABLE_CMD_TYPE].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
                 int sendDataType = 0;
                 int sendDataLen = 0;
                 Json::Value sendData;
@@ -1002,6 +1229,29 @@ Json::Value frame::fillBe(const std::string &infoWord)
 
     int infoWordType = std::atoi(infoWord.c_str());
 
+    //获取弹编号、设备序号、模块序号、备用字符串
+    int dNum = 0, devNum = 0, modelNum = 0;
+    Json::Value headJs = mHeadObj->serialize();
+
+    if(!headJs.isNull())
+    {
+        if(!headJs["head_d_num"].isNull())
+        {
+            dNum = headJs["head_d_num"].asInt();
+        }
+
+        if(!headJs["head_dev_num"].isNull())
+        {
+            devNum = headJs["head_dev_num"].asInt();
+        }
+
+        if(!headJs["head_modle_num"].isNull())
+        {
+            modelNum = headJs["head_modle_num"].asInt();
+        }
+    }
+
+
     //获取表号
     std::string table = std::get<Param_Table_Index>( mParamsVec[0]);
 
@@ -1029,11 +1279,11 @@ Json::Value frame::fillBe(const std::string &infoWord)
 
                 if(InfoWord_One == infoWordType)
                 {
-                    tmpJs = fillInfoOne(std::atoi(table.c_str()), coding, 0, false, 0);
+                    tmpJs = fillInfoOne(std::atoi(table.c_str()), coding, Json::Value((int)0), 2, false, dNum);
                 }
                 else if(InfoWord_Three == infoWordType)
                 {
-                    tmpJs = fillInfoThree(std::atoi(table.c_str()), coding, "0", CMD_TYPE_DATA, false, 0, 0);
+                    tmpJs = fillInfoThree(std::atoi(table.c_str()), coding, Json::Value(0), Pf::PfIcdWorkBench::ncharType, false, 0, dNum);
                 }
 
                 infoWordJs.append(tmpJs);
@@ -1054,7 +1304,7 @@ Json::Value frame::fillBe(const std::string &infoWord)
 
                 std::string cmdType = paramValues[index][PARAM_TABLE_CMD_TYPE].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 auto findItor = std::find_if(mParamsVec.begin(), mParamsVec.end(), [=](const paramsType &v){
                     return (table == std::get<Param_Table_Index>(v)) && (std::to_string(coding) == std::get<Param_Coding_Index>(v));
@@ -1082,14 +1332,32 @@ Json::Value frame::fillBe(const std::string &infoWord)
                 }
 
                 Json::Value tmpJs;
+                int sendDataType = 0;
+                int sendDataLen = 0;
+                Json::Value sendData;
+
+                if( (Pf::PfIcdWorkBench::ieee64Type == dataType) || (Pf::PfIcdWorkBench::ieee32Type == dataType))
+                {
+                    sendData = (float)std::atof(initValue.c_str());
+                    sendDataType = 1;
+                }
+                else if( (Pf::PfIcdWorkBench::ncharType == dataType) || (Pf::PfIcdWorkBench::nRawType == dataType))
+                {
+                    sendData = initValue;
+                }
+                else
+                {
+                    sendData = std::atoi(initValue.c_str());
+                    sendDataType = 2;
+                }
 
                 if(InfoWord_One == infoWordType)
                 {
-                    tmpJs = fillInfoOne(std::atoi(table.c_str()), coding, std::atof(initValue.c_str()), isOver, 0);
+                    tmpJs = fillInfoOne(std::atoi(table.c_str()), coding, sendData, sendDataType, isOver, dNum);
                 }
                 else if(InfoWord_Three == infoWordType)
                 {
-                    tmpJs = fillInfoThree(std::atoi(table.c_str()), coding, initValue, cmdType, isOver, 0, 0);
+                    tmpJs = fillInfoThree(std::atoi(table.c_str()), coding, sendData, dataType, isOver, 0, dNum);
                 }
 
                 infoWordJs.append(tmpJs);
@@ -1102,13 +1370,14 @@ Json::Value frame::fillBe(const std::string &infoWord)
     return otherJs;
 }
 
-Json::Value frame::fillInfoOne(const unsigned short &table, const unsigned short &coding, const double &v, const bool &isOver, const unsigned short &num)
+Json::Value frame::fillInfoOne(const unsigned short &table, const unsigned short &coding, const Json::Value &data, const int &dataType, const bool &isOver, const unsigned short &num)
 {
     Json::Value value;
 
     value["info_1_table_num"] = table;
     value["info_1_code"] = coding;
-    value["info_1_data"] = v;
+    value["info_1_data"] = num;
+    value["info_1_data_type"] = dataType;
     value["info_1_over"] = (int)isOver;
     value["info_1_num"] = num;
     value["info_1_reserve"] = 0;
@@ -1127,7 +1396,7 @@ Json::Value frame::fillInfoTwo(const unsigned short &table, const unsigned short
     return value;
 }
 
-Json::Value frame::fillInfoThree(int table, int coding, std::string v, std::string dataType, bool isOver, int devNum, int modelNum)
+Json::Value frame::fillInfoThree(int table, int coding, const Json::Value &data, std::string dataType, bool isOver, int devNum, int modelNum)
 {
     Json::Value value;
 
@@ -1137,35 +1406,38 @@ Json::Value frame::fillInfoThree(int table, int coding, std::string v, std::stri
     value["info_3_module"] = modelNum;
 
     //判断数值类型
-    if(CMD_TYPE_DATA == dataType)
+    if( (Pf::PfIcdWorkBench::ieee32Type == dataType) || (Pf::PfIcdWorkBench::ieee64Type == dataType))
     {
         value["info_3_data_type"] = 1;
     }
-    else if(CMD_TYPE_STATE == dataType)
-    {
-        value["info_3_data_type"] = 2;
-    }
-    else if(CMD_CHAR_TYPE == dataType)
+    else if(Pf::PfIcdWorkBench::ncharType == dataType)
     {
         value["info_3_data_type"] = 3;
+    }
+    else
+    {
+        value["info_3_data_type"] = 2;
     }
 
     value["info_3_over"] = (int)isOver;
 
-   if(CMD_CHAR_TYPE == dataType) //字符串类型
+    if(Pf::PfIcdWorkBench::ncharType == dataType) //字符串类型
     {
         value["info_3_data_value"] = 0;
     }
-    else //数值/状态
+    else
     {
-        value["info_3_data_value"] = std::atof(v.c_str());
+        if( (Pf::PfIcdWorkBench::ieee32Type == dataType) || (Pf::PfIcdWorkBench::ieee64Type == dataType))
+            value["info_3_data_value"] = data.asFloat();
+        else
+            value["info_3_data_value"] = data.asInt();
     }
     value["info_3_reserve"] = 0;
 
-    if(CMD_CHAR_TYPE == dataType)
+    if(Pf::PfIcdWorkBench::ncharType == dataType)
     {
-        value["info_3_string_len"] = v.size();
-        value["info_3_string_value"] = v;
+        value["info_3_string_len"] = data.asString().size();
+        value["info_3_data_value"] = data.asString();
     }
 
     return value;

@@ -136,6 +136,12 @@ bool DBTableOpt::deleteSubSystem(QString SystemUuid)
         else if(!QString::compare(rec.value("DEV_TYPE").toString(),"1553B"))
         {
             sql = "DELETE from table_1553B WHERE UUID="+QString("'%1'").arg(rec.value("DEV_UUID").toString());
+        }else if(!QString::compare(rec.value("DEV_TYPE").toString(),"TCP"))
+        {
+            sql = "DELETE from tcp_table WHERE UUID="+QString("'%1'").arg(rec.value("DEV_UUID").toString());
+        }else if(!QString::compare(rec.value("DEV_TYPE").toString(),"ServerTcp"))
+        {
+            sql = "DELETE from serverTcp_table WHERE UUID="+QString("'%1'").arg(rec.value("DEV_UUID").toString());
         }
         result &= query.exec(sql);
         //删除相应的测试流程
@@ -183,6 +189,14 @@ bool DBTableOpt::getDevDescribe(QSqlRecord systemRec,QString &Describe,QString &
               {
                   Describe += rec.value("RT_ADDR").toString();
               }
+         }else if(!QString::compare(systemRec.value("DEV_TYPE").toString(), "TCP"))
+         {
+           rec = query.record();
+           Describe = rec.value("IP_ADDR").toString()+" : "+rec.value("PORT").toString();
+         }else if(!QString::compare(systemRec.value("DEV_TYPE").toString(), "ServerTcp"))
+         {
+           rec = query.record();
+           Describe = rec.value("IP_ADDR").toString()+" : "+rec.value("PORT").toString();
          }
          result=true;
      }
@@ -216,6 +230,14 @@ bool DBTableOpt::CheckDevTableRepeat(Json::Value &value)
              sql = "SELECT * from table_1553B WHERE CARD_NUM="+QString("'%1'").arg(QString::fromStdString(DevInfo["CARD_NUM"].asString()));
              sql += " AND RT_ADDR="+QString("'%1'").arg(QString::fromStdString(DevInfo["RT_ADDR"].asString()));
          }
+    }else if(!QString::compare(Tabletype, "TCP"))
+    {
+      sql = "SELECT * from tcp_table WHERE IP_ADDR="+QString("'%1'").arg(QString::fromStdString(DevInfo["IP_ADDR"].asString()));
+      sql += " AND PORT="+QString("'%1'").arg(QString::fromStdString(DevInfo["PORT"].asString()));
+    }else if(!QString::compare(Tabletype, "ServerTcp"))
+    {
+      sql = "SELECT * from serverTcp_table WHERE IP_ADDR="+QString("'%1'").arg(QString::fromStdString(DevInfo["IP_ADDR"].asString()));
+      sql += " AND PORT="+QString("'%1'").arg(QString::fromStdString(DevInfo["PORT"].asString()));
     }
     query.exec(sql);
     res =query.next();
@@ -235,6 +257,12 @@ QString DBTableOpt::getDevTableName(QString Tabletype)
     else if(!QString::compare(Tabletype, "1553B"))
     {
         TableName="table_1553B";
+    }else if(!QString::compare(Tabletype, "TCP"))
+    {
+        TableName="tcp_table";
+    }else if(!QString::compare(Tabletype, "ServerTcp"))
+    {
+        TableName="serverTcp_table";
     }
     return TableName;
 }
@@ -317,6 +345,18 @@ bool DBTableOpt::addSystemDev(Json::Value value,QString &Devuuid)
             qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["RT_ADDR"].asString()));
             qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["RESERVE"].asString()));
             sql = "insert into table_1553B(UUID,DEV_NAME, CARD_NUM, MODE,RT_ADDR,RESERVE) Values("+qstrDevItem+")";
+        }else if(!QString::compare(QString::fromStdString(value["DEV_TYPE"].asString()), "TCP"))
+        {
+            qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["IP_ADDR"].asString()));
+            qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["PORT"].asString()));
+            qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["RESERVE"].asString()));
+            sql = "insert into tcp_table(UUID,DEV_NAME,IP_ADDR,PORT,RESERVE) Values("+qstrDevItem+")";
+        }else if(!QString::compare(QString::fromStdString(value["DEV_TYPE"].asString()), "ServerTcp"))
+        {
+            qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["IP_ADDR"].asString()));
+            qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["PORT"].asString()));
+            qstrDevItem += QString(",'%1'").arg(QString::fromStdString(Item["RESERVE"].asString()));
+            sql = "insert into serverTcp_table(UUID,DEV_NAME,IP_ADDR,PORT,RESERVE) Values("+qstrDevItem+")";
         }
         result = query.exec(sql);
     }
@@ -619,6 +659,20 @@ bool DBTableOpt::dbToExcel(QString tableNum,Json::Value &msgBox)
         msgBox.append(item);
     }
     return Ok;
+}
+
+bool DBTableOpt::deleteTable(QString tableName)
+{
+    bool Ok = false;
+    QString sql = "delete from "+QString("'%1'").arg(tableName);
+
+    QSqlQuery query(mDb);
+
+    if(query.exec(sql)){
+        Ok = true;
+    }
+    return Ok;
+
 }
 
 DBTableOpt::~DBTableOpt()

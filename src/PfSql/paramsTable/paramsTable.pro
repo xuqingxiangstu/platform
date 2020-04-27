@@ -23,7 +23,10 @@ SOURCES += paramstable.cpp \
     flowrecordtable.cpp \
     udptable.cpp \
     sysinterfacetable.cpp \
-    systemtable.cpp
+    systemtable.cpp \
+    tcptable.cpp \
+    tcpservertable.cpp \
+    m1553btable.cpp
 
 HEADERS += paramstable.h\
         paramstable_global.h \
@@ -31,7 +34,10 @@ HEADERS += paramstable.h\
     flowrecordtable.h \
     udptable.h \
     sysinterfacetable.h \
-    systemtable.h
+    systemtable.h \
+    tcptable.h \
+    tcpservertable.h \
+    m1553btable.h
 
 unix {
     target.path = /usr/lib

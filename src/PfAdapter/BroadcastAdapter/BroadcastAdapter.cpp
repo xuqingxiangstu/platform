@@ -47,7 +47,7 @@ namespace Pf
 
       }
 
-      bool BroadcastAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr , const int &port)
+      bool BroadcastAdapter::sendMsg(const char *msg, const int &msgSize)
       {
           std::unique_lock<std::mutex> lk(mMutex);
           return udp->sendMsg((unsigned char*)msg, msgSize);

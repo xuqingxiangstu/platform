@@ -158,10 +158,13 @@ namespace Pf
                     baRecv.resize(mSocket->pendingDatagramSize());
                     RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size(), &host, &port);
                     *u32MsgLen = RecvLen;
-                    bRes = true;
-                    rcvIp = host.toString().toStdString();
-                    rcvPort = port;
-                    break;
+                    if(RecvLen > 0)
+                    {
+                        bRes = true;
+                        rcvIp = host.toString().toStdString();
+                        rcvPort = port;
+                        break;
+                    }
                 }
 
                 auto endTime = std::chrono::high_resolution_clock::now();

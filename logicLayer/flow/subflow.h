@@ -36,7 +36,7 @@ public:
     Json::Value getRunItems();
     timing::timingType getTimingType();
 private:
-    bool perform();
+    bool perform(bool isShow = true);
     void init(TiXmlElement *);
     void uiShowMsg(const std::string &msg, bool state = true);
     void uiTestStatus(const std::string &status);

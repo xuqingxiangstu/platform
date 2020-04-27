@@ -9,8 +9,8 @@ simulation::simulation(QWidget *parent) :
     ui(new Ui::simulation)
 {
     ui->setupUi(this);
-    initSystemTree();
     initFlowTable();
+    initSystemTree();
     ui->simTableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidget_3->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidget_3->setColumnHidden(2,true);
@@ -37,6 +37,36 @@ void simulation::initSystemTree()
         item->setText(0, QString::fromStdString(value[i]["SYSTEM_NAME"].asString()));
         item->setText(1, QString::fromStdString(value[i]["UUID"].asString()));
         ui->simTreeWidget->addTopLevelItem(item);
+    }
+
+    QTreeWidgetItemIterator it(ui->simTreeWidget);
+    if(*it){
+        ui->simTreeWidget->setFocus();
+        ui->simTreeWidget->setCurrentItem(*it);
+    }
+    if(value.size()>0){
+        Json::Value init;
+        QString systemUuid = QString::fromStdString(value[0]["UUID"].asString());
+        qDebug()<< systemUuid;
+        DBTableOpt::getInstance()->getValueAllFlowRecord(systemUuid,init);
+        int rowNum =  ui->simTableWidget->rowCount();
+        for(int i = 0;i < rowNum;i++)
+        {
+            ui->simTableWidget->removeRow(0);
+        }
+        for(int i =0;i<init.size();i++){
+            ui->simTableWidget->insertRow(i);
+            ui->simTableWidget->setItem(i,0,new QTableWidgetItem(QString::fromStdString(init[i]["FLOW_NAME"].asString())));
+            ui->simTableWidget->setItem(i,1,new QTableWidgetItem(QString::fromStdString(init[i]["CREATE_TIME"].asString())));
+            ui->simTableWidget->setItem(i,2,new QTableWidgetItem(QString::fromStdString(init[i]["RECENT_OPEN_TIME"].asString())));
+            ui->simTableWidget->setItem(i,3,new QTableWidgetItem(QString::fromStdString(init[i]["NOTE"].asString())));
+            ui->simTableWidget->setItem(i,4,new QTableWidgetItem(QString::fromStdString(init[i]["UUID"].asString())));
+            ui->simTableWidget->item(i, 0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+            ui->simTableWidget->item(i, 1)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+            ui->simTableWidget->item(i, 2)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+            ui->simTableWidget->item(i, 3)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+            ui->simTableWidget->item(i, 4)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        }
     }
 }
 void simulation::initFlowTable()
@@ -145,12 +175,15 @@ void simulation::addSimTree()
         int row = ui->simTableWidget->row(items.at(0));
         flowName= ui->simTableWidget->item(row,0)->text();
         record_uuid= ui->simTableWidget->item(row,4)->text();
-
-        QTreeWidgetItem *item = new QTreeWidgetItem();
-        item->setText(0,m_sysName);
-        item->setText(1,flowName);
-        item->setText(2,record_uuid);
-        ui->treeWidget_3->addTopLevelItem(item);
+        if(checkSimTree(record_uuid)){
+            QTreeWidgetItem *item = new QTreeWidgetItem();
+            item->setText(0,m_sysName);
+            item->setText(1,flowName);
+            item->setText(2,record_uuid);
+            ui->treeWidget_3->addTopLevelItem(item);
+        }else{
+            QMessageBox::about(NULL,"","测试任务已存在！");
+        }
 
     }else{
 
@@ -199,4 +232,21 @@ void simulation::on_pushButton_clicked()
 {
     m_simTestflags = false;
     this->hide();
+}
+
+bool simulation::checkSimTree(QString record_uuid)
+{
+    QTreeWidgetItemIterator it(ui->treeWidget_3);
+    bool flag = true;
+    if((*it)){
+        while (*it) {
+            if(record_uuid == (*it)->text(2))
+            {
+                flag = false;
+                break;
+            }
+            ++it;
+        }
+    }
+    return flag;
 }

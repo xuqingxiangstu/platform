@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <QLibrary>
+#include <QDir>
 
 #include "../../PfCommon/tools/ut_error.h"
 

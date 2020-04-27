@@ -62,7 +62,11 @@ public:
 signals:
     void sendCmd(QString json);
     void sendRecid(QString recid);
-    void stopRecid(QString recid);
+    void stopRecid(QString recid,int cnt);
+    void initFlowErr(QString recid,bool flag);
+
+    void sendErrRecid(QString recid);
+    void stopErrRecid(QString recid);
 private:
     void setTreeItemsFirst(QJsonArray);
     void setTreeItemsSecond(QJsonArray, QTreeWidgetItem *item);
@@ -75,12 +79,17 @@ private:
     void onTestStop();
     QString converJson(QString msgType);
     void onTestOver(bool);
+    void setBtnAble(int index);
 public slots:
     void testTreeShow(QJsonObject,QString);
+    void rcvAllStart(QVector<QString> &msg);
+    void setStartBtn(QString record_uuid,QString msg);
 private slots:
     void on_treeWidget_customContextMenuRequested(const QPoint &pos);
     void startflowTest();
-    void slot_onClick();
+    void slot_onClick(bool);
+    void on_pushButton_clicked();
+
 private:
     Ui::testflow *ui;
 
@@ -96,6 +105,10 @@ private:
     QPushButton *m_manualTrigger;
     QStackedWidget *m_stackItem;
     QWidget *m_coverWidget;
+
+    QTreeWidget *m_treeWidget;
+
+    bool isnotAllStart;
 };
 
 #endif // TESTFLOW_H

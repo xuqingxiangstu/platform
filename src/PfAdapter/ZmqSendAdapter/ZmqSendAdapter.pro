@@ -6,7 +6,7 @@ else:unix:!macx: TARGET = ../../../adapterLib/ZmqSendAdapter
 TEMPLATE = lib
 
 DEFINES += ZMQSENDADAPTER_LIBRARY
-CONFIG += C++11
+CONFIG += c++11
 SOURCES += ZmqSendAdapter.cpp
 
 HEADERS += ZmqSendAdapter.h\

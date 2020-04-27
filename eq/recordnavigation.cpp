@@ -8,6 +8,8 @@
 #include "newprojectdialog.h"
 
 #include "./toXml/nullxml.h"
+
+#include <iostream>
 #include <QMessageBox>
 #include <QDebug>
 #include <QFileInfo>
@@ -270,6 +272,7 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
         Json::Value recordJs = flowRecordTable::getInstance()->getValue(uuid);
 
         Json::Value devCurInfo;
+        Json::Value dstDevCurInfo;
 
         std::string nodeInfo = recordJs[FLOW_RECORD_TABLE_NODE_INFO].asString();
         if(nodeInfo != "")  //如果记录中有节点属性则按照记录中的，否则新建
@@ -279,7 +282,29 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
             if (jsonReader.parse(nodeInfo, value))
             {
                 role.mNodeProperty = std::make_shared<nodeProperty>(value);
-                role.mNodeProperty->getProperty(PROPERTY_RECORD_DEV_SEL, devCurInfo);
+                role.mNodeProperty->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devCurInfo);
+                role.mNodeProperty->getProperty(PROPERTY_RECORD_DEST_DEVICE, dstDevCurInfo);
+#if 0
+                if(devCurInfo.isNull())
+                {
+                    nodeProperty property(templateProperty::getInstance()->getProperty("record"));
+
+                    Json::Value localJs;
+                    Json::Value dstJs;
+
+                    property.getProperty(PROPERTY_RECORD_LOCAL_DEVICE, localJs);
+                    property.getProperty(PROPERTY_RECORD_DEST_DEVICE, dstJs);
+
+                    role.mNodeProperty->setProperty(PROPERTY_RECORD_LOCAL_DEVICE, localJs);
+                    role.mNodeProperty->setProperty(PROPERTY_RECORD_LOCAL_DEVICE, dstJs);
+
+                    //role.mNodeProperty->setInitValue(PROPERTY_RECORD_LOCAL_DEVICE, property.initValue(PROPERTY_RECORD_LOCAL_DEVICE));
+                    //role.mNodeProperty->setInitValue(PROPERTY_RECORD_DEST_DEVICE, property.initValue(PROPERTY_RECORD_DEST_DEVICE));
+
+                    role.mNodeProperty->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devCurInfo);
+                    role.mNodeProperty->getProperty(PROPERTY_RECORD_DEST_DEVICE, dstDevCurInfo);
+                }
+#endif                
             }
             else
             {
@@ -297,6 +322,7 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
         role.mNodeProperty->setProperty(PROPERTY_RECORD__NODE, recordJs[FLOW_RECORD_TABLE_NOTE]);
 
         //role.mNodeProperty->setProperty(PROPERTY_SRC_SYS_TYPE, );
+#if 0
         //系统类型
         Json::Value sysInfoJs = systemTable::getInstance()->getSysInfoByUuid(fatherUuid);
 
@@ -305,15 +331,22 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
             role.mNodeProperty->setProperty(PROPERTY_SRC_SYS_TYPE, sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE]);
             role.sysType = sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE].asInt();
         }
-
+#endif
         if(mDestDevInitValue.contains(fatherUuid))
         {
-            role.mNodeProperty->setInitValue(PROPERTY_RECORD_DEV_SEL, mDestDevInitValue[fatherUuid]);
+            role.mNodeProperty->setInitValue(PROPERTY_RECORD_LOCAL_DEVICE, mDestDevInitValue[fatherUuid]);
 
             if( (devCurInfo.isNull()) && (mDestDevInitValue[fatherUuid].size() > 0))
-                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEV_SEL, mDestDevInitValue[fatherUuid][0]);
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_LOCAL_DEVICE, mDestDevInitValue[fatherUuid][0]);
             else
-                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEV_SEL,devCurInfo);
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_LOCAL_DEVICE,devCurInfo);
+
+            role.mNodeProperty->setInitValue(PROPERTY_RECORD_DEST_DEVICE, mDestDevInitValue[fatherUuid]);
+
+            if( (dstDevCurInfo.isNull()) && (mDestDevInitValue[fatherUuid].size() > 0))
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEST_DEVICE, mDestDevInitValue[fatherUuid][0]);
+            else
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEST_DEVICE,dstDevCurInfo);
         }
         else
         {
@@ -333,18 +366,42 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
 
             mDestDevInitValue[fatherUuid] = arrayJs;
 
-            role.mNodeProperty->setInitValue(PROPERTY_RECORD_DEV_SEL, mDestDevInitValue[fatherUuid]);
+            role.mNodeProperty->setInitValue(PROPERTY_RECORD_LOCAL_DEVICE, mDestDevInitValue[fatherUuid]);
 
             if( (devCurInfo.isNull()) && (mDestDevInitValue[fatherUuid].size() > 0))
-                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEV_SEL, mDestDevInitValue[fatherUuid][0]);
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_LOCAL_DEVICE, mDestDevInitValue[fatherUuid][0]);
             else
-                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEV_SEL,devCurInfo);
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_LOCAL_DEVICE,devCurInfo);
+
+            role.mNodeProperty->setInitValue(PROPERTY_RECORD_DEST_DEVICE, mDestDevInitValue[fatherUuid]);
+
+            if( (dstDevCurInfo.isNull()) && (mDestDevInitValue[fatherUuid].size() > 0))
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEST_DEVICE, mDestDevInitValue[fatherUuid][0]);
+            else
+                role.mNodeProperty->setCurValue(PROPERTY_RECORD_DEST_DEVICE,dstDevCurInfo);
+
+            //更新协议选择
+            //获取协议配置
+            nodeProperty ptlPro(templateProperty::getInstance()->getProperty("record"));
+
+            Json::Value ptlJs;
+            ptlJs = ptlPro.initValue(PROPERTY_FRAME);
+            role.mNodeProperty->setInitValue(PROPERTY_FRAME, ptlJs);
+
+            //更新FE数据帧类型
+
+            nodeProperty fePro(templateProperty::getInstance()->getProperty("cmd"));
+
+            Json::Value feJs;
+            feJs = fePro.initValue(PROPERTY_FE_DATA_TYPE_SEND_SYS);
+            role.mNodeProperty->setInitValue(PROPERTY_FE_DATA_TYPE_SEND_SYS, feJs);
+            role.mNodeProperty->setInitValue(PROPERTY_FE_DATA_TYPE_RCV_SYS, feJs);
         }
     }
     else
     {
         role.mNodeProperty = std::make_shared<nodeProperty>(templateProperty::getInstance()->getProperty("system"));
-
+#if 0
         //系统类型
         Json::Value sysInfoJs = systemTable::getInstance()->getSysInfoByUuid(uuid);
 
@@ -354,6 +411,7 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
             role.mNodeProperty->setProperty(PROPERTY_SYS_NAME, sysInfoJs[SYSTEM_TABLE_SYSTEM_NAME]);
             role.mNodeProperty->setProperty(PROPERTY_SYS_TYPE, sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE]);
         }
+#endif
     }
     data.setValue(role);
 
@@ -427,7 +485,7 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
             role.mNodeProperty->setVisible(PROPERTY_SRC, true);
 
         }
-        else if( (PROPERTY_FRAME_93 == type ))
+        else if( (PROPERTY_FRAME_93 == type ) || (PROPERTY_FRAME_1553B == type ))
         {
             //删除属性，并设置隐藏
             emit removeGroupProperty(PROPERTY_SRC);
@@ -522,6 +580,12 @@ void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
             mCurSelectUuid = role.uuid.c_str();
 
             emit flowChange(item->parent()->text(Name_Index), role.sysType, item->text(Name_Index),mCurSelectUuid, mNewUuid.contains(mCurSelectUuid));
+
+            //通知流程树类型变化
+            Json::Value tmJs;
+            role.mNodeProperty->getProperty(PROPERTY_FRAME, tmJs);
+
+            emit frameTypeChange(mCurSelectUuid, QString::fromStdString(tmJs.asString()));
         }
     }
     else

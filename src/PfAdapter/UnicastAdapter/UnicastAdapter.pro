@@ -23,3 +23,5 @@ unix {
 LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 
 LIBS += -L$$OUT_PWD/../../../ -ludp
+
+LIBS += -L$$OUT_PWD/../../../ -ljsoncpp

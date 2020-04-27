@@ -24,13 +24,9 @@ paramsTable::~paramsTable()
 
 }
 
-bool paramsTable::getValue(std::string tableNum, int coding, Json::Value &value)
-{
-    return getValue(std::atoi(tableNum.c_str()), coding, value);
-}
 bool paramsTable::getValue(std::string tableNum, std::string coding, Json::Value &value)
 {
-    return getValue(std::atoi(tableNum.c_str()), std::atoi(coding.c_str()), value);
+    return getValue(tableNum, std::atoi(coding.c_str()), value);
 }
 
 bool paramsTable::getValueFrameParamSys(Json::Value &value)
@@ -72,10 +68,11 @@ bool paramsTable::getValueFrameParamCMD(QString system,Json::Value &value)
     }
     return value.isNull();
 }
-bool paramsTable::getValueFrameParamGroup(QString cmdType, Json::Value &value)
+bool paramsTable::getValueFrameParamGroup(QString system, QString cmdType, Json::Value &value)
 {
     bool Ok = false;
     QString sql  = "SELECT * FROM params_table WHERE CMD_TYPE ="+QString("'%1'").arg(cmdType);
+            sql += "and SYSTEM = " + QString("'%1'").arg(system);
             sql += "GROUP BY GROUP_NAME";
             sql += " ORDER BY params_table.\"INDEX\" ASC";
     QSqlQuery query(sql, mDb);
@@ -102,10 +99,12 @@ bool paramsTable::getValueFrameParamGroup(QString cmdType, Json::Value &value)
     return value.isNull();
 }
 
-bool paramsTable::getValueFrameParamPar(QString group, Json::Value &value)
+bool paramsTable::getValueFrameParamPar(QString system, QString cmdType, QString group, Json::Value &value)
 {
     bool Ok = false;
     QString sql  = "SELECT * FROM params_table WHERE GROUP_NAME ="+QString("'%1'").arg(group);
+    sql += "and SYSTEM = " + QString("'%1'").arg(system);
+    sql += "and CMD_TYPE = " + QString("'%1'").arg(cmdType);
     sql += " ORDER BY params_table.\"INDEX\" ASC";
     QSqlQuery query(sql, mDb);
     QSqlRecord rec = query.record();
@@ -130,12 +129,12 @@ bool paramsTable::getValueFrameParamPar(QString group, Json::Value &value)
     return value.isNull();
 }
 
-bool paramsTable::getValue(int tableNum, int coding, Json::Value &value)
+bool paramsTable::getValue(std::string tableNum, int coding, Json::Value &value)
 {
     bool Ok = false;
-    QString sql = "SELECT * from params_table where params_table.TABLE_NUM=";
-    sql += QString::number(tableNum, 10);
-    sql += " and params_table.CODING_NUM=";
+    QString sql = "SELECT * from params_table where params_table.TABLE_NUM='";
+    sql += QString::fromStdString(tableNum);
+    sql += "' and params_table.CODING_NUM=";
     sql += QString::number(coding, 10);
     sql += " ORDER BY params_table.\"INDEX\" ASC";
 
@@ -210,6 +209,39 @@ bool paramsTable::getValues(int tableNum, Json::Value &value)
     QString sql = "SELECT * from params_table where params_table.TABLE_NUM=";
     sql += QString::number(tableNum, 10);
     sql += " ORDER BY params_table.\"INDEX\" ASC";
+
+    QSqlQuery query(sql, mDb);
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+    {
+        rec = query.record();
+        Json::Value tmpV;
+        for(int index = 0; index < rec.count(); index++)
+        {
+            QVariant::Type type = query.record().field(index).type();
+            if(QVariant::Int == type)
+            {
+                tmpV[rec.fieldName(index).toStdString()] = rec.value(index).toInt(&Ok);
+            }
+            //else if(QVariant::String == type)
+            else
+            {
+                tmpV[rec.fieldName(index).toStdString()] = rec.value(index).toString().toStdString();
+            }
+        }
+        value.append(tmpV);
+    }
+
+    return !value.isNull();
+}
+
+bool paramsTable::getValues(unsigned int tableNum, Json::Value &value)
+{
+    bool Ok = false;
+    QString sql = "SELECT * from params_table where params_table.TABLE_NUM='";
+    sql += QString::number(tableNum, 16);
+    sql += "' ORDER BY params_table.\"INDEX\" ASC";
 
     QSqlQuery query(sql, mDb);
     QSqlRecord rec = query.record();

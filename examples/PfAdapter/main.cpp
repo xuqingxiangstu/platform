@@ -21,7 +21,7 @@ void test()
     std::shared_ptr<PfAdapter::PfAdapterManager> obj = std::make_shared<PfAdapter::PfAdapterManager>();
 
     //step2：初始化配置文件
-    obj->init("./devcfg.xml");
+    obj->init("./cfgfile/dev.xml");
 
     //step3：获取适配器句柄
     PfAdapter::Adapter *ada = nullptr;

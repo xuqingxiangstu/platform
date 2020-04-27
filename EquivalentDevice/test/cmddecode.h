@@ -6,7 +6,7 @@
 #include <atomic>
 #include <QJsonObject>
 
-#include "../include/PfAdapter/adapter/Adapter.h"
+#include "../../src/PfAdapter/adapter/Adapter.h"
 #include <memory>
 
 #define MSG_TYPE    "msgType"

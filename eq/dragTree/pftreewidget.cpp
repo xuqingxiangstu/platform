@@ -242,7 +242,7 @@ void PfTreeWidget::dragMoveEvent(QDragMoveEvent *event)
     {
         std::shared_ptr<dragRole> stData = currentItem->data(0,Qt::UserRole).value<std::shared_ptr<dragRole>>();
         if(
-                //(dragRole::Node_Flow == stData->getNodeType())
+                (dragRole::Node_Root == stData->getNodeType()) ||
                // || (dragRole::Node_Cmd == stData.getNodeType())
                 (dragRole::Node_Param == stData->getNodeType())
                 )
@@ -284,13 +284,19 @@ void PfTreeWidget::dragMoveEvent(QDragMoveEvent *event)
                  if(rect.contains(m_MousePoint))
                  {
                      if( (m_MousePoint.y() - rect.topLeft().y() <=rect.height()/2.0) //上半部分
-                             && (currentItem->parent()->indexOfChild(currentItem) == 0))    //并且没有前兄弟节点
+                             //&& currentItem->parent()   //父节点有效
+                             //&& (currentItem->parent()->indexOfChild(currentItem) == 0))    //并且没有前兄弟节点
+                             )
                      {
-                         event->ignore();
-                         mLineType = Line_Forbit;
-                         //红线点至为空
-                         m_MousePoint = QPoint();
-                         return ;
+                         if(!currentItem->parent() || currentItem->parent()->indexOfChild(currentItem) == 0)
+                         {
+                             event->ignore();
+                             mLineType = Line_Forbit;
+                             //红线点至为空
+                             m_MousePoint = QPoint();
+                             return ;
+                         }
+
                      }
                  }
              }

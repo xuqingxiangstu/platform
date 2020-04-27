@@ -76,7 +76,13 @@
                     "node":    
                     [       
                         {
-                            "attr":"接口选择",
+                            "attr":"等效接口选择",
+                            "type":"trigger", 
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"目标接口选择",
                             "type":"trigger", 
                             "readOnly":false,
                             "isVisible":true
@@ -97,8 +103,14 @@
                             [
                                 "BE",
                                 "FE",
-                                "93",
-                                "中间件"
+                                "密码集控装置协议",
+                                "C3协议",
+                                "中间件",	
+                                "信控协议",
+                                "定位瞄准协议",
+                                "车长显控通讯协议",
+                                "M1553B协议"
+                                
                             ],
                             "curValue":"FE",
                             "isVisible":true
@@ -267,19 +279,33 @@
                     ]
                 },
                 {
-                    "group":"仿真接口属性",
+                    "group":"RT属性",
                     "readOnly":false,
                     "isVisible":true,
                     "node":    
-                    [       
+                    [        
                         {
-                            "attr":"接口选择",
-                            "type":"trigger", 
+                            "attr":"RT地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
                             "readOnly":false,
                             "isVisible":true
                         }
                     ]
-                },
+                },             
                 {
                     "group":"信宿属性",
                     "readOnly":false,
@@ -329,6 +355,46 @@
                             "curValue":"",
                             "isVisible":true
                           }
+                    ]
+                },
+                {
+                    "group":"数据帧类型",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [       
+                        {
+                            "attr":"发起系统",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "0x01:首长软件",
+                                "0x02:作战计划软件",
+                                "0x03:态势综合软件",
+                                "0xA1:表示前端综合控制软件",
+                                "0xA2:表示密码集控装置软件",
+                                "0xA3:表示测发控中心机软件",
+                                "0xA4:表示测发控电源控制器软件",
+                                "0xA5:表示1号车车控主机软件"                                
+                                
+                            ],
+                            "curValue":"0x01:首长软件",
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"接收系统",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "0x01:首长软件",
+                                "0x02:作战计划软件",
+                                "0x03:态势综合软件"
+                            ],
+                            "curValue":"0x01:首长软件",
+                            "readOnly":false,
+                            "isVisible":true
+                        }
                     ]
                 },
                 {
@@ -446,19 +512,33 @@
                     ]
                 },
                 {
-                    "group":"仿真接口属性",
+                    "group":"RT属性",
                     "readOnly":false,
                     "isVisible":true,
                     "node":    
-                    [       
+                    [        
                         {
-                            "attr":"接口选择",
-                            "type":"trigger", 
+                            "attr":"RT地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
                             "readOnly":false,
                             "isVisible":true
                         }
                     ]
-                },
+                },                
                 {
                     "group":"信宿属性",
                     "readOnly":false,
@@ -508,6 +588,45 @@
                             "curValue":"",
                             "isVisible":true
                           }
+                    ]
+                },
+                {
+                    "group":"数据帧类型",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [       
+                        {
+                            "attr":"发起系统",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "0x01:首长软件",
+                                "0x02:作战计划软件",
+                                "0x03:态势综合软件",
+                                "0xA1:表示前端综合控制软件",
+                                "0xA2:表示密码集控装置软件",
+                                "0xA3:表示测发控中心机软件",
+                                "0xA4:表示测发控电源控制器软件",
+                                "0xA5:表示1号车车控主机软件"    
+                            ],
+                            "curValue":"0x01:首长软件",
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"接收系统",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "0x01:首长软件",
+                                "0x02:作战计划软件",
+                                "0x03:态势综合软件"
+                            ],
+                            "curValue":"0x01:首长软件",
+                            "readOnly":false,
+                            "isVisible":true
+                        }
                     ]
                 },
                 {

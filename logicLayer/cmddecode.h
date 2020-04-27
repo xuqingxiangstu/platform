@@ -148,7 +148,7 @@ private:
     bool resetAdapter();
 
     void getDevInfo(const std::string &sys_uuid, Json::Value &info);
-
+    void getDestDevIpPort(const std::string &uuid, Json::Value &info);
     void singleSendTest(Json::Value value);
 signals:
 

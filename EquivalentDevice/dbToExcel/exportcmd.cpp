@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QString>
 #include <QFile>
+#include <QDir>
 #include <QDebug>
 
 exportCmd::exportCmd(QWidget *parent)
@@ -73,7 +74,7 @@ void exportCmd::onExport()
     QString strFilePath = ui->lineEdit->text();
     if (strFilePath == "")
     {
-        QMessageBox::information(this, QString::fromLocal8Bit("消息"), QString::fromLocal8Bit("文件为空，请选择文件!"), QMessageBox::Ok);
+        QMessageBox::information(this, tr("消息"), tr("文件为空，请选择文件!"), QMessageBox::Ok);
         return;
     }
 
@@ -84,34 +85,41 @@ void exportCmd::onExport()
         QString str = strFilePath.mid(index + 1, strFilePath.size());
         if (str != QStringLiteral("xlsx"))
         {
-            QMessageBox::information(this, QString::fromLocal8Bit("消息"), QString::fromLocal8Bit("文件为空，请选择文件!"), QMessageBox::Ok);
+            QMessageBox::information(this, tr("消息"), tr("文件为空，请选择文件!"), QMessageBox::Ok);
             return;
         }
     }
     else
     {
-            QMessageBox::information(this, QString::fromLocal8Bit("消息"), QString::fromLocal8Bit("文件为空，请选择文件!"), QMessageBox::Ok);
+            QMessageBox::information(this, tr("消息"), tr("文件为空，请选择文件!"), QMessageBox::Ok);
             return;
     }
 
     ui->sureBtn->setEnabled(false);
     ui->exportBtn->setEnabled(false);
 
-    QString reportpath  = "./cfgfile/template.xlsx";
+    QString reportpath  = QDir::currentPath()+ "/cfgfile/template.xlsx";
 
-    QFile file(strFilePath);
-        QString name = file.fileName();
-        qDebug()<<name;
-        if(file.exists()){
-            file.remove(name);
-        }
-        if(QFile::copy(reportpath,strFilePath)){
-            qDebug()<<QStringLiteral("复制成功");
-        }else
-            qDebug()<<QStringLiteral("复制失败");
+    QFileInfo fileInfo(reportpath);
+    if(fileInfo.isFile()){
+        QFile file(strFilePath);
+            QString name = file.fileName();
+            qDebug()<<name;
+            if(file.exists()){
+                file.remove(name);
+            }
+            if(QFile::copy(reportpath,strFilePath)){
+                qDebug()<<QStringLiteral("复制成功");
+            }else
+                qDebug()<<QStringLiteral("复制失败");
 
-    toExcel->setExcelFile(strFilePath);
-    toExcel->startToExcel();
+            toExcel->setExcelFile(strFilePath);
+            toExcel->startToExcel();
+
+    }else{
+        QMessageBox::information(this, tr("消息"), tr("请添加模板文件!"), QMessageBox::Ok);
+        return;
+    }
 }
 
 void exportCmd::onSetRange(int minimum, int maximum)
@@ -122,4 +130,3 @@ void exportCmd::onSetCurValue(int value)
 {
     ui->progressBar->setValue(value);
 }
-

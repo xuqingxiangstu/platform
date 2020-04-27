@@ -14,7 +14,7 @@ else:win32:CONFIG(debug, debug|release): TARGET =  ../../EquivalentDevice
 else:unix:!macx: TARGET =  ../EquivalentDevice
 
 LIBS += -L$$OUT_PWD/../ -ljsoncpp
-LIBS += -LSSOUT_PWD/../ -lTinyXml
+LIBS += -L$$OUT_PWD/../ -lTinyXml
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../ -lPfAdapterManager
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../ -lPfAdapterManager
@@ -81,10 +81,10 @@ FORMS    += mainwindow.ui \
     test/testflow.ui \
     excelToDb/importcmd.ui \
     dbToExcel/exportcmd.ui \
-    login.ui
+    login.ui \
+    delegate/qtreeitemdelegate.ui
 
 RESOURCES += \
     icon.qrc \
     image.qrc
-
 

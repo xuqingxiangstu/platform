@@ -4,6 +4,11 @@
 #include "../virtualParams/virtualparams.h"
 #include "../src/PfCommon/tools/ut_error.h"
 #include "../flow/frame.h"
+#include "../business/businessadapter.h"
+#include "partpackage.h"
+
+#include <QDateTime>
+#include "../uibus.h"
 
 decodingPool::decodingPool(QObject *parent):
     QObject(parent),
@@ -14,7 +19,7 @@ decodingPool::decodingPool(QObject *parent):
     mThreadPool->setExpiryTimeout(-1);
 }
 
-void decodingPool::decode(QString uuid, QString ptl, QByteArray msg, QString rcvIp, int rcvPort)
+void decodingPool::decode(Json::Value param, QString recordUuid, QString uuid, QString ptl, QByteArray msg, QString rcvIp, int rcvPort)
 {
     if(!mParseObj.contains(ptl))
         return ;
@@ -26,7 +31,7 @@ void decodingPool::decode(QString uuid, QString ptl, QByteArray msg, QString rcv
         mPfAdapterManager->getAdapter(uuid.toStdString(), &adapterObj);
     }
 
-    decoding *obj = new decoding(uuid.toStdString(), adapterObj, rcvIp.toStdString(), rcvPort, mParseObj[ptl], msg);
+    decoding *obj = new decoding(param, recordUuid.toStdString(), uuid.toStdString(), ptl.toStdString(), adapterObj, rcvIp.toStdString(), rcvPort, mParseObj[ptl], msg);
 
     connect(obj, &decoding::result, this, &decodingPool::result);
 
@@ -62,23 +67,78 @@ void decodingPool::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFram
     {
         mParseObj[FRAME_MIDDLE] = middleObj;
     }
+
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> xkObj = mIcdWorkBench->getFrameObj(FRAME_XK);
+    if(xkObj)
+    {
+        mParseObj[FRAME_XK] = xkObj;
+    }
+
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> dmObj = mIcdWorkBench->getFrameObj(FRAME_DM);
+    if(dmObj)
+    {
+        mParseObj[FRAME_DM] = dmObj;
+    }
+
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> czxkObj = mIcdWorkBench->getFrameObj(FRAME_CZXK);
+    if(czxkObj)
+    {
+        mParseObj[FRAME_CZXK] = czxkObj;
+    }
+
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> c3Obj = mIcdWorkBench->getFrameObj(FRAME_C3);
+    if(c3Obj)
+    {
+        mParseObj[FRAME_C3] = c3Obj;
+    }
+
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> m1553BObj = mIcdWorkBench->getFrameObj(FRAME_M1553B);
+    if(m1553BObj)
+    {
+        mParseObj[FRAME_M1553B] = m1553BObj;
+    }
 }
 
 /****************************************************/
 
-decoding::decoding(std::string uuid, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg):
+decoding::decoding(Json::Value param, std::string recordUuid, std::string uuid, std::string ptl, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg):
     mBusObj(adapterObj),
     mUuid(uuid),
+    mCurPtrl(ptl),
     mFrameObj(frameObj),
     mCurMsg(msg),
     mDstIp(ipAddr),
-    mDstPort(port)
+    mDstPort(port),
+    mRecordUuid(recordUuid),
+    mParam(param)
 {
-
+    mUiBus = uiBus::getInstance()->getUiAdapter();
 }
 
 decoding::~decoding()
 {
+
+}
+
+void decoding::toUi(const std::string &msg, bool state)
+{
+    Json::Value js;
+    js["msgType"] = "showMsg";
+
+    Json::Value tmp;
+    tmp["record_uuid"] = mRecordUuid;
+
+    if(state)
+        tmp["status"] = "NORMAL";
+    else
+        tmp["status"] = "ERROR";
+
+    tmp["show"] = "[" + QDateTime::currentDateTime().toString("hh:mm.ss.zzz").toStdString() + "]" + "[信息控制系统]->" + msg;
+
+    js["msg"] = tmp;
+
+    if(mUiBus)
+        mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
 
@@ -89,50 +149,107 @@ void decoding::run()
 
     //解析
     try
-    {
-        //step1:解析
-        Json::Value result;
-        mFrameObj->parse((unsigned char*)mCurMsg.data(), mCurMsg.size(), result);
-
-        //step2：是否应答
-        Pf::PfIcdWorkBench::byteArray readMsg;
-        std::copy((unsigned char*)mCurMsg.data(), (unsigned char*)mCurMsg.data() + mCurMsg.size(), std::back_inserter(readMsg));
-
-        Pf::PfIcdWorkBench::byteArray askMsg;
-        if(mFrameObj->getAskMsg(readMsg, askMsg, result))
+    {        
+        //modify xqx 20200422 TCP有粘包情况
+        if("frameC3" == mFrameObj->getFrameName())
         {
-            mBusObj->sendMsg((const char*)&askMsg.at(0), askMsg.size(), mDstIp, mDstPort);
-        }
+            partPackage packages;
+            packages.setHeadCode(QByteArray::fromHex("F7 7E F7 7E"));
+            packages.setSrcPackage(mCurMsg);
 
-        //step3：更新参数
-        Json::Value newJs;
-        if(mFrameObj->getValidValue(result, newJs))
-        {
-            for(int index = 0; index < newJs.size(); index++)
+            for(int index = 0; index < packages.getVaildPkSize(); index++)
             {
-                int coding = 0, table = 0;
-                if(!newJs[index]["coding"].isNull())
-                {
-                    coding = newJs[index]["coding"].asInt();
-                }
+                QByteArray vaildMsg = packages.getVaildMsg(index);
 
-                if(!newJs[index]["table"].isNull())
-                {
-                    table = newJs[index]["table"].asInt();
-                }
+                //step1:解析
+                Json::Value result;
+                mFrameObj->parse((unsigned char*)vaildMsg.data(), vaildMsg.size(), result);
 
-                virtualParams::getInstance()->setValue({mUuid, std::to_string(table), std::to_string(coding)}, mapValue());
+                //step2：业务处理
+
+                Pf::PfIcdWorkBench::byteArray readMsg;
+                std::copy((unsigned char*)vaildMsg.data(), (unsigned char*)vaildMsg.data() + vaildMsg.size(), std::back_inserter(readMsg));
+
+                auto businessObj = businessAdapter::getInstance()->getBusiness(mCurPtrl);
+                businessObj->setBusObj(mBusObj, mDstIp, mDstPort);
+                businessObj->setFrameObj(mFrameObj);
+                businessObj->setDevUuid(mUuid);
+                businessObj->setRecordUuid(mRecordUuid);
+                if(businessObj)
+                {
+                    businessObj->deal(readMsg, result);
+                }
             }
         }
+        else if("frameXK" == mFrameObj->getFrameName())
+        {
+            partPackage packages;
+            packages.setHeadCode(QByteArray::fromHex("EB 90"));
+            packages.setSrcPackage(mCurMsg);
 
-        UT_SHOW(result.toStyledString());
+            for(int index = 0; index < packages.getVaildPkSize(); index++)
+            {
+                QByteArray vaildMsg = packages.getVaildMsg(index);
+
+                //step1:解析
+                Json::Value result;
+                mFrameObj->parse((unsigned char*)vaildMsg.data(), vaildMsg.size(), result);
+
+                //step2：业务处理
+
+                Pf::PfIcdWorkBench::byteArray readMsg;
+                std::copy((unsigned char*)vaildMsg.data(), (unsigned char*)vaildMsg.data() + vaildMsg.size(), std::back_inserter(readMsg));
+
+                auto businessObj = businessAdapter::getInstance()->getBusiness(mCurPtrl);
+                if(businessObj)
+                {
+                    businessObj->setBusObj(mBusObj, mDstIp, mDstPort);
+                    businessObj->setFrameObj(mFrameObj);
+                    businessObj->setDevUuid(mUuid);
+                    businessObj->setRecordUuid(mRecordUuid);
+                    businessObj->setParam(mParam);
+
+                    businessObj->deal(readMsg, result);
+                }
+            }
+        }
+        else
+        {
+            //step1:解析
+            Json::Value result;
+            mFrameObj->parse((unsigned char*)mCurMsg.data(), mCurMsg.size(), result);
+
+            //step2：业务处理
+
+            Pf::PfIcdWorkBench::byteArray readMsg;
+            std::copy((unsigned char*)mCurMsg.data(), (unsigned char*)mCurMsg.data() + mCurMsg.size(), std::back_inserter(readMsg));           
+
+            auto businessObj = businessAdapter::getInstance()->getBusiness(mCurPtrl);
+            if(businessObj)
+            {
+                businessObj->setBusObj(mBusObj, mDstIp, mDstPort);
+                businessObj->setFrameObj(mFrameObj);
+                businessObj->setDevUuid(mUuid);
+                businessObj->setRecordUuid(mRecordUuid);
+                businessObj->setParam(mParam);
+
+                businessObj->deal(readMsg, result);
+            }
+        }
     }
     catch(std::runtime_error err)
     {
+        toUi(err.what(), false);
         UT_SHOW(err.what());
     }
     catch(Json::LogicError err)
     {
+        toUi(err.what(), false);
         UT_SHOW(err.what());
+    }
+    catch(...)
+    {
+        toUi("[ERROR]...", false);
+        UT_SHOW("[ERROR]...");
     }
 }

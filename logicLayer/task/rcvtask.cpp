@@ -1,28 +1,27 @@
 #include "rcvtask.h"
 #include <QTime>
 #include "../src/PfCommon/tools/ut_error.h"
-
+#include "../src/PfAdapter/m1553Adapter/m1553adapter.h"
 //#define DEBUG_TASK  0
+
+#include <QDebug>
 
 rcvTask::rcvTask(QObject *parent):
     QThread(parent),
-    mIsStop(false)
+    mIsStop(false),
+    mDecodingPoolObj(nullptr)
 {
-    mDecodingPoolObj = std::make_shared<decodingPool>();
 
-    connect(this, &rcvTask::decode, mDecodingPoolObj.get(), &decodingPool::decode);
-    connect(mDecodingPoolObj.get(), &decodingPool::result, this, &rcvTask::decodeResult);
 }
 
 void rcvTask::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> obj)
 {
-    mDecodingPoolObj->setIcdFrameAdpter(obj);
+    mIcdFrameManager = obj;
 }
 
 void rcvTask::setPfAdapterManager(std::shared_ptr<Pf::PfAdapter::PfAdapterManager> manager)
 {
     mPfAdapterManager = manager;
-    mDecodingPoolObj->setPfAdapterManager(manager);
 }
 
 rcvTask::~rcvTask()
@@ -40,8 +39,8 @@ void rcvTask::startTask()
 {
     if(!isRunning())
     {
-        initObj();
 
+initObj();
 #ifndef DEBUG_TASK
         start();
 #endif
@@ -61,7 +60,12 @@ void rcvTask::stopTask()
     }
 }
 
-void rcvTask::setRcvUuid(const std::vector<std::tuple<std::string, std::string, std::string>> &uuids)
+void rcvTask::onSwitchPermiss(qint64 obj, bool status)
+{
+    mPermiss[obj] = status;
+}
+
+void rcvTask::setRcvUuid(const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &uuids)
 {
     mAdapters.clear();
 
@@ -71,7 +75,8 @@ void rcvTask::setRcvUuid(const std::vector<std::tuple<std::string, std::string, 
         Pf::PfAdapter::Adapter *obj;
         if(mPfAdapterManager->getAdapter(std::get<0>(uuid), &obj))
         {
-            mAdapters.push_back(std::make_tuple(std::get<0>(uuid), std::get<1>(uuid), obj, std::get<2>(uuid)));
+            mPermiss[(qint64)static_cast<void *>(obj)] = true;
+            mAdapters.push_back(std::make_tuple(std::get<0>(uuid), std::get<1>(uuid), obj, std::get<2>(uuid), std::get<3>(uuid)));
         }
         else
         {
@@ -92,6 +97,17 @@ void rcvTask::deleteObj()
 
 void rcvTask::initObj()
 {
+    if(mDecodingPoolObj.get() == nullptr)
+    {
+        mDecodingPoolObj = std::make_shared<decodingPool>();
+
+        mDecodingPoolObj->setIcdFrameAdpter(mIcdFrameManager);
+        mDecodingPoolObj->setPfAdapterManager(mPfAdapterManager);
+
+        connect(this, &rcvTask::decode, mDecodingPoolObj.get(), &decodingPool::decode);
+        connect(mDecodingPoolObj.get(), &decodingPool::result, this, &rcvTask::decodeResult);
+    }
+
     //初始化日志模块
 
     mRecordsObj.clear();
@@ -110,6 +126,7 @@ void rcvTask::initObj()
     }
 }
 
+
 void rcvTask::run()
 {
     const int rcvMaxSize = 2048;
@@ -117,30 +134,36 @@ void rcvTask::run()
     int rcvSize = 0;
     std::string rcvIp;
     unsigned short rcvPort;
+
 #ifndef DEBUG_TASK
     while(!mIsStop)
     {
         //遍历接收        
         for(auto adapter : mAdapters)
         {
-            if(std::get<Adapter_Obj_Index>(adapter)->receiveMsg(rcvBuf, rcvSize, rcvIp, rcvPort, rcvMaxSize, 0))
-            {
-#ifndef DEBUG_TASK
-                QString msg = "[" + QDateTime::currentDateTime().toString("hh:mm.ss.zzz") + "]#";
-                msg += std::get<Adapter_Name_Index>(adapter).c_str();
-                msg += "#(";
-                msg += QString::number(rcvSize);
-                msg += ")>\n";
-                for(int index = 0; index < rcvSize; index++)
+            auto busObj = std::get<Adapter_Obj_Index>(adapter);
+
+            if(!mPermiss[(qint64)static_cast<void *>(busObj)])
+                continue;
+
+            if(busObj->receiveMsg(rcvBuf, rcvSize, rcvMaxSize, 0))
+            {                                
+                Json::Value param;
+
+                //1553B特殊处理 xqx 2020-4-27 19:52:24
+                if("m1553Adapter" == busObj->getClassName())
                 {
-                    msg += QString::number(rcvBuf[index] & 0xFF, 16);
-                    msg += " ";
+                    unsigned short rt;
+                    unsigned short sa;
+
+                    (dynamic_cast<Pf::PfAdapter::m1553Adapter*>(busObj))->getRcvRtAndSa(rt, sa);
+
+                    param["rt"] = rt;
+                    param["sa"] = sa;
                 }
 
-                SHOW(msg.toStdString());
-#endif                
-                //step1：解析
-                emit decode(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Ptl_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize), rcvIp.c_str(), rcvPort);
+                //step1：解析                
+                emit decode(param, QString(std::get<Record_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Ptl_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize), rcvIp.c_str(), rcvPort);
 
                 //step2：存日志
                 emit record(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize));

@@ -14,10 +14,16 @@
 #include "../src/PfSql/paramsTable/systemtable.h"
 #include "../src/PfSql/paramsTable/sysinterfacetable.h"
 #include "../src/PfSql/paramsTable/udptable.h"
-#include "../src/PfAdapter/virtualUnicastAdapter/virtualUnicastAdapter.h"
-
+#include "../src/PfSql/paramsTable/tcptable.h"
+#include "../src/PfSql/paramsTable/m1553btable.h"
+#include "../src/PfSql/paramsTable/tcpservertable.h"
+#include "../src/PfAdapter/UnicastAdapter/UnicastAdapter.h"
+#include "../src/PfAdapter/tcpAdapter/tcpAdapter.h"
+#include "../src/PfAdapter/tcpServerAdapter/tcpServerAdapter.h"
+#include "../src/PfAdapter/m1553Adapter/m1553adapter.h"
+#include "uibus.h"
 #include "virtualParams/virtualparams.h"
-
+#include "./custom/custommsg.h"
 
 cmdDecode::cmdDecode(PfAdapter::Adapter  *obj, QObject *parent )
     :QObject(parent),
@@ -28,10 +34,12 @@ cmdDecode::cmdDecode(PfAdapter::Adapter  *obj, QObject *parent )
 
 {
     mRcvMsgTask = std::make_shared<rcvTask>();
+
+    connect(customMsg::getInstance().get(), &customMsg::switchPermiss, mRcvMsgTask.get(), &rcvTask::onSwitchPermiss);
 }
 cmdDecode::~cmdDecode()
 {
-
+    qDebug() << "~cmdDecode";
 }
 void cmdDecode::respond(const std::string &code)
 {
@@ -565,6 +573,8 @@ void cmdDecode::initPrograme()
             //将发送UI适配器加入管理
             mAdpterManagerObj->setAdapter("UI", mCmdSendObj);
 
+            uiBus::getInstance()->setUiAdapter(mCmdSendObj);
+
             mIcdFrameAdpter = std::make_shared<PfIcdWorkBench::icdFrameAdapter>();
             mIcdFrameAdpter->init("./cfgfile/icd.xml");
             mRcvMsgTask->setIcdFrameAdpter(mIcdFrameAdpter);
@@ -716,14 +726,15 @@ bool cmdDecode::resetAdapter()
 
     std::ostringstream errorInfo;
 
-    std::map<std::string, std::set<std::string>> adapters;
+    std::map<std::string, std::string> adapters;
+    QMap<std::string, std::string> recordUuid;
     QMap<std::string, std::string> protocols;
     std::vector<std::tuple<std::string, std::string>> mAdapterUuids;
 
     for(auto itor = mFLowsObj.begin(); itor != mFLowsObj.end(); itor++)
     {      
         errorInfo.str("");
-
+#if 0
         //获取各目的设备信息
         std::set<std::string> tmpV;
 
@@ -738,7 +749,7 @@ bool cmdDecode::resetAdapter()
                 tmpV.insert(subFlow[subIndex]["dest_system_uuid"].asString());
             }
         }
-
+#endif
         std::string eqUuid = (itor->second)->eqSystemUuid();
 
         if(eqUuid == "")
@@ -749,8 +760,9 @@ bool cmdDecode::resetAdapter()
             continue;
         }
         protocols[eqUuid] = (itor->second)->eqProtocol();
+        recordUuid[eqUuid] = itor->first;
         mAdapterUuids.push_back(std::make_tuple(eqUuid, itor->first));
-        adapters[eqUuid] = tmpV;
+        adapters[eqUuid] = (itor->second)->dstSystemUuid();
     }
 
 
@@ -761,7 +773,7 @@ bool cmdDecode::resetAdapter()
 
     //step3:重新初始化各系统
 
-    std::vector<std::tuple<std::string, std::string, std::string>> eqUuids;
+    std::vector<std::tuple<std::string, std::string, std::string, std::string>> eqUuids;
 
     for(auto itor = adapters.begin(); itor != adapters.end(); itor++)
     {
@@ -779,6 +791,30 @@ bool cmdDecode::resetAdapter()
                 if(mAdpterManagerObj->isExist(eqSysUuid))
                     continue;
 
+                //获取目标IP+PORT
+                Json::Value destDevInfo;
+                getDestDevIpPort(itor->second, destDevInfo);
+
+
+                //等效设备,源IP+PORT
+                Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::UnicastAdapter();
+                Json::Value paramJs;
+
+                paramJs["local_ip"] = devInfo["ip_addr"];
+                paramJs["local_port"] = devInfo["port"];
+                paramJs["remote_ip"] = destDevInfo["ip_addr"];
+                paramJs["remote_port"] = destDevInfo["port"];
+
+                eqObj->init(paramJs.toStyledString());
+
+                mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
+
+                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid], recordUuid[eqSysUuid]));
+
+#if 0
+                if(mAdpterManagerObj->isExist(eqSysUuid))
+                    continue;
+
                 //等效设备,源IP+PORT
                 Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::virtualUnicastAdapter();
                 Json::Value paramJs;
@@ -791,7 +827,7 @@ bool cmdDecode::resetAdapter()
 
                 mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
 
-                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid]));
+                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid], recordUuid[eqSysUuid]));
 
                 //初始化各发送系统
                 auto sendSyss = itor->second;
@@ -819,6 +855,58 @@ bool cmdDecode::resetAdapter()
                         mAdpterManagerObj->setAdapter(send_uuid, tmpObj);
                     }
                 }
+#endif
+            }
+            else if(SYSTEM_INTERFACE_TABLE_TCP == devInfo["type"].asString())
+            {
+                if(mAdpterManagerObj->isExist(eqSysUuid))
+                    continue;
+
+                Json::Value paramJs;
+
+                paramJs["ip_addr"] = devInfo["ip_addr"];
+                paramJs["port"] = devInfo["port"];
+
+                Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::tcpAdapter();
+
+                eqObj->init(paramJs.toStyledString());
+                mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
+
+                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid], recordUuid[eqSysUuid]));
+            }
+            else if(SYSTEM_INTERFACE_TABLE_TCP_SERVER == devInfo["type"].asString())
+            {
+                if(mAdpterManagerObj->isExist(eqSysUuid))
+                    continue;
+
+                Json::Value paramJs;
+
+                paramJs["ip_addr"] = devInfo["ip_addr"];
+                paramJs["port"] = devInfo["port"];
+
+                Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::tcpServerAdapter();
+
+                eqObj->init(paramJs.toStyledString());
+                mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
+
+                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid], recordUuid[eqSysUuid]));
+            }
+            else if(SYSTEM_INTERFACE_TABLE_1553B == devInfo["type"].asString())
+            {
+                if(mAdpterManagerObj->isExist(eqSysUuid))
+                    continue;
+
+                Json::Value paramJs;
+
+                paramJs["card_num"] = devInfo["card_num"];
+                paramJs["mode"] = devInfo["mode"];
+
+                Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::m1553Adapter();
+
+                eqObj->init(paramJs.toStyledString());
+                mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
+
+                eqUuids.push_back(std::make_tuple(eqSysUuid, devInfo["name"].asString(), protocols[eqSysUuid], recordUuid[eqSysUuid]));
             }
         }
         catch(std::runtime_error err)
@@ -867,6 +955,40 @@ bool cmdDecode::resetAdapter()
     return res;
 }
 
+void cmdDecode::getDestDevIpPort(const std::string &uuid, Json::Value &info)
+{
+    std::ostringstream errInfo;
+
+    //获取系统表中的DEV_TYPE、DEV_UUID字段
+    Json::Value tmpV = sysInterfaceTable::getInstance()->getValue(uuid);
+    if(!tmpV.isNull())
+    {
+        std::string type = tmpV[SYSTEM_INTERFACE_TABLE_DEV_TYPE].asString();
+        std::string devUuid = tmpV[SYSTEM_INTERFACE_TABLE_DEV_UUID].asString();
+
+        info["type"] = type;
+
+        if(SYSTEM_INTERFACE_TABLE_UDP == type)//UDP网络
+        {
+            //获取网络IP、PORT
+            Json::Value udpJs = udpTable::getInstance()->getValue(devUuid);
+            if(!udpJs.isNull())
+            {
+                info["ip_addr"] = udpJs[UDP_TABLE_IP_ADDR].asString();
+                info["port"] = udpJs[UDP_TABLE_PORT].asInt();
+                info["name"] = udpJs[UDP_TABLE_DEV_NAME].asString();
+            }
+            else
+            {
+                errInfo << "[ERROR] system_interface_table:" << uuid << "，DEV_UUID:" << devUuid
+                        << ", udp_table not find ";
+
+                THROW_EXCEPTION(errInfo.str());
+            }
+        }
+    }
+}
+
 void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
 {
     std::ostringstream errInfo;
@@ -880,7 +1002,7 @@ void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
 
         info["type"] = type;
 
-        if(SYSTEM_INTERFACE_TABLE_UDP == type)//网络
+        if(SYSTEM_INTERFACE_TABLE_UDP == type)//UDP网络
         {
             //获取网络IP、PORT
             Json::Value udpJs = udpTable::getInstance()->getValue(devUuid);
@@ -894,6 +1016,59 @@ void cmdDecode::getDevInfo(const std::string &sys_uuid, Json::Value &info)
             {
                 errInfo << "[ERROR] system_interface_table:" << sys_uuid << "，DEV_UUID:" << devUuid
                         << ", udp_table not find ";
+
+                THROW_EXCEPTION(errInfo.str());
+            }
+        }
+        else if(SYSTEM_INTERFACE_TABLE_TCP == type)//tcp网络
+        {
+            //获取网络IP、PORT
+            Json::Value udpJs = tcpTable::getInstance()->getValue(devUuid);
+            if(!udpJs.isNull())
+            {
+                info["ip_addr"] = udpJs[UDP_TABLE_IP_ADDR].asString();
+                info["port"] = udpJs[UDP_TABLE_PORT].asInt();
+                info["name"] = udpJs[UDP_TABLE_DEV_NAME].asString();
+            }
+            else
+            {
+                errInfo << "[ERROR] system_interface_table:" << sys_uuid << "，DEV_UUID:" << devUuid
+                        << ", udp_table not find ";
+
+                THROW_EXCEPTION(errInfo.str());
+            }
+        }
+        else if(SYSTEM_INTERFACE_TABLE_TCP_SERVER == type)//tcp网络
+        {
+            //获取网络IP、PORT
+            Json::Value udpJs = tcpServerTable::getInstance()->getValue(devUuid);
+            if(!udpJs.isNull())
+            {
+                info["ip_addr"] = udpJs[UDP_TABLE_IP_ADDR].asString();
+                info["port"] = udpJs[UDP_TABLE_PORT].asInt();
+                info["name"] = udpJs[UDP_TABLE_DEV_NAME].asString();
+            }
+            else
+            {
+                errInfo << "[ERROR] system_interface_table:" << sys_uuid << "，DEV_UUID:" << devUuid
+                        << ", udp_table not find ";
+
+                THROW_EXCEPTION(errInfo.str());
+            }
+        }
+        else if(SYSTEM_INTERFACE_TABLE_1553B == type)//1553B等效
+        {
+            //获取网络IP、PORT
+            Json::Value m1553Js = m1553bTable::getInstance()->getValue(devUuid);
+            if(!m1553Js.isNull())
+            {
+                info["card_num"] = m1553Js[M1553B_TABLE_CARD_NUM].asString();
+                info["mode"] = m1553Js[M1553B_TABLE_MODE].asString();
+            }
+            else
+            {
+                errInfo << "[ERROR] system_interface_table:" << sys_uuid << "，DEV_UUID:" << devUuid
+                        << ", 1553b_table not find ";
 
                 THROW_EXCEPTION(errInfo.str());
             }

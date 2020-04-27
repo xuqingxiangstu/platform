@@ -1,0 +1,7 @@
+QScrollBar:vertical{
+    width:18px;
+    background:#1e75ff;
+    margin:0px;
+    padding-top:9px;
+    padding-bottom:9px;
+}

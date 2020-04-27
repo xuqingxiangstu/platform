@@ -6,7 +6,7 @@
 #include "../adapter/Adapter.h"
 
 #include "../../PfBus/udp/UnicastUdp.h"
-
+#include "../../PfCommon/jsoncpp/json.h"
 #include <memory>
 
 namespace Pf
@@ -41,8 +41,16 @@ namespace Pf
           UnicastAdapter();
           ~UnicastAdapter();
       public:
+          /*
+           *{
+           *    "type":"local",
+           *    "ip_addr":"192.168.34.2",
+           *    "port":4001
+           *}
+           */
+          void init(const std::string &json);
           void init(const TiXmlElement *ele) override;
-          bool sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr = "", const int &port = 0) override;
+          bool sendMsg(const char *msg, const int &msgSize) override;
           bool receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF) override;
           bool atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, const int &rMaxRcvSize = 1024) override;
           std::string getClassName() override;

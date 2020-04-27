@@ -50,8 +50,92 @@ namespace Pf
             //更新CRC
 
             unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(3), outValue.size() - 3);
-            outValue.at(1) = crc >> 8;
-            outValue.at(2) = crc & 0xFF;
+            outValue.at(1) = crc & 0xFF;
+            outValue.at(2) = crc >> 8;
+        }
+
+        /** 自定义仿真 **/
+
+        void frameFE::simulation(byteArray &outValue, const Json::Value &json)
+        {
+            std::ostringstream strErr;
+
+            outValue.clear();
+
+            //step3填充帧头
+            outValue.push_back(mHeadCode);
+
+            //step4：填充校验码（先站位，后更新）
+            outValue.push_back(0);
+            outValue.push_back(0);
+
+            //step5：填充数据长度（先站位，后更新）
+            outValue.push_back(0);
+            outValue.push_back(0);
+
+            //step5：源节点填充
+            int srcNode = json["head_src_node"].asInt() & 0xFF;
+            outValue.push_back(srcNode & 0xFF);
+
+            //step5：目标节点填充
+            int dstNode = json["head_dst_node"].asInt() & 0xFF;
+            outValue.push_back(dstNode & 0xFF);
+
+            //step6：数据种类类型
+            outValue.push_back(json["head_send_sys"].asInt());
+            outValue.push_back(json["head_rcv_sys"].asInt());
+
+            //十六进制
+            bool isOk;
+            unsigned short frameType = json["frame_type"].asInt();
+
+            //数据类型,待后填充
+            outValue.push_back(frameType >> 8);
+            outValue.push_back(frameType);
+
+            //step7：预留字节
+            outValue.push_back(0);
+
+            //step8：确认标志
+            outValue.push_back(0);
+
+            int retrans = 0;
+
+            //step9: 填充命令计数,
+
+            auto findItor = mProtocolCnt.find(std::make_pair(srcNode, dstNode));
+            if(findItor == mProtocolCnt.end())
+            {
+                mProtocolCnt[std::make_pair(srcNode, dstNode)] = 0;
+            }
+
+            unsigned short cmdCnt = mProtocolCnt[std::make_pair(srcNode, dstNode)];
+
+            outValue.push_back(cmdCnt & 0xFF);
+            outValue.push_back(cmdCnt >> 8);
+
+            mProtocolCnt[std::make_pair(srcNode, dstNode)] = mProtocolCnt[std::make_pair(srcNode, dstNode)] + 1;
+
+            //step9：重传次数
+
+            outValue.push_back(retrans);
+
+            //step10: 填充数据域
+            Json::Value array = json["msg"];
+            for(int index = 0; index < array.size(); index++)
+            {
+                outValue.push_back(array[index].asInt());
+            }
+
+            //step11：更新长度
+            int len = outValue.size() - 5;
+            outValue.at(3) = len & 0xFF;
+            outValue.at(4) = len >> 8;
+
+            //step12：更新CRC
+            unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(3), outValue.size() - 3);
+            outValue.at(1) = crc & 0xFF;
+            outValue.at(2) = crc >> 8;
         }
 
         void frameFE::simulation(byteArray &outValue, const std::string &json)
@@ -100,12 +184,17 @@ namespace Pf
             int dstNode = headJson["head_dst_node"].asInt() & 0xFF;
             outValue.push_back(dstNode & 0xFF);
 
-            //step6：数据种类类型
-            int dataTYpe = headJson["data_type"].asInt();
-            outValue.push_back(dataTYpe >> 24);
-            outValue.push_back(dataTYpe >> 16);
-            outValue.push_back(dataTYpe >> 8);
-            outValue.push_back(dataTYpe);
+            //step6：数据种类类型           
+            outValue.push_back(headJson["head_send_sys"].asInt());
+            outValue.push_back(headJson["head_rcv_sys"].asInt());
+
+            //十六进制
+            bool isOk;            
+            unsigned short frameType = regionJson["table_num"].asInt();
+
+            //数据类型,待后填充
+            outValue.push_back(frameType >> 8);
+            outValue.push_back(frameType);
 
             //step7：预留字节
             outValue.push_back(0);
@@ -114,7 +203,7 @@ namespace Pf
             int ack = 0;
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues(regionJson["table_num"].asInt(), paramValues);
+            paramsTable::getInstance()->getValues((unsigned int)regionJson["table_num"].asInt(), paramValues);
             if(paramValues.size() > 0)
             {
                 std::string isAck = paramValues[0][PARAM_TABLE_IS_ACK].asString();
@@ -139,8 +228,8 @@ namespace Pf
 
             unsigned short cmdCnt = mProtocolCnt[std::make_pair(srcNode, dstNode)];
 
-            outValue.push_back(cmdCnt >> 8);
             outValue.push_back(cmdCnt & 0xFF);
+            outValue.push_back(cmdCnt >> 8);
 
             mProtocolCnt[std::make_pair(srcNode, dstNode)] = mProtocolCnt[std::make_pair(srcNode, dstNode)] + 1;
 
@@ -153,13 +242,13 @@ namespace Pf
 
             //step11：更新长度
             int len = outValue.size() - 5;
-            outValue.at(3) = len >> 8;
-            outValue.at(4) = len & 0xFF;
+            outValue.at(3) = len & 0xFF;
+            outValue.at(4) = len >> 8;
 
             //step12：更新CRC
             unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(3), outValue.size() - 3);
-            outValue.at(1) = crc >> 8;
-            outValue.at(2) = crc & 0xFF;
+            outValue.at(1) = crc & 0xFF;
+            outValue.at(2) = crc >> 8;
         }
         void frameFE::_fillRegion(byteArray &outValue, const Json::Value &regionJs)
         {
@@ -179,12 +268,10 @@ namespace Pf
             //通过表号 从数据库中获取参数信息
 
             //添加表号            
-            outValue.push_back(tableNum & 0xFF);
-            outValue.push_back(tableNum >> 8);
 
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues(tableNum, paramValues);
+            paramsTable::getInstance()->getValues((unsigned int)tableNum, paramValues);
 
             //qDebug() << paramValues.toStyledString().c_str();
 
@@ -197,7 +284,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 if(startPos == -1)
                     startPos = preStartPos;
@@ -231,6 +318,34 @@ namespace Pf
                     preStartPos = startPos + initValue.size();
                     outSize += initValue.size();
                 }
+                else if(nRawType == dataType)   //十六进制原始数据
+                {
+                    QByteArray msg = QByteArray::fromHex(initValue.c_str());
+
+                    int maxSize = 0;
+                    if(0 == byteSize)
+                    {
+                        maxSize = msg.size();
+                    }
+                    else
+                    {
+                        maxSize = byteSize;
+                    }
+
+                    int pos = startPos;
+                    for(int index = 0; index < maxSize; index++)
+                    {
+                        if(index < msg.size())
+                            data.setData(tmpBuf, msgSize, pos, 1, 0, 0, msg.at(index));
+                        else
+                            data.setData(tmpBuf, msgSize, pos, 1, 0, 0, 0);
+
+                        pos += 1;
+                    }
+
+                    preStartPos = startPos + maxSize;
+                    outSize += maxSize;
+                }
                 else
                 {
                     data.setData(tmpBuf, msgSize, startPos, byteSize, bitPos, bitSize, std::atoi(initValue.c_str()), bigSmall);
@@ -244,83 +359,33 @@ namespace Pf
 
         bool frameFE::getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json)
         {
+            if(json.isNull() || json["head"].isNull())
+                return false;
             Json::Value headJs = json["head"];
             if(headJs.isNull() || headJs["head_is_ask"].asInt() != 0x1)
                 return false;
 
-            //step1：帧头
-            outValue.push_back(0xFE);
+            int headLen = 16;
 
-            //step2：校验码
-            outValue.push_back(0x0);
-            outValue.push_back(0x0);
+            if(inValue.size() < headLen)
+                return false;
 
-            //step3：数据长度
-            outValue.push_back(0x0);
-            outValue.push_back(0x0);
+            outValue.clear();
+            std::copy(inValue.begin(), inValue.begin() + headLen, std::back_inserter(outValue));
 
-            //step4：源节点编号
-            if(!headJs["head_src_node"].isNull())
-                outValue.push_back(headJs["head_src_node"].asInt());
-            else
-                outValue.push_back(0x0);
+            //step1：更新确认标志            
+            outValue.at(12) = 0x3;
 
-            //step5：目的节点编号
-            if(!headJs["head_dst_node"].isNull())
-                outValue.push_back(headJs["head_dst_node"].asInt());
-            else
-                outValue.push_back(0x0);
+            //更新长度
+            outValue[3] = 11;
+            outValue[4] = 0;
 
-            //step6：数据种类标识吗
-            if(!headJs["data_type"].isNull())
-            {
-                int type = headJs["data_type"].asInt();
-                outValue.push_back(type >> 24);
-                outValue.push_back(type >> 16);
-                outValue.push_back(type >> 8);
-                outValue.push_back(type & 0xFF);
-            }
-            else
-            {
-                outValue.push_back(0x0);
-                outValue.push_back(0x0);
-                outValue.push_back(0x0);
-                outValue.push_back(0x0);
-            }
+            //step2：更新校验(先把校验位至0，然后再计算填充)
 
-            //step7：预留
-            outValue.push_back(0x0);
+            unsigned short calCrc = PfCommon::Crc::calCrc16(&outValue.at(3), headLen - 3);
 
-            //step8：确认标志
-            outValue.push_back(0x3);
-
-            //step9：序号
-            if(!headJs["head_cmd_cnt"].isNull())
-            {
-                int cnt = headJs["head_cmd_cnt"].asInt();
-                outValue.push_back(cnt >> 8);
-                outValue.push_back(cnt & 0xFF);
-            }
-            else
-            {
-                outValue.push_back(0x0);
-                outValue.push_back(0x0);
-            }
-
-            //step10：重传次数
-            if(!headJs["head_retry_cnt"].isNull())
-                outValue.push_back(headJs["head_retry_cnt"].asInt());
-            else
-                outValue.push_back(0x0);
-
-            //step11：更新长度及校验
-            int dataLen = outValue.size() - 5;
-            outValue[3] = dataLen >> 8;
-            outValue[4] = dataLen & 0xFF;
-
-            unsigned short calCrc = PfCommon::Crc::calCrc16(&outValue.at(0), outValue.size() - 3);
-            outValue[1] = calCrc >> 8;
-            outValue[2] = calCrc & 0xFF;
+            outValue[1] = calCrc & 0xFF;
+            outValue[2] = calCrc >> 8;
 
             return true;
         }
@@ -368,22 +433,23 @@ namespace Pf
             //step4-1：获取源节点、目的节点、数据种类标识
             headJs["head_src_node"] = data.getData(u8Msg, u32Size, 5, 1, 0, 0);
             headJs["head_dst_node"] = data.getData(u8Msg, u32Size, 6, 1, 0, 0);
-            headJs["data_type"] = data.getData(u8Msg, u32Size, 7, 4, 0, 0);
+
+            headJs["head_send_sys"] = data.getData(u8Msg, u32Size, 7, 1, 0, 0);
+            headJs["head_rcv_sys"] = data.getData(u8Msg, u32Size, 8, 1, 0, 0);
+
+            unsigned short frameType = data.getData(u8Msg, u32Size, 9, 2, 0, 0, BIGENDIAN);
+            headJs["frame_type"] = frameType;
+
             headJs["head_is_ask"] = data.getData(u8Msg, u32Size, 12, 1, 0, 0);
             headJs["head_cmd_cnt"] = data.getData(u8Msg, u32Size, 13, 2, 0, 0);
             headJs["head_retry_cnt"] = data.getData(u8Msg, u32Size, 15, 1, 0, 0);
 
             result["head"] = headJs;
 
-            //step3：获取表号
-            int tableNum = 0;
-
-            tableNum = data.getData(u8Msg, u32Size, 16, 2, 0, 0);
-
             Json::Value regionValue;
             //首地址除去表号
 
-            _parseRegion(tableNum, &u8Msg[18], u32Size -18, regionValue);
+            _parseRegion(frameType, &u8Msg[16], u32Size -16, regionValue);
 
             if(!regionValue.isNull())
                 result["region"] = regionValue;
@@ -393,9 +459,11 @@ namespace Pf
 
         void frameFE::_parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
         {
+            if(u32Size <= 0)
+                return;
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues(tableNum, paramValues);
+            paramsTable::getInstance()->getValues((unsigned int)tableNum, paramValues);
 
             dataStorage data;
             int preValue = 0;
@@ -415,7 +483,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 tmpValue["coding"] = coding;
 
@@ -456,6 +524,13 @@ namespace Pf
 
             if(!dataJs.isNull())
                 regionValue["data"] = dataJs;
+        }
+
+        bool frameFE::getValidValue(const Json::Value &result, Json::Value &value)
+        {
+            bool res = false;
+
+            return res;
         }
 
         extern "C"

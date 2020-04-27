@@ -12,10 +12,14 @@
 #include <QListWidgetItem>
 
 #include "./test/testflow.h"
-#include "../include/PfAdapter/PfAdapterManager/pfadaptermanager.h"
-#include "../include/PfCommon/jsoncpp/json.h"
+#include "../../src/PfAdapter/PfAdapterManager/pfadaptermanager.h"
+#include "../../src/PfCommon/jsoncpp/json.h"
 #include "simulation/simulation.h"
+#include "delegate/qtreeitemdelegate.h"
 #include <QProcess>
+#include <QVector>
+
+extern int startAllCnt;
 namespace Ui {
 class MainWindow;
 }
@@ -40,23 +44,40 @@ private:
     void initFlowCom();
     void loadSimTest();
     void clearSysTree();
+    void setBtnAble(bool flag);
+    void sendAll(QString record_uuid, QString msgType);
 signals:
     void sendCmd(QString json);
     void cmdMsg(QJsonObject,QString);
+    void showCurrent(QString id);
+    void sendAllStart(QString json);
+    void sendErrId(QVector<QString> &msg);
+    void sendAllStartId(QVector<QString> &msg);
+    void sendStartSignal(QString record_uuid,QString msg);
+
 private slots:
-    void on_TbSysManage_triggered();
-    void on_TbFlow_triggered();
-    void on_TbSimulation_triggered();
-    void on_TbExport_triggered();
+
     void switchPage(QListWidgetItem * );
-    void on_ExcelToDb_triggered();
     void reset();
-    void on_resetSys_triggered();
     void setFlag(bool flag);
     void saveRecid(QString recid);
-    void deleRecid(QString recid);
+    void deleRecid(QString recid, int cnt);
+    void onLogicOutPut(); 
+    void on_simBtn_clicked();
+    void on_flowBtn_clicked();
+    void on_sysBtn_clicked();
+    void on_impBtn_clicked();
+    void on_expBtn_clicked();
+    void on_resetBtn_clicked();
+    void on_changeBtn_clicked();
+    void timeUpdate(void);
+    void revRecid(QString,bool);
+    void on_pushButtonStartAll_clicked();
+    void on_pushButtonStopAll_clicked();
 
-    void onLogicOutPut();
+    void saveErrRecid(QString recid);
+    void deleErrRecid(QString recid);
+
 private:
     Ui::MainWindow *ui;
     cmdDecode *mCmdDecode;
@@ -69,6 +90,12 @@ private:
     bool m_flag;
     int *taskCount;
     QProcess *mLogicLayerProcess;
+	qtreeitemdelegate *m_sysTreeItem;
+    bool m_changeFlag;
+    std::vector<QString> m_saveAllStartId;
+    QVector<QString> m_errRecoid;
+    std::vector<QString> m_saveErrRecid;
+    QVector<QString> m_AllStartRecoid;
 };
 
 #endif // MAINWINDOW_H

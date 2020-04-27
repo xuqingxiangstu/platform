@@ -29,6 +29,8 @@ class flowTree : public QWidget
 public:
     explicit flowTree(QString uuid, int sysType = 0, QWidget *parent = 0);
     ~flowTree();
+public:
+    void keyPressEvent(QKeyEvent *event);
 public slots:
     void onDropDrag(QTreeWidgetItem *parentItem, QTreeWidgetItem *curItem, QTreeWidgetItem *dropItem, bool isFrontInsert);
 
@@ -95,6 +97,12 @@ public slots:
      * @param type 类型
      */
     void onFrameTypeChange(QString uuid, QString type);
+
+private:
+    void onNewFlowNode();
+    void onCopyNode();
+    void onParseNode();
+    void onDeleteNode();
 signals:
     void toShowProperty(QString uuid, Json::Value);
 

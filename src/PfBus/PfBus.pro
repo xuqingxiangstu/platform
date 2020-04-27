@@ -4,4 +4,7 @@ SUBDIRS += \
     #netWork \
     serialPort \
     zeroMq \
-    udp
+    udp \
+    tcpClient \
+    tcpServer \
+    M1553B

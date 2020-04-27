@@ -12,15 +12,23 @@
 #define PROPERTY_FRAME  "帧类型"
 #define PROPERTY_FRAME_BE   "BE"
 #define PROPERTY_FRAME_FE   "FE"
-#define PROPERTY_FRAME_93   "93"
+#define PROPERTY_FRAME_93   "密码集控装置协议"
 #define PROPERTY_FRAME_MIDDLE   "中间件"
+#define PROPERTY_FRAME_1553B   "M1553B协议"
+
+/*****************1553B RT属性**********************/
+#define PROPERTY_1553B_RT_GROUP         "RT属性"
+#define PROPERTY_1553B_RT_GROUP_RT_ADDR "RT地址"
+#define PROPERTY_1553B_RT_GROUP_SA_ADDR "SA地址"
 
 /*************记录属性********************/
 #define PROPERTY_RECORD_NAME    "名称"
 #define PROPERTY_RECORD_CREATE_TIME "创建时间"
 #define PROPERTY_RECORD__OPEN_TIME  "最近打开时间"
 #define PROPERTY_RECORD__NODE       "备注"
-#define PROPERTY_RECORD_DEV_SEL     "接口选择"
+//#define PROPERTY_RECORD_DEV_SEL     "接口选择"
+#define PROPERTY_RECORD_LOCAL_DEVICE  "等效接口选择"
+#define PROPERTY_RECORD_DEST_DEVICE   "目标接口选择"
 
 /*************系统属性********************/
 #define PROPERTY_SYS_NAME   "名称"
@@ -44,6 +52,10 @@
 #define PROPERTY_OTHER_MODLE_INDEX  "模块序号"
 #define PROPERTY_OTHER_RESERVE      "备用字符串"
 
+/*******************FE帧数据类型属性*********************/
+#define PROPERTY_FE_DATA_TYPE   "数据帧类型"
+#define PROPERTY_FE_DATA_TYPE_SEND_SYS  "发起系统"
+#define PROPERTY_FE_DATA_TYPE_RCV_SYS   "接收系统"
 
 
 /*************属性宏定义**********************/
@@ -52,7 +64,8 @@
 #define PROPERTY_DELAY              "delay"
 #define PROPERTY_TIMING             "timing"
 #define PROPERTY_STOP_CONDITION     "stopCondition"
-#define PROPERTY_DESTDEVICE         "接口选择"
+#define PROPERTY_LOCAL_DEVICE       "等效接口选择"
+#define PROPERTY_DEST_DEVICE        "目标接口选择"
 #define PROPERTY_SIM_MODEL          "simulationModel"
 #define PROPERTY_FIX_VALUE          "fixValue"
 #define PROPERTY_RAND_MIN           "rand_min"
@@ -155,6 +168,7 @@ public:
     std::shared_ptr<nodeProperty> clone();
 public:
     void setInitValue(const std::string &name, const Json::Value &initValue);
+    Json::Value initValue(const std::string &name);
 
     void setCurValue(const std::string &name, const Json::Value &curValue);
     Json::Value curValue(const std::string &name);
@@ -173,8 +187,8 @@ public:
     void setProperty(const std::string &name, const Json::Value &value);
     void getProperty(const std::string &name, Json::Value &value);
 
-    void setTableNum(int table);
-    int tableNum();
+    void setTableNum(std::string table);
+    std::string tableNum();
 
     void setCodingNum(int coding);
     int codingNum();
@@ -185,6 +199,7 @@ public:
      */
     std::string getKey();
     Json::Value getJson();
+    Json::Value getSaveJson();
 private:
     Json::Value mDefalultProperty;    
     std::vector<std::shared_ptr<property>> mProperty;

@@ -69,7 +69,7 @@ namespace Pf
           sep->Init(strComName, u32BandRate, u8Bytesize, u8StopBit, u8Parity);
       }
 
-      bool SerialPortAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr, const int &port)
+      bool SerialPortAdapter::sendMsg(const char *msg, const int &msgSize)
       {
           std::unique_lock<std::mutex> lk(mMutex);
           return sep->SndUartData((unsigned char*)msg, msgSize);

@@ -59,7 +59,7 @@ public:
     void setNodeType(nodeType type){mCurCmdType = type;}
     nodeType getNodeType(){return mCurCmdType;}
 
-    void setTableAndCoding(int table, int coding);
+    void setTableAndCoding(std::string table, int coding);
 
     //int tableNum(){return mCurTable;}
     //int codingNum(){return mCurCoding;}
@@ -67,7 +67,7 @@ public:
     std::string uuid(){return mCurUuid;}
 private:
     nodeType mCurCmdType;
-    int mCurTable;
+    std::string mCurTable;
     int mCurCoding;
     std::string mCurUuid;
     std::shared_ptr<nodeProperty> mNodeProperty;

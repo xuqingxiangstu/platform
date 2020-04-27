@@ -13,6 +13,7 @@
 //等效
 #define EQ_ELEMENT              "equivalent"
 #define EQ_SYSTEM_UUID_ELEMENT  "system_uuid"
+#define EQ_DST_SYSTEM_UUID_ELEMENT  "dest_system_uuid"
 #define EQ_PROTOCOL_ELEMENT "protocol"
 
 #define EQ_FRAME_TYPE   "frameType"
@@ -43,6 +44,9 @@
 //FE帧源节点，目的节点
 #define EQ_FE_HEAD_SRC_NODE         "head_src_node"
 #define EQ_FE_HEAD_DST_NODE         "head_dst_node"
+
+#define EQ_FE_HEAD_SEND_SYS_NODE    "head_send_sys"
+#define EQ_FE_HEAD_RCV_SYS_NODE         "head_rcv_sys"
 
 //流程
 
@@ -85,6 +89,8 @@
 #define LINE_ELEMENT            "line"
 #define RAND_ELEMENT            "random"
 #define STEP_ELEMENT            "changeStep"
+#define RT_ELEMENT                 "RT"
+#define SA_ELEMENT                 "SA"
 
 
 class createEquivalent

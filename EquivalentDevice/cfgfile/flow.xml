@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<ProjectTest>
+    <TestProcedure Index="1">
+        <Describe>新建procedure</Describe>
+        <TestCase Index="1">
+            <Describe>新建case</Describe>
+            <Thread>FALSE</Thread>
+            <TestStep TemplateType="sleepStep" StepType="sleepStep" Index="1">
+                <Describe CanRef="true" Type="WSTRING">延时流程部(ms)</Describe>
+                <timeout CanRef="true" Type="WSTRING">20</timeout>
+                <Unit CanRef="true" Type="WSTRING">ms</Unit>
+            </TestStep>
+            <TestStep TemplateType="ifStep" StepType="ifStep" Index="2">
+                <Describe CanRef="true" Type="WSTRING">判断(if)</Describe>
+                <v CanRef="true" Type="INT8">!1@1#1$timeout$4</v>
+                <Calc CanRef="true" Type="WSTRING">v&lt;10</Calc>
+            </TestStep>
+            <TestStep TemplateType="printfStep" StepType="printfStep" Index="5">
+                <Describe Type="WSTRING">打印显示</Describe>
+                <Printf Type="WSTRING">Delay less than10. Delay Time is %d</Printf>
+                <Argu1 Type="WSTRING">!1@1#1$timeout$4</Argu1>
+                <Argu2 Type="WSTRING"></Argu2>
+                <Argu3 Type="WSTRING"></Argu3>
+                <Argu4 Type="WSTRING"></Argu4>
+                <MessageType Type="WSTRING">NORMAL</MessageType>
+            </TestStep>
+            <TestStep TemplateType="elseIfStep" StepType="elseIfStep" Index="3">
+                <Describe CanRef="true" Type="WSTRING">否则如果(elsif)</Describe>
+                <v CanRef="true" Type="INT8">!1@1#1$timeout$4</v>
+                <Calc CanRef="true" Type="WSTRING">v&gt;10</Calc>
+            </TestStep>
+            <TestStep TemplateType="printfStep" StepType="printfStep" Index="6">
+                <Describe Type="WSTRING">打印显示</Describe>
+                <Printf Type="WSTRING">Delay greater than10. Delay Time is %d</Printf>
+                <Argu1 Type="WSTRING">!1@1#1$timeout$4</Argu1>
+                <Argu2 Type="WSTRING"></Argu2>
+                <Argu3 Type="WSTRING"></Argu3>
+                <Argu4 Type="WSTRING"></Argu4>
+                <MessageType Type="WSTRING">NORMAL</MessageType>
+            </TestStep>
+            <TestStep TemplateType="endStep" StepType="endStep" Index="4">
+                <Describe CanRef="true" Type="WSTRING">结束(End)</Describe>
+            </TestStep>
+        </TestCase>
+    </TestProcedure>
+</ProjectTest>

@@ -129,6 +129,12 @@
    <property name="text">
     <string>新建流程</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionNewSubFlow">
    <property name="text">
@@ -142,6 +148,9 @@
    <property name="shortcut">
     <string>Ctrl+C</string>
    </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionPase">
    <property name="text">
@@ -149,6 +158,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
   <action name="actionDelete">
@@ -158,10 +170,8 @@
    <property name="shortcut">
     <string>Del</string>
    </property>
-  </action>
-  <action name="actionTestSend">
-   <property name="text">
-    <string>测试发送</string>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetWithChildrenShortcut</enum>
    </property>
   </action>
  </widget>

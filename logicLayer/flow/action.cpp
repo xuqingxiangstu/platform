@@ -5,9 +5,12 @@
 
 #include <QDateTime>
 #include "frame.h"
+#include <QDebug>
 
+#include "../custom/custommsg.h"
 #include "../src/PfSql/paramsTable/sysinterfacetable.h"
 #include "../../src/PfCommon/tools/ut_error.h"
+#include "../src/PfAdapter/m1553Adapter/m1553adapter.h"
 
 //#define DEBUG_ACTION 1
 
@@ -65,16 +68,6 @@ bool action::exe()
 {
     bool res = false;
 
-#ifdef DEBUG_ACTION
-
-    if(mTimeOut > 0)
-        std::this_thread::sleep_for(std::chrono:: milliseconds (mTimeOut));
-
-    std::vector<unsigned char> msg;
-
-    if(mFrameObj)
-        mFrameObj->getFrameMsg(msg);
-#else
     //校验目标设备
     if(mAdapterManagerObj == nullptr)
     {
@@ -94,6 +87,32 @@ bool action::exe()
     //step2：延时
     if(mTimeOut > 0)
         std::this_thread::sleep_for(std::chrono:: milliseconds (mTimeOut));
+
+    //modify xqx 20200416自定义消息处理（特殊消息处理）
+    if(frame::CustomMsg == mFrameObj->getMsgType())
+    {
+        std::string table;
+        std::string coding;
+        mFrameObj->getCustomMsg(table, coding);
+        auto icdObj = mFrameObj->getCurFrameObj();        
+        customMsg::getInstance()->exe(mFrameObj, mRecordUuid, icdObj, obj, mUiAdapter,table, coding);
+        return true;
+    }
+
+    //modify xqx 2020-4-26 20:14:50 1553B时发送前需设置RT地址及SA地址
+    std::string rtAddr;
+    std::string saAddr;
+
+    if(mFrameObj->getRtAndSa(rtAddr, saAddr))
+    {
+        //设置
+        if("m1553Adapter" == obj->getClassName())
+        {
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->setSendRtAndSa(rtAddr, saAddr);
+        }
+    }
+
+    //end
 
     //step3：获取组帧数据
     std::vector<unsigned char> msg;
@@ -120,6 +139,7 @@ bool action::exe()
                 int resendCnt = 0;
                 while(1)
                 {
+                    qDebug() << "[" << QDateTime::currentDateTime().toString("hh:mm.ss.zzz") << "]" << "resend msg";
                     mFrameObj->getResendMsg(msg);                    
 
                     if(obj->atomicTrMsg((const char*)&msg.at(0), msg.size(), (char*)mRcvBus, rcvSize, 400))
@@ -160,7 +180,6 @@ bool action::exe()
         UT_THROW_EXCEPTION("[ERROR]");
     }
 
-#endif
 
     return res;
 }

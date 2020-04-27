@@ -19,7 +19,7 @@ std::shared_ptr<dragRole> dragRole::clone()
     return std::shared_ptr<dragRole>(obj);
 }
 
-void dragRole::setTableAndCoding(int table, int coding)
+void dragRole::setTableAndCoding(std::string table, int coding)
 {
     mCurTable = table;
     mCurCoding = coding;

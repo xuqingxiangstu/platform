@@ -24,6 +24,7 @@ sysManageUi::sysManageUi(QWidget *parent) :
     ui(new Ui::sysManageUi)
 {
     ui->setupUi(this);
+    ui->information_tableWidget->setAlternatingRowColors(true);
     systemInit();
     initSystemTree();
 
@@ -208,9 +209,16 @@ void sysManageUi::initSystemTree()
         item->setFlags(Qt::ItemIsEditable| Qt::ItemIsEnabled | Qt::ItemIsSelectable);
         ui->systemTree->addTopLevelItem(item);
     }
+
+    QTreeWidgetItemIterator it(ui->systemTree);
+    if(*it){
+        ui->systemTree->setFocus();
+        ui->systemTree->setCurrentItem(*it);
+    }
     if(value.size()>0){
         Json::Value init;
         m_sysUuid = QString::fromStdString(value[0]["UUID"].asString());
+        addDevSysName = m_sysUuid;
         DBTableOpt::getInstance()->getSystemDev(m_sysUuid,init);
         int rowNum =  ui->information_tableWidget->rowCount();
         for(int i = 0;i < rowNum;i++)

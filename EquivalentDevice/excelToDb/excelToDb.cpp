@@ -30,32 +30,47 @@ void excelToDb::run()
     QXlsx::Document xlsx(strFilePath);
     QXlsx::Workbook *workBook = xlsx.workbook();
     int sheetCount = workBook->sheetCount();
+    DBTableOpt::getInstance()->deleteTable("params_table");
     QString value;
     QString strErr;
-    emit setRange(0, sheetCount-1);
+    if(sheetCount == 1){
+       emit setRange(0, 1);
+    }else{
+       emit setRange(0, sheetCount-1);
+    }
+
     for(int h =0;h<sheetCount;h++)
     {
         QXlsx::Worksheet *workSheet = static_cast<QXlsx::Worksheet*>(workBook->sheet(h));
         QString tableName = workSheet->sheetName();
-
-        for (int i = 3; i <= workSheet->dimension().rowCount(); i++)
+        for (int i = 3; i <=workSheet->dimension().lastRow(); i++)
         {
             msgBox.clear();
             msgBox.push_back(tableName);
-            for (int j = 1; j <= workSheet->dimension().columnCount(); j++)
-            {
-                QXlsx::Cell *cell = workSheet->cellAt(i, j);
-                if (cell==NULL)
+            QXlsx::Cell *cellbreak = workSheet->cellAt(i, 1);
+            if(cellbreak == NULL){
+                continue;
+            }else{
+                for (int j = 1; j <= 18; j++)
                 {
-                    value = "";
-                }else{
-                    value = cell->value().toString();
+                    QXlsx::Cell *cell = workSheet->cellAt(i, j);
+                    if (cell==NULL)
+                    {
+                        value = "";
+                    }else{
+                        value = cell->value().toString();
+                    }
+                    msgBox.push_back(value);
                 }
-                msgBox.push_back(value);
+                result &= DBTableOpt::getInstance()->excelToDb(msgBox);
             }
-            result &= DBTableOpt::getInstance()->excelToDb(msgBox);
         }
-        emit setCurValue(h);
+        if(sheetCount == 1){
+            emit setCurValue(1);
+        }else{
+            emit setCurValue(h);
+        }
+
     }
 END:
 		

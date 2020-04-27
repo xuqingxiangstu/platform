@@ -34,5 +34,10 @@
         <file>icon/dbsync.ico</file>
         <file>icon/dberror.ico</file>
         <file>icon/configDB.ico</file>
+        <file>icon/icon128.ico</file>
+        <file>icon/icon128.png</file>
+        <file>icon/icon128x.ico</file>
+        <file>icon/icon128z.ico</file>
+        <file>icon/icon128z.png</file>
     </qresource>
 </RCC>

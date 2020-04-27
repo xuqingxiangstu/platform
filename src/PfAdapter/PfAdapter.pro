@@ -14,5 +14,8 @@ SUBDIRS += \
     ZmqSendAdapter  \
     ZmqRcvAdapter  \
     virtualUnicastAdapter \
+    tcpAdapter \
+    tcpServerAdapter \
+    m1553Adapter
 
 include (./adapter/adapter.pri)

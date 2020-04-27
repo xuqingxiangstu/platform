@@ -1,15 +1,42 @@
 #ifndef QTREEITEMDELEGATE_H
 #define QTREEITEMDELEGATE_H
 
-#include<QItemDelegate>
-class QtreeItemDelegate:public QItemDelegate
+#include <QWidget>
+#include <QString>
+#include <QVector>
+
+namespace Ui {
+class qtreeitemdelegate;
+}
+
+class qtreeitemdelegate : public QWidget
 {
     Q_OBJECT
-public:
-    QtreeItemDelegate(QObject * parent=0);
 
-    QWidget * createEditor(QWidget *parent,
-                           const QStyleOptionViewItem &/*option*/,
-                           const QModelIndex &/*index*/)const;
+public:
+    explicit qtreeitemdelegate(QWidget *parent = 0, QString sysName = "", QString recUuid = "", QString flowName = "");
+    ~qtreeitemdelegate();
+private:
+    void initTreeItem();
+signals:
+    sendToMain(QString,bool);
+public slots:
+    void showCurrent(QString recid);
+    void setErrTreeBg(QString recoid, bool flag);
+    void setErrId(QVector<QString> &msg);
+protected:
+    void paintEvent(QPaintEvent *event);
+private slots:
+    void on_checkBox_stateChanged(int arg1);
+private:
+    Ui::qtreeitemdelegate *ui;
+
+    QString m_sysName;
+    QString m_recUuid;
+    QString m_flowName;
+    bool m_flag;
+    QString m_checkUuid;
+    QVector<QString> m_errId;
 };
+
 #endif // QTREEITEMDELEGATE_H

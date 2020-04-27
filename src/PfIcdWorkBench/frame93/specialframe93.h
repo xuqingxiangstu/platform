@@ -38,6 +38,7 @@ namespace Pf
             void init(const TiXmlElement *ele) override;
             std::string getFrameName() override{return VAR_NAME(specialFrame93);}
             std::string version() override {return VERSION;}
+            void simulation(byteArray &outValue, const Json::Value &json) override;
             void simulation(byteArray &outValue, const std::string &json) override;
             bool getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json) override;
             bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &result) override;
@@ -46,8 +47,6 @@ namespace Pf
             void _fillRegion(byteArray &outValue, const Json::Value &jsValue);
         private:
             std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数
-
-            const unsigned char mHeadCode = 0x93;
         };
         extern "C"
         {

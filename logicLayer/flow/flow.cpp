@@ -11,6 +11,7 @@
 flowManager::flowManager():
     mIsRunning(false),
     mEqSystemUuid(""),
+    mDstSystemUuid(""),
     mEqProtocol("")
 {
 }
@@ -168,6 +169,12 @@ void flowManager::init(std::string strFilePath)
             if(uuidEle)
             {
                 mEqSystemUuid = uuidEle->GetText();
+            }
+
+            TiXmlElement *dstUuidEle = mEqEle->FirstChildElement("dest_system_uuid");
+            if(dstUuidEle)
+            {
+                mDstSystemUuid = dstUuidEle->GetText();
             }
 
             TiXmlElement *ptlEle = mEqEle->FirstChildElement("protocol");

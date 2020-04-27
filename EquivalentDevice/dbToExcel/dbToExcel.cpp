@@ -34,7 +34,13 @@ void dbToExcel::run()
     std::vector<QString> msgBox;
     msgBox.clear();
     DBTableOpt::getInstance()->dbToExcelTableNum(msgBox);
-    emit setRange(0, msgBox.size()-1);
+
+    if(msgBox.size() == 1){
+        emit setRange(0, 1);
+    }else{
+        emit setRange(0, msgBox.size()-1);
+    }
+
 
     QXlsx::Document xlsx(strFilePath);
     QXlsx::Workbook *workBook = xlsx.workbook();
@@ -64,15 +70,20 @@ void dbToExcel::run()
     LBENDIAN.addRange("L2:L10000");
     LBENDIAN.setPromptMessage("Please Input choose between 大端,小端");
 
-    DataValidation DATATYPE(DataValidation::List,DataValidation::Equal,"\"UINT16,UINT8,UINT32,IEEE32,IEEE64,NCHAR\"");
+    DataValidation DATATYPE(DataValidation::List,DataValidation::Equal,"\"UINT16,UINT8,UINT32,IEEE32,IEEE64,NCHAR,NRAW\"");
     DATATYPE.addRange("P2:P10000");
     DATATYPE.setPromptMessage("Please Input choose between UINT16,UINT8,UINT32,IEEE32,IEEE64,NCHAR");
 
-    for(int i = 0;i<msgBox.size();i++){
+    for(int i = 1;i<=msgBox.size();i++){
         QXlsx::Worksheet *writeSheet = static_cast<QXlsx::Worksheet*>(workBook->sheet(i));
         QString sheetName = writeSheet->sheetName();
         Json::Value paramsInfo;
         DBTableOpt::getInstance()->dbToExcel(sheetName,paramsInfo);
+        if(sheetName == "50019"){
+            paramsInfo.toStyledString();
+            std::string out = Json::FastWriter().write(paramsInfo);
+            qDebug()<<QString::fromStdString(out);
+        }
 
         for(int j = 0;j<paramsInfo.size();j++){
             writeSheet->write(j+3,CODING_NUM,QString::fromStdString(paramsInfo[j]["CODING_NUM"].asString()));
@@ -101,11 +112,13 @@ void dbToExcel::run()
             writeSheet->addDataValidation(LBENDIAN);
             writeSheet->addDataValidation(DATATYPE);
         }
-        emit setCurValue(i);
+        if(msgBox.size() == 1){
+            emit setCurValue(1);
+        }else{
+            emit setCurValue(i);
+        }
     }
-
-
-
+    workBook->deleteSheet(0);
     xlsx.saveAs(strFilePath);
 
 

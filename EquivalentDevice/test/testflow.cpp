@@ -1,6 +1,7 @@
 #include "testflow.h"
 #include "ui_testflow.h"
-#include "../include/PfCommon/jsoncpp/json.h"
+#include "mainwindow.h"
+#include "../../src/PfCommon/jsoncpp/json.h"
 #include <QDebug>
 #include <QScrollBar>
 #include <QStandardItemModel>
@@ -10,6 +11,7 @@
 #include <iostream>
 #include <QMessageBox>
 #include <QPushButton>
+
 testflow::testflow(QWidget *parent,QString sysName,QString recUuid,QString flowName,bool flag,QStackedWidget *item) :
     QWidget(parent),
     mRunType(ALL_TEST),
@@ -23,24 +25,34 @@ testflow::testflow(QWidget *parent,QString sysName,QString recUuid,QString flowN
     m_stackItem = item;
 
     ui->labelSubSysName->setText(m_sysName);
-    ui->labelSubSysName->setStyleSheet("color:#2a4dfb;");
+    ui->labelSubSysName->setStyleSheet("color:#FFFFFF;");
 
     QFont fontSys( "Microsoft YaHei", 14, 75);
     ui->labelSubSysName->setFont(fontSys);
 
     ui->labelTaskName->setText(m_flowName);
-    ui->labelTaskName->setStyleSheet("color:#04fe00;");
+    ui->labelTaskName->setStyleSheet("color:#FFFFFF;");
 
     QFont fontTask( "Microsoft YaHei", 14, 75);
     ui->labelTaskName->setFont(fontTask);
 
     mRuningMovie = new QMovie(":/image/img/runing.gif.gif");
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_treeWidget_customContextMenuRequested(const QPoint &pos)));
+    connect(ui->treeWidget, SIGNAL(customContextMenuRequested(const QPoint &pos)), this, SLOT(on_treeWidget_customContextMenuRequested(const QPoint &pos)));
 
     initBtn();
     onInitResultItem();
-    ui->toolButtonStop->setEnabled(false);
+    ui->pushButtonStop->setEnabled(false);
+    //this->setAttribute(Qt::WA_TranslucentBackground,true);
+    ui->textBrowserOutPut->setFrameShape(QTextBrowser::NoFrame);
+    ui->treeWidget->setColumnWidth(0,285);
+    ui->treeWidget->setColumnWidth(1,135);
+    ui->treeWidget->setColumnWidth(2,183);
+    ui->treeWidget->setColumnWidth(3,125);
+    ui->treeWidget->setColumnWidth(4,120);
+    ui->treeWidget->setColumnWidth(5,115);
+    ui->treeWidget->setColumnWidth(6,140);
+    this->setStyleSheet("#groupBox_2{border:1px solid #1e75ff;}");
 }
 
 testflow::~testflow()
@@ -80,14 +92,8 @@ void testflow::testTreeShow(QJsonObject obj,QString msgType)
     QString recordUuid = obj["record_uuid"].toString();
     qDebug() << recordUuid;
 
-    /*m_coverWidget = new QWidget(this,Qt::FramelessWindowHint);
-    m_coverWidget->resize(m_stackItem->size());
-    m_coverWidget->setObjectName("widget");// 设置对象句,相当于css里的id
-    m_coverWidget->setStyleSheet("#widget {background-color:rgba(200, 200, 200,0.3);}");// 设置id对应元素的背景色
-    m_coverWidget->show();*/
-
     if(recordUuid == m_recUuid){
-        //if(!m_flag) return;
+
         if(msgType == "runitems"){
 
             setTreeItemsFirst(obj["flow"].toArray());
@@ -112,17 +118,27 @@ void testflow::testTreeShow(QJsonObject obj,QString msgType)
                 onShowMsg(ERROR, "-- 测试已结束，存在错误，请查看测试报告！--");
                 QMessageBox::information(this, QStringLiteral("提示"), "测试已结束，存在错误请查看测试报告！");
             }
-            ui->toolButtonStart->setEnabled(true);
-            ui->toolButtonStop->setEnabled(false);
+            setBtnAble(1);
+            startAllCnt++;
+            emit stopRecid(m_recUuid,startAllCnt);
 
         }else if(msgType == "manualTrigger"){
             QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
         }else if(msgType =="stop"){
             QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
         }else if(msgType == "start"){
-            QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
+            if(obj["result"].toString() != "ok"){
+                QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
+            }
         }else if(msgType == "init_flow" &&obj["result"].toString().compare("")!=0&&obj["result"].toString().compare("ok") !=0){
+            emit initFlowErr(m_recUuid,true);
+            setBtnAble(3);
+            emit sendErrRecid(m_recUuid);
             QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
+        }else if(msgType == "init_flow"){
+            setBtnAble(1);
+            emit initFlowErr(m_recUuid,false);
+            emit stopErrRecid(m_recUuid);
         }
 
     }else{
@@ -157,28 +173,30 @@ void testflow::setTreeItemsFirst(QJsonArray obj)
         QTreeWidgetItem *item = new QTreeWidgetItem();
         item->setData(flowName,Qt::UserRole,QVariant(uuid));
         item->setText(flowName,flowDesName);
+        item->setTextColor(0,QColor("#ffffff"));
 
         ui->treeWidget->addTopLevelItem(item);
         int h = 26;
         QLabel *lab = new QLabel(ui->treeWidget);
         lab->setScaledContents(true);
         lab->setFixedSize(QSize(h, h));
-
+        item->setExpanded(true);
         ui->treeWidget->setItemWidget(item, testStatus, lab);
 
         setTreeItemsSecond(jsonObject.take("sub_flow").toArray(),item);
 
         mTreeItemSrcColor = item->background(0);
     }
-    ui->treeWidget->expandAll();
+    //ui->treeWidget->expandAll();
 }
 
 void testflow::setTreeItemsSecond(QJsonArray obj,QTreeWidgetItem *item)
 {
 
-    QString subFlowDesName,trigger,delay,timing,dest_system,sub_flow_uuid,cmdOrParam;
+
     for (int i = 0; i < obj.size(); i++)
     {
+        QString subFlowDesName,trigger,delay,timing,dest_system,sub_flow_uuid,cmdOrParam;
         QTreeWidgetItem *itemSub = new QTreeWidgetItem();
         QJsonObject jsonObject = obj[i].toObject();
         if (jsonObject.contains("describe"))
@@ -233,11 +251,26 @@ void testflow::setTreeItemsSecond(QJsonArray obj,QTreeWidgetItem *item)
 
         itemSub->setText(targetDev,dest_system);
 
+
+        itemSub->setTextColor(flowName,QColor("#ffffff"));
+        itemSub->setTextColor(flowValue,QColor("#ffffff"));
+        itemSub->setTextColor(triggerCon,QColor("#ffffff"));
+        itemSub->setTextColor(flowDelay,QColor("#ffffff"));
+        itemSub->setTextColor(targetDev,QColor("#ffffff"));
+
+        itemSub->setTextColor(flowName,QColor("#ffffff"));
+        itemSub->setTextColor(flowValue,QColor("#ffffff"));
+        itemSub->setTextColor(triggerCon,QColor("#ffffff"));
+        itemSub->setTextColor(flowDelay,QColor("#ffffff"));
+
+        itemSub->setTextColor(targetDev,QColor("#ffffff"));
+
         if(timing == "手动"){
 
         }else{
             itemSub->setData(sendTime,Qt::UserRole,QVariant(timing));
             itemSub->setText(sendTime,timing);
+            itemSub->setTextColor(sendTime,QColor("#ffffff"));
         }
         item->addChild(itemSub);
 
@@ -251,9 +284,12 @@ void testflow::setTreeItemsSecond(QJsonArray obj,QTreeWidgetItem *item)
             m_manualTrigger->setText(timing);
             m_manualTrigger->setFixedSize(QSize(45, 26));
             ui->treeWidget->setItemWidget(itemSub, sendTime, m_manualTrigger);
-            connect(m_manualTrigger,SIGNAL(clicked(bool)), this,SLOT(slot_onClick()));
+            m_manualTrigger->setDisabled(true);
+            connect(m_manualTrigger,SIGNAL(clicked(bool)), this,SLOT(slot_onClick(bool)));
         }
+
         ui->treeWidget->setItemWidget(itemSub, testStatus, labSub);
+        itemSub->setExpanded(false);
 
         if(cmdOrParam == "param"){
             setTreeItemsThird(jsonObject.take("info").toArray(),itemSub);
@@ -276,24 +312,26 @@ void testflow::setTreeItemsThird(QJsonArray obj, QTreeWidgetItem *itemSub)
                 infoname = subFlowInfoName.toString();
             }
             QJsonValue subFlowInfoCode = jsonObject.take("coding");
-            infocoding = QString::number(subFlowInfoCode.toDouble(),10,0);
+            infocoding = subFlowInfoCode.toString();
             QJsonValue subFlowInfoVal= jsonObject.take("value");
             infovalue = subFlowInfoVal.toString();
         }
 
         itemSubSub->setData(flowName,Qt::UserRole,QVariant(infovalue));
 
-        itemSubSub->setText(flowName,infoname);
+        itemSubSub->setText(flowName,infoname+"_"+infocoding);
 
         itemSubSub->setData(flowValue,Qt::UserRole,QVariant(infovalue));
         itemSubSub->setText(flowValue,infovalue);
+
+        itemSubSub->setTextColor(flowName,QColor("#ffffff"));
+        itemSubSub->setTextColor(flowValue,QColor("#ffffff"));
         itemSub->addChild(itemSubSub);
 
         int hSubSub = 26;
         QLabel *labSubSub = new QLabel(ui->treeWidget);
         labSubSub->setScaledContents(true);
         labSubSub->setFixedSize(QSize(hSubSub, hSubSub));
-
         ui->treeWidget->setItemWidget(itemSubSub, testStatus, labSubSub);
 
 
@@ -327,6 +365,7 @@ void testflow::startflowTest()
     value["msgType"] = "start";
     item["record_uuid"] = m_recUuid.toStdString();
 
+    qDebug() << currentItem->parent()->data(flowName,Qt::UserRole).toString();
     if(currentItem->parent()){
         item["flow_uuid"] = currentItem->parent()->data(flowName,Qt::UserRole).toString().toStdString();
         item["sub_flow_uuid"] = currentItem->data(flowName,Qt::UserRole).toString().toStdString();
@@ -341,8 +380,8 @@ void testflow::startflowTest()
 
     sendCmd(QString::fromLocal8Bit(out.c_str()));
 
-    ui->toolButtonStart->setEnabled(false);
-    ui->toolButtonStop->setEnabled(true);
+    setBtnAble(2);
+
     sendRecid(m_recUuid);
 }
 
@@ -524,13 +563,13 @@ void testflow::onInitResultItem()
 
 void testflow::initBtn()
 {
-    connect(ui->toolButtonStart, &QToolButton::clicked, [=](){
+    connect(ui->pushButtonStart, &QPushButton::clicked, [=](){
         onTestStart();
         sendRecid(m_recUuid);
     });
-    connect(ui->toolButtonStop, &QToolButton::clicked, [=](){
+    connect(ui->pushButtonStop, &QPushButton::clicked, [=](){
         onTestStop();
-        stopRecid(m_recUuid);
+        stopRecid(m_recUuid,0);
     });
 }
 
@@ -548,14 +587,12 @@ void testflow::onTestStart()
 
     }
 
-    ui->toolButtonStart->setEnabled(false);
-    ui->toolButtonStop->setEnabled(true);
+    setBtnAble(2);
 }
 
 void testflow::onTestStop()
 {
-    ui->toolButtonStart->setEnabled(false);
-    ui->toolButtonStop->setEnabled(false);
+    setBtnAble(3);
 
     sendCmd(converJson("stop"));
 
@@ -581,9 +618,8 @@ QString testflow::converJson(QString msgType)
 
 void testflow::onTestOver(bool res)
 {
-    ui->toolButtonStart->setText("开始");
-    ui->toolButtonStart->setEnabled(true);
-    ui->toolButtonStop->setEnabled(false);
+    ui->pushButtonStart->setText("开始");
+    setBtnAble(1);
     if(!res)
     {
         onShowMsg(ERROR, "-- 所有测试已结束，存在错误，请查看测试报告！--");
@@ -596,17 +632,16 @@ void testflow::onTestOver(bool res)
     }
 }
 
-void testflow::slot_onClick()
+void testflow::slot_onClick(bool flag)
 {
     QPushButton *senderObj = qobject_cast<QPushButton*>(sender());
     if(senderObj == nullptr)
     {
         return;
     }
-
-    QTreeWidgetItem  *currentItem =ui->treeWidget->itemAt(QPoint(senderObj->parentWidget()->frameGeometry().x(),senderObj->parentWidget()->frameGeometry().y()));
+    QTreeWidgetItem  *currentItem = ui->treeWidget->itemAt(QPoint(senderObj->parentWidget()->frameGeometry().x(),senderObj->parentWidget()->frameGeometry().y()));
     //成功获取到所在行对应列的数据
-
+    qDebug() << currentItem->data(flowName,Qt::UserRole).toString();
     Json::Value value;
     Json::Value item;
 
@@ -619,4 +654,65 @@ void testflow::slot_onClick()
     value.toStyledString();
     std::string out = Json::FastWriter().write(value);
     sendCmd(QString::fromLocal8Bit(out.c_str()));
+}
+
+void testflow::setBtnAble(int index)
+{
+    if(index == 1)
+    {
+        ui->pushButtonStart->setEnabled(true);
+        ui->pushButtonStop->setEnabled(false);
+
+        ui->pushButtonStart->setStyleSheet("background-image:url(:/image/img/startC.png);border:none;outline:none;color:#fff;");
+        ui->pushButtonStop->setStyleSheet("background-image:url(:/image/img/stopCN.png);border:none;outline:none;color:#fff;");
+    }
+    else if(index == 2)
+    {
+        ui->pushButtonStart->setEnabled(false);
+        ui->pushButtonStop->setEnabled(true);
+
+        ui->pushButtonStart->setStyleSheet("background-image:url(:/image/img/startCN.png);border:none;outline:none;color:#fff;");
+        ui->pushButtonStop->setStyleSheet("background-image:url(:/image/img/stopC.png);border:none;outline:none;color:#fff;");
+
+    }else if(index == 3)
+    {
+        ui->pushButtonStart->setEnabled(false);
+        ui->pushButtonStop->setEnabled(false);
+
+        ui->pushButtonStart->setStyleSheet("background-image:url(:/image/img/startCN.png);border:none;outline:none;color:#fff;");
+        ui->pushButtonStop->setStyleSheet("background-image:url(:/image/img/stopCN.png);border:none;outline:none;color:#fff;");
+    }
+}
+
+
+
+void testflow::on_pushButton_clicked()
+{
+    ui->textBrowserOutPut->clear();
+}
+
+void testflow::rcvAllStart(QVector<QString> &msg)
+{
+
+    for (int i = 0; i < msg.size(); ++i) {
+          if (msg.at(i) == m_recUuid){
+                isnotAllStart = true;
+                break;
+          }
+    }
+    if(isnotAllStart)
+    {
+        setBtnAble(2);
+    }
+}
+
+void testflow::setStartBtn(QString record_uuid, QString msg)
+{
+    if(record_uuid == m_recUuid)
+    {
+        if(msg == "start")
+            setBtnAble(2);
+        else if(msg == "stop")
+            setBtnAble(1);
+    }
 }

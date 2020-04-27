@@ -59,6 +59,7 @@ public:
     void exit();    
     void exeOver(bool status, std::string info);
     std::string eqSystemUuid(){return mEqSystemUuid;}
+    std::string dstSystemUuid(){return mDstSystemUuid;}
     std::string eqProtocol(){return mEqProtocol;}
 private:
     std::vector<std::tuple<std::string, std::string, std::shared_ptr<flow>>> mFlowsObj;
@@ -66,6 +67,7 @@ private:
     Pf::PfAdapter::Adapter *mUiAdapter;
     std::string mRecordUuid;
     std::string mEqSystemUuid;  //等效系统UUID
+    std::string mDstSystemUuid;  //目标系统UUID
     std::string mEqProtocol;    //等效系统协议
 
     //std::vector<std::thread> mRunThreadObj;

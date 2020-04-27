@@ -2,6 +2,9 @@
 #include <QMetaType>
 #include <QDebug>
 #include "../property/templateproperty.h"
+#include "../src/PfSql/paramsTable/paramstable.h"
+#include "../src/PfSql/paramsTable/systemtable.h"
+#include "../src/PfSql/paramsTable/sysinterfacetable.h"
 
 readXml::readXml(QObject *parent):
     QThread(parent),
@@ -46,6 +49,9 @@ void readXml::run()
     {
         TiXmlElement *mRoot = mXmlDoc->RootElement();
 
+        initConditionValue();
+        initDestDevInitValue();
+        initFeInitValue();
         readFlow(mRoot);
     }
 
@@ -87,6 +93,99 @@ void readXml::readFlow(TiXmlElement *ele)
     }
 }
 
+void readXml::initDestDevInitValue()
+{
+    //获取系统
+    Json::Value sysGroup = systemTable::getInstance()->getSysGroups();
+
+    if(sysGroup.isNull())
+        return ;
+
+    for(int index = 0; index < sysGroup.size(); index++)
+    {
+        std::string uuid = sysGroup[index][SYSTEM_TABLE_UUID].asString();
+        std::string name = sysGroup[index][SYSTEM_TABLE_SYSTEM_NAME].asString();
+
+        //获取系统下的接口
+        Json::Value interfaceJs = sysInterfaceTable::getInstance()->getValueBySysUuid(uuid);
+
+        for(int tmpIndex = 0; tmpIndex < interfaceJs.size(); tmpIndex++)
+        {
+            Json::Value tmpJs;
+
+            tmpJs[PROPERTY_DEV_VALUE_UUID] = interfaceJs[tmpIndex][SYSTEM_INTERFACE_TABLE_UUID].asString();
+            tmpJs[PROPERTY_DEV_VALUE_NAME] = "[" + name + "] " + interfaceJs[tmpIndex][SYSTEM_INTERFACE_TABLE_DEV_NAME].asString();
+
+            mDestDevInitValue.append(tmpJs);
+        }
+    }
+}
+
+void readXml::updateConditionInit(dragRole *role)
+{
+    if(!mConditionInitValue.isNull())
+    {
+        role->getProperty()->setInitValue(PROPERTY_START_CONDITION, mConditionInitValue);
+        role->getProperty()->setInitValue(PROPERTY_STOP_CONDITION, mConditionInitValue);
+    }
+}
+
+void readXml::updateFeSysInitValue(dragRole *role)
+{
+    if(!mFeInitValue.isNull())
+    {
+        role->getProperty()->setInitValue(PROPERTY_FE_DATA_TYPE_SEND_SYS, mFeInitValue);
+        role->getProperty()->setInitValue(PROPERTY_FE_DATA_TYPE_RCV_SYS, mFeInitValue);
+    }
+}
+
+void readXml::updateDestDevInitValue(dragRole *role)
+{
+    if(!mDestDevInitValue.isNull())
+    {
+        role->getProperty()->setInitValue(PROPERTY_LOCAL_DEVICE, mDestDevInitValue);
+        role->getProperty()->setInitValue(PROPERTY_DEST_DEVICE, mDestDevInitValue);
+    }
+}
+
+void readXml::initFeInitValue()
+{
+    if(mFeInitValue.isNull())
+    {
+        //获取协议配置
+        nodeProperty ptlPro(templateProperty::getInstance()->getProperty("cmd"));
+
+        mFeInitValue = ptlPro.initValue(PROPERTY_FE_DATA_TYPE_SEND_SYS);
+    }
+}
+
+void readXml::initConditionValue()
+{
+    Json::Value cmdJs;
+
+    if(paramsTable::getInstance()->getCmdValues(cmdJs))
+    {
+        Json::Value noJs;
+        noJs[PROPERTY_CONDITION_VALUE_NAME] = PROPERTY_CONDITION_NO;
+        noJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = -1;
+        noJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = -1;
+
+        mConditionInitValue.append(noJs);
+
+        for(int index = 0; index < cmdJs.size(); index++)
+        {
+            Json::Value tmpJs;
+
+            tmpJs[PROPERTY_CONDITION_VALUE_NAME] = cmdJs[index][PARAM_TABLE_PARAM_NAME];
+            tmpJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = cmdJs[index][PARAM_TABLE_TABLE_NUM];
+            tmpJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = cmdJs[index][PARAM_TABLE_CODING_NUM];
+
+            mConditionInitValue.append(tmpJs);
+        }
+    }
+}
+
+
 void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
 {
     TiXmlElement *testItemEle = ele->FirstChildElement("subFlow");
@@ -127,11 +226,14 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
         testItemRole->setProperty(pro);
         testItemRole->getProperty()->setProperty(PROPERTY_DESCRIBE, Json::Value(des));
         testItemRole->setUuid(testItemUuid);
-        //testItemRole->setTableAndCoding(testItemRole->getProperty()->getProperty(PROPERTY_TIMING););
 
         if(testItemRole->mNodeKey[dragRole::Node_Cmd] == pro->getKey())
         {
             testItemRole->setNodeType(dragRole::Node_Cmd);
+
+            updateConditionInit(testItemRole.get());
+            updateDestDevInitValue(testItemRole.get());
+            updateFeSysInitValue(testItemRole.get());
 
             emit cmdItemValue(QString(subFlowUuid.c_str()), testItemRole);
         }
@@ -139,6 +241,9 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
         {
             testItemRole->setNodeType(dragRole::Node_Param_Group);
 
+            updateConditionInit(testItemRole.get());
+            updateDestDevInitValue(testItemRole.get());
+            updateFeSysInitValue(testItemRole.get());
 
             //获取subJson节点
             TiXmlElement *subJsonEle = testItemEle->FirstChildElement("subJson");

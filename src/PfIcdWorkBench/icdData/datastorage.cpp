@@ -228,6 +228,14 @@ namespace Pf
             std::ostringstream strErr;
             unDataConvert mData;
             mData.d64Value = 0;
+            std::string convertDataType = dataType;
+
+            //modify xqx 2020 0424 用户没有填充此字段时按照默认小端处理
+            if("" == convertDataType)
+            {
+                convertDataType = SAMLLENDIAN;
+            }
+            //end
 
             if( (i32ByteStartPos < 0) || (i32ByteStopPos < 0))
             {
@@ -259,14 +267,14 @@ namespace Pf
                 mData.f32Value = value;
 
                 i32Pos = 0;
-                if (dataType == BIGENDIAN)
+                if (convertDataType == BIGENDIAN)
                 {
                     for (int i = i32ByteStopPos - 1; i >= i32ByteStartPos; i--)
                     {
                         u8Data[i] = mData.u8Buf[i32Pos++];
                     }
                 }
-                else if (dataType == SAMLLENDIAN)
+                else if (convertDataType == SAMLLENDIAN)
                 {
                     for (int i = i32ByteStartPos; i < i32ByteStopPos; i++)
                     {

@@ -183,7 +183,7 @@ bool subFlow::_exe()
         while(!isStop) //强制退出
         {
             //执行
-            res = perform();
+            res = perform(false);
 
             //判断是否结束
             if(mStopCond)
@@ -211,13 +211,14 @@ bool subFlow::_exe()
     return res;
 }
 
-bool subFlow::perform()
+bool subFlow::perform(bool isShow)
 {
     bool res = false;
     ///执行动作
     if(mAction.get() != nullptr)
     {
-        uiShowMsg(mDescribe);
+        if(isShow)
+            uiShowMsg(mDescribe);
 
         res = mAction->exe();
     }

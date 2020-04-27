@@ -4,7 +4,7 @@
 #include <QtSql/QSqlDatabase>
 #include <QUuid>
 #include <QString>
-#include "./include/PfCommon/jsoncpp/json.h"
+#include "../src/PfCommon/jsoncpp/json.h"
 class DBTableOpt
 {
 public:
@@ -259,6 +259,8 @@ public:
       bool dbToExcelTableNum(std::vector<QString> &msgBox);
 
       bool dbToExcel(QString tableNum,Json::Value &msgBox);
+
+      bool deleteTable(QString tableName);
 private:
       bool getDevDescribe(QSqlRecord rec,QString &Describe,QString &DevName);
       QString getDevTableName(QString TableTyep);

@@ -26,19 +26,21 @@ namespace Pf
 
         std::shared_ptr<frameObj>  specialFrame93::clone()
         {
-            specialFrame93 *obj = new specialFrame93();
-
-
+            specialFrame93 *obj = new specialFrame93();           
 
             for(auto itor = mProtocolCnt.begin() ; itor != mProtocolCnt.end(); itor++)
             {
                 obj->mProtocolCnt[itor->first] = (itor->second);
             }
 
-
             std::shared_ptr<frameObj> tmp(obj);
 
             return tmp;
+        }
+
+        void specialFrame93::simulation(byteArray &outValue, const Json::Value &json)
+        {
+
         }
 
         void specialFrame93::simulation(byteArray &outValue, const std::string &json)
@@ -68,24 +70,31 @@ namespace Pf
             _fillRegion(msg, regionJson);
 
 
-            //step3填充帧头
-            outValue.push_back(mHeadCode);
-
-            //step4:TODO填充命令计数
-            outValue.push_back(0);
-
             //填充数据域
             std::copy(msg.begin(), msg.end(), std::back_inserter(outValue));
 
+            if(msg.size() <= 0)
+                return ;
+
+            //更新计数
+            unsigned int src = outValue[0];
+            unsigned int dst = 0;
+            auto findItor = mProtocolCnt.find(std::make_pair(src, dst));
+            if(findItor == mProtocolCnt.end())
+            {
+                mProtocolCnt[std::make_pair(src, dst)] = 0;
+            }
+
+            outValue[1] = mProtocolCnt[std::make_pair(src, dst)];
+
+            mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
+
             //填充CRC
-#if CHECK_CRC
-            unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(1), outValue.size() - 1);
+
+            unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(0), outValue.size());
+
+            outValue.push_back(crc & 0xFF);
             outValue.push_back(crc >> 8);
-            outValue.push_back(crc & 0xFF);
-#else
-            unsigned short crc = PfCommon::Crc::calSum(&outValue.at(1), outValue.size() - 1);
-            outValue.push_back(crc & 0xFF);
-#endif
         }
         void specialFrame93::_fillRegion(byteArray &outValue, const Json::Value &regionJs)
         {
@@ -101,18 +110,11 @@ namespace Pf
             int preStartPos = 0;
 
             //获取表号
-            int tableNum = regionJs["table_num"].asInt();
-            //通过表号 从数据库中获取参数信息
-
-            //添加表号
-            outValue.push_back(tableNum >> 8);
-            outValue.push_back(tableNum & 0xFF);
+            int tableNum = regionJs["table_num"].asInt();         
 
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues(tableNum, paramValues);
-
-            //qDebug() << paramValues.toStyledString().c_str();
+            paramsTable::getInstance()->getValues((unsigned int)tableNum, paramValues);
 
             for(int index = 0; index < paramValues.size(); index++)
             {
@@ -123,7 +125,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 if(startPos == -1)
                     startPos = preStartPos;
@@ -152,10 +154,58 @@ namespace Pf
                 }
                 else if(ncharType == dataType)
                 {
-                    //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
-                    preStartPos = startPos + initValue.size();
-                    outSize += initValue.size();
+                    //modify xqx 20200423 当为字符串时，如果设置大小则按照设置填充，否则按照字符串大小进行填充
+                    if(0 == byteSize)//按照字符串填充
+                    {
+                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                        preStartPos = startPos + initValue.size();
+                        outSize += initValue.size();
+                    }
+                    else//按大小填充
+                    {
+                        //先清空，再填充
+                        memset(tmpBuf + startPos, 0, byteSize);
+                        int cpySize = 0;
+                        if(byteSize > initValue.size())
+                        {
+                            cpySize = initValue.size();
+                        }
+                        else
+                        {
+                            cpySize = byteSize;
+                        }
+                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), cpySize);
+                        preStartPos = startPos + byteSize;
+                        outSize += byteSize;
+                    }
+                }
+                else if(nRawType == dataType)   //十六进制原始数据
+                {
+                    QByteArray msg = QByteArray::fromHex(initValue.c_str());
+
+                    int maxSize = 0;
+                    if(0 == byteSize)
+                    {
+                        maxSize = msg.size();
+                    }
+                    else
+                    {
+                        maxSize = byteSize;
+                    }
+
+                    int pos = startPos;
+                    for(int index = 0; index < maxSize; index++)
+                    {
+                        if(index < msg.size())
+                            data.setData(tmpBuf, msgSize, pos, 1, 0, 0, msg.at(index));
+                        else
+                            data.setData(tmpBuf, msgSize, pos, 1, 0, 0, 0);
+
+                        pos += 1;
+                    }
+
+                    preStartPos = startPos + maxSize;
+                    outSize += maxSize;
                 }
                 else
                 {
@@ -175,25 +225,16 @@ namespace Pf
             dataStorage data;
             std::ostringstream strErr;
 
-            //step1：帧头校验
-            unsigned char head = u8Msg[0];
-            if(head != mHeadCode)
-            {
-                strErr.str("");
-                strErr << "帧同步码校验错误, 接收0x" << std::hex << head << " 实际0x" << mHeadCode;
-                UT_THROW_EXCEPTION(strErr.str());
-            }
+            if(u32Size <= 0)
+                return false;
 
+            //消息标识
+            result["frame_type"] = u8Msg[0];
+#if 0
             //step2：计算crc校验
-#if CHECK_CRC
-            unsigned short getCrc = data.getData(u8Msg, u32Size, u32Size - CRC_SIZE, CRC_SIZE, 0, 0);
-            unsigned short calCrc = PfCommon::Crc::calCrc16(&u8Msg[1], u32Size - CRC_SIZE- 1);
-#else
-            unsigned short getCrc = data.getData(u8Msg, u32Size, u32Size - CRC_SIZE, CRC_SIZE, 0, 0);
-            getCrc &= 0xFF;
-            unsigned short calCrc = PfCommon::Crc::calSum(&u8Msg[1], u32Size - CRC_SIZE - 1);
-            calCrc &= 0xFF;
-#endif
+
+            unsigned short getCrc = data.getData(u8Msg, u32Size, u32Size - 2, 2, 0, 0);
+            unsigned short calCrc = PfCommon::Crc::calCrc16(&u8Msg[0], u32Size - 2);
 
             if(calCrc != getCrc)
             {
@@ -205,15 +246,12 @@ namespace Pf
             //step3：获取表号
             int tableNum = 0;
 
-            tableNum = data.getData(u8Msg, u32Size, 2, 2, 0, 0);
+            tableNum = data.getData(u8Msg, u32Size, 0, 1, 0, 0);
 
             //首地址除去表号
-#if CHECK_CRC
-            _parseRegion(tableNum, &u8Msg[2 + 2], u32Size - 2 - CRC_SIZE - 2, result);
-#else
-            _parseRegion(tableNum, &u8Msg[2 + 2], u32Size - 2 - CRC_SIZE - 2, result);
-#endif
 
+            _parseRegion(tableNum, &u8Msg[0], u32Size - 2, result);
+#endif
             return !result.isNull();
         }
 
@@ -248,7 +286,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 tmpValue["coding"] = coding;
 

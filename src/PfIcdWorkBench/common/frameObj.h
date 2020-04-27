@@ -78,6 +78,15 @@ namespace Pf
              */
             virtual void simulation(byteArray &outValue, const std::string &json){}
 
+
+            virtual void simulation(byteArray &outValue, const Json::Value &json){}
+            /**
+             * @brief simulation    协议仿真
+             * @param outValue 仿真数据
+             * @param json json协议
+             */
+            virtual void simulation(byteArray &outValue, const byteArray &inValue){}
+
             /**
              * @brief getAskMsg 获取应答帧
              * @param outValue  应答数据

@@ -26,6 +26,12 @@ private slots:
 
     void on_comboBox_6_currentTextChanged(const QString &arg1);
 
+    void on_UdpButton_clicked();
+
+    void on_TcpButton_clicked();
+
+    void on_TcpButton_2_clicked();
+
 private:
     Ui::addSysManage *ui;
     sysManageUi *Sparent;

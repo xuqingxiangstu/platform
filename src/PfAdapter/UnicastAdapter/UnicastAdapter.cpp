@@ -1,5 +1,7 @@
 #include "UnicastAdapter.h"
 
+#include "../../PfCommon/tools/ut_error.h"
+
 namespace Pf
 {
   namespace PfAdapter
@@ -13,6 +15,25 @@ namespace Pf
       {
 
       }
+
+      void UnicastAdapter::init(const std::string &json)
+      {
+          std::ostringstream strErr;
+          Json::Reader reader;
+          Json::Value root;
+          if(!reader.parse(json, root))
+          {
+            strErr.str("");
+            strErr << "json格式错误(" << json << ")";
+
+            UT_THROW_EXCEPTION(strErr.str());
+          }
+
+          udp = std::make_shared<PfBus::UnicastUdp>();
+
+          udp->init(root["local_ip"].asString(), root["local_port"].asString(), root["remote_ip"].asString(), root["remote_port"].asString());
+      }
+
 
       void UnicastAdapter::init(const TiXmlElement *xmlEle)
       {
@@ -53,7 +74,7 @@ namespace Pf
 
       }
 
-      bool UnicastAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr, const int &port)
+      bool UnicastAdapter::sendMsg(const char *msg, const int &msgSize)
       {
           std::unique_lock<std::mutex> lk(mMutex);
           return udp->sendMsg((unsigned char*)msg, msgSize);

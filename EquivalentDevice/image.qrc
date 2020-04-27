@@ -35,5 +35,56 @@
         <file>img/DoubleLeft.png</file>
         <file>img/DoubleRight.png</file>
         <file>img/otherWindow.png</file>
+        <file>img/itemTreeBg.png</file>
+        <file>img/bg.png</file>
+        <file>img/dx.png</file>
+        <file>img/xian.png</file>
+        <file>img/itemTreeUnBg.png</file>
+        <file>img/exportTb.png</file>
+        <file>img/flow.png</file>
+        <file>img/importTb.png</file>
+        <file>img/reset.png</file>
+        <file>img/sim.png</file>
+        <file>img/system.png</file>
+        <file>img/buttonBg.png</file>
+        <file>img/buttonBgH.png</file>
+        <file>img/itemTreeBgCh.png</file>
+        <file>img/resetTbH.png</file>
+        <file>img/exportTbH.png</file>
+        <file>img/importTbH.png</file>
+        <file>img/systemH.png</file>
+        <file>img/flowH.png</file>
+        <file>img/simH.png</file>
+        <file>img/stopCH.png</file>
+        <file>img/startCH.png</file>
+        <file>img/stopAH.png</file>
+        <file>img/startAH.png</file>
+        <file>img/stopC.png</file>
+        <file>img/startC.png</file>
+        <file>img/stopA.png</file>
+        <file>img/startA.png</file>
+        <file>img/changeH.png</file>
+        <file>img/change.png</file>
+        <file>img/flowTree.png</file>
+        <file>img/resetN.png</file>
+        <file>img/exportTbN.png</file>
+        <file>img/importTbN.png</file>
+        <file>img/systemN.png</file>
+        <file>img/flowN.png</file>
+        <file>img/simN.png</file>
+        <file>img/stopCN.png</file>
+        <file>img/startCN.png</file>
+        <file>img/stopAN.png</file>
+        <file>img/startAN.png</file>
+        <file>img/treeBg.png</file>
+        <file>img/closeBtn.png</file>
+        <file>img/trueBtn.png</file>
+        <file>img/itemTreeBgErr.png</file>
+        <file>icon/icon128.ico</file>
+        <file>icon/icon128.png</file>
+        <file>icon/icon128x.ico</file>
+        <file>icon/icon128z.ico</file>
+        <file>icon/icon128z.png</file>
+        <file>img/treeCheck.png</file>
     </qresource>
 </RCC>

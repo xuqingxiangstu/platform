@@ -108,15 +108,20 @@ void templateTree::searchTreeAndHighlight(QString strKey)
 
 void templateTree::updateDestDevInitValue(dragRole *role)
 {
+    return ;
     if(!mDestDevInitValue.isNull())
     {
-        role->getProperty()->setInitValue(PROPERTY_DESTDEVICE, mDestDevInitValue);
+        role->getProperty()->setInitValue(PROPERTY_LOCAL_DEVICE, mDestDevInitValue);
+        role->getProperty()->setInitValue(PROPERTY_DEST_DEVICE, mDestDevInitValue);
     }
 
     if(!mDestDevCurValue.isNull())
     {
-        if(role->getProperty()->curValue(PROPERTY_DESTDEVICE).isNull())
-            role->getProperty()->setCurValue(PROPERTY_DESTDEVICE, mDestDevCurValue);
+        if(role->getProperty()->curValue(PROPERTY_LOCAL_DEVICE).isNull())
+            role->getProperty()->setCurValue(PROPERTY_LOCAL_DEVICE, mDestDevCurValue);
+
+        if(role->getProperty()->curValue(PROPERTY_DEST_DEVICE).isNull())
+            role->getProperty()->setCurValue(PROPERTY_DEST_DEVICE, mDestDevCurValue);
     }
 }
 
@@ -136,7 +141,7 @@ QStringList templateTree::getValueMeans(QString value)
 
 void templateTree::updateParamType(dragRole *role)
 {
-    int tableNum = role->getProperty()->tableNum();
+    std::string tableNum = role->getProperty()->tableNum();
     int codingNum = role->getProperty()->codingNum();
 
     Json::Value infoJs;
@@ -150,13 +155,28 @@ void templateTree::updateParamType(dragRole *role)
 
         bool isOk;
 
-        if(DATA_TYPE_NCHAR == dataType)
+        if( (DATA_TYPE_NCHAR == dataType) || (DATA_TYPE_NRAW == dataType))
         {
             role->getProperty()->setType(PROPERTY_FIX_VALUE, PROPERTY_STRING_TYPE);
             role->getProperty()->setReadOnly(PROPERTY_SIM_MODEL, true);
 
-            role->getProperty()->setInitValue(PROPERTY_FIX_VALUE, Json::Value(initValue.toStdString()));
-            role->getProperty()->setCurValue(PROPERTY_FIX_VALUE, Json::Value(initValue.toStdString()));
+            if(!(means.size() > 0))   //单值
+            {
+                role->getProperty()->setType(PROPERTY_FIX_VALUE, PROPERTY_STRING_TYPE);
+                role->getProperty()->setInitValue(PROPERTY_FIX_VALUE, Json::Value(initValue.toStdString()));
+                role->getProperty()->setCurValue(PROPERTY_FIX_VALUE, Json::Value(initValue.toStdString()));
+            }
+            else    //下拉框选择
+            {
+                Json::Value arrayJs;
+                foreach (QString m, means)
+                {
+                    arrayJs.append(m.toStdString());
+                }
+                role->getProperty()->setType(PROPERTY_FIX_VALUE, PROPERTY_ENUM_TYPE);
+                role->getProperty()->setInitValue(PROPERTY_FIX_VALUE, arrayJs);
+                role->getProperty()->setCurValue(PROPERTY_FIX_VALUE, Json::Value(means.at(0).toStdString()));
+            }
         }
         else if( (DATA_TYPE_IEEE32 == dataType) || (DATA_TYPE_IEEE64 == dataType))
         {
@@ -174,7 +194,11 @@ void templateTree::updateParamType(dragRole *role)
         {
             role->getProperty()->setReadOnly(PROPERTY_SIM_MODEL, false);
 
-            int tmpV = initValue.toInt(&isOk);
+            unsigned int tmpV = initValue.toInt(&isOk, 10);
+
+            if(!isOk)
+                tmpV = initValue.toUInt(&isOk, 16);
+
             if(!isOk)
                 tmpV = 0;
 
@@ -314,7 +338,7 @@ void templateTree::buildTree()
             item->addChild(itemSub);
 
             Json::Value groupN;
-            paramsTable::getInstance()->getValueFrameParamGroup(QString::fromStdString(cmdType[j][PARAM_TABLE_CMD_TYPE].asString()),groupN);
+            paramsTable::getInstance()->getValueFrameParamGroup(QString::fromStdString(systemN[i][PARAM_TABLE_SYSTEM].asString()), QString::fromStdString(cmdType[j][PARAM_TABLE_CMD_TYPE].asString()),groupN);
 
             for(int h = 0;h<groupN.size();h++)
             {
@@ -347,6 +371,8 @@ void templateTree::buildTree()
                     itemSubSub->setText(Name_Index, QString::fromStdString(groupN[h][PARAM_TABLE_GROUP_NAME].asString()));
                     //itemSubSub->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
                     //itemSubSub->setCheckState (0, Qt::Unchecked);//复选框
+
+
                 }
                 variant.setValue(dragData);
                 itemSubSub->setData(Table_Or_Coding_Index,Qt::UserRole,variant);
@@ -354,7 +380,7 @@ void templateTree::buildTree()
                 itemSub->addChild(itemSubSub);
 
                 Json::Value paramN;
-                paramsTable::getInstance()->getValueFrameParamPar(QString::fromStdString(groupN[h][PARAM_TABLE_GROUP_NAME].asString()),paramN);
+                paramsTable::getInstance()->getValueFrameParamPar(QString::fromStdString(systemN[i][PARAM_TABLE_SYSTEM].asString()),QString::fromStdString(cmdType[j][PARAM_TABLE_CMD_TYPE].asString()),QString::fromStdString(groupN[h][PARAM_TABLE_GROUP_NAME].asString()),paramN);
 
                 for(int g = 0;g<paramN.size();g++)
                 {
@@ -377,7 +403,7 @@ void templateTree::buildTree()
                         itemSubSubSub->setText(Table_Or_Coding_Index, QString::fromStdString(paramN[g][PARAM_TABLE_CODING_NUM].asString()));
                         itemSubSubSub->setText(Name_Index, QString::fromStdString(paramN[g][PARAM_TABLE_PARAM_NAME].asString()));                        
 
-                        dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asInt(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());
+                        dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asString(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());
 
                         updateParamType(dragData.get());
                     }else{
@@ -385,12 +411,14 @@ void templateTree::buildTree()
                         dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Cmd])));
 
                         dragData->getProperty()->setProperty(PROPERTY_BASE_INFO_WORD, paramN[g][PARAM_TABLE_INFO_WORD_TYPE]);
-                        dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asInt(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());                        
+                        dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asString(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());
                         updateConditionInit(dragData.get());
                         updateDestDevInitValue(dragData.get());
 
                         itemSubSubSub->setText(Table_Or_Coding_Index, QString::fromStdString(paramN[g][PARAM_TABLE_CODING_NUM].asString()));
                         itemSubSubSub->setText(Name_Index, QString::fromStdString(paramN[g][PARAM_TABLE_PARAM_NAME].asString()));                        
+
+                        ui->paramTreeWidget->expandItem(itemSubSubSub);
                     }                    
 
                     variant.setValue(dragData);
@@ -398,10 +426,34 @@ void templateTree::buildTree()
 
                     itemSubSub->addChild(itemSubSubSub);
                 }
+
+                ui->paramTreeWidget->collapseItem(itemSubSub);
             }
+
+            ui->paramTreeWidget->expandItem(itemSub);
         }
+
+        ui->paramTreeWidget->expandItem(item);
 
         ui->paramTreeWidget->addTopLevelItem(item);
         ui->paramTreeWidget->expandAll();
+    }
+
+    //重新展开与关闭
+    QTreeWidgetItemIterator Itor(ui->paramTreeWidget);
+    while (*Itor)
+    {
+        std::shared_ptr<dragRole> role = (*Itor)->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+        if(dragRole::Node_Param_Group == role->getNodeType())
+        {
+            ui->paramTreeWidget->collapseItem(*Itor);
+        }
+        else
+        {
+            ui->paramTreeWidget->expandItem(*Itor);
+        }
+
+        ++Itor;
     }
 }

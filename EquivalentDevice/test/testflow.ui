@@ -2,364 +2,640 @@
 <ui version="4.0">
  <class>testflow</class>
  <widget class="QWidget" name="testflow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1639</width>
-    <height>1020</height>
+    <width>1500</width>
+    <height>860</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>1</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1639</width>
-    <height>1020</height>
+    <width>1500</width>
+    <height>860</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1500</width>
+    <height>860</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>9</y>
-     <width>1621</width>
-     <height>1001</height>
+     <x>1161</x>
+     <y>2</y>
+     <width>318</width>
+     <height>858</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="8,2">
-    <property name="sizeConstraint">
-     <enum>QLayout::SetMaximumSize</enum>
+   <property name="minimumSize">
+    <size>
+     <width>318</width>
+     <height>858</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>318</width>
+     <height>858</height>
+    </size>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QGroupBox{
+	background:transparent;
+}</string>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QTextBrowser" name="textBrowserOutPut">
+    <property name="enabled">
+     <bool>true</bool>
     </property>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>任务名称：</string>
-              </property>
-              <property name="scaledContents">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelTaskName">
-              <property name="maximumSize">
-               <size>
-                <width>300</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_2">
-            <item>
-             <widget class="QLabel" name="label_6">
-              <property name="maximumSize">
-               <size>
-                <width>80</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>等效系统：</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="labelSubSysName">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QToolButton" name="toolButtonStart">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>开始</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../icon.qrc">
-              <normaloff>:/icon/play.ico</normaloff>:/icon/play.ico</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>72</width>
-              <height>72</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonIconOnly</enum>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButtonStop">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../icon.qrc">
-              <normaloff>:/icon/stop.ico</normaloff>:/icon/stop.ico</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>72</width>
-              <height>72</height>
-             </size>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButtonStartAll">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>开始</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../icon.qrc">
-              <normaloff>:/icon/play.ico</normaloff>:/icon/play.ico</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>72</width>
-              <height>72</height>
-             </size>
-            </property>
-            <property name="toolButtonStyle">
-             <enum>Qt::ToolButtonIconOnly</enum>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QToolButton" name="toolButtonStopAll">
-            <property name="minimumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>60</width>
-              <height>60</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="../icon.qrc">
-              <normaloff>:/icon/stop.ico</normaloff>:/icon/stop.ico</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>72</width>
-              <height>72</height>
-             </size>
-            </property>
-            <property name="autoRaise">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QTreeWidget" name="treeWidget">
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="wordWrap">
-         <bool>true</bool>
-        </property>
-        <attribute name="headerStretchLastSection">
-         <bool>false</bool>
-        </attribute>
-        <column>
-         <property name="text">
-          <string>流程</string>
-         </property>
-         <property name="font">
-          <font>
-           <weight>50</weight>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="background">
-          <color>
-           <red>206</red>
-           <green>206</green>
-           <blue>206</blue>
-          </color>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>值</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>触发条件</string>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="background">
-          <color>
-           <red>85</red>
-           <green>170</green>
-           <blue>255</blue>
-          </color>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>延时</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>发送时机</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>目标设备</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>测试状态</string>
-         </property>
-         <property name="background">
-          <color>
-           <red>206</red>
-           <green>206</green>
-           <blue>206</blue>
-          </color>
-         </property>
-        </column>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="QDockWidget" name="dockWidget">
-      <property name="windowTitle">
-       <string>信息显示</string>
-      </property>
-      <widget class="QWidget" name="dockWidgetContents_2">
-       <widget class="QTextBrowser" name="textBrowserOutPut">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="geometry">
-         <rect>
-          <x>0</x>
-          <y>10</y>
-          <width>321</width>
-          <height>961</height>
-         </rect>
-        </property>
-        <property name="html">
-         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>292</width>
+      <height>817</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>292</width>
+      <height>817</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>292</width>
+      <height>817</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTextBrowser{background-color:transparent;
+border-color:transparent;}
+
+QScrollBar:vertical{
+	width:5px;
+	background:rgb(0,0,0,10%);
+	padding-top:9px;
+	padding-bottom:9px;
+}
+
+
+QScrollBar::handle:vertical{
+	width:8px;
+	background:rgba(80,147,252);
+	border-radius:4px;
+	min-heigth:20px;
+}
+QScrollBar::handle:vertical:hover{
+	width:8px;
+	background:#72a7fb;
+	border-radius:4px;
+	min-heigth:20px;
+}
+
+QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
+	background:rgb(0,0,0,10%);
+	border-radius:4px;
+}</string>
+    </property>
+    <property name="html">
+     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </widget>
-     </widget>
-    </item>
-   </layout>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>23</x>
+      <y>10</y>
+      <width>281</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>13</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border:2px solid #ffffff;
+border-image: url(:/image/img/xian.png);
+border-top:none;
+border-left:none;
+border-right:none;
+color:#1e75ff;</string>
+    </property>
+    <property name="text">
+     <string>　  消息显示</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>23</x>
+      <y>17</y>
+      <width>23</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-image: url(:/image/img/dx.png)　no-repeat;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>254</x>
+      <y>12</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background-color:#1e75ff;
+	border:none;
+	outline:none;
+	color:#fff;
+}
+
+QPushButton:hover{
+	background-color:#4088f9;
+}</string>
+    </property>
+    <property name="text">
+     <string>清除</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>1</x>
+     <y>2</y>
+     <width>1140</width>
+     <height>858</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>35</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>25</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>80</width>
+      <height>25</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#1e75ff;</string>
+    </property>
+    <property name="text">
+     <string>任务名称：</string>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelTaskName">
+    <property name="geometry">
+     <rect>
+      <x>65</x>
+      <y>70</y>
+      <width>161</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>300</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>25</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#ffffff;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSubSysName">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>70</y>
+      <width>201</width>
+      <height>42</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>25</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#ffffff;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QTreeWidget" name="treeWidget">
+    <property name="geometry">
+     <rect>
+      <x>17</x>
+      <y>115</y>
+      <width>1105</width>
+      <height>730</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>1105</width>
+      <height>730</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>1105</width>
+      <height>730</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QTreeWidget{
+	background-color:transparent;
+	border:1px solid #1e75ff;
+}
+
+QTreeWidget QHeaderView::section{
+	border-image: url(:/image/img/treeBg.png);
+	height:39px;
+}
+QTreeView::item:hover{
+	background-color:#4c9cff;
+}
+QTreeView::item:selected{
+	background-color:#4c9cff;
+}
+QScrollBar:vertical{
+	width:5px;
+	background:rgb(0,0,0,10%);
+	padding-top:9px;
+	padding-bottom:9px;
+}
+
+
+QScrollBar::handle:vertical{
+	width:8px;
+	background:rgba(80,147,252);
+	border-radius:4px;
+	min-heigth:20px;
+}
+QScrollBar::handle:vertical:hover{
+	width:8px;
+	background:#72a7fb;
+	border-radius:4px;
+	min-heigth:20px;
+}
+
+QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
+	background:rgb(0,0,0,10%);
+	border-radius:4px;
+}
+</string>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <attribute name="headerStretchLastSection">
+     <bool>false</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>流程</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>值</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>触发条件</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>延时</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>发送时机</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>目标设备</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>测试状态</string>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="foreground">
+      <brush brushstyle="SolidPattern">
+       <color alpha="255">
+        <red>30</red>
+        <green>117</green>
+        <blue>255</blue>
+       </color>
+      </brush>
+     </property>
+    </column>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>35</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>80</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="font">
+     <font>
+      <family>微软雅黑</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#1e75ff;</string>
+    </property>
+    <property name="text">
+     <string>等效系统：</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonStart">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>40</y>
+      <width>166</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>166</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>166</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: url(:/image/img/startC.png);
+border:none;
+outline:none;
+	color:#fff;
+}
+
+QPushButton:hover{
+	background-image: url(:/image/img/startCH.png);
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>72</width>
+      <height>72</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonStop">
+    <property name="geometry">
+     <rect>
+      <x>940</x>
+      <y>40</y>
+      <width>166</width>
+      <height>48</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>166</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>166</width>
+      <height>48</height>
+     </size>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: url(:/image/img/stopCN.png);
+	border:none;
+	outline:none;
+	color:#fff;
+}
+</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>72</width>
+      <height>72</height>
+     </size>
+    </property>
+   </widget>
   </widget>
  </widget>
- <resources>
-  <include location="../icon.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

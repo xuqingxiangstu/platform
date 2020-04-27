@@ -403,6 +403,7 @@ void propertyWidget::addGroupProperty(QString name)
 
 void propertyWidget::addProperty(QString fatherName, Json::Value json)
 {
+    isUpDate = false;
     foreach(QtProperty *pro, mEditorProperty->properties())
     {
         if( (pro->propertyName().compare(fatherName) == 0))
@@ -417,6 +418,7 @@ void propertyWidget::addProperty(QString fatherName, Json::Value json)
             break;
          }
     }
+    isUpDate = true;
 }
 
 void propertyWidget::removeProperty(QString propertyName)

@@ -24,11 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     try
     {
         templateProperty::getInstance()->init("./cfgfile/property.json");
-    }
-    catch(std::runtime_error err)
-    {
-        qDebug() << err.what();
-    }
+
 
     mPropertyWidgetObj = new propertyWidget();
     ui->propertyWidgetHorizontalLayout->addWidget(mPropertyWidgetObj);
@@ -69,6 +65,32 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave, &QAction::triggered, [=](){
         onSave();
     });
+    }
+    catch(std::runtime_error err)
+    {
+        //qDebug() << err.what();
+        QMessageBox::information(this, "提示", QString::fromStdString(err.what()));
+        exit(0);
+    }
+    catch(Json::LogicError err)
+    {
+        QMessageBox::information(this, "提示", QString::fromStdString(err.what()));
+        exit(0);
+    }
+    catch(...)
+    {
+        QMessageBox::information(this, "提示", "[ERROR]...");
+        exit(0);
+    }
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if ((event->modifiers() == Qt::CTRL) && (event->key() == Qt::Key_N))//组合键触发
+    {
+        //onNewFlow();
+    }
+    qDebug() << event->key();
 }
 
 

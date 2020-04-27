@@ -473,7 +473,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 tmpValue["coding"] = coding;
 
@@ -1188,7 +1188,7 @@ namespace Pf
                 int bitSize = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asInt();
                 std::string bigSmall = paramValues[index][PARAM_TABLE_L_B_ENDIAN].asString();
                 std::string dataType = paramValues[index][PARAM_TABLE_DATA_TYPE].asString();
-                std::string initValue = paramValues[index][PARAM_TABLE_PARAM_BIT_SIZE].asString();
+                std::string initValue = paramValues[index][PARAM_TABLE_INIT_VALUE].asString();
 
                 if(startPos == -1)
                     startPos = preStartPos;

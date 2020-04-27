@@ -27,13 +27,13 @@ namespace Pf
 
           UT_THROW_EXCEPTION(strErr.str());
         }
-        std::string type = root["type"].asString();
+        mType = root["type"].asString();
 
         mIpAddr = root["ip_addr"].asString();
 
-        mPort = std::to_string(root["port"].asInt());
+        mPort = std::to_string(root["port"].asInt());        
 
-        if(type == "local")
+        if(mType == LOCAL_TYPE)
         {
             udp = std::make_shared<PfBus::UnicastUdp>();
 
@@ -41,12 +41,21 @@ namespace Pf
         }
     }
 
-      bool virtualUnicastAdapter::sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr, const int &port)
+      bool virtualUnicastAdapter::sendMsg(const char *msg, const int &msgSize)
       {
           bool res = false;
 
           if(udp)
-              res = udp->sendMsg((unsigned char*)msg, msgSize, ipAddr, std::to_string(port));
+          {
+              if(mType == LOCAL_TYPE)
+              {
+                  //res = udp->sendMsg((unsigned char*)msg, msgSize, ipAddr, std::to_string(port));
+              }
+              else
+              {
+                  res = udp->sendMsg((unsigned char*)msg, msgSize, mIpAddr, mPort);
+              }
+          }
 
           return res;
       }
@@ -69,17 +78,7 @@ namespace Pf
               res = udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, timeOut);
 
           return res;
-      }
-
-      bool virtualUnicastAdapter::receiveMsg(char *msg, int &rcvSize, std::string &rcvIp, unsigned short &rcvPort, const int &maxRcvSize, const unsigned int &timeOut)
-      {
-          bool res = false;
-
-          if(udp)
-              res = udp->receiveMsg((unsigned char*)msg, (unsigned int*)&rcvSize, maxRcvSize, rcvIp, rcvPort, timeOut);
-
-          return res;
-      }
+      }     
 
       std::string virtualUnicastAdapter::getClassName()
       {

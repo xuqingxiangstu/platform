@@ -7,7 +7,7 @@ else:unix:!macx: TARGET = ../../../adapterLib/ZmqRcvAdapter
 TEMPLATE = lib
 
 DEFINES += ZMQRCVADAPTER_LIBRARY
-CONFIG += C++11
+CONFIG += c++11
 SOURCES += ZmqRcvAdapter.cpp
 
 HEADERS += ZmqRcvAdapter.h\

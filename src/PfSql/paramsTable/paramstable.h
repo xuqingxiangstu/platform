@@ -33,6 +33,7 @@
 #define PARAM_TABLE_MAX_VALUE   "MAX_VALUE"
 
 /***************数据类型***************************/
+#define DATA_TYPE_NRAW      "NRAW"
 #define DATA_TYPE_NCHAR     "NCHAR"
 #define DATA_TYPE_UINT8     "UINT8"
 #define DATA_TYPE_UINT16    "UINT16"
@@ -79,8 +80,6 @@ public:
      * }
      * @return
      */
-    bool getValue(int tableNum, int coding, Json::Value &value);
-
     bool getValue(std::string tableNum, int coding, Json::Value &value);
 
     bool getValue(std::string tableNum, std::string  coding, Json::Value &value);
@@ -107,6 +106,8 @@ public:
      */
     bool getValues(int tableNum, Json::Value &value);
 
+    bool getValues(unsigned int tableNum, Json::Value &value);
+
     bool getValues(const std::string &tableNum, Json::Value &value);
 
     /**
@@ -129,14 +130,14 @@ public:
            * @param value
            * @return
            */
-          bool getValueFrameParamGroup(QString cmdType, Json::Value &value);
+          bool getValueFrameParamGroup(QString system, QString cmdType, Json::Value &value);
           /**
            * @brief getValueFrameParamPar
            * @param group
            * @param value
            * @return
            */
-          bool getValueFrameParamPar(QString group, Json::Value &value);
+          bool getValueFrameParamPar(QString system,QString cmdType, QString group, Json::Value &value);
 private:
     paramsTable();
 private:
