@@ -5,7 +5,8 @@
 
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
-
+#include <mutex>
+#include <QMutex>
 #include <memory>
 
 #include "../../PfCommon/jsoncpp/json.h"
@@ -66,6 +67,10 @@ public:
     ~paramsTable();
 public:
 
+    bool getStateValues(Json::Value &value);
+
+    bool getParamValues(Json::Value &value);
+
     bool getCmdValues(Json::Value &value);
 
     /**
@@ -80,9 +85,9 @@ public:
      * }
      * @return
      */
-    bool getValue(std::string tableNum, int coding, Json::Value &value);
+    bool getValue(const QString &tableNum, int coding, Json::Value &value);
 
-    bool getValue(std::string tableNum, std::string  coding, Json::Value &value);
+    bool getValue(const QString &tableNum, const QString &coding, Json::Value &value);
 
     /**
      * @brief getValues 通过表号获取相应参数信息多组(已排序)
@@ -143,6 +148,7 @@ private:
 private:
     const QString mTableName = "params_table";
     QSqlDatabase mDb;
+    QMutex mMutex;
 private:
     static paramsTable *mInstance;
 };

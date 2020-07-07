@@ -10,6 +10,7 @@
  */
 
 #include "../../PfCommon/TinyXml/tinyxml.h"
+#include "../../PfCommon/jsoncpp/json.h"
 
 #include <string>
 #include <mutex>
@@ -42,7 +43,17 @@ namespace Pf
              */
             virtual void init(const TiXmlElement *ele) {}
 
+            /**
+             * @brief init  通过Json序列化字符串初始化
+             * @param json  字符串
+             */
             virtual void init(const std::string &json){}
+
+            /**
+             * @brief init  通过Json节点初始化
+             * @param json  节点
+             */
+            virtual void init(const Json::Value &json){}
 
             /**
              * @brief sendMsg   发送消息

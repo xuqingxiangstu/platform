@@ -62,20 +62,20 @@ public:
     void setRecordUuid(const std::string &uuid) override {mRecordUuid = uuid;}
     void setDevUuid(const std::string &uuid) override {mDevUuid = uuid;}
 private:
-    void respondCmd(int frameType, int code, Json::Value array);
+    void respondCmd(int frameType, int code, Json::Value array, unsigned char srcNode, unsigned char dstNode);
     void toUi(const std::string &msg, bool state = true);
     std::string getCmdName(int type);
     bool getTableAndCoding(int type, std::string &table, std::string &coding);
 private:
-    void exeCmd(Json::Value regionJs);
+    void exeCmd(Json::Value regionJs, unsigned char srcNode, unsigned char dstNode);
 
-    void testInfo(Json::Value regionJs);
+    void testInfo(Json::Value regionJs, unsigned char srcNode, unsigned char dstNode);
 
-    void queryVersion(Json::Value regionJs);
+    void queryVersion(Json::Value regionJs, unsigned char srcNode, unsigned char dstNode);
 
-    void checkCmd(Json::Value regionJs);
+    void checkCmd(Json::Value regionJs, unsigned char srcNode, unsigned char dstNode);
 
-    void sendFsCmd(Json::Value regionJs);
+    void sendFsCmd(Json::Value regionJs, unsigned char srcNode, unsigned char dstNode);
 private:
     Pf::PfAdapter::Adapter *mBusObj;
     Pf::PfAdapter::Adapter *mUiBus;

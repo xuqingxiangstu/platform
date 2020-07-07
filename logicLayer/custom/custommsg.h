@@ -36,6 +36,7 @@ private:
     Pf::PfAdapter::Adapter *mBusAdapter;
     std::shared_ptr<Pf::PfIcdWorkBench::frameObj> mIcdObj;
     Pf::PfAdapter::Adapter *mUiAdapter;
+    std::shared_ptr<zy> mZyObj;
     std::string mRecordUuid;
 };
 

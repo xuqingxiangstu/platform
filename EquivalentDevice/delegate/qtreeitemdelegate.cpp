@@ -16,6 +16,7 @@ qtreeitemdelegate::qtreeitemdelegate(QWidget *parent,QString sysName,QString rec
     this->setAutoFillBackground(true);
     ui->sysName->setStyleSheet("color:#ffffff");
     m_errId.clear();
+    m_isAllSelectflag = false;
 }
 
 qtreeitemdelegate::~qtreeitemdelegate()
@@ -89,13 +90,14 @@ void qtreeitemdelegate::on_checkBox_stateChanged(int arg1)
         ui->clickCurrent->hide();
         this->setStyleSheet("#qtreeitemdelegate{border-image:url(:/image/img/itemTreeUnBg.png);}");
     }
-
-    if(arg1 == Qt::Checked)
-    {
-        emit sendToMain(m_recUuid, true);
-    }else{
-        emit sendToMain(m_recUuid, false);
-    }
+    //if(!m_isAllSelectflag){
+        if(arg1 == Qt::Checked)
+        {
+            emit sendToMain(m_recUuid, true);
+        }else{
+            emit sendToMain(m_recUuid, false);
+        }
+    //}
 }
 void qtreeitemdelegate::setErrTreeBg(QString recoid,bool flag)
 {
@@ -126,4 +128,18 @@ void qtreeitemdelegate::setErrId(QVector<QString> &msg)
               this->setStyleSheet("#qtreeitemdelegate{border-image:url(:/image/img/itemTreeBgErr.png);}");
           }
     }
+}
+
+void qtreeitemdelegate::setChecked(bool flag)
+{
+    m_isAllSelectflag = flag;
+    if(flag)
+    {
+        ui->checkBox->setChecked(true);
+        emit sendToMain(m_recUuid, true);
+    }else{
+        ui->checkBox->setChecked(false);
+        emit sendToMain(m_recUuid, false);
+    }
+
 }

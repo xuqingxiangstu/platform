@@ -5,6 +5,7 @@
 #include "../../PfCommon/tools/ut_error.h"
 #include "../icdData/datatype.h"
 #include "../../PfSql/paramsTable/paramstable.h"
+#include "../frameNumber/framenumber.h"
 
 namespace Pf
 {
@@ -28,10 +29,6 @@ namespace Pf
         {
             specialFrame93 *obj = new specialFrame93();           
 
-            for(auto itor = mProtocolCnt.begin() ; itor != mProtocolCnt.end(); itor++)
-            {
-                obj->mProtocolCnt[itor->first] = (itor->second);
-            }
 
             std::shared_ptr<frameObj> tmp(obj);
 
@@ -79,17 +76,12 @@ namespace Pf
             //更新计数
             unsigned int src = outValue[0];
             unsigned int dst = 0;
-            auto findItor = mProtocolCnt.find(std::make_pair(src, dst));
-            if(findItor == mProtocolCnt.end())
-            {
-                mProtocolCnt[std::make_pair(src, dst)] = 0;
-            }
 
-            outValue[1] = mProtocolCnt[std::make_pair(src, dst)];
+            int cmdCnt = frameNumberManager::getInstance()->getFrameNumber(mCurUuid, getFrameName(), src, dst) & 0xFF;
 
-            mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
+            outValue[1] = cmdCnt;
 
-            //填充CRC
+             //填充CRC
 
             unsigned short crc = PfCommon::Crc::calCrc16(&outValue.at(0), outValue.size());
 
@@ -157,7 +149,7 @@ namespace Pf
                     //modify xqx 20200423 当为字符串时，如果设置大小则按照设置填充，否则按照字符串大小进行填充
                     if(0 == byteSize)//按照字符串填充
                     {
-                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                        memcpy(tmpBuf + startPos,  initValue.c_str(), initValue.size());
                         preStartPos = startPos + initValue.size();
                         outSize += initValue.size();
                     }
@@ -174,7 +166,7 @@ namespace Pf
                         {
                             cpySize = byteSize;
                         }
-                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), cpySize);
+                        memcpy(tmpBuf + startPos,  initValue.c_str(), cpySize);
                         preStartPos = startPos + byteSize;
                         outSize += byteSize;
                     }
@@ -229,29 +221,27 @@ namespace Pf
                 return false;
 
             //消息标识
-            result["frame_type"] = u8Msg[0];
-#if 0
-            //step2：计算crc校验
+            unsigned int frameType = 0;
+            frameType = u8Msg[0];
 
-            unsigned short getCrc = data.getData(u8Msg, u32Size, u32Size - 2, 2, 0, 0);
-            unsigned short calCrc = PfCommon::Crc::calCrc16(&u8Msg[0], u32Size - 2);
+            result["frame_type"] = frameType;
 
-            if(calCrc != getCrc)
+            if(0x93 == frameType)//93帧由 消息标识+子类型组成
             {
-                strErr.str("");
-                strErr << "帧校验和校验错误, 接收0x" << std::hex << getCrc << " 实际计算0x" << calCrc;
-                UT_THROW_EXCEPTION(strErr.str());
+                //子帧标识
+                unsigned char subFrameType = u8Msg[2];
+
+                frameType = (u8Msg[0] << 8) | u8Msg[2];
             }
 
-            //step3：获取表号
-            int tableNum = 0;
+            // 根据帧类型查找数据库进行解析
 
-            tableNum = data.getData(u8Msg, u32Size, 0, 1, 0, 0);
+            Json::Value regionJs;
 
-            //首地址除去表号
+            _parseRegion(frameType, u8Msg, u32Size, regionJs);
 
-            _parseRegion(tableNum, &u8Msg[0], u32Size - 2, result);
-#endif
+            result["region"] = regionJs;
+
             return !result.isNull();
         }
 
@@ -260,7 +250,7 @@ namespace Pf
             return false;
         }
 
-        void specialFrame93::_parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
+        void specialFrame93::_parseRegion(const unsigned int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue)
         {
             //从数据库中获取参数信息
             Json::Value paramValues;
@@ -270,9 +260,7 @@ namespace Pf
             int preValue = 0;
             int preStartPos = 0;
 
-            Json::Value tmpJs;
-
-            tmpJs["table_num"] = tableNum;
+            regionValue["table_num"] = tableNum;
 
             Json::Value dataJs;
 
@@ -295,6 +283,12 @@ namespace Pf
 
                 if(ncharType == dataType)
                 {
+                    //modify xqx 2020-6-28 09:28:17 字符串长度大于总长度时按照最小获取（字符串异常），软件不至于崩溃
+
+                    preValue > (u32Size - startPos) ? preValue = u32Size - startPos : preValue;
+
+                    //end
+
                     std::string calResult = std::string((const char*)&u8Msg[startPos], preValue);
 
                     tmpValue["value"] = calResult;
@@ -326,9 +320,7 @@ namespace Pf
             }
 
             if(!dataJs.isNull())
-                tmpJs["data"] = dataJs;
-
-            regionValue["region"] = tmpJs;
+                regionValue["data"] = dataJs;
         }
 
         extern "C"

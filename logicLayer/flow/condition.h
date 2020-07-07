@@ -4,25 +4,37 @@
 
 #include "../src/PfCommon/TinyXml/tinyxml.h"
 #include "../src/PfCommon/jsoncpp/json.h"
-
+#include "../virtualParams/virtualparams.h"
 #include <vector>
+#include <mutex>
 #include <tuple>
-
+#include <QDebug>
 
 ///启动条件
 class startCondition
 {
 public:
+    startCondition(){}
+    ~startCondition(){
+        qDebug() << "~startCondition";
+    }
+public:    
     void init(TiXmlElement *);
     bool isConform();
     static std::string className(){return "startCondition";}
     Json::Value getRunItems();
-    static bool isConform(const std::string &uuid, const std::string &table, const std::string &coding);
-private:
-    //std::vector<std::tuple<inValueType, outValueType>> mParams;
-    std::string mId;
-    std::string mTable;
-    std::string mCoding;
+    QString getId(){return mId;}
+    QString getTable(){return mTable;}
+    QString getCoding(){return mCoding;}
+    Json::Value getValue(){return mValue;}
+private:   
+    QString mId;
+    QString mTable;
+    QString mCoding;
+    Json::Value mValue;
+    std::mutex mMutex;
+    mapKey mConditionKey;
+
 };
 
 ///停止条件
@@ -32,11 +44,13 @@ public:
     void init(TiXmlElement *);
     bool isConform();
     static std::string className(){return "stopCondition";}
-private:
-    //std::vector<std::tuple<inValueType, outValueType>> mParams;
-    std::string mId;
-    std::string mTable;
-    std::string mCoding;
+private:   
+    QString mId;
+    QString mTable;
+    QString mCoding;
+    Json::Value mValue;
+    std::mutex mMutex;
+    mapKey mConditionKey;
 };
 
 //时机

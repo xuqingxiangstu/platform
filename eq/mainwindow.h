@@ -3,12 +3,14 @@
 
 #include <QMainWindow>
 #include <QMap>
+#include <QLabel>
 #include <QKeyEvent>
 #include "templatetree.h"
 #include "flowtree.h"
 #include "recordnavigation.h"
 #include "./propertyui/propertywidget.h"
 #include "cmddecode.h"
+#include "versionform.h"
 
 namespace Ui {
 class MainWindow;
@@ -25,8 +27,6 @@ private:
     void onSave();
 
     void closeEvent( QCloseEvent * event);
-
-    void keyPressEvent(QKeyEvent *event);
 public slots:
     /**
      * @brief onFlowChange  流程变化
@@ -76,6 +76,7 @@ private:
     bool isExit;
     QStringList mSaveProjectUuid;
     std::shared_ptr<cmdDecode> mCmdDecodeObj;   //协议解析句柄
+    versionForm *mVersionWidget;  ///< 版本号
 private:
     Ui::MainWindow *ui;
 };

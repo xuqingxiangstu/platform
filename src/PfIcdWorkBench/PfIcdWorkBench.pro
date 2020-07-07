@@ -4,9 +4,8 @@ include (./common/common.pri)
 
 SUBDIRS += \
     icdData \
-    icdFrameAdapter\
-    #variableFrame \
-    generalFrame \
+    frameNumber \
+    icdFrameAdapter\    
     frame93 \
     frameFE \
     frameMiddle \
@@ -15,4 +14,5 @@ SUBDIRS += \
     frameDM \
     frameCZXK \
     frameC3 \
-    frame1553B
+    frame1553B \
+    frameJG

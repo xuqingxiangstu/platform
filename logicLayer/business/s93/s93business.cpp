@@ -22,18 +22,67 @@ void s93Business::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value 
     if(result.isNull())
         return;
 
-    int frameType = result["frame_type"].asInt();
+    unsigned int frameType = result["frame_type"].asUInt();
 
-    if(0x43 == frameType)
-    {
-        toUi("接收到时间同步命令");
-    }
-    else if(0xC5 == frameType)
-    {
-        toUi("清除状态命令");
-    }
-    //
+    Json::Value regionValue = result["region"];
 
+
+    Json::Value array = regionValue["data"];
+
+    Json::Value table = regionValue["table_num"];
+
+    for(int index = 0; index < array.size(); index++)
+    {
+        int coding = array[index]["coding"].asInt();
+
+        mapKey vKey(mDevUuid.c_str(), QString::number(table.asInt(), 16), std::to_string(coding).c_str());
+
+        virtualParams::getInstance()->setValue(vKey, array[index]["value"]);
+
+        qDebug() << "[93]->" << mDevUuid.c_str() << + ":" << QString::number(table.asInt(), 16) << "," << QString::number(coding) << "," << array[index]["value"].asString().c_str();
+    }
+}
+
+std::string s93Business::getVirtualCoding(unsigned char table)
+{
+    std::string coding = "";
+    //根据EXcel配置映射关系
+
+    switch(table)
+    {
+    case 0x43:
+        coding = "0";
+        break;
+    case 0x81:
+        coding = "1";
+        break;
+    case 0x8A:
+        coding = "2";
+        break;
+    case 0x8C:
+        coding = "3";
+        break;
+    case 0x8F:
+        coding = "4";
+        break;
+    case 0x90:
+        coding = "5";
+        break;
+    case 0x91:
+        coding = "6";
+        break;
+    case 0x92:
+        coding = "7";
+        break;
+    case 0x93:
+        coding = "8";
+        break;
+    case 0xC5:
+        coding = "9";
+        break;
+    }
+
+    return coding;
 }
 
 void s93Business::setBusObj(Pf::PfAdapter::Adapter *obj, const std::string &dstIp, const int &dstPort)

@@ -1,6 +1,8 @@
 #include "readxml.h"
 #include <QMetaType>
 #include <QDebug>
+#include <QFile>
+#include <iostream>
 #include "../property/templateproperty.h"
 #include "../src/PfSql/paramsTable/paramstable.h"
 #include "../src/PfSql/paramsTable/systemtable.h"
@@ -40,19 +42,26 @@ void readXml::run()
 
     TiXmlDocument *mXmlDoc = new TiXmlDocument(mCurPath.toStdString().c_str());
 
-    if(!mXmlDoc->LoadFile())
+    try
     {
-        strErr << "[ERROR](xml)Open File Error" << mCurPath.toStdString() << "\n";
-        emit errInfo(QString(strErr.str().c_str()));
-    }
-    else
-    {
-        TiXmlElement *mRoot = mXmlDoc->RootElement();
+        if(!mXmlDoc->LoadFile())
+        {
+            strErr << "[ERROR](xml)Open File Error" << mCurPath.toStdString() << "\n";
+            emit errInfo(QString(strErr.str().c_str()));
+        }
+        else
+        {
+            TiXmlElement *mRoot = mXmlDoc->RootElement();
 
-        initConditionValue();
-        initDestDevInitValue();
-        initFeInitValue();
-        readFlow(mRoot);
+            initDestDevInitValue();
+            initFeInitValue();
+
+            readFlow(mRoot);
+        }
+    }
+    catch(std::runtime_error err)
+    {
+        qDebug() << "[ERROR]readXml" << err.what();
     }
 
     emit readOver();
@@ -121,15 +130,6 @@ void readXml::initDestDevInitValue()
     }
 }
 
-void readXml::updateConditionInit(dragRole *role)
-{
-    if(!mConditionInitValue.isNull())
-    {
-        role->getProperty()->setInitValue(PROPERTY_START_CONDITION, mConditionInitValue);
-        role->getProperty()->setInitValue(PROPERTY_STOP_CONDITION, mConditionInitValue);
-    }
-}
-
 void readXml::updateFeSysInitValue(dragRole *role)
 {
     if(!mFeInitValue.isNull())
@@ -159,32 +159,56 @@ void readXml::initFeInitValue()
     }
 }
 
-void readXml::initConditionValue()
+QStringList readXml::getValueMeans(QString value)
 {
-    Json::Value cmdJs;
+    QStringList meansList;
 
-    if(paramsTable::getInstance()->getCmdValues(cmdJs))
+    if(value.compare("") != 0)
     {
-        Json::Value noJs;
-        noJs[PROPERTY_CONDITION_VALUE_NAME] = PROPERTY_CONDITION_NO;
-        noJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = -1;
-        noJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = -1;
+        meansList = value.split(";");
 
-        mConditionInitValue.append(noJs);
-
-        for(int index = 0; index < cmdJs.size(); index++)
-        {
-            Json::Value tmpJs;
-
-            tmpJs[PROPERTY_CONDITION_VALUE_NAME] = cmdJs[index][PARAM_TABLE_PARAM_NAME];
-            tmpJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = cmdJs[index][PARAM_TABLE_TABLE_NUM];
-            tmpJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = cmdJs[index][PARAM_TABLE_CODING_NUM];
-
-            mConditionInitValue.append(tmpJs);
-        }
+        //qDebug() << meansList;
     }
+
+    return meansList;
 }
 
+
+nodeProperty *readXml::getNewAttr(Json::Value saveJs)
+{    
+    nodeProperty saveProperty(saveJs);
+
+    nodeProperty *newProperty = new nodeProperty(templateProperty::getInstance()->getProperty(saveProperty.getKey()));
+
+    for(auto pro : newProperty->mProperty)
+    {
+        if(saveProperty.isExist(pro->name()))
+        {
+            //modify xqx 2020-5-26 10:58:20 当类型不一致时默认值按照存储（固定值时软件启动后会更改相应类型及值）
+            if(pro->name() == "fixValue")
+            {
+                pro->setInitValue(saveProperty.initValue(pro->name()));
+            }
+            //end
+
+            pro->setType(saveProperty.type(pro->name()));
+
+            pro->setCurValue(saveProperty.curValue(pro->name()));
+            pro->setReadOnly(saveProperty.isReadOnly(pro->name()));
+            pro->setVisible(saveProperty.isVisible(pro->name()));
+        }
+    }
+
+    newProperty->setTableNum(saveProperty.tableNum());
+    newProperty->setCodingNum(saveProperty.codingNum());
+
+    //modify xqx 2020-5-23 16:25:34,增加基本属性中表号编码
+    newProperty->setProperty(PROPERTY_BASE_TABLE_NUM, Json::Value(saveProperty.tableNum()));
+    newProperty->setProperty(PROPERTY_BASE_CODING_NUM, Json::Value(saveProperty.codingNum()));
+    //end
+
+    return newProperty;
+}
 
 void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
 {
@@ -214,12 +238,13 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
             continue;
 
         QString jsStr = jsonEle->GetText();
+
         Json::Value jsValue;
         Json::Reader jsonReader;
         if (!jsonReader.parse(jsStr.toStdString(), jsValue))
             continue;
 
-        nodeProperty *pro = new nodeProperty(jsValue);
+        nodeProperty *pro = getNewAttr(jsValue);
 
         std::shared_ptr<dragRole> testItemRole = std::make_shared<dragRole>();
 
@@ -231,7 +256,6 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
         {
             testItemRole->setNodeType(dragRole::Node_Cmd);
 
-            updateConditionInit(testItemRole.get());
             updateDestDevInitValue(testItemRole.get());
             updateFeSysInitValue(testItemRole.get());
 
@@ -241,9 +265,35 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
         {
             testItemRole->setNodeType(dragRole::Node_Param_Group);
 
-            updateConditionInit(testItemRole.get());
             updateDestDevInitValue(testItemRole.get());
             updateFeSysInitValue(testItemRole.get());
+
+            std::string tableString = "";
+
+            //modify xqx 2020-5-26 13:06:58 获取表号
+            if(
+                    testItemEle->FirstChildElement("action") &&
+                    testItemEle->FirstChildElement("action")->FirstChildElement("frame") &&
+                    testItemEle->FirstChildElement("action")->FirstChildElement("frame")->FirstChildElement("datafields")
+                    )
+            {
+                TiXmlElement *datafielsEle = testItemEle->FirstChildElement("action")->FirstChildElement("frame")->FirstChildElement("datafields");
+                if(datafielsEle->FirstChildElement("cmd") && datafielsEle->FirstChildElement("cmd")->FirstChildElement("table"))
+                {
+                    tableString = datafielsEle->FirstChildElement("cmd")->FirstChildElement("table")->GetText();
+                }
+                else if(datafielsEle->FirstChildElement("param") && datafielsEle->FirstChildElement("param")->FirstChildElement("table"))
+                {
+                    tableString = datafielsEle->FirstChildElement("param")->FirstChildElement("table")->GetText();
+                }
+            }
+            if(tableString != "")
+            {
+                pro->setTableNum(tableString);
+                pro->setProperty(PROPERTY_BASE_TABLE_NUM, Json::Value(tableString));
+            }
+            //end
+
 
             //获取subJson节点
             TiXmlElement *subJsonEle = testItemEle->FirstChildElement("subJson");
@@ -251,6 +301,8 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
                 continue;
 
             QString subJsStr = subJsonEle->GetText();
+
+
             Json::Value subJsValue;
             Json::Reader subJsonReader;
             if (!subJsonReader.parse(subJsStr.toStdString(), subJsValue))
@@ -265,7 +317,14 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
             {
                 Json::Value paramJs = subJsValue[index];
 
-                nodeProperty *paramPro = new nodeProperty(paramJs);
+//                nodeProperty *paramPro = new nodeProperty(paramJs);
+
+//                //modify xqx 2020-5-23 16:25:34,增加基本属性中表号编码
+//                paramPro->setProperty(PROPERTY_BASE_TABLE_NUM, Json::Value(paramPro->tableNum()));
+//                paramPro->setProperty(PROPERTY_BASE_CODING_NUM, Json::Value(paramPro->codingNum()));
+//                //end
+
+                nodeProperty *paramPro = getNewAttr(paramJs);
 
                 std::shared_ptr<dragRole> paramRole = std::make_shared<dragRole>();
 

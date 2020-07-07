@@ -21,6 +21,8 @@ public:
     void setParam(const Json::Value &param) override;
 private:
     void toUi(const std::string &msg, bool state = true);
+
+    void exeCmd(const Pf::PfIcdWorkBench::byteArray &inData);
 private:
     Pf::PfAdapter::Adapter *mBusObj;
     Pf::PfAdapter::Adapter *mUiBus;
@@ -31,6 +33,7 @@ private:
     int mDstPort;
     unsigned short mRtAddr;
     unsigned short mSaAddr;
+    unsigned short mCmdCnt;///< 命令计数
 };
 
 #endif // M1553BBUSINESS_H

@@ -1,5 +1,6 @@
 #include "rcvtask.h"
 #include <QTime>
+#include <QDateTime>
 #include "../src/PfCommon/tools/ut_error.h"
 #include "../src/PfAdapter/m1553Adapter/m1553adapter.h"
 //#define DEBUG_TASK  0
@@ -40,7 +41,7 @@ void rcvTask::startTask()
     if(!isRunning())
     {
 
-initObj();
+        initObj();
 #ifndef DEBUG_TASK
         start();
 #endif
@@ -65,12 +66,12 @@ void rcvTask::onSwitchPermiss(qint64 obj, bool status)
     mPermiss[obj] = status;
 }
 
-void rcvTask::setRcvUuid(const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &uuids)
+void rcvTask::setRcvUuid(std::tuple<std::string, std::string, std::string, std::string> &uuid)
 {
     mAdapters.clear();
 
     //获取适配器
-    for(auto uuid : uuids)
+    //for(auto uuid : uuids)
     {
         Pf::PfAdapter::Adapter *obj;
         if(mPfAdapterManager->getAdapter(std::get<0>(uuid), &obj))
@@ -87,12 +88,7 @@ void rcvTask::setRcvUuid(const std::vector<std::tuple<std::string, std::string, 
 
 void rcvTask::deleteObj()
 {
-    for(auto itor = mRecordsObj.begin(); itor != mRecordsObj.end(); )
-    {
-        (*itor).reset();
 
-        mRecordsObj.erase(itor);
-    }
 }
 
 void rcvTask::initObj()
@@ -107,23 +103,6 @@ void rcvTask::initObj()
         connect(this, &rcvTask::decode, mDecodingPoolObj.get(), &decodingPool::decode);
         connect(mDecodingPoolObj.get(), &decodingPool::result, this, &rcvTask::decodeResult);
     }
-
-    //初始化日志模块
-
-    mRecordsObj.clear();
-
-    //日志
-    for(auto adapter : mAdapters)
-    {         
-        std::shared_ptr<Pf::PfCommon::RecordLog> rd = std::make_shared<Pf::PfCommon::RecordLog>();
-
-        rd->setUuid(std::get<Adapter_Uuid_Index>(adapter).c_str());
-        rd->setSource(std::get<Adapter_Name_Index>(adapter));
-
-        connect(this, &rcvTask::record, rd.get(), &Pf::PfCommon::RecordLog::record);
-
-        mRecordsObj.emplace_back(rd);        
-    }
 }
 
 
@@ -133,7 +112,13 @@ void rcvTask::run()
     char rcvBuf[rcvMaxSize] = {0};
     int rcvSize = 0;
     std::string rcvIp;
+    int m1553BCycle = 100;
     unsigned short rcvPort;
+    QString recordUuid;
+    QString uuid;
+    QString ptrl;
+
+    auto beginTime = std::chrono::high_resolution_clock::now();
 
 #ifndef DEBUG_TASK
     while(!mIsStop)
@@ -146,9 +131,30 @@ void rcvTask::run()
             if(!mPermiss[(qint64)static_cast<void *>(busObj)])
                 continue;
 
+            //modify xqx 2020-5-8 17:52:53 1553B查询周期>50ms
+            if("m1553Adapter" == busObj->getClassName())
+            {
+                auto endTime = std::chrono::high_resolution_clock::now();
+                auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
+
+                if(elapsedTime.count() < m1553BCycle)
+                    continue;
+
+                beginTime = std::chrono::high_resolution_clock::now();
+            }
+            //end
+
             if(busObj->receiveMsg(rcvBuf, rcvSize, rcvMaxSize, 0))
             {                                
                 Json::Value param;
+
+                //modify xqx 2020-6-2 10:52:28 二进制源码转换为十六进制字符串+时间
+                QByteArray recordMsg;
+                recordMsg += "[";
+                recordMsg += QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz");
+                recordMsg += "]";
+                recordMsg += "[r]->";
+                //end
 
                 //1553B特殊处理 xqx 2020-4-27 19:52:24
                 if("m1553Adapter" == busObj->getClassName())
@@ -162,15 +168,27 @@ void rcvTask::run()
                     param["sa"] = sa;
                 }
 
-                //step1：解析                
-                emit decode(param, QString(std::get<Record_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QString(std::get<Adapter_Ptl_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize), rcvIp.c_str(), rcvPort);
+                //qDebug() << "[rcv]->" << QString(std::get<Adapter_Uuid_Index>(adapter).c_str());
+
+                //step1：解析
+
+                recordUuid = QString(std::get<Record_Uuid_Index>(adapter).c_str());
+                uuid = QString(std::get<Adapter_Uuid_Index>(adapter).c_str());
+                ptrl = QString(std::get<Adapter_Ptl_Index>(adapter).c_str());
+
+                emit decode(param, recordUuid, uuid, ptrl, QByteArray((char*)rcvBuf, rcvSize), rcvIp.c_str(), rcvPort);
+
+                //modify xqx 2020-6-2 10:52:28 二进制源码转换为十六进制字符串+时间
+                recordMsg += QByteArray((char*)rcvBuf, rcvSize).toHex();
+                recordMsg += "\n";
+                //end
 
                 //step2：存日志
-                emit record(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), QByteArray((char*)rcvBuf, rcvSize));
+                emit record(QString(std::get<Adapter_Uuid_Index>(adapter).c_str()), recordMsg);
             }
         }
 
-        usleep(10); //让出时间片
+        usleep(1); //让出时间片
     }
 #endif
 }

@@ -15,6 +15,7 @@
 #define EQ_SYSTEM_UUID_ELEMENT  "system_uuid"
 #define EQ_DST_SYSTEM_UUID_ELEMENT  "dest_system_uuid"
 #define EQ_PROTOCOL_ELEMENT "protocol"
+#define EQ_ASK_FLAG_ELEMENT "head_ask_flag"
 
 #define EQ_FRAME_TYPE   "frameType"
 
@@ -34,6 +35,7 @@
 
 #define EQ_HEAD_FRAME_TYPE_ELEMENT       "head_frame_type"
 
+#define EQ_DATA_ELEMENT     "head_data"
 #define EQ_D_NUM_ELEMENT    "head_d_num"
 #define EQ_DEV_NUM_ELEMENT  "head_dev_num"
 #define EQ_MODLE_NUM_ELEMENT    "head_modle_num"
@@ -75,6 +77,7 @@
 #define DEST_SYSTEM_ELEMENT     "dest_system_uuid"
 #define TABLE_ELEMENT           "table"
 #define CODING_ELEMENT          "coding"
+#define VALUE_ELEMENT           "value"
 #define ACTION_ELEMENT          "action"
 #define SLEEP_ELEMENT           "sleep"
 #define FRAME_ELEMENT           "frame"
@@ -82,6 +85,10 @@
 #define DATAFIELDS_ELEMENT      "datafields"
 #define PARAM_ELEMENT           "param"
 #define VALUE_ELEMENT           "value"
+
+#define VALUE_TYPE_ELEMENT       "type"
+#define VALUE_VALUE_CONTEXT_ELEMENT  "context"
+
 #define INIT_ELEMENT            "init"
 #define CMD_ELEMENT             "cmd"
 #define MIN_ELEMENT             "min"
@@ -89,9 +96,19 @@
 #define LINE_ELEMENT            "line"
 #define RAND_ELEMENT            "random"
 #define STEP_ELEMENT            "changeStep"
-#define RT_ELEMENT                 "RT"
-#define SA_ELEMENT                 "SA"
 
+#define MODEL_ELEMENT               "model"
+#define BUS_ELEMENT               "bus"
+#define RT_ELEMENT                  "RT"
+#define SA_ELEMENT                  "SA"
+
+#define S_RT_ELEMENT                "S_RT"
+#define S_SA_ELEMENT                "S_SA"
+
+#define R_RT_ELEMENT                "R_RT"
+#define R_SA_ELEMENT                "R_SA"
+
+#define DATA_SIZE_ELEMENT           "DATA_SIZE"
 
 class createEquivalent
 {

@@ -1,6 +1,6 @@
 #include "flow.h"
 #include "ui_flow.h"
-#include <windows.h>
+//#include <windows.h>
 #include <stdio.h>
 #include <QMessageBox>
 #include <QDebug>
@@ -9,6 +9,7 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QLabel>
+#include <QDateTime>
 #include <QInputDialog>
 
 flow::flow(QWidget *parent) :
@@ -114,7 +115,6 @@ void flow::deleFlow()
 
             int row = ui->flowTableWidget->row(items.at(0));
             QString uuid = ui->flowTableWidget->item(row,4)->text();
-            qDebug()<<uuid;
             ok = DBTableOpt::getInstance()->deleteFlow(uuid);
             if(!ok){
                 QMessageBox::information(this, tr("消息"), tr("删除失败!"), QMessageBox::Ok);
@@ -160,9 +160,12 @@ void flow::newBulitFlow(std::vector<QString> &flowArr)
     QString flowUuid = "";
     Json::Value value;
 
-    SYSTEMTIME sys;
-    GetLocalTime( &sys );
-    QString sysTime = QString("%1-%2-%3 %4-%5-%6").arg(sys.wYear).arg(sys.wMonth).arg(sys.wDay).arg(sys.wHour).arg(sys.wMinute).arg(sys.wSecond);
+//    SYSTEMTIME sys;
+//    GetLocalTime( &sys );
+//    QString sysTime = QString("%1-%2-%3 %4-%5-%6").arg(sys.wYear).arg(sys.wMonth).arg(sys.wDay).arg(sys.wHour).arg(sys.wMinute).arg(sys.wSecond);
+
+    QString sysTime = QDateTime::currentDateTime().toString("yyyy-MM-dd hh-mm-ss-zzz");
+
 
     value["SYSTEM_UUID"] = m_addFlowSysName.toStdString();
     value["FLOW_NAME"] = flowArr[0].toStdString();

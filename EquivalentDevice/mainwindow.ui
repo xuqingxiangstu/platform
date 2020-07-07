@@ -34,7 +34,7 @@
      <rect>
       <x>38</x>
       <y>200</y>
-      <width>325</width>
+      <width>272</width>
       <height>857</height>
      </rect>
     </property>
@@ -46,13 +46,13 @@
     </property>
     <property name="minimumSize">
      <size>
-      <width>325</width>
+      <width>272</width>
       <height>857</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>325</width>
+      <width>272</width>
       <height>851</height>
      </size>
     </property>
@@ -65,9 +65,9 @@
     <widget class="QListWidget" name="syslistWidget">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>7</x>
        <y>60</y>
-       <width>310</width>
+       <width>260</width>
        <height>791</height>
       </rect>
      </property>
@@ -105,15 +105,15 @@ QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
       <bool>false</bool>
      </property>
      <property name="spacing">
-      <number>6</number>
+      <number>4</number>
      </property>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
       <rect>
-       <x>25</x>
-       <y>11</y>
-       <width>281</width>
+       <x>8</x>
+       <y>15</y>
+       <width>261</width>
        <height>31</height>
       </rect>
      </property>
@@ -138,8 +138,8 @@ color:#1e75ff;</string>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>27</x>
-       <y>19</y>
+       <x>11</x>
+       <y>21</y>
        <width>23</width>
        <height>15</height>
       </rect>
@@ -158,9 +158,9 @@ color:#1e75ff;</string>
     </property>
     <property name="geometry">
      <rect>
-      <x>387</x>
+      <x>325</x>
       <y>200</y>
-      <width>1500</width>
+      <width>1580</width>
       <height>860</height>
      </rect>
     </property>
@@ -172,13 +172,13 @@ color:#1e75ff;</string>
     </property>
     <property name="minimumSize">
      <size>
-      <width>1500</width>
+      <width>1580</width>
       <height>860</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>1500</width>
+      <width>1580</width>
       <height>860</height>
      </size>
     </property>
@@ -212,7 +212,7 @@ padding:0;</string>
     </property>
     <property name="icon">
      <iconset resource="image.qrc">
-      <normaloff>:/image/img/closePass.png</normaloff>:/image/img/closePass.png</iconset>
+      <normaloff>:/image/img/icon3.png</normaloff>:/image/img/icon3.png</iconset>
     </property>
     <property name="iconSize">
      <size>
@@ -420,6 +420,9 @@ QPushButton:hover{
        <height>18</height>
       </size>
      </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
     </widget>
     <widget class="QPushButton" name="expBtn">
      <property name="geometry">
@@ -460,6 +463,9 @@ QPushButton:hover{
      </property>
     </widget>
     <widget class="QPushButton" name="resetBtn">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>850</x>
@@ -471,10 +477,14 @@ QPushButton:hover{
      <property name="font">
       <font>
        <pointsize>10</pointsize>
+       <kerning>true</kerning>
       </font>
      </property>
      <property name="cursor">
       <cursorShape>OpenHandCursor</cursorShape>
+     </property>
+     <property name="autoFillBackground">
+      <bool>false</bool>
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton{
@@ -495,6 +505,9 @@ QPushButton:hover{
        <width>18</width>
        <height>18</height>
       </size>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>
@@ -542,19 +555,19 @@ QPushButton:hover{
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLabel" name="dataTime">
+   <widget class="QLabel" name="versionNum">
     <property name="geometry">
      <rect>
       <x>1510</x>
-      <y>20</y>
+      <y>16</y>
       <width>341</width>
-      <height>28</height>
+      <height>35</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Microsoft YaHei UI</family>
-      <pointsize>24</pointsize>
+      <pointsize>20</pointsize>
      </font>
     </property>
     <property name="styleSheet">
@@ -610,7 +623,7 @@ QPushButton:hover{
    <widget class="QPushButton" name="pushButtonStopAll">
     <property name="geometry">
      <rect>
-      <x>970</x>
+      <x>979</x>
       <y>242</y>
       <width>166</width>
       <height>48</height>
@@ -647,6 +660,82 @@ QPushButton:hover{
      <size>
       <width>72</width>
       <height>72</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="selectAll">
+    <property name="geometry">
+     <rect>
+      <x>252</x>
+      <y>219</y>
+      <width>51</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="cursor">
+     <cursorShape>OpenHandCursor</cursorShape>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background-color:#1e75ff;
+	border:none;
+	outline:none;
+	color:#fff;
+}
+
+QPushButton:hover{
+	background-color:#4088f9;
+}</string>
+    </property>
+    <property name="text">
+     <string>全选</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="dataTime">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>20</y>
+      <width>341</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Microsoft YaHei UI</family>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:#ffffff;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="minButton">
+    <property name="geometry">
+     <rect>
+      <x>1860</x>
+      <y>0</y>
+      <width>25</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="image.qrc">
+      <normaloff>:/image/img/icon1.png</normaloff>:/image/img/icon1.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>20</width>
+      <height>20</height>
      </size>
     </property>
    </widget>
@@ -1032,8 +1121,8 @@ QPushButton:hover{
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
-  <include location="image.qrc"/>
   <include location="icon.qrc"/>
+  <include location="image.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -25,12 +25,41 @@ namespace Pf
          * 适配器抽象管理类，由唯一设备ID索引
          * @note xml文件配置如下
          * @code
+         *  xml格式
          *  <?xml version="1.0"?>
          *  <configure>
          *      <!-- 根据各适配器配置进行填充，具体配置详见各适配器init注解-->
          *      <dev id="" class="adapter">
          *      </dev>
          *  </configure>
+         *  json格式
+         * {
+                "configure":
+                [
+                    {
+                        "uuid":"cmdRcv",
+                        "class":"UnicastAdapter",
+                        "params":
+                        {
+                            "localIp":"192.168.1.1",
+                            "localPort":5004,
+                            "remoteIp":"192.168.1.2",
+                            "remotePort":5006
+                        }
+                    },
+                    {
+                        "uuid":"cmdSend",
+                        "class":"UnicastAdapter",
+                        "params":
+                        {
+                            "localIp":"192.168.1.1",
+                            "localPort":5004,
+                            "remoteIp":"192.168.1.2",
+                            "remotePort":5006
+                        }
+                    }
+                ]
+            }
          * @endcode
          */
         class PFADAPTERMANAGERSHARED_EXPORT PfAdapterManager
@@ -45,6 +74,72 @@ namespace Pf
              * @exception catch(runtime_error)
              */
             void init(const std::string &xmlPath);
+
+            /**
+             * @brief initPassJsonStr  通过json字符串初始化
+             * @param json          序列化内容
+             *{
+                    "configure":
+                    [
+                        {
+                            "uuid":"cmdRcv",
+                            "class":"UnicastAdapter",
+                            "params":
+                            {
+                                "localIp":"192.168.1.1",
+                                "localPort":5004,
+                                "remoteIp":"192.168.1.2",
+                                "remotePort":5006
+                            }
+                        },
+                        {
+                            "uuid":"cmdSend",
+                            "class":"UnicastAdapter",
+                            "params":
+                            {
+                                "localIp":"192.168.1.1",
+                                "localPort":5004,
+                                "remoteIp":"192.168.1.2",
+                                "remotePort":5006
+                            }
+                        }
+                    ]
+                }
+             */
+            void initPassJsonStr(const std::string &json);
+
+            /**
+             * @brief initPassJsonFile  通过json文件初始化
+             * @param json          序列化内容
+             *{
+                    "configure":
+                    [
+                        {
+                            "uuid":"cmdRcv",
+                            "class":"UnicastAdapter",
+                            "params":
+                            {
+                                "localIp":"192.168.1.1",
+                                "localPort":5004,
+                                "remoteIp":"192.168.1.2",
+                                "remotePort":5006
+                            }
+                        },
+                        {
+                            "uuid":"cmdSend",
+                            "class":"UnicastAdapter",
+                            "params":
+                            {
+                                "localIp":"192.168.1.1",
+                                "localPort":5004,
+                                "remoteIp":"192.168.1.2",
+                                "remotePort":5006
+                            }
+                        }
+                    ]
+                }
+             */
+            void initPassJsonFile(const std::string &filePath);
 
             /**
              * @brief getAdapter    获取适配器
@@ -62,6 +157,20 @@ namespace Pf
              * @param[in] obj 句柄
              */
             void setAdapter(const std::string &id, Adapter *adpter);
+
+            /**
+             * @brief isExist   查看ID是否存在
+             * @param[in] id 设备ID
+             * @return  是否成功
+             * - true：成功
+             * - false：失败
+             */
+            bool isExist(const std::string &id);
+
+            /**
+             * @brief deleteAll 删除所有,除UI外
+             */
+            void deleteAll();
         private:
             std::unordered_map<std::string, std::shared_ptr<Adapter>> mManagement; ///<  适配器管理
         };

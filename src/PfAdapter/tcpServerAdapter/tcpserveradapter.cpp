@@ -97,6 +97,11 @@ namespace Pf
       }
       int tcpServerAdapter::getAttribute(const std::string &attr, void *value)
       {
+          int result=0;
+          if(mTcpClientObj->getAttribute(attr,value))
+          {
+              result= 1;
+          }
           return 0;
       }
 

@@ -61,14 +61,14 @@ public slots:
      * @brief setFlowItemValue  设置流程ITEM值
      * @param role  值
      */
-    void setFlowItemValue(std::shared_ptr<dragRole> role);
+    void setFlowItemValue(const std::shared_ptr<dragRole> &role);
 
     /**
      * @brief setSubFlowItemValue   设置子流程ITEM值
      * @param flowUuid  流程UUID
      * @param role  值
      */
-    void setSubFlowItemValue(QString flowUuid, std::shared_ptr<dragRole> role);
+    void setSubFlowItemValue(QString flowUuid, const std::shared_ptr<dragRole> &role);
 
     /**
      * @brief setCmdItemValue   设置指令ITEM值
@@ -76,7 +76,7 @@ public slots:
      * @param subFlowUuid       子流程UUID
      * @param role          值
      */
-    void setCmdItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role);
+    void setCmdItemValue(QString subFlowUuid, const std::shared_ptr<dragRole> &role);
 
     /**
      * @brief setParamItemValue 设置参数ITEM值
@@ -85,7 +85,7 @@ public slots:
      * @param role          值
      * @param subRole       子值
      */
-    void setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRole);
+    void setParamItemValue(QString subFlowUuid, const std::shared_ptr<dragRole> &role, const std::vector<std::shared_ptr<dragRole>> &subRole);
 
     /**
      * @brief onShowCurItemProperty 显示当前选择节点属性
@@ -98,11 +98,17 @@ public slots:
      */
     void onFrameTypeChange(QString uuid, QString type);
 
+    void onPasteCmdItem(std::shared_ptr<dragRole> role);
 private:
     void onNewFlowNode();
     void onCopyNode();
     void onParseNode();
     void onDeleteNode();
+
+    void disable1553BAttr(std::shared_ptr<dragRole> role);
+    void enable1553BAttr(std::shared_ptr<dragRole> role, bool isNew = true);
+
+    QTreeWidgetItem *getPasteBrother(const dragRole::nodeType &type);
 signals:
     void toShowProperty(QString uuid, Json::Value);
 
@@ -194,6 +200,8 @@ private:
     QMenu *mPopMenu;
     QPoint mRightMousePoint;
     QTreeWidgetItem *mCurItem;    
+    QTreeWidgetItem *mCopyItem;
+    bool mIsCopy;
     QString mCurProjectUuid;    ///< 当前工程uuid
     int mCurSystemType;         ///< 当前系统类型
     bool mIsUpdateTree;         ///< 是否更新树

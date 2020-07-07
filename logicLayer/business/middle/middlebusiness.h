@@ -20,6 +20,9 @@ public:
     void setDevUuid(const std::string &uuid) override {mDevUuid = uuid;}
 private:
     void toUi(const std::string &msg, bool state = true);
+    void exe4307(const int &coding);
+
+    void zy(Json::Value info);
 private:
     Pf::PfAdapter::Adapter *mBusObj;
     Pf::PfAdapter::Adapter *mUiBus;
@@ -28,6 +31,7 @@ private:
     std::string mRecordUuid;
     std::string mDevUuid;
     int mDstPort;
+    const std::string mVirtualTable = "800003";
 };
 
 

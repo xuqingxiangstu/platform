@@ -1,0 +1,12 @@
+#ifndef FRAME1553B_GLOBAL_H
+#define FRAME1553B_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(FRAME1553B_LIBRARY)
+#  define FRAME1553BSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define FRAME1553BSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // FRAME1553B_GLOBAL_H

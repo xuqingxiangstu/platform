@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1500</width>
+    <width>1580</width>
     <height>860</height>
    </rect>
   </property>
@@ -21,13 +21,13 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>1500</width>
+    <width>1580</width>
     <height>860</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1500</width>
+    <width>1580</width>
     <height>860</height>
    </size>
   </property>
@@ -40,7 +40,7 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>1161</x>
+     <x>1240</x>
      <y>2</y>
      <width>318</width>
      <height>858</height>
@@ -205,7 +205,7 @@ QPushButton:hover{
     <rect>
      <x>1</x>
      <y>2</y>
-     <width>1140</width>
+     <width>1221</width>
      <height>858</height>
     </rect>
    </property>
@@ -307,19 +307,19 @@ QPushButton:hover{
      <rect>
       <x>17</x>
       <y>115</y>
-      <width>1105</width>
+      <width>1184</width>
       <height>730</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>1105</width>
+      <width>1184</width>
       <height>730</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>1105</width>
+      <width>1100</width>
       <height>730</height>
      </size>
     </property>
@@ -339,6 +339,8 @@ QTreeView::item:hover{
 QTreeView::item:selected{
 	background-color:#4c9cff;
 }
+
+
 QScrollBar:vertical{
 	width:5px;
 	background:rgb(0,0,0,10%);
@@ -361,6 +363,34 @@ QScrollBar::handle:vertical:hover{
 }
 
 QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
+	background:rgb(0,0,0,10%);
+	border-radius:4px;
+}
+
+
+
+QScrollBar:horizontal{
+	width:5px;
+	background:rgb(0,0,0,10%);
+	padding-top:9px;
+	padding-bottom:9px;
+}
+
+
+QScrollBar::handle:horizontal{
+	width:8px;
+	background:rgba(80,147,252);
+	border-radius:4px;
+	min-heigth:20px;
+}
+QScrollBar::handle:horizontal:hover{
+	width:8px;
+	background:#72a7fb;
+	border-radius:4px;
+	min-heigth:20px;
+}
+
+QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal{
 	background:rgb(0,0,0,10%);
 	border-radius:4px;
 }
@@ -554,7 +584,7 @@ QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{
     </property>
     <property name="geometry">
      <rect>
-      <x>760</x>
+      <x>840</x>
       <y>40</y>
       <width>166</width>
       <height>48</height>
@@ -597,7 +627,7 @@ QPushButton:hover{
    <widget class="QPushButton" name="pushButtonStop">
     <property name="geometry">
      <rect>
-      <x>940</x>
+      <x>1030</x>
       <y>40</y>
       <width>166</width>
       <height>48</height>

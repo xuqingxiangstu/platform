@@ -68,6 +68,16 @@ namespace Pf
             bool receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut = 0xFFFFFFFF);
 
             bool atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, std::string remotIp, std::string remotPort);
+            /**
+             * @brief getAttribute 获取类属性的信息
+             * @param attr 成员名字
+             * @param value 属性的具体信息
+             * @return 属性获取是否成功
+             *- true 接收成功
+             *- false 接收失败
+             */
+            bool getAttribute(const std::string &attr, void *value);
+
         private:
             bool _receive(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, std::string &rcvIp, unsigned short &rcvPort, const unsigned int u32TimeOut = 0xFFFFFFFF);
             bool _send(unsigned char *u8Msg, unsigned int u32MsgLen, std::string remotIp, std::string remotPort);

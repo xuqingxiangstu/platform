@@ -6,7 +6,7 @@
 #include "../adapter/Adapter.h"
 
 #include "../../PfBus/udp/MulticastUdp.h"
-
+#include "../../PfCommon/jsoncpp/json.h"
 #include <memory>
 
 namespace Pf
@@ -41,6 +41,7 @@ namespace Pf
           MulticastAdapter();
           ~MulticastAdapter();
       public:
+          void init(const Json::Value &json) override;
           void init(const TiXmlElement *ele) override;
           bool sendMsg(const char *msg, const int &msgSize) override;
           bool receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF) override;

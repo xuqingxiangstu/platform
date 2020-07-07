@@ -82,6 +82,26 @@
    </item>
    <item>
     <widget class="PfTreeWidget" name="treeWidget">
+     <property name="styleSheet">
+      <string notr="true">
+QTreeWidget::item{
+    background: transparent;
+	border-right:1px solid #E5E5E5;
+}
+ 
+QTreeView::item:hover {
+    background: rgb(69, 187, 217);;
+}
+ 
+QTreeView::item:selected:active{
+    background: rgb(63, 147, 168);
+}
+ 
+QTreeView::item:selected:!active {
+    background: rgb(63, 147, 168);
+}
+</string>
+     </property>
      <column>
       <property name="text">
        <string>流程名称</string>

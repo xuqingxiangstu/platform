@@ -26,7 +26,8 @@ class MainWindow;
 class cmdDecode;
 class simulation;
 
-#define DEBUG_LOGIC 0
+#define DEBUG_LOGIC 1
+#define FE_VERSION "1.1.0"
 
 class MainWindow : public QMainWindow
 {
@@ -54,9 +55,12 @@ signals:
     void sendErrId(QVector<QString> &msg);
     void sendAllStartId(QVector<QString> &msg);
     void sendStartSignal(QString record_uuid,QString msg);
+    void setChecked(bool flag);
 
 private slots:
-
+    void onLogicStateChanged(QProcess::ProcessState state);
+    void onLogicErrorOccurred(QProcess::ProcessError error);
+    void onLogicExeError();
     void switchPage(QListWidgetItem * );
     void reset();
     void setFlag(bool flag);
@@ -78,6 +82,10 @@ private slots:
     void saveErrRecid(QString recid);
     void deleErrRecid(QString recid);
 
+    void on_selectAll_clicked();
+
+    void windowMin();
+
 private:
     Ui::MainWindow *ui;
     cmdDecode *mCmdDecode;
@@ -96,6 +104,8 @@ private:
     QVector<QString> m_errRecoid;
     std::vector<QString> m_saveErrRecid;
     QVector<QString> m_AllStartRecoid;
+    bool mLogicExit;
+    bool m_AllSelectFlag;
 };
 
 #endif // MAINWINDOW_H

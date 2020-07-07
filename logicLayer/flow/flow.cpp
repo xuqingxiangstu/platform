@@ -7,8 +7,11 @@
 #include <QDateTime>
 #include <QDebug>
 #include <thread>
+#include <QThread>
+#include <QObject>
 
-flowManager::flowManager():
+flowManager::flowManager(QObject *parent):
+    QObject(parent),
     mIsRunning(false),
     mEqSystemUuid(""),
     mDstSystemUuid(""),
@@ -98,7 +101,33 @@ void flowManager::exeOver(bool status, std::string info)
     if(mUiAdapter)
         mUiAdapter->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
-    mIsRunning = false;
+    mIsRunning = false;   
+
+#if !USE_STD_THRED
+    //释放线程句柄
+    for(auto itor = mExeThreads.begin(); itor != mExeThreads.end(); )
+    {
+        (*itor).reset();
+
+        mExeThreads.erase(itor);
+    }
+#endif
+}
+
+void flowManager::enforceExe(std::string flowUuid, std::string subFlowUuid)
+{
+    if(mIsRunning)
+    {
+        //查找uuid相关流程
+        auto findItor = std::find_if(mFlowsObj.begin(), mFlowsObj.end(), [=](const std::tuple<std::string, std::string, std::shared_ptr<flow>> &v){
+            return std::get<Uuid_Index>(v) == flowUuid;
+        });
+
+        if(findItor != mFlowsObj.end())
+        {
+           std::get<Flow_Index>(*findItor)->enforceExe(subFlowUuid);
+        }
+    }
 }
 
 void flowManager::exe(std::string flowUuid, std::string subFlowUuid)
@@ -109,7 +138,14 @@ void flowManager::exe(std::string flowUuid, std::string subFlowUuid)
         {
             for(auto obj : mFlowsObj)
             {
+
+#if USE_STD_THRED
                 std::thread thread([=](){
+#else
+                std::shared_ptr<QThread> thread = std::make_shared<QThread>();
+
+                QObject::connect(thread.get(), &QThread::started, [=](){
+#endif
 
                 #ifdef DEBUG_PRINT
                         UT_SHOW("-------------" + std::get<0>(flow) + "-------------");
@@ -117,10 +153,16 @@ void flowManager::exe(std::string flowUuid, std::string subFlowUuid)
                         std::get<Flow_Index>(obj)->exe(this, subFlowUuid);
 
                 });
+#if USE_STD_THRED
                 thread.detach();
+#else
+                thread->start();
+
+                mExeThreads.emplace_back(thread);
+#endif
 
                 mIsRunning = true;
-            }
+            }            
         }
         else
         {
@@ -131,11 +173,25 @@ void flowManager::exe(std::string flowUuid, std::string subFlowUuid)
 
             if(findItor != mFlowsObj.end())
             {
-                std::thread thread([=]{
+#if USE_STD_THRED
+                std::thread thread([=](){
+#else
+                std::shared_ptr<QThread> thread = std::make_shared<QThread>();
+
+                QObject::connect(thread.get(), &QThread::started, [=](){
+#endif
+
                    std::get<Flow_Index>(*findItor)->exe(this, subFlowUuid);
+
                 });
 
+#if USE_STD_THRED
                 thread.detach();
+#else
+                thread->start();
+
+                mExeThreads.emplace_back(thread);
+#endif
 
                 mIsRunning = true;
             }
@@ -182,6 +238,12 @@ void flowManager::init(std::string strFilePath)
             {
                 mEqProtocol = ptlEle->GetText();
             }
+
+            TiXmlElement *askEle = mEqEle->FirstChildElement("askflag");
+            if(askEle)
+            {
+                mAskFlag = askEle->GetText();
+            }
         }
 
         TiXmlElement *mChildEle = mRoot->FirstChildElement("flow");
@@ -212,7 +274,8 @@ void flowManager::init(std::string strFilePath)
     }
 }
 
-flow::flow(TiXmlElement *xmlEle)
+flow::flow(TiXmlElement *xmlEle, QObject *parent):
+    QObject(parent)
 {
     TiXmlElement *mChildEle = xmlEle->FirstChildElement("subFlow");
 
@@ -238,6 +301,9 @@ flow::flow(TiXmlElement *xmlEle)
      {
          std::get<SubFlow_Index>(obj)->setAdapterManager(adapterManagerObj);
      }
+
+     //获取发送UI句柄
+     adapterManagerObj->getAdapter("UI", &mUiAdapter);
  }
 
  void flow::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
@@ -280,56 +346,131 @@ Json::Value flow::getRunItems()
     return subFlowJs;
 }
 
+void flow::restoreInitStateCmd()
+{
+    Json::Value js;
+    js["msgType"] = "restore_initial_state";
+
+    Json::Value tmp;
+    tmp["record_uuid"] = mRecordUuid;
+    tmp["flow_uuid"] = mUuid;
+
+    js["msg"] = tmp;
+
+    if(mUiAdapter)
+        mUiAdapter->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
+}
+
+void flow::enforceExe(std::string subFlowUuid)
+{
+    auto findItor = std::find_if(mSubFlowObjs.begin(), mSubFlowObjs.end(), [=](const std::tuple<std::string, std::shared_ptr<subFlow>> &v){
+       return std::get<Uuid_Index>(v) == subFlowUuid;
+    });
+
+    bool res = false;
+    std::string errInfo = "";
+    if(findItor != mSubFlowObjs.end())
+    {
+       std::get<SubFlow_Index>(*findItor)->enforceExe();
+       res = true;
+    }
+}
+
 void flow::exe(flowManager *manager, std::string subFlowUuid)
 {   
+    isStop = false;
     mFlowManagerObj = manager;
 
     if(subFlowUuid == "") //全部执行
     {
-        std::vector<std::shared_ptr<subFlow>> threadExes;
-
-        std::vector<std::shared_ptr<subFlow>> orderExes;
-
-        //执行前先检查哪些周期性执行，周期性执行则线程执行
-        for(auto obj : mSubFlowObjs)
+        //modify xqx 2020-5-26 13:36:24 增加老化测试，执行完成后再次执行，直到人点击停止测试
+#ifdef LH_TEST
+        while(!isStop)
+#endif
         {
-            if(timing::CYCLE == std::get<SubFlow_Index>(obj)->getTimingType())
+        //end
+            std::vector<std::shared_ptr<subFlow>> threadExes;
+
+            std::vector<std::shared_ptr<subFlow>> orderExes;
+
+            //执行前先检查哪些周期性执行，周期性执行则线程执行
+            for(auto obj : mSubFlowObjs)
             {
-                threadExes.push_back(std::get<SubFlow_Index>(obj));
+                if(timing::CYCLE == std::get<SubFlow_Index>(obj)->getTimingType())
+                {
+                    threadExes.push_back(std::get<SubFlow_Index>(obj));
+                }
+                else
+                {
+                    orderExes.push_back(std::get<SubFlow_Index>(obj));
+                }
             }
-            else
+
+            //周期性执行
+#if USE_STD_THRED
+            std::vector<std::thread> threads;
+#else
+            std::vector<QThread*> threads;
+#endif
+
+            for(auto obj : threadExes)
             {
-                orderExes.push_back(std::get<SubFlow_Index>(obj));
+#if USE_STD_THRED
+                threads.push_back(std::thread([=](){
+
+                                      obj->exe();
+
+                                  }));
+#else
+                QThread *thread = new QThread();
+
+                QObject::connect(thread, &QThread::started, [=](){
+                    obj->exe();
+                });
+
+                thread->start();
+
+                threads.emplace_back(thread);
+#endif
+
             }
-        }
 
-        //周期性执行
+            //顺序执行
+            for(auto obj : orderExes)
+            {
+                if(isStop)
+                    break;
 
-        std::vector<std::thread> threads;
+                obj->exe();
+            }
 
-        for(auto obj : threadExes)
-        {
-            threads.push_back(std::thread([=](){
-                                  obj->exe();
-                              }));
-        }
+            //等待线程执行结束/手动退出
+            for(auto& thread : threads)
+            {
+#if USE_STD_THRED
+                thread.join();
+#else
+                thread->wait();
 
-        //顺序执行
-        for(auto obj : orderExes)
-        {
+                delete thread;
+                thread = nullptr;
+#endif
+            }
+
+
+#ifdef LH_TEST
             if(isStop)
                 break;
 
-            obj->exe();
-        }
-
-        //等待线程执行结束/手动退出
-        for(auto& thread : threads)
-        {
-            thread.join();
+            //modify xqx 2020-5-26 13:49:19 本次结束后向界面发送初恢复始化状态
+            restoreInitStateCmd();
+            //end
+#endif
         }
 
         mFlowManagerObj->exeOver(true, "");
+
+        isStop = false;
     }
     else//执行某一个，此时不需要开启线程，上级已经开线程
     {

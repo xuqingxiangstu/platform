@@ -79,7 +79,7 @@ namespace Pf
              * @param[in] value         待写入数据
              * @param[in] dataType      大段/小端
              */
-            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const float &value, const std::string &dataType = SAMLLENDIAN);
+            void setData(unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const float &value, const std::string &dataType = SAMLLENDIAN);            
         };
     }
 }

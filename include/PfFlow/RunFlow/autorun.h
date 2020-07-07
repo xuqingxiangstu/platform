@@ -22,6 +22,9 @@ public:
     ~autoRun();
     autoRun();
 public:
+    void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter) override;
+    void setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter) override;
+
     void setFlowType(std::string type);
     void setMsgObj(Pf::PfAdapter::Adapter *obj);
     void init(TiXmlElement *);

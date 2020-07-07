@@ -4,9 +4,9 @@
 
 void nullXml::create(std::string filePath)
 {
-    TiXmlDocument *myDocument = new TiXmlDocument();
+    TiXmlDocument myDocument;
 
-    myDocument->LinkEndChild(createRoot::element());
+    myDocument.LinkEndChild(createRoot::element());
 
-    myDocument->SaveFile(filePath.c_str());
+    myDocument.SaveFile(filePath.c_str());
 }

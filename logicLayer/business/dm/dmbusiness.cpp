@@ -85,7 +85,7 @@ void dmBusiness::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value &
     std::string tableNum, coding;
 
     if(getTableAndCoding(cmdType, tableNum, coding));
-        virtualParams::getInstance()->setValue({mDevUuid, tableNum, coding}, mapValue());
+        virtualParams::getInstance()->setValue({mDevUuid, tableNum, coding});
 #endif
 }
 

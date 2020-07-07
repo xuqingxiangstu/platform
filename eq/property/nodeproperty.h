@@ -7,7 +7,10 @@
 
 /*************基本属性********************/
 #define PROPERTY_BASE_INFO_WORD "信息字格式"
+#define PROPERTY_BASE_TABLE_NUM    "表号"
+#define PROPERTY_BASE_CODING_NUM       "编码"
 
+#define PROPERTY_FRAME_TYPE_ATTR    "帧类型属性"
 /*************帧类型属性********************/
 #define PROPERTY_FRAME  "帧类型"
 #define PROPERTY_FRAME_BE   "BE"
@@ -15,11 +18,29 @@
 #define PROPERTY_FRAME_93   "密码集控装置协议"
 #define PROPERTY_FRAME_MIDDLE   "中间件"
 #define PROPERTY_FRAME_1553B   "M1553B协议"
+#define PROPERTY_FRAME_JG   "机柜协议"
+#define PROPERTY_FRAME_CZXK   "车长显控通讯协议"
+
+#define PROPERTY_ASK_FLAG  "确认标志"
 
 /*****************1553B RT属性**********************/
-#define PROPERTY_1553B_RT_GROUP         "RT属性"
-#define PROPERTY_1553B_RT_GROUP_RT_ADDR "RT地址"
-#define PROPERTY_1553B_RT_GROUP_SA_ADDR "SA地址"
+#define PROPERTY_1553B           "1553B属性"
+#define PROPERTY_1553B_MODE     "模式"
+#define PROPERTY_1553B_BUS      "总线"
+
+#define PROPERTY_1553B_MODE_BC_RT   "BC->RT"
+#define PROPERTY_1553B_MODE_RT_RT   "RT->RT"
+
+#define PROPERTY_1553B_BC_RT    "BC->RT属性"
+#define PROPERTY_1553B_BC_RT_RT_ADDR "RT地址"
+#define PROPERTY_1553B_BC_RT_SA_ADDR "SA地址"
+
+#define PROPERTY_1553B_RT_RT    "RT->RT属性"
+#define PROPERTY_1553B_RT_RT_S_RT_ADDR  "发送RT地址"
+#define PROPERTY_1553B_RT_RT_S_SA_ADDR  "发送SA地址"
+#define PROPERTY_1553B_RT_RT_R_RT_ADDR  "接收RT地址"
+#define PROPERTY_1553B_RT_RT_R_SA_ADDR  "接收SA地址"
+#define PROPERTY_1553B_RT_RT_DATA_SIZE  "数据长度"
 
 /*************记录属性********************/
 #define PROPERTY_RECORD_NAME    "名称"
@@ -48,9 +69,12 @@
 /*************其它属性********************/
 #define PROPERTY_OTHER  "其它属性"
 #define PROPERTY_OTHER_D_NUM    "弹编号"
+#define PROPERTY_OTHER_CL_TYPE  "车辆类型"
+#define PROPERTY_OTHER_CL_NUM   "车辆编号"
 #define PROPERTY_OTHER_DEV_INDEX    "设备序号"
 #define PROPERTY_OTHER_MODLE_INDEX  "模块序号"
 #define PROPERTY_OTHER_RESERVE      "备用字符串"
+#define PROPERTY_OTHER_DATA         "数据"
 
 /*******************FE帧数据类型属性*********************/
 #define PROPERTY_FE_DATA_TYPE   "数据帧类型"
@@ -85,9 +109,10 @@
 #define PROPERTY_CONDITION_CODING   "coding"
 #define PROPERTY_CONDITION_NO       "无"
 
-#define PROPERTY_CONDITION_VALUE_NAME   "name"
-#define PROPERTY_CONDITION_VALUE_TABLE_NUM    "table"
-#define PROPERTY_CONDITION_VALUE_CODING_NUM   "coding"
+#define PROPERTY_CONDITION_VALUE_NAME           "name"
+#define PROPERTY_CONDITION_VALUE_TABLE_NUM      "table"
+#define PROPERTY_CONDITION_VALUE_CODING_NUM     "coding"
+#define PROPERTY_CONDITION_VALUE_VALUE          "value"
 
 /*****************设备属性**************************/
 
@@ -173,7 +198,7 @@ public:
     void setCurValue(const std::string &name, const Json::Value &curValue);
     Json::Value curValue(const std::string &name);
 
-    Json::Value curAttr(const std::string &name);
+    Json::Value curAttr(const std::string &name);  
 
     void setReadOnly(const std::string &name, bool isRead);
     bool isReadOnly(const std::string &name);
@@ -193,6 +218,8 @@ public:
     void setCodingNum(int coding);
     int codingNum();
 
+    bool isExist(const std::string &name);
+
     /**
      * @brief getKey    获取关键字（cmd 、param、param_group）
      * @return
@@ -201,7 +228,10 @@ public:
     Json::Value getJson();
     Json::Value getSaveJson();
 private:
+    void initProperty(Json::Value initV);
+private:
     Json::Value mDefalultProperty;    
+public:
     std::vector<std::shared_ptr<property>> mProperty;
 };
 

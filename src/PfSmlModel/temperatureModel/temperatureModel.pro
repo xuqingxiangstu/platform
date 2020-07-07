@@ -23,3 +23,17 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
     
     
+win32{
+    SRCFILE = $$OUT_PWD/../../../algorithmLib/temperatureModel.dll
+    DSTFILE = $$OUT_PWD/../../../temperatureModel.dll
+    SRCDIR = $$replace(SRCFILE, /, \\)
+    DSTDIR = $$replace(DSTFILE, /, \\)
+
+    QMAKE_POST_LINK += copy $$SRCDIR $$DSTDIR
+}
+unix{
+    SRCFILE = $$OUT_PWD/../../../algorithmLib/libtemperatureModel.so*
+    DSTFILE = $$OUT_PWD/../../../
+
+    QMAKE_POST_LINK += cp -d $$SRCFILE $$DSTFILE
+}

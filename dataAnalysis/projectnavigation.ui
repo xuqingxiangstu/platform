@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>projectNavigation</class>
+ <widget class="QWidget" name="projectNavigation">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>563</width>
+    <height>528</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QTreeWidget" name="treeWidget">
+     <column>
+      <property name="text">
+       <string>项目</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>结果</string>
+      </property>
+     </column>
+     <item>
+      <property name="text">
+       <string>测试</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>./logRecord本地等效接口/2020-06-26/10.59.18.137.dat</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </item>
+     </item>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

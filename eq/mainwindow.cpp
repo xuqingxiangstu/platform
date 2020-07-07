@@ -65,6 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSave, &QAction::triggered, [=](){
         onSave();
     });
+        mVersionWidget = new versionForm();
+
+        ui->mainToolBar->addWidget(mVersionWidget);
     }
     catch(std::runtime_error err)
     {
@@ -82,15 +85,6 @@ MainWindow::MainWindow(QWidget *parent) :
         QMessageBox::information(this, "提示", "[ERROR]...");
         exit(0);
     }
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if ((event->modifiers() == Qt::CTRL) && (event->key() == Qt::Key_N))//组合键触发
-    {
-        //onNewFlow();
-    }
-    qDebug() << event->key();
 }
 
 
@@ -128,11 +122,27 @@ void MainWindow::onSave()
 
 void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QString uuid, bool isNew)
 {
+//    //modify xqx 2020-6-19 21:07:59 每次都创建内存太大，容易内存不足，改为只有一个
+
+//    if(mFlowWidgetManager.keys().size() > 0)
+//    {
+//        auto tmpPoint = mFlowWidgetManager.value(mFlowWidgetManager.keys()[0]);
+
+//        delete tmpPoint;
+
+//        tmpPoint = nullptr;
+
+//        mFlowWidgetManager.remove(mFlowWidgetManager.keys()[0]);
+//    }
+//    //end
+
     //如果已有窗体则切换，否则新建窗体
     if(mFlowWidgetManager.contains(uuid))
     {
         //已有则切
         ui->stackedWidget->setCurrentWidget(mFlowWidgetManager[uuid]);
+
+        dynamic_cast<flowTree*>(mFlowWidgetManager[uuid])->setSystemAndProductName(sysName, testName);
     }
     else
     {

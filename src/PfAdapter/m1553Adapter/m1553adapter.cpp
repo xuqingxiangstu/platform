@@ -10,8 +10,15 @@ namespace Pf
   namespace PfAdapter
   {
       m1553Adapter::m1553Adapter():
-          mRtAddr(1),
-          mSaAddr(1)
+          mBc2RtRtAddr(1),
+          mBc2RtSaAddr(1),
+          mRt2RtDataSize(1),
+          mRt2RtRRtAddr(1),
+          mRt2RtRSaAddr(1),
+          mRt2RtSRtAddr(1),
+          mRt2RtSSaAddr(1),
+          m1553BMsgFormat(BC_2_RT),
+          m1553BBusType(Bus_A)
       {
       }
 
@@ -53,29 +60,37 @@ namespace Pf
 
       bool m1553Adapter::sendMsg(const char *msg, const int &msgSize)
       {
-          std::vector<unsigned short> sendMsg;
-          int convertSize = msgSize;
-
-          if(convertSize % 2)
-              convertSize -= 1;
-
-          int index = 0;
-
-          for (index = 0; index < convertSize; index += 2)
+          if(BC_2_RT == m1553BMsgFormat)
           {
-              sendMsg.push_back(msg[index]);
-              sendMsg.push_back(msg[index+1]);
-          }
+                std::vector<unsigned char> sendMsg;
+                int convertSize = msgSize;
 
-          if(convertSize % 2)
+                if(convertSize % 2)
+                  convertSize -= 1;
+
+                int index = 0;
+
+                for (index = 0; index < convertSize; index += 2)
+                {
+                  sendMsg.push_back(msg[index]);
+                  sendMsg.push_back(msg[index+1]);
+                }
+
+                if(convertSize % 2)
+                {
+                  sendMsg.push_back(msg[index]);
+                  sendMsg.push_back(0);
+                }
+
+                std::unique_lock<std::mutex> lk(mMutex);
+
+                return mBusObj->Bc2RtMsg((unsigned short*)&sendMsg.at(0), sendMsg.size() / 2, mBc2RtRtAddr, mBc2RtSaAddr, m1553BBusType);
+          }
+          else if(RT_2_RT == m1553BMsgFormat)
           {
-              sendMsg.push_back(msg[index]);
-              sendMsg.push_back(0);
+                std::unique_lock<std::mutex> lk(mMutex);
+                return mBusObj->Rt2RtMsg(mRt2RtSRtAddr, mRt2RtSSaAddr, mRt2RtRRtAddr, mRt2RtRSaAddr, mRt2RtDataSize, m1553BBusType);
           }
-
-          std::unique_lock<std::mutex> lk(mMutex);
-
-          return mBusObj->sendMsg(&sendMsg.at(0), sendMsg.size(), mRtAddr, mSaAddr);
       }
 
       bool m1553Adapter::receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize, const unsigned int &timeOut)
@@ -87,10 +102,26 @@ namespace Pf
           return res;
       }
 
-      void m1553Adapter::setSendRtAndSa(const std::string &rt, const std::string &sa)
+      void m1553Adapter::set1553BModel(MsgFormat format)
       {
-          mRtAddr = std::atoi(rt.c_str());
-          mSaAddr = std::atoi(sa.c_str());
+            m1553BMsgFormat = format;
+      }
+
+      void m1553Adapter::setBc2RtInfo(const unsigned short &rt, const unsigned short &sa)
+      {
+            mBc2RtRtAddr = rt;
+            mBc2RtSaAddr = sa;
+      }
+
+      void m1553Adapter::setRt2RtInfo(const unsigned short &sRt, const unsigned short &sSa, const unsigned short &rRt, const unsigned short &rSa, const unsigned short &size)
+      {
+            mRt2RtSRtAddr = sRt;
+            mRt2RtSSaAddr = sSa;
+
+            mRt2RtRRtAddr = rRt;
+            mRt2RtRSaAddr = rSa;
+
+            mRt2RtDataSize = size;
       }
 
       std::string m1553Adapter::getClassName()

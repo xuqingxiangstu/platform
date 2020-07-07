@@ -45,7 +45,9 @@ namespace Pf
           mTcpClientObj->init(strRemoteIp, strRemotePort);
 
           connect(this, &tcpAdapter::toMsg, mTcpClientObj.get(), &tcpClient::onSendMsg);
-      }
+
+          connect(mTcpClientObj.get(), &tcpClient::rcvMsg, this, &tcpAdapter::rcvMsg);
+      }      
 
       void tcpAdapter::init(const TiXmlElement *xmlEle)
       {
@@ -73,6 +75,11 @@ namespace Pf
 
       }
 
+      void tcpAdapter::setTrigger(bool state)
+      {
+           mTcpClientObj->setTrigger(state);
+      }
+
       bool tcpAdapter::sendMsg(const char *msg, const int &msgSize)
       {
           std::unique_lock<std::mutex> lk(mMutex);
@@ -97,6 +104,11 @@ namespace Pf
       }
       int tcpAdapter::getAttribute(const std::string &attr, void *value)
       {
+          int result=0;
+          if(mTcpClientObj->getAttribute(attr,value))
+          {
+              result= 1;
+          }
           return 0;
       }
 

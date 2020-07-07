@@ -10,6 +10,15 @@
 
 #include <mutex>
 
+#define INFO_STR(info) infoStr(info, __PRETTY_FUNCTION__, __FILE__, __LINE__)
+
+inline std::string infoStr(std::string arg, char const * funcName, char const * fileName, int line)
+{
+    std::ostringstream strErr;
+    strErr.str("");
+    strErr << fileName << "(" << line << ")" << "-<" << funcName << ">: " << arg;
+    return strErr.str();
+}
 
 #define THROW_EXCEPTION(err) throwSrcErr(err)
 
@@ -17,7 +26,6 @@ inline void throwSrcErr(std::string arg)
 {
     throw std::runtime_error(arg);
 }
-
 
 #define UT_THROW_EXCEPTION(err) throwErr(err, __PRETTY_FUNCTION__, __FILE__, __LINE__)
 

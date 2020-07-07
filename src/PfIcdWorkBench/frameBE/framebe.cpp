@@ -4,8 +4,9 @@
 #include "../../PfCommon/tools/ut_error.h"
 #include "../icdData/datatype.h"
 #include "../../PfSql/paramsTable/paramstable.h"
-
+#include "../frameNumber/framenumber.h"
 #include <QDateTime>
+#include <QDebug>
 
 namespace Pf
 {
@@ -20,14 +21,6 @@ namespace Pf
         std::shared_ptr<frameObj>  frameBE::clone()
         {
             frameBE *obj = new frameBE();
-
-
-
-            for(auto itor = mProtocolCnt.begin() ; itor != mProtocolCnt.end(); itor++)
-            {
-                obj->mProtocolCnt[itor->first] = (itor->second);
-            }
-
 
             std::shared_ptr<frameObj> tmp(obj);
 
@@ -247,11 +240,11 @@ namespace Pf
 
                 //step9：数据长度
                 byteSize = 1;
-                data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, str.size());
+                data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, (int)str.size());
                 pos += byteSize;
 
                 //step10：数据字符串
-                memcpy_s(&tmpBuf[pos], msgSize, str.c_str(), str.size());
+                memcpy(&tmpBuf[pos], str.c_str(), str.size());
                 pos += str.size();
 
             }
@@ -415,16 +408,11 @@ namespace Pf
 
             unsigned int src = data.getData(tmpBuf, msgSize, 4, 4, 0, 0);
             unsigned int dst = data.getData(tmpBuf, msgSize, 8, 4, 0, 0);
-            auto findItor = mProtocolCnt.find(std::make_pair(src, dst));
-            if(findItor == mProtocolCnt.end())
-            {
-                mProtocolCnt[std::make_pair(src, dst)] = 0;
-            }
+
+            int cmdCnt = frameNumberManager::getInstance()->getFrameNumber(mCurUuid, getFrameName(), src, dst) & 0xFFFF;
 
             byteSize = 4;
-            data.setData(tmpBuf, msgSize, index, byteSize, 0, 0, mProtocolCnt[std::make_pair(src, dst)]);
-
-            mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
+            data.setData(tmpBuf, msgSize, index, byteSize, 0, 0, cmdCnt);
 
             index += byteSize;
 
@@ -463,7 +451,7 @@ namespace Pf
 
             //step11：信息字个数
             byteSize = 2;
-            data.setData(tmpBuf, msgSize, index, byteSize, 0, 0, wordMsg.size());
+            data.setData(tmpBuf, msgSize, index, byteSize, 0, 0, (int)wordMsg.size());
             index += byteSize;
 
             //step12：备用字节
@@ -484,7 +472,7 @@ namespace Pf
 
             //step15：更新长度+校验
             byteSize = 2;
-            data.setData(&outValue.at(0), outValue.size(), 1, byteSize, 0, 0, outValue.size());
+            data.setData(&outValue.at(0), outValue.size(), 1, byteSize, 0, 0, (int)outValue.size());
 
             outValue[33] = Pf::PfCommon::Crc::calSum(&outValue.at(0), outValue.size());
         }
@@ -556,13 +544,30 @@ namespace Pf
                 }
                 else if(ncharType == dataType)
                 {
-                    //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
-                    preStartPos = startPos + initValue.size();
-                    outSize += initValue.size();
-
-                    //modify xqx 20200420 更新字符串长度
-                    data.setData(tmpBuf, msgSize, strLenPos, strLenByteSize, 0, 0, initValue.size());
+                    //modify xqx 20200423 当为字符串时，如果设置大小则按照设置填充，否则按照字符串大小进行填充
+                    if(0 == byteSize)//按照字符串填充
+                    {
+                        memcpy(tmpBuf + startPos, initValue.c_str(), initValue.size());
+                        preStartPos = startPos + initValue.size();
+                        outSize += initValue.size();
+                    }
+                    else//按大小填充
+                    {
+                        //先清空，再填充
+                        memset(tmpBuf + startPos, 0, byteSize);
+                        int cpySize = 0;
+                        if(byteSize > initValue.size())
+                        {
+                            cpySize = initValue.size();
+                        }
+                        else
+                        {
+                            cpySize = byteSize;
+                        }
+                        memcpy(tmpBuf + startPos, initValue.c_str(), cpySize);
+                        preStartPos = startPos + byteSize;
+                        outSize += byteSize;
+                    }
                 }
                 else if(nRawType == dataType)   //十六进制原始数据
                 {
@@ -608,6 +613,7 @@ namespace Pf
 
         bool frameBE::getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json)
         {
+            dataStorage data;
             Json::Value headJs = json["head"];
             if(headJs.isNull() || headJs["head_is_ask"].asInt() != 0x1)
                 return false;
@@ -618,10 +624,32 @@ namespace Pf
             outValue.clear();
             std::copy(inValue.begin(), inValue.begin() + 34, std::back_inserter(outValue));
 
+            //更改信源信宿
+            unsigned char tmpV = 0;
+
+            tmpV = outValue.at(4);
+            outValue.at(4) = outValue.at(8);
+            outValue.at(8) = tmpV;
+
+            tmpV = outValue.at(5);
+            outValue.at(5) = outValue.at(9);
+            outValue.at(9) = tmpV;
+
+            tmpV = outValue.at(6);
+            outValue.at(6) = outValue.at(10);
+            outValue.at(10) = tmpV;
+
+            tmpV = outValue.at(7);
+            outValue.at(7) = outValue.at(11);
+            outValue.at(11) = tmpV;
+
+
             //step1：更新确认标志
             if(outValue.size() >= 24)
                 outValue.at(24) = 0x2;
 
+            //2020-5-15 ygt
+            outValue.at(1) = 0x22;
             //step2：更新校验(先把校验位至0，然后再计算填充)
             if(outValue.size() >= 33)
             {
@@ -783,71 +811,71 @@ namespace Pf
             pos = 3;
             //step1：帧类型
             byteSize = 1;
-            headInfo["head_frame_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_frame_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step2：信源 系统类型、系统编码、节点编码
             byteSize = 1;
-            headInfo["head_src_sys_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_src_sys_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 2;
-            headInfo["head_src_sys_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_src_sys_code"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_src_node_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_src_node_code"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step3：信宿 系统类型、系统编码、节点编码
             byteSize = 1;
-            headInfo["head_dst_sys_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_dst_sys_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 2;
-            headInfo["head_dst_sys_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_dst_sys_code"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_dst_node_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_dst_node_code"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step3：日期+时间
             byteSize = 2;
-            headInfo["head_year"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_year"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_mon"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_mon"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_day"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_day"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 4;
-            headInfo["head_time"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_time"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step4：命令技术+确认标志、重传次数
             byteSize = 4;
-            headInfo["head_cmd_cnt"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_cmd_cnt"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_is_ask"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_is_ask"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_retry_cnt"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_retry_cnt"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 1;
-            headInfo["head_info_word_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_info_word_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 2;
-            headInfo["head_info_word_cnt_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            headInfo["head_info_word_cnt_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             byteSize = 4;
@@ -931,12 +959,12 @@ namespace Pf
 
             //step1：表号
             byteSize = 2;
-            value["info_1_table"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_1_table"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step2：编码
             byteSize = 2;
-            value["info_1_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_1_code"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step4：数据
@@ -945,7 +973,7 @@ namespace Pf
 
             //step3：数据类型
             byteSize = 1;
-            value["info_1_data_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_1_data_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             dataType = value["info_1_data_type"].asInt();
             pos += byteSize;
 
@@ -970,7 +998,7 @@ namespace Pf
 
             //step4：D编号
             byteSize = 2;
-            value["info_1_num"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_1_num"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
         }
 
@@ -991,7 +1019,7 @@ namespace Pf
 
             //step1：编码
             byteSize = 2;
-            value["info_2_num"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_2_num"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
 
@@ -1000,7 +1028,7 @@ namespace Pf
             pos += byteSize;
 
             //step4：解析二进制数据
-            _parseRegion(tableNum, &inBuf[pos], byteSize, regionJs);
+            _parseRegion(tableNum, &inBuf[pos], inSize - pos, regionJs);
 
             pos += byteSize;           
         }
@@ -1016,33 +1044,33 @@ namespace Pf
 
             //step1：表号
             byteSize = 2;
-            value["info_3_table"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_3_table"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step2：编码
             byteSize = 2;
-            value["info_3_code"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_3_code"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step3：设备序号
             byteSize = 1;
-            value["info_3_dev_num"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_3_dev_num"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step4：模块序号
             byteSize = 1;
-            value["info_3_module"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_3_module"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step4：数据类型
             byteSize = 1;
-            value["info_3_data_type"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_3_data_type"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             dataType = value["info_3_data_type"].asInt();
             pos += byteSize;
 
             //step5：超差标记
             byteSize = 1;
-            value["info_3_over"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+            value["info_3_over"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step6：数据
@@ -1068,7 +1096,7 @@ namespace Pf
             {
                 //step8：数据字符串长度
                 byteSize = 1;
-                value["info_3_string_len"] = data.getData(inBuf, inSize, pos, byteSize, 0, 0);
+                value["info_3_string_len"] = (int)data.getData(inBuf, inSize, pos, byteSize, 0, 0);
                 pos += byteSize;
 
                 //step9：字符串
@@ -1081,7 +1109,7 @@ namespace Pf
         }
 
 
-        bool frameBE::getValidValue(const Json::Value &result, Json::Value &value)
+        bool frameBE::getValidValue(const Json::Value &result, Json::Value &value, int &infoType)
         {
             bool res = false;
 
@@ -1090,9 +1118,11 @@ namespace Pf
             if(!result["head"]["head_info_word_type"].isNull())
             {
                 int type = result["head"]["head_info_word_type"].asInt();
+                infoType = type;
                 int tableNum = result["head"]["head_table"].asInt();
                 std::string codeKey = "info_" + std::to_string(type + 1) + "_code";
-                std::string tableKey = "info_" + std::to_string(type + 1) + "_table_num";
+                std::string tableKey = "info_" + std::to_string(type + 1) + "_table";
+                std::string valueKey = "info_" + std::to_string(type + 1) + "_data";
 
                 if(!result["infoWord"].isNull())
                 {
@@ -1107,7 +1137,11 @@ namespace Pf
                             tmpJs["coding"] = infoWord[index][codeKey].asInt();
                         }
 
-                        tmpJs["table"] = tableNum;
+                        if(!infoWord[index][tableKey].isNull())
+                            tmpJs["table"] = infoWord[index][tableKey].asInt();
+
+                        if(!infoWord[index][valueKey].isNull())
+                            tmpJs["value"] = infoWord[index][valueKey];
 
                         value.append(tmpJs);
                     }
@@ -1220,6 +1254,7 @@ namespace Pf
             int preStartPos = 0;
 
             //TODO:表号
+            regionValue["table_num"] = tableNum;
 
             Json::Value dataJs;
 

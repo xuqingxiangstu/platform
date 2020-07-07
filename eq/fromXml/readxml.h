@@ -54,14 +54,14 @@ signals:
      * @brief setFlowItemValue  设置流程ITEM值
      * @param role  值
      */
-    void flowItemValue(std::shared_ptr<dragRole> role);
+    void flowItemValue(const std::shared_ptr<dragRole> &role);
 
     /**
      * @brief setSubFlowItemValue   设置子流程ITEM值
      * @param flowUuid  流程UUID
      * @param role  值
      */
-    void subFlowItemValue(QString flowUuid, std::shared_ptr<dragRole> role);
+    void subFlowItemValue(QString flowUuid, const std::shared_ptr<dragRole> &role);
 
     /**
      * @brief setCmdItemValue   设置指令ITEM值
@@ -78,16 +78,18 @@ signals:
      */
     void paramItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRole);
 private:
-    void initConditionValue();
     void initDestDevInitValue();
     void initFeInitValue();
 
-    void updateConditionInit(dragRole *role);
     void updateDestDevInitValue(dragRole *role);
     void updateFeSysInitValue(dragRole *role);
+
+    QStringList getValueMeans(QString value);
 private:
     void readFlow(TiXmlElement *ele);
     void readSubFlow(std::string subFlowUuid, TiXmlElement *ele);
+
+    nodeProperty *getNewAttr(Json::Value saveJs);
 private:
     void run();
 private:

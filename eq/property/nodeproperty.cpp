@@ -7,6 +7,11 @@ nodeProperty::nodeProperty()
 
 }
 
+void nodeProperty::initProperty(Json::Value initV)
+{
+
+}
+
 nodeProperty::nodeProperty(const Json::Value &v)
 {
     mDefalultProperty = v;
@@ -240,6 +245,22 @@ std::string nodeProperty::getKey()
     return key;
 }
 
+bool nodeProperty::isExist(const std::string &name)
+{
+    bool res = false;
+    auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
+        {
+            return pro->name() == name;
+        });
+
+    if(itor != mProperty.end())
+    {
+        res = true;
+    }
+
+    return res;
+}
+
 void nodeProperty::getProperty(const std::string &name, Json::Value &value)
 {
     auto itor = std::find_if(mProperty.begin(), mProperty.end(), [=](const std::shared_ptr<property> &pro)
@@ -279,7 +300,7 @@ std::string nodeProperty::tableNum()
 {
     Json::Value tmpJs = mDefalultProperty["table"];
     if(tmpJs.isNull())
-        return 0;
+        return "";
 
     return tmpJs.asString();
 }
@@ -359,8 +380,6 @@ Json::Value nodeProperty::getSaveJson()
     }
 
     mDefalultProperty["property"] = propertyJs;
-
-    qDebug() << QString::fromStdString(mDefalultProperty.toStyledString());
 
     return mDefalultProperty;
 }

@@ -80,6 +80,7 @@ private:
     QString converJson(QString msgType);
     void onTestOver(bool);
     void setBtnAble(int index);
+    void resetFlowState(QString flow_uuid);
 public slots:
     void testTreeShow(QJsonObject,QString);
     void rcvAllStart(QVector<QString> &msg);

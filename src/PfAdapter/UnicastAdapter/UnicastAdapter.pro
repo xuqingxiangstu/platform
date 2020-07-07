@@ -25,3 +25,18 @@ LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 LIBS += -L$$OUT_PWD/../../../ -ludp
 
 LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
+
+win32{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/UnicastAdapter.dll
+    DSTFILE = $$OUT_PWD/../../../UnicastAdapter.dll
+    SRCDIR = $$replace(SRCFILE, /, \\)
+    DSTDIR = $$replace(DSTFILE, /, \\)
+
+    QMAKE_POST_LINK += copy $$SRCDIR $$DSTDIR
+}
+unix{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/libUnicastAdapter.so*
+    DSTFILE = $$OUT_PWD/../../../
+
+    QMAKE_POST_LINK += cp -d $$SRCFILE $$DSTFILE
+}

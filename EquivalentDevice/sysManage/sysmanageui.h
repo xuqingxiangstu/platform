@@ -5,6 +5,7 @@
 #include <QUuid>
 #include <QMenu>
 #include <QTreeWidgetItem>
+#include <QTableWidgetItem>
 
 typedef struct sysInfo
 {
@@ -29,6 +30,7 @@ public:
     void systemInit();
     void initSystemTree();
     void update(my_sys *stu);
+    void changeUpdate(my_sys *stu, int col);
 
 private slots:
 
@@ -47,6 +49,8 @@ private slots:
     void on_systemTree_itemClicked(QTreeWidgetItem *item, int column);
 
     void changeSysName(QTreeWidgetItem*,int);
+
+    void on_information_tableWidget_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
     Ui::sysManageUi *ui;

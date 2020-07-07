@@ -98,9 +98,10 @@ namespace Pf
             /**
              * @brief getValidValue 获取有效值
              * @param json  值
+             * @param infoType  信息字类型
              * @return
              */
-            virtual bool getValidValue(const Json::Value &result, Json::Value &value){return false;}
+            virtual bool getValidValue(const Json::Value &result, Json::Value &value, int &infoType){return false;}
 
             /**
              * @brief resendMsg 重传消息，只改变重传次数
@@ -130,6 +131,12 @@ namespace Pf
              * @param attr  属性
              */
             virtual void setAttribute(const Json::Value &attr){}
+
+            /**
+             * @brief setUuid   设置UUID
+             * @param uuid
+             */
+            virtual void setUuid(const std::string &uuid){}
         };
 
         /** 类导出函数指针 **/

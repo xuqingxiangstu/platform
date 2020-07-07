@@ -1,0 +1,12 @@
+#ifndef FRAMECZXK_GLOBAL_H
+#define FRAMECZXK_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(FRAMECZXK_LIBRARY)
+#  define FRAMECZXKSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define FRAMECZXKSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // FRAMECZXK_GLOBAL_H

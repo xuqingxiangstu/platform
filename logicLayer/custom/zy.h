@@ -4,6 +4,12 @@
 #include <string>
 #include <QStringList>
 #include <QFile>
+#include <QMutex>
+#include <QWaitCondition>
+#include <QObject>
+#include <atomic>
+#include <QThread>
+#include <QQueue>
 
 #include "../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
 #include "../../src/PfAdapter/PfAdapterManager/pfadaptermanager.h"
@@ -13,6 +19,34 @@
 #define PACK_MAX_SIZE  1400
 
 #define TIME_OUT    -1
+
+#define TCP_RCV_MAX_SIZE    2048
+
+/**
+ * @brief The zyPackages class  诸元数据包
+ */
+class zyPackages : public QThread
+{
+    Q_OBJECT
+public:
+    zyPackages(QObject *parent = 0);
+    ~zyPackages();
+private:
+    void run();
+public:
+    void clearMsg();
+public slots:
+    void encodeMsg(QByteArray msg);
+signals:
+    void vaildMsg(QByteArray msg);
+private:
+    std::atomic_bool mIsStop;
+    QQueue<QByteArray> mDecoderQueue;   ///< 待解码队列
+    QMutex mMsgMutex;   ///< 数据锁
+    QWaitCondition mMsgCondition;
+    QByteArray mHead;
+    QByteArray mAllMsg;
+};
 
 class zyWriteFile
 {
@@ -58,8 +92,9 @@ private:
     std::string mCurMd5;
 };
 
-class zy
+class zy : public QObject
 {
+    Q_OBJECT
 private:
     /** 子帧类型索引 **/
     enum Zy_Sub_Frame_Index
@@ -158,7 +193,14 @@ private:
         Down_Request
     };
 public:
-    zy(const std::string &uuid, const std::string &node, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> icdObj, Pf::PfAdapter::Adapter *busObj, Pf::PfAdapter::Adapter *uiObj);
+    zy(QObject *parent = 0);
+    void exe(const std::string &uuid, const std::string &node, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> icdObj, Pf::PfAdapter::Adapter *busObj, Pf::PfAdapter::Adapter *uiObj);
+signals:
+    void zyMsg(QByteArray msg);
+public slots:
+    void vaildZyMsg(QByteArray msg);
+
+    void onMsg(QByteArray msg);
 private:
     void up(Zy_Index index);
     void down(Zy_Index index, DownType type);
@@ -217,7 +259,23 @@ private:
     std::shared_ptr<Pf::PfIcdWorkBench::frameObj> mFrameObj;
     Pf::PfAdapter::Adapter *mBusAdapter;
     Pf::PfAdapter::Adapter *mUiAdapter;
+    std::shared_ptr<zyPackages> mZyPackages;
     std::string mRecordUuid;
+
+    QByteArray mDownFileContext;
+    std::atomic_int mDownZyIndex;
+    std::atomic_int mDownZyType;
+    std::atomic_int mDownPckIndex;
+    std::atomic_int mDownRcvSize;
+    std::atomic_int mDownFileSize;
+    std::string mDownMd5;
+    std::string mDownFileName;
+    std::atomic_bool mDownIsOver;
+
+    std::mutex mMutex;
+    std::chrono::system_clock::time_point mDownStartTime;
+
+    char mDownRcvBuf[TCP_RCV_MAX_SIZE];
 };
 
 #endif // ZY_H

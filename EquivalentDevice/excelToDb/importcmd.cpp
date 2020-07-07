@@ -1,11 +1,13 @@
 #include "importcmd.h"
-#include "ui_importCmd.h"
+#include "ui_importcmd.h"
+
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QString>
 
-importCmd::importCmd(QWidget *parent)
-    : QDialog(parent),ui(new Ui::importCmd)
+importCmd::importCmd(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::importCmd)
 {
     ui->setupUi(this);
 
@@ -13,23 +15,24 @@ importCmd::importCmd(QWidget *parent)
     connect(ui->sureBtn, SIGNAL(clicked()), this, SLOT(onSure()));
     connect(ui->exportBtn, SIGNAL(clicked()), this, SLOT(onExport()));
 
-	mExportType = exportExit;
+    mExportType = exportExit;
 
     toDb = new excelToDb(this);
 
     connect(toDb, SIGNAL(setEnd(QString)), this, SLOT(onEnd(QString)));
     connect(toDb, SIGNAL(setRange(int, int)), this, SLOT(onSetRange(int, int)));
     connect(toDb, SIGNAL(setCurValue(int)), this, SLOT(onSetCurValue(int)));
-    //ui->exportBtn->setEnabled(false);
 }
 
 importCmd::~importCmd()
 {
     if (toDb)
-	{
+    {
         delete toDb;
         toDb = NULL;
-	}
+    }
+
+    delete ui;
 }
 
 void importCmd::onEnd(QString title)
@@ -37,66 +40,66 @@ void importCmd::onEnd(QString title)
     ui->sureBtn->setEnabled(true);
     ui->selBtn->setEnabled(true);
     ui->exportBtn->setEnabled(true);
-    //QMessageBox::information(this, QString::fromLocal8Bit("ÏûÏ¢"), QString::fromLocal8Bit(title.toStdString().c_str()), QMessageBox::Ok);
+    //QMessageBox::information(this, QString::fromLocal8Bit("ï¿½ï¿½Ï¢"), QString::fromLocal8Bit(title.toStdString().c_str()), QMessageBox::Ok);
 }
 
 void importCmd::onSure()
 {
-	mExportType = exportSure;
-	accept();
+    mExportType = exportSure;
+    accept();
 }
 void importCmd::onOpen()
 {
-	QFileDialog fileDlg;
-	fileDlg.setWindowTitle("Open file");
-	fileDlg.setDirectory("./");
-	fileDlg.setFilter(QDir::Dirs);
-	fileDlg.setNameFilter("*.xlsx");
-	if (fileDlg.exec() == QDialog::Accepted)
-	{
-		QString fileName = fileDlg.selectedFiles()[0];
+    QFileDialog fileDlg;
+    fileDlg.setWindowTitle("Open file");
+    fileDlg.setDirectory("./");
+    fileDlg.setFilter(QDir::Dirs);
+    fileDlg.setNameFilter("*.xlsx");
+    if (fileDlg.exec() == QDialog::Accepted)
+    {
+        QString fileName = fileDlg.selectedFiles()[0];
 
-		if (fileName != "")
-		{
+        if (fileName != "")
+        {
             ui->lineEdit->setText(fileName);
-		}
-		else
-		{
-			return ;
-		}
-	}
-	else
-	{
-		return;
-	}
+        }
+        else
+        {
+            return ;
+        }
+    }
+    else
+    {
+        return;
+    }
 
     ui->exportBtn->setEnabled(true);
 }
 void importCmd::onExport()
 {
     QString strFilePath = ui->lineEdit->text();
-	if (strFilePath == "")
-	{
-        QMessageBox::information(this, QString::fromLocal8Bit("ÏûÏ¢"), QString::fromLocal8Bit("ÎÄ¼þÎª¿Õ£¬ÇëÑ¡ÔñÎÄ¼þ!"), QMessageBox::Ok);
-		return;
-	}
+    if (strFilePath == "")
+    {
+        QMessageBox::information(this, QString::fromLocal8Bit("ï¿½ï¿½Ï¢"), QString::fromLocal8Bit("ï¿½Ä¼ï¿½Îªï¿½Õ£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ä¼ï¿½!"), QMessageBox::Ok);
+        return;
+    }
 
-	int index = strFilePath.lastIndexOf('.');
+    int index = strFilePath.lastIndexOf('.');
 
-	if (index != -1)
-	{
-		QString str = strFilePath.mid(index + 1, strFilePath.size());
-		if (str != QStringLiteral("xlsx"))
-		{
-            QMessageBox::information(this, QString::fromLocal8Bit("ÏûÏ¢"), QString::fromLocal8Bit("ÎÄ¼þÎª¿Õ£¬ÇëÑ¡ÔñÎÄ¼þ!"), QMessageBox::Ok);
+    if (index != -1)
+    {
+        QString str = strFilePath.mid(index + 1, strFilePath.size());
+        if (str != QStringLiteral("xlsx"))
+        {
+            QMessageBox::information(this, QString::fromLocal8Bit("ï¿½ï¿½Ï¢"), QString::fromLocal8Bit("ï¿½Ä¼ï¿½Îªï¿½Õ£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ä¼ï¿½!"), QMessageBox::Ok);
             return;
-		}
-	}
-	else
-	{
-            QMessageBox::information(this, QString::fromLocal8Bit("ÏûÏ¢"), QString::fromLocal8Bit("ÎÄ¼þÎª¿Õ£¬ÇëÑ¡ÔñÎÄ¼þ!"), QMessageBox::Ok);
+        }
+    }
+    else
+    {
+            QMessageBox::information(this, QString::fromLocal8Bit("ï¿½ï¿½Ï¢"), QString::fromLocal8Bit("ï¿½Ä¼ï¿½Îªï¿½Õ£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ä¼ï¿½!"), QMessageBox::Ok);
             return;
-	}
+    }
 
     toDb->setExcelFile(strFilePath);
 
@@ -115,3 +118,4 @@ void importCmd::onSetCurValue(int value)
 {
     ui->progressBar->setValue(value);
 }
+

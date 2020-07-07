@@ -28,6 +28,12 @@ namespace Pf
         class infoConf
         {
         public:
+            enum{
+                InfoWord_One = 0,
+                InfoWord_Two,
+                InfoWord_Three
+            };
+        public:
             /**
              * @brief getInfoLen    获取信息字长度
              * @param[in] msg 帧首地址
@@ -107,6 +113,26 @@ namespace Pf
         public:
             infoWord2Conf();
             ~infoWord2Conf(){}
+        public:
+            void init(QXlsx::Worksheet *sheet) override;
+            bool getInfoLen(const unsigned char *msg, const int &msgSize, int &len) override;
+            int getInfoType() override {return mInfoType;}
+            std::shared_ptr<infoConf> clone() override;
+        private:
+            int mInfoLen;
+            int mInfoType;
+        };
+
+        /**
+         * @brief The infoWord2Conf class
+         * 信息字3配置
+         */
+
+        class infoWord3Conf : public infoConf
+        {
+        public:
+            infoWord3Conf();
+            ~infoWord3Conf(){}
         public:
             void init(QXlsx::Worksheet *sheet) override;
             bool getInfoLen(const unsigned char *msg, const int &msgSize, int &len) override;

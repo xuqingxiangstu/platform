@@ -4,7 +4,7 @@
 #include "../dbtableopt.h"
 #include <QDebug>
 
-addSysManage::addSysManage(QWidget *parent) :
+addSysManage::addSysManage(QWidget *parent, QString mouseActive, QString devOldUuid, QString sysName, int changeRow) :
     QDialog(parent),
     ui(new Ui::addSysManage)
 {
@@ -20,6 +20,12 @@ addSysManage::addSysManage(QWidget *parent) :
     ui->groupBox_3->hide();
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setGeometry(QRect(150,0,this->width(),this->height()));
+
+    m_mouseActive = mouseActive;
+    m_devUuid = devOldUuid;
+    m_sysName = sysName;
+    m_changeRow = changeRow;
+    ui->systemName->setText(m_sysName);
 }
 
 addSysManage::~addSysManage()
@@ -92,34 +98,35 @@ void addSysManage::on_buttonBox_clicked(QAbstractButton *button)
         value["DEVINFO"] = item;
         value["SYSTEM_UUID"]=addDevSysName.toStdString();
         value.toStyledString();
-        if(!DBTableOpt::getInstance()->addSystemDev(value,devUuid))
-        {
-            QMessageBox::information(this, tr("消息"), tr("添加失败!"), QMessageBox::Ok);
-            return;
+        if(m_mouseActive == "update"){
+            if(DBTableOpt::getInstance()->deleteSystemDev(m_devUuid))
+            {
+                if(!DBTableOpt::getInstance()->addSystemDev(value,devUuid))
+                {
+                    QMessageBox::information(this, tr("消息"), tr("更新失败!"), QMessageBox::Ok);
+                    return;
+                }
+                tran.uuid = devUuid;
+                this->close();
+                Sparent->changeUpdate(&tran,m_changeRow);
+            }
+        }else{
+
+            if(!DBTableOpt::getInstance()->addSystemDev(value,devUuid))
+            {
+                QMessageBox::information(this, tr("消息"), tr("添加失败!"), QMessageBox::Ok);
+                return;
+            }
+
+            tran.uuid = devUuid;
+            this->close();
+            Sparent->update(&tran);
         }
-        //QMessageBox::information(this, tr("消息"), tr("添加成功!"), QMessageBox::Ok);
-        tran.uuid = devUuid;
-        this->close();
-        Sparent->update(&tran);
         return;
     }
     else if(ui->buttonBox->button(QDialogButtonBox::Close) == button)
     {
         this->close();
-        QProgressDialog dialog(tr("正在返回主界面"),tr("取消"), 0, 100, this);
-        dialog.setWindowTitle(tr("进度"));
-        dialog.setWindowModality(Qt::WindowModal);
-        dialog.show();
-        for(int k = 0; k < 100; k++)
-        {
-            dialog.setValue(k);
-            QCoreApplication::processEvents();
-            if(dialog.wasCanceled())
-            {
-                break;
-            }
-        }
-        dialog.setValue(100);
         Sparent->show();
     }
 }
@@ -153,3 +160,5 @@ void addSysManage::on_TcpButton_2_clicked()
     ui->groupBox_2->hide();
     ui->groupBox_3->hide();
 }
+
+

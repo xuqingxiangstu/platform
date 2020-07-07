@@ -66,7 +66,7 @@ namespace Pf
 
             pos = 0;
             byteSize = 1;
-            result["cmd_code"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["cmd_code"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
 
 
             return !result.isNull();
@@ -189,7 +189,7 @@ namespace Pf
                 else if(ncharType == dataType)
                 {
                     //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                    memcpy(tmpBuf + startPos, initValue.c_str(), initValue.size());
                     preStartPos = startPos + initValue.size();
                     outSize += initValue.size();
                 }

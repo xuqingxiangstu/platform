@@ -2,11 +2,11 @@ TEMPLATE = subdirs
 
 SUBDIRS +=  \
     TinyXml \
-    dynCreate \
     recordLog \
     crc \
     jsoncpp \
     CalcFormula \
-    cmdToJson
+    cmdToJson \
+    dynCreate
 
 include (./tools/tools.pri)

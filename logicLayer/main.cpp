@@ -3,7 +3,7 @@
 #include "cmddecode.h"
 #include "../src/PfBus/zeroMq/zmqsend.h"
 #include "../src/PfBus/zeroMq/zmqreceive.h"
-#include "../../src/PfCommon/tools/ut_error.h"
+#include "../src/PfCommon/tools/ut_error.h"
 #include "../src/PfAdapter/ZmqRcvAdapter/ZmqRcvAdapter.h"
 #include "../src/PfAdapter/ZmqSendAdapter/ZmqSendAdapter.h"
 #include "../src/PfSql/paramsTable/paramstable.h"
@@ -24,6 +24,11 @@ int main(int argc, char *argv[])
     QCoreApplication a(argc, argv);
 
     qRegisterMetaType<Value>("Value");
+
+    paramsTable::getInstance();
+
+    virtualParams::getInstance();
+
 #if 0
     try
     {
@@ -123,7 +128,7 @@ int main(int argc, char *argv[])
         decode->initPrograme();
 //#ifndef QT_NO_DEBUG
 #if 0
-        std::string uuid = "{5eebc27a-20aa-4bd5-8e57-cecbe00c8a93}";
+        std::string uuid = "{9df9f5d7-81fe-4a4e-851c-44021d307aec}";
 
         Json::Value tmp;
         tmp.append(uuid);

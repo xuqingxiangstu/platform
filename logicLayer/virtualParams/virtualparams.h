@@ -9,68 +9,98 @@
 #include <mutex>
 #include <string>
 #include <chrono>
+#include <QHash>
+#include <QMutex>
+#include <QDebug>
+#include <QWaitCondition>
+#include <QReadWriteLock>
+#include "activetime.h"
+#include "../src/PfCommon/jsoncpp/json.h"
+
+#define USE_BLOCK_MODE  1   // 0:非阻塞、1:阻塞
+
+#define USE_QT_LOCK 1       //1:QT 读写锁，0：c++锁
 
 class mapKey
 {
 public:
-    mapKey(std::string f, std::string s, std::string t):first(f), second(s), three(t){}
+    mapKey(){}
+    ~mapKey(){
+    }
+    mapKey(QString f, QString s, QString t):first(f), second(s), three(t){}
 public:
-    std::string first;
-    std::string second;
-    std::string three;
+    QString first;
+    QString second;
+    QString three;
 };
 
 class mapValue
 {
-public:
-    mapValue():isValid(true){}
-    mapValue(std::string v):mValue(v),isValid(true){}
+public:   
+    mapValue(Json::Value value = Json::Value()):isValid(true),mCurValue(value){}
 
-    //void setStartTime(std::chrono::time_point time){startTime = time;}
+    void setStartTime(std::chrono::system_clock::time_point time){startTime = time;}
 
-    std::string getValue(){return mValue;}
+    bool isMeet(Json::Value value = Json::Value())
+    {
+        //modify xqx 20200429 增加时间判断
+        auto endTime = std::chrono::high_resolution_clock::now();
+        auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
 
-    bool isMeet(){
-        bool res = isValid;
-        isValid = false;
-        return res;
+        if(elapsedTime.count() >= activeTime::getInstance()->getActiveTime())   //超时置为无效
+        {
+            isValid = false;
+        }
+        else
+        {
+            //modify xqx 2020-6-5 17:55:19 增加数据判断（只判是否相等，数值量及字符串判断）
+
+            if(Json::Value() == value)    //为空时代表不需要判断
+            {
+                //nothong to do
+            }
+            else
+            {
+                isValid = false;
+
+                if(value.isInt() && mCurValue.isInt())
+                {
+                    if(value.asInt() == mCurValue.asInt())
+                    {
+                        isValid = true;
+                    }
+                }
+                else if(value.isDouble() && mCurValue.isDouble())
+                {
+                    isValid = qFuzzyCompare(value.asDouble(), mCurValue.asDouble());
+                }
+                else if(value.isString() && mCurValue.isString())
+                {
+                    if(value.asString() == mCurValue.asString())
+                    {
+                        isValid = true;
+                    }
+                }
+            }
+
+            //end
+        }
+        return isValid;
     }
 
-    void setInValid(){isValid = false;}
+    void setValue(Json::Value value)
+    {
+        isValid = true;
+        mCurValue = value;
+    }
+
 private:
-   // std::chrono::time_point startTime;
-    std::string mValue;
-    bool isValid;
+    std::chrono::system_clock::time_point startTime;
+    //int mActiveTime = 10000000;  ///参数有效时间(ms)
+    bool isValid;           ///是否有效
+    Json::Value mCurValue;       ///< 当前值
 };
 
-class mapHash
-{
-public:
-    std::size_t operator()(const mapKey &key) const
-    {
-        using std::size_t;
-        using std::hash;
-
-        //modify xqx 20200410 不判设备UUID
-        return ((hash<std::string>()(key.first)
-            ^ (hash<std::string>()(key.second) << 1)) >> 1)
-            ^ (hash<std::string>()(key.three) << 1);
-
-        //return ((hash<std::string>()(key.second)
-         //   ^ (hash<std::string>()(key.three) << 1)) >> 1);
-    }
-};
-
-class mapEqualTo
-{
-public:
-    bool operator()(const mapKey& key1, const mapKey& key2) const
-    {
-        //modify xqx 20200410 不判设备UUID
-        return (key1.first == key2.first) && (key1.second == key2.second) && (key1.three == key2.three);
-       // return (key1.second == key2.second) && (key1.three == key2.three);
-    }
-};
 
 class virtualParams
 {
@@ -92,19 +122,27 @@ public:
 private:
     using keyType = mapKey;
     using valueType = mapValue;
+
+    using hashKeyType = QPair<QString, QString>;
+    using hashValueType = mapValue*;
 private:
     virtualParams();
 public:
-    void setValue(const keyType &key, const valueType &value);
-    bool getValue(const keyType &key, valueType &value);
-    bool isMeet(const keyType &key);
+    void setValue(const keyType &key, Json::Value = Json::nullValue);
+    bool isMeet(const keyType &key, Json::Value = Json::nullValue);
 private:
-
-    std::unordered_map<keyType, valueType, mapHash, mapEqualTo> mParamsManager;
-
+    QHash<hashKeyType, hashValueType> mHashParamsManager;
+#if USE_QT_LOCK
+    QReadWriteLock mDataMutex;
+#else
+    std::mutex mDataMutex;
+#endif
 private:
     static virtualParams *mInstance;
     static std::mutex mInMutex;
+public:
+    static QMutex mParamsUpDateMutex;           ///< 参数更新锁
+    static QWaitCondition mParamsUpdateCondition;   ///< 参数更新条件
 };
 
 #endif // VIRTUALPARAMS_H

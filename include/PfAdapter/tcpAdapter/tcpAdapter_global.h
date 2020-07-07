@@ -1,0 +1,14 @@
+#ifndef TCPADAPTER_GLOBAL_H
+#define TCPADAPTER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(TCPADAPTER_LIBRARY)
+#  define TCPADAPTERSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define TCPADAPTERSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // TCPADAPTER_GLOBAL_H
+    
+    

@@ -29,6 +29,7 @@
 #define CONTINUE_TEST   "continue"
 #define GET_RUNITES     "runitems"
 #define LOAD            "load"
+#define ENFORCE_EXE      "enforceExe"
 
 #define OK      "ok"
 #define RUNNING "running"
@@ -114,6 +115,12 @@ private:
     void manualTrigger(const Json::Value &msg);
 
     /**
+     * @brief enforceExe    后台程序如果有启动条件，前端强制执行此逻辑
+     * @param msg
+     */
+    void enforceExe(const Json::Value &msg);
+
+    /**
      * @brief stopTest  停止测试
      * @param flowType  流程类型（normal：正常、fault：故障)
      */
@@ -177,6 +184,8 @@ public slots:
      * @param srcJson   JSON文件源
      */
     void parse(QString srcJson);
+
+    void onTestMsg(QByteArray);
 private:
     PfAdapter::Adapter *mCmdSendObj;  ///< 命令发送对象
     //PfAdapter::Adapter *mAnalogSendObj;   ///< 模拟量输入发送对象
@@ -185,7 +194,7 @@ private:
     std::atomic_bool mIsInitSuccessful;     ///<初始化是否成功
     QMap<std::string, bool> mIsInitFlow;           ///<流程是否初始化
     std::map<std::string, std::shared_ptr<flowManager>> mFLowsObj;    ///< 流程句柄
-    std::shared_ptr<rcvTask> mRcvMsgTask;      ///< 接收消息任务  
+    std::vector<std::shared_ptr<rcvTask>> mRcvMsgTasks;      ///< 接收消息任务
 };
 
 #endif // CMDDECODE_H

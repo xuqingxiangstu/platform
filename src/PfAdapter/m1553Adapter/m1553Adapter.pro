@@ -30,3 +30,18 @@ unix {
 LIBS += -L$$OUT_PWD/../../../ -lTinyXml
 LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
 LIBS += -L$$OUT_PWD/../../../ -lM1553B
+
+win32{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/m1553Adapter.dll
+    DSTFILE = $$OUT_PWD/../../../m1553Adapter.dll
+    SRCDIR = $$replace(SRCFILE, /, \\)
+    DSTDIR = $$replace(DSTFILE, /, \\)
+
+    QMAKE_POST_LINK += copy $$SRCDIR $$DSTDIR
+}
+unix{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/libm1553Adapter.so*
+    DSTFILE = $$OUT_PWD/../../../
+
+    QMAKE_POST_LINK += cp -d $$SRCFILE $$DSTFILE
+}

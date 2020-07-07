@@ -40,7 +40,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     mCmdDecode(nullptr),
     mPfAdaterObjs(nullptr),
-    mLogicLayerProcess(nullptr)
+    mLogicLayerProcess(nullptr),
+    mLogicExit(false)
 {
     ui->setupUi(this);
     setWindowFlags(Qt::FramelessWindowHint);
@@ -49,22 +50,70 @@ MainWindow::MainWindow(QWidget *parent) :
     m_saveErrRecid.clear();
     ui->groupBox_2->show();
 
+    m_AllSelectFlag = false;
+
     QTimer *timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timeUpdate()));
 
     timer->start(1000);
+    QString dataTime = "";
+    dataTime += __DATE__;
+    dataTime += " ";
+    dataTime += __TIME__;
+
+    QString tmp = dataTime.replace("  ", " ");
+
+    QDateTime buildTime = QLocale(QLocale::English).toDateTime(tmp, "MMM d yyyy hh:mm:ss");
+
+    QString version;
+#ifndef QT_NO_DEBUG
+    version = "V" + QString(FE_VERSION) + "." + buildTime.toString("yyyyMMdd") + "_Debug";
+#else
+    version = "V" + QString(FE_VERSION) + "." + buildTime.toString("yyyyMMdd") + "_Release";
+#endif
+    ui->versionNum->setText(version);
 
 
     //启动后台程序
 #ifndef DEBUG_LOGIC
+
+    //modify xqx 2020-7-6 17:23:09 启动之前先把logicLayer进程杀死
+
+#ifdef Q_OS_WIN
+    QProcess p;
+    QString cmd = "";
+    cmd = "taskkill /im logicLayer.exe /f";
+    p.execute(cmd);
+    p.close();
+#endif
+
+#ifdef Q_OS_LINUX
+    QProcess killProcess;
+    QStringList params;
+    params.append("logicLayerExe");
+    killProcess.start("./taskKill.sh", params );
+
+#endif
+
+    //end
+
     mLogicLayerProcess = new QProcess;
-    mLogicLayerProcess->start("./logicLayer.exe");
+
     connect(mLogicLayerProcess, &QProcess::readyRead, this, &MainWindow::onLogicOutPut);
+    connect(mLogicLayerProcess, &QProcess::stateChanged, this, &MainWindow::onLogicStateChanged);
+    //connect(mLogicLayerProcess, &QProcess::errorOccurred, this, &MainWindow::onLogicErrorOccurred);
+
+#if defined(Q_OS_WIN)
+    mLogicLayerProcess->start("./logicLayer.exe");
+#else
+    mLogicLayerProcess->start("./logicLayerExe.sh");
+#endif
+
 #endif
     try
     {
         loading();
-        initFlowTree();
+        //initFlowTree();
         initSystemTree();
     }
     catch(std::runtime_error err)
@@ -83,6 +132,8 @@ MainWindow::MainWindow(QWidget *parent) :
         exit(0);
     }
     QObject::connect(ui->closeButton,&QPushButton::clicked,[=](){
+        unLoading();
+        delete ui;
         exit(0);
     });
     //initFlowCom();
@@ -97,8 +148,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->syslistWidget->setStyleSheet("background-color:transparent;"
                                      "QListWidget::Item{padding-top:20px;padding-bottom:20px;}");
     ui->syslistWidget->setFrameShape(QListWidget::NoFrame);
+    //ui->resetBtn->setVisible(false);
     ui->pushButtonStopAll->setDisabled(true);
     ui->pushButtonStopAll->setStyleSheet("QPushButton{background: url(:/image/img/stopAN.png);border:none;outline:none;color:#fff;}");
+    connect(ui->minButton,SIGNAL(clicked(bool)), this,SLOT(windowMin()));
 
 }
 MainWindow::~MainWindow()
@@ -106,6 +159,35 @@ MainWindow::~MainWindow()
     unLoading();
     delete ui;
     exit(0);
+}
+
+void MainWindow::onLogicExeError()
+{
+
+}
+
+void MainWindow::onLogicStateChanged(QProcess::ProcessState state)
+{
+    if(!mLogicExit)
+    {
+        if(QProcess::ProcessState::NotRunning == state)
+        {
+            QString error = "后台程序异常退出!";
+            error += mLogicLayerProcess->errorString();
+
+            QMessageBox::warning(this, "提示", error);
+        }
+    }
+}
+
+void MainWindow::onLogicErrorOccurred(QProcess::ProcessError error)
+{
+    if(!mLogicExit)
+    {
+        //QString errorInfo = mLogicLayerProcess->errorString();
+
+        //QMessageBox::warning(this, "提示", errorInfo);
+    }
 }
 
 void MainWindow::onLogicOutPut()
@@ -185,6 +267,7 @@ void MainWindow::initFlowCom()
 
             connect(this, &MainWindow::sendAllStartId, m_testFlow, &testflow::rcvAllStart);
             connect(this, &MainWindow::sendStartSignal, m_testFlow, &testflow::setStartBtn);
+
         }
     }else{
         m_testFlow = new testflow(this);
@@ -196,6 +279,7 @@ void MainWindow::initFlowCom()
 }
 void MainWindow::unLoading()
 {
+    mLogicExit = true;
     if(mCmdDecode)
     {
         delete mCmdDecode;
@@ -210,9 +294,10 @@ void MainWindow::unLoading()
 
     if(mLogicLayerProcess)
     {
-        if(mLogicLayerProcess->isOpen())
-            mLogicLayerProcess->close();
-
+        if(mLogicLayerProcess->state() == QProcess::ProcessState::Running){
+            mLogicLayerProcess->kill();
+            mLogicLayerProcess->waitForFinished();
+        }
         delete mLogicLayerProcess;
     }
 }
@@ -221,10 +306,8 @@ void MainWindow::unLoading()
 void MainWindow::switchPage(QListWidgetItem * item)
 {
     m_resetRecord = item->data(Qt::UserRole).toString();
-    qDebug() << m_resetRecord;
 
     int index = ui->syslistWidget->currentRow();
-    qDebug()<< index;
     ui->stackedWidget->setCurrentIndex(index);
 
     std::vector<QString>::iterator ret = std::find(m_saveRecid.begin(), m_saveRecid.end(), m_resetRecord);
@@ -262,11 +345,13 @@ void MainWindow::loadSimTest()
         QListWidgetItem *item = new QListWidgetItem();
         m_sysTreeItem = new qtreeitemdelegate(this,QString::fromStdString(m_value["SYSTEM_NAME"][i].asString()),QString::fromStdString(m_value["RECORD_UUID"][i].asString()),QString::fromStdString(m_value["FLOW_NAME"][i].asString()));
         item->setData(Qt::UserRole,QVariant(QString::fromStdString(m_value["RECORD_UUID"][i].asString())));
-        item->setSizeHint(QSize(292,85));
+        item->setSizeHint(QSize(247,50));
         ui->syslistWidget->insertItem(i,item);
         ui->syslistWidget->setItemWidget(item,m_sysTreeItem);
         connect(this, &MainWindow::showCurrent, m_sysTreeItem, &qtreeitemdelegate::showCurrent);
         connect( m_sysTreeItem, &qtreeitemdelegate::sendToMain,this, &MainWindow::revRecid);
+
+        connect(this, &MainWindow::setChecked, m_sysTreeItem, &qtreeitemdelegate::setChecked);
 
         connect(this, &MainWindow::sendErrId, m_sysTreeItem, &qtreeitemdelegate::setErrId);
     }
@@ -337,7 +422,12 @@ void MainWindow::on_flowBtn_clicked()
         fl->setWindowModality(Qt::ApplicationModal);
         fl->show();
     #endif
-        QProcess::startDetached("./eq.exe");
+
+#if defined(Q_OS_WIN)
+    QProcess::startDetached("./eq.exe");
+#else
+    QProcess::startDetached("./eqTool.sh");
+#endif
 }
 
 void MainWindow::on_sysBtn_clicked()
@@ -363,6 +453,29 @@ void MainWindow::on_expBtn_clicked()
 
 void MainWindow::on_resetBtn_clicked()
 {
+    QString recordUuid = "{cd509e5b-d441-43ad-ba38-ab156afb4227}";
+    QString flowUuid = "{23f4cc6b-746e-433b-bd2b-1ad7792295d8}";
+    QString subFlowUuid = "{066c6392-a1f5-438d-a741-1fd493ed1ad9}";
+
+    QString cmd = "";
+
+    cmd += "{\"msgType\":\"enforceExe\",\"msg\":{";
+    cmd += "\"record_uuid\":\"";
+    cmd += recordUuid;
+    cmd += "\",";
+
+    cmd += "\"flow_uuid\":";
+    cmd += "\"";
+    cmd += flowUuid;
+    cmd += "\",";
+
+    cmd += "\"sub_flow_uuid\":";
+    cmd += "\"";
+    cmd += subFlowUuid;
+    cmd += "\"}}";
+
+    emit sendCmd(cmd);
+#if 0
     std::vector<std::string> msg;
     msg.clear();
     qDebug()<< m_resetRecord;
@@ -373,6 +486,7 @@ void MainWindow::on_resetBtn_clicked()
     std::string msgRun = "runitems";
     std::string json1 = testflow::getRunitems(msgRun);
     emit sendCmd(QString::fromLocal8Bit(json1.c_str()));
+#endif
 }
 
 
@@ -427,8 +541,21 @@ void MainWindow::setBtnAble(bool flag)
 
 void MainWindow::revRecid(QString id,bool flag)
 {
+    bool isHaveFlag = false;
     if(flag){
-        m_saveAllStartId.push_back(id);
+        if(m_saveAllStartId.size() == 0){
+            m_saveAllStartId.push_back(id);
+        }
+        for(int i = 0;i<m_saveAllStartId.size();i++)
+        {
+            if(m_saveAllStartId.at(i) == id){
+                isHaveFlag = true;
+            }
+        }
+        if(!isHaveFlag){
+            m_saveAllStartId.push_back(id);
+        }
+
     }else{
         std::vector<QString>::iterator iter;
 
@@ -441,19 +568,25 @@ void MainWindow::revRecid(QString id,bool flag)
 void MainWindow::on_pushButtonStartAll_clicked()
 {
     QString msg = "start";
-    ui->pushButtonStartAll->setDisabled(true);
-    ui->pushButtonStartAll->setStyleSheet("QPushButton{background: url(:/image/img/startAN.png);border:none;outline:none;color:#fff;}");
-    startAllCnt = m_saveAllStartId.size();
-    for(int i=0;i<m_saveAllStartId.size();i++){
-        qDebug() << m_saveAllStartId[i];
-        sendAll(m_saveAllStartId[i],msg);
+    if(m_saveAllStartId.size()>0){
+        ui->pushButtonStartAll->setDisabled(true);
+        ui->pushButtonStartAll->setStyleSheet("QPushButton{background: url(:/image/img/startAN.png);border:none;outline:none;color:#fff;}");
+        startAllCnt = m_saveAllStartId.size();
+        for(int i=0;i<m_saveAllStartId.size();i++){
+            qDebug() << m_saveAllStartId[i];
+            sendAll(m_saveAllStartId[i],msg);
+        }
+        ui->pushButtonStopAll->setEnabled(true);
+        ui->pushButtonStopAll->setStyleSheet("QPushButton{background: url(:/image/img/stopA.png);border:none;outline:none;color:#fff;}");
+
+        m_AllStartRecoid = QVector<QString>::fromStdVector(m_saveAllStartId);
+
+        emit sendAllStartId(m_AllStartRecoid);
+
+    }else{
+        QMessageBox::warning(this, "提示", QString::fromStdString("请勾选！"));
+        return;
     }
-    ui->pushButtonStopAll->setEnabled(true);
-    ui->pushButtonStopAll->setStyleSheet("QPushButton{background: url(:/image/img/stopA.png);border:none;outline:none;color:#fff;}");
-
-    m_AllStartRecoid = QVector<QString>::fromStdVector(m_saveAllStartId);
-
-    emit sendAllStartId(m_AllStartRecoid);
 }
 
 void MainWindow::on_pushButtonStopAll_clicked()
@@ -507,4 +640,20 @@ void MainWindow::sendAll(QString record_uuid,QString msgType)
     std::string out = Json::FastWriter().write(value);
     json = QString::fromLocal8Bit(out.c_str());
     emit sendCmd(json);
+}
+
+void MainWindow::on_selectAll_clicked()
+{
+    if(!m_AllSelectFlag)
+    {
+        emit setChecked(true);
+        m_AllSelectFlag = true;
+    }else{
+        emit setChecked(false);
+        m_AllSelectFlag = false;
+    }
+}
+void MainWindow::windowMin()
+{
+    this->showMinimized();
 }

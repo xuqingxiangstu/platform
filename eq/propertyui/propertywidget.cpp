@@ -146,7 +146,10 @@ QtProperty *propertyWidget::createTriggerProperty(const bool &isReadOnlay, const
 
     int curIndex = 0;
 
-    if(!curValue.isObject() || !initValue.isArray())
+    //modify xqx 2020-6-7 12:32:50 当前值为空时，显示第一个空
+
+    //if(!curValue.isObject() || !initValue.isArray())
+    if(!initValue.isArray())
         return property;
 
     QStringList listName;
@@ -159,7 +162,11 @@ QtProperty *propertyWidget::createTriggerProperty(const bool &isReadOnlay, const
 
         if(!curValue.isNull())
         {
-            if(initValue[index] == curValue)
+            std::string tmp1 = initValue[index].toStyledString();
+            std::string tmp2 = curValue.toStyledString();
+            //modify xqx 2020-6-7 13:22:21 判断字符串相等，启动条件时异常
+            //if(initValue[index] == curValue)
+            if(tmp1 == tmp2)
             {
                 curIndex = index;
             }

@@ -10,6 +10,7 @@
  */
 
 #include "../../PfCommon/TinyXml/tinyxml.h"
+#include "../../PfCommon/jsoncpp/json.h"
 
 #include <string>
 #include <mutex>
@@ -43,6 +44,18 @@ namespace Pf
             virtual void init(const TiXmlElement *ele) {}
 
             /**
+             * @brief init  通过Json序列化字符串初始化
+             * @param json  字符串
+             */
+            virtual void init(const std::string &json){}
+
+            /**
+             * @brief init  通过Json节点初始化
+             * @param json  节点
+             */
+            virtual void init(const Json::Value &json){}
+
+            /**
              * @brief sendMsg   发送消息
              * @param[in] msg 消息首地址
              * @param[in] msgSize 消息个数
@@ -51,6 +64,8 @@ namespace Pf
              * - false：失败
              */
             virtual bool sendMsg(const char *msg, const int &msgSize) { return false; }
+
+            //virtual bool sendMsg(const char *msg, const int &msgSize, const std::string &ipAddr = "", const int &port = 0) { return false; }
 
             /**
              * @brief receiveMsg    接收消息
@@ -63,6 +78,20 @@ namespace Pf
              * - false：失败
              */
             virtual bool receiveMsg(char *msg, int &rcvSize, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF) { return false; }
+
+            //virtual bool receiveMsg(char *msg, int &rcvSize, std::string &rcvIp, unsigned short &rcvPort, const int &maxRcvSize = 1024, const unsigned int &timeOut = 0xFFFFFFFF){return false;}
+
+            /**
+             * @brief atomicTrMsg   原子发送接收数据（send rcv）
+             * @param[in] sMsg      发送消息首地址
+             * @param[in] sMsgSize  发送消息长度
+             * @param[out] rMsg     接收消息首地址
+             * @param[out] rcvSize  接收长度
+             * @param[in] interval(ms)      发送后间隔接收时间
+             * @param[in] rMaxRcvSize   待接收长度
+             * @return
+             */
+            virtual bool atomicTrMsg(const char *sMsg, const int &sMsgSize, char *rMsg, int &rcvSize, const unsigned int &interval, const int &rMaxRcvSize = 1024){return false;}
 
             /**
              * @brief getClassName  获取类名称

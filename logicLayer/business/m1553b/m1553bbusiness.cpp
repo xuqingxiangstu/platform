@@ -5,23 +5,61 @@
 #include <QDateTime>
 
 #include "../../src/PfCommon/crc/crc.h"
+#include "../../src/PfIcdWorkBench/icdData/datastorage.h"
 #include "../../virtualParams/virtualparams.h"
 
 using namespace Pf::PfIcdWorkBench;
 
 m1553bBusiness::m1553bBusiness():
     mBusObj(nullptr),
-    mUiBus(nullptr)
+    mUiBus(nullptr),
+    mCmdCnt(1)
 {
     mUiBus = uiBus::getInstance()->getUiAdapter();
 }
 
 void m1553bBusiness::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value &result)
+{   
+    //TODO:根据RT SA进行命令分类
+
+    if( (3 == mRtAddr) && (8 == mSaAddr))
+    {
+        exeCmd(inData);
+    }
+}
+
+void m1553bBusiness::exeCmd(const Pf::PfIcdWorkBench::byteArray &inData)
 {
-    if(result.isNull())
+    if(inData.size() != 12)
         return;
 
-    //TODO:鏍规嵁RT SA杩涜鍛戒护鍒嗙被
+    std::ostringstream strErr;
+
+    dataStorage data;
+
+    //crc
+    unsigned short rcvCrc = data.getData(&inData.at(0), inData.size(), 10, 2, 0, 0);
+
+    unsigned short calCrc = Pf::PfCommon::Crc::calCrc16(&inData.at(0), inData.size() - 2);
+
+    if(rcvCrc != calCrc)
+    {
+        return ;
+    }
+
+    unsigned short rcvCnt = data.getData(&inData.at(0), inData.size(), 0, 2, 0, 0);
+
+    if(mCmdCnt != rcvCnt)
+    {
+        unsigned short cmdCode = data.getData(&inData.at(0), inData.size(), 2, 2, 0, 0);;
+
+        //更新参数
+        mapKey vKey(mDevUuid.c_str(), "62010", std::to_string((int)cmdCode).c_str());
+
+        virtualParams::getInstance()->setValue(vKey);
+
+        mCmdCnt = rcvCnt;
+    }
 }
 
 void m1553bBusiness::setParam(const Json::Value &param)

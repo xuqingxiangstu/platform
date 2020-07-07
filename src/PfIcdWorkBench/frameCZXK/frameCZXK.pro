@@ -34,3 +34,5 @@ LIBS += -L$$OUT_PWD/../../../ -licdData
 LIBS += -L$$OUT_PWD/../../../ -lcrc
 
 LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
+
+LIBS += -L$$OUT_PWD/../../../ -lframeNumber

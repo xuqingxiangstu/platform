@@ -27,3 +27,17 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../ -lzeroMq
 else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lzeroMq
     
     
+win32{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/ZmqRcvAdapter.dll
+    DSTFILE = $$OUT_PWD/../../../ZmqRcvAdapter.dll
+    SRCDIR = $$replace(SRCFILE, /, \\)
+    DSTDIR = $$replace(DSTFILE, /, \\)
+
+    QMAKE_POST_LINK += copy $$SRCDIR $$DSTDIR
+}
+unix{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/libZmqRcvAdapter.so*
+    DSTFILE = $$OUT_PWD/../../../
+
+    QMAKE_POST_LINK += cp -d $$SRCFILE $$DSTFILE
+}

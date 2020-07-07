@@ -3,11 +3,13 @@
 #include "../../uibus.h"
 #include <QDebug>
 #include <QDateTime>
-
+#include <QString>
 #include "../../src/PfCommon/crc/crc.h"
 #include "../../virtualParams/virtualparams.h"
 
 #include "../../src/PfCommon/crc/crc.h"
+#include "../../src/PfSql/paramsTable/udptable.h"
+#include "../../src/PfSql/paramsTable/sysinterfacetable.h"
 
 using namespace Pf::PfIcdWorkBench;
 
@@ -27,21 +29,26 @@ void feBusiness::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value &
     {
         mBusObj->sendMsg((const char*)&askMsg.at(0), askMsg.size());
     }
-
     //更新参数
-
+    //qDebug() << result.toStyledString().c_str();
     if(!result["region"].isNull())
     {
         Json::Value regionValue = result["region"];
 
         if(!regionValue["table_num"].isNull())
         {
-            int table = regionValue["table_num"].asInt();
+            unsigned int table = regionValue["table_num"].asUInt();
 
             Json::Value array = regionValue["data"];
             for(int index = 0; index < array.size(); index++)
             {
-                virtualParams::getInstance()->setValue({mDevUuid, std::to_string(table), std::to_string(array[index]["coding"].asInt())}, mapValue());
+                int coding = array[index]["coding"].asInt();
+
+                mapKey vKey(mDevUuid.c_str(), QString::number(table, 16), std::to_string(coding).c_str());
+
+                virtualParams::getInstance()->setValue(vKey, array[index]["value"]);
+
+                qDebug() << "[FE]->" << mDevUuid.c_str() << + ":" << QString::number(table, 16) << "," << QString::number(coding) << "," << array[index]["value"].asString().c_str();
             }
         }
     }
@@ -51,7 +58,9 @@ void feBusiness::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value &
 
     int frameType = headJs["frame_type"].asInt();
 
-    if(0x0203 == frameType) //6.4.2.4　初始数据装订指令
+    int headSize = 16;
+
+    /*if(0x0206 == frameType) //6.4.2.4　初始数据装订指令
     {
         Pf::PfIcdWorkBench::byteArray convertMsg;
         std::copy(inData.begin(), inData.end(), std::back_inserter(convertMsg));
@@ -75,7 +84,7 @@ void feBusiness::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value &
         convertMsg.at(2) = crc >> 8;
 
         mBusObj->sendMsg((const char*)&convertMsg.at(0), convertMsg.size());
-    }
+    }*/
 }
 
 void feBusiness::respondCmd(int frameType, Json::Value head, Json::Value array)

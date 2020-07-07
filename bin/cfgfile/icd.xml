@@ -12,4 +12,5 @@
 	<icd key="M1553B协议" frame="frame1553B"/>
 	<icd key="密码集控装置协议" frame="frame93"/>
 	<icd key="FE" frame="frameFE"/>
+	<icd key="机柜协议" frame="frameJG"/>
 </configure>

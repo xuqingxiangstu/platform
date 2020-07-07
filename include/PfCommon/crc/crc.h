@@ -37,6 +37,10 @@ namespace Pf
              * @return crc结果
              */
             static unsigned char calSum(const unsigned char *DataBuf, unsigned int dwNumOfBytes);
+
+            static std::string calMd5(const unsigned char *DataBuf, unsigned int dwNumOfBytes);
+
+            static unsigned char xOr(const unsigned char *dataBuf, unsigned int dwNumOfBytes);
         };
     }
 }

@@ -14,6 +14,54 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+    double s1 = 4.5;
+    int s2 = 4;
+    unsigned int s3 = 0x10;
+    float s4 = 3.5;
+
+    Json::Value t1 = Json::Value(s1);
+    Json::Value t2 = Json::Value(s2);
+    Json::Value t3 = Json::Value(s3);
+    Json::Value t4 = Json::Value(s4);
+
+    bool res = false;
+
+    res = t1.isDouble();
+    qDebug() << res;
+    res = t1.isInt();
+    qDebug() << res;
+    res = t1.isInt64();
+    qDebug() << res;
+    res = t1.isIntegral();
+    qDebug() << res;
+
+    res = t2.isDouble();
+    qDebug() << res;
+    res = t2.isInt();
+    qDebug() << res;
+    res = t2.isInt64();
+    qDebug() << res;
+    res = t2.isIntegral();
+    qDebug() << res;
+
+    res = t3.isDouble();
+    qDebug() << res;
+    res = t3.isInt();
+    qDebug() << res;
+    res = t3.isInt64();
+    qDebug() << res;
+    res = t3.isIntegral();
+    qDebug() << res;
+
+    res = t4.isDouble();
+    qDebug() << res;
+    res = t4.isInt();
+    qDebug() << res;
+    res = t4.isInt64();
+    qDebug() << res;
+    res = t4.isIntegral();
+    qDebug() << res;
+
     //序列化
     qDebug() << "序列化测试";
 

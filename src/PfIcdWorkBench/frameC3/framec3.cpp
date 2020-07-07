@@ -5,11 +5,12 @@
 #include "../../PfCommon/tools/ut_error.h"
 #include "../icdData/datatype.h"
 #include "../../PfSql/paramsTable/paramstable.h"
+#include "../frameNumber/framenumber.h"
 
 #include <QByteArray>
 #include <QDateTime>
 
-#include <qDebug>
+#include <QDebug>
 
 namespace Pf
 {
@@ -123,17 +124,12 @@ namespace Pf
             pos += byteSize;
 
             //帧计数
-            auto findItor = mProtocolCnt.find(std::make_pair(src, dst));
-            if(findItor == mProtocolCnt.end())
-            {
-                mProtocolCnt[std::make_pair(src, dst)] = 0;
-            }
+
+            int cmdCnt = frameNumberManager::getInstance()->getFrameNumber(mCurUuid, getFrameName(), src, dst);
 
             byteSize = 4;
-            data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, mProtocolCnt[std::make_pair(src, dst)]);
+            data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, cmdCnt);
             pos += byteSize;
-
-            mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
 
             //校验和
             byteSize = 1;
@@ -213,12 +209,12 @@ namespace Pf
                 else if(ncharType == dataType)
                 {
                     //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                    memcpy(tmpBuf + startPos,  initValue.c_str(), initValue.size());
                     preStartPos = startPos + initValue.size();
                     outSize += initValue.size();
 
                     //modify xqx 20200420 更新字符串长度
-                    data.setData(tmpBuf, msgSize, strLenPos, strLenByteSize, 0, 0, initValue.size());
+                    data.setData(tmpBuf, msgSize, strLenPos, strLenByteSize, 0, 0, (int)initValue.size());
                 }
                 else if(nRawType == dataType)   //十六进制原始数据
                 {
@@ -388,7 +384,7 @@ namespace Pf
 
             //帧标识
             byteSize = 1;
-            result["frame_code"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["frame_code"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //step3：数据长度校验
@@ -413,22 +409,22 @@ namespace Pf
 
             //源节点表号
             byteSize = 1;
-            result["src_num"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["src_num"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //目标节点表号
             byteSize = 1;
-            result["dst_num"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["dst_num"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //帧计数
             byteSize = 4;
-            result["count"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["count"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //时间
             byteSize = 4;
-            result["time"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["time"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //表号
@@ -454,7 +450,7 @@ namespace Pf
 
                 //编码
                 byteSize = 1;
-                msg["coding"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                msg["coding"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                 pos += byteSize;
 
                 //测试值
@@ -462,7 +458,7 @@ namespace Pf
                 if( (1 == tableNum) || (2 == tableNum))
                 {
                     byteSize = 1;
-                    msg["value"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                    msg["value"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                     pos += byteSize;
                 }
                 else if( (3 == tableNum))
@@ -475,18 +471,18 @@ namespace Pf
                 else if( (4 == tableNum))
                 {
                     byteSize = 2;
-                    msg["value"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                    msg["value"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                     pos += byteSize;
                 }
 
                 //合格标志
                 byteSize = 1;
-                msg["flag"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                msg["flag"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                 pos += byteSize;
 
                 //测试时间
                 byteSize = 4;
-                msg["test_time"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                msg["test_time"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                 pos += byteSize;
 
                 msgArray.append(msg);

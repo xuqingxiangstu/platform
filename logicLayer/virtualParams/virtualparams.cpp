@@ -5,54 +5,78 @@
 virtualParams *virtualParams::mInstance = nullptr;
 std::mutex virtualParams::mInMutex;
 
+QMutex virtualParams::mParamsUpDateMutex;
+QWaitCondition virtualParams::mParamsUpdateCondition;
+
 virtualParams::virtualParams()
 {
+    //初始化参数存活时间
+    activeTime::getInstance();
 #if 0
-    auto beginTime = std::chrono::high_resolution_clock::now();
-    std::this_thread::sleep_for(std::chrono::microseconds(5000));
-    auto endTime = std::chrono::high_resolution_clock::now();
-    auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
-    int a = elapsedTime.count();
-    int b = 0;
+    setValue({"12", "1103", "2"}, Json::Value(3.4));
+    setValue({"34", "4401", "02"}, Json::Value(4));
+
+    bool res = false;
+    res = isMeet({"12", "1103", "2"}, Json::Value(3.3));
+    res = isMeet({"12", "1103", "2"}, Json::Value(3.4));
+    res = isMeet({"34", "4401", "02"}, Json::Value(4));
+    res = isMeet({"34", "4401", "02"}, Json::Value(3));
+    res = isMeet({"34", "4401", "12"}, Json::Value(4));
+    int i = 0;
+    i++;
+#endif
+}
+
+void virtualParams::setValue(const keyType &key, Json::Value value)
+{
+#if USE_QT_LOCK
+    mDataMutex.lockForWrite();
+#else
+    mDataMutex.lock();
 #endif
 
-    setValue({"12", "1103", "2"}, mapValue());
-    //setValue({"34", "4401", "02"}, mapValue());
-}
+    QString zcValue = key.second + "_" + key.three;
 
-void virtualParams::setValue(const keyType &key, const valueType &value)
-{
-    //增加时间戳
-    //value.setStartTime(std::chrono::high_resolution_clock::now());
-
-
-    mParamsManager[key] = value;
-}
-
-bool virtualParams::getValue(const keyType &key, valueType &value)
-{
-    bool res = false;
-
-    auto findItor = mParamsManager.find(key);
-    if(findItor != mParamsManager.end())
+    if(mHashParamsManager.contains(QPair<QString, QString>(key.first, zcValue)))
     {
-        value = (findItor->second);
+        mHashParamsManager[QPair<QString, QString>(key.first, zcValue)]->setValue(value);
+    }
+    else
+    {
+        mHashParamsManager[QPair<QString, QString>(key.first, zcValue)] = new valueType(value);
     }
 
-    return res;
+    //增加时间戳
+    mHashParamsManager[QPair<QString, QString>(key.first, zcValue)]->setStartTime(std::chrono::high_resolution_clock::now());
+
+    mDataMutex.unlock();
+
+#if USE_BLOCK_MODE
+    //唤醒其他线程
+    mParamsUpdateCondition.wakeAll();
+#endif
 }
 
-bool virtualParams::isMeet(const keyType &key)
+bool virtualParams::isMeet(const keyType &key, Json::Value value)
 {
     bool res = false;
+
+#if USE_QT_LOCK
+    mDataMutex.lockForRead();
+#else
+    mDataMutex.lock();
+#endif
+
+    auto pair = QPair<QString, QString>(key.first, key.second + "_" + key.three);
 
     //符合条件后设置为无效
-
-    auto findItor = mParamsManager.find(key);
-    if(findItor != mParamsManager.end())
+    if(mHashParamsManager.contains(pair))
     {
-        res = (findItor->second).isMeet();        
+        res = mHashParamsManager[pair]->isMeet(value);
+        //mHashParamsManager[QPair<QString, QString>(key.first.c_str(), zcValue)]->setInValid();
     }
+
+    mDataMutex.unlock();
 
     return res;
 }

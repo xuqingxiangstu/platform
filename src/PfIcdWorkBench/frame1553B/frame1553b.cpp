@@ -97,7 +97,7 @@ namespace Pf
             int preStartPos = 0;
 
             //获取表号
-            int tableNum = regionJs["table_num"].asInt();
+            unsigned int tableNum = regionJs["table_num"].asUInt();
 
             //从数据库中获取参数信息
             Json::Value paramValues;
@@ -144,7 +144,7 @@ namespace Pf
                     //modify xqx 20200423 当为字符串时，如果设置大小则按照设置填充，否则按照字符串大小进行填充
                     if(0 == byteSize)//按照字符串填充
                     {
-                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                        memcpy(tmpBuf + startPos,  initValue.c_str(), initValue.size());
                         preStartPos = startPos + initValue.size();
                         outSize += initValue.size();
                     }
@@ -161,7 +161,7 @@ namespace Pf
                         {
                             cpySize = byteSize;
                         }
-                        memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), cpySize);
+                        memcpy(tmpBuf + startPos,  initValue.c_str(), cpySize);
                         preStartPos = startPos + byteSize;
                         outSize += byteSize;
                     }

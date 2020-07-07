@@ -128,6 +128,21 @@ Json::Value flowRecordTable::getValueBySystemUuid(const std::string &sysUuid)
     return value;
 }
 
+void flowRecordTable::updateNodeName(const std::string &uuid, const std::string &name)
+{
+    QString sql = "update " + mTableName + " set " + FLOW_RECORD_TABLE_FLOW_NAME + " = '" + name.c_str() + "' "
+        + " where " + FLOW_RECORD_TABLE_UUID + " = ";
+    sql += "'";
+    sql += QString::fromStdString(uuid);
+    sql += "'";
+    QSqlQuery query(mDb);
+    bool result = query.exec(sql);
+    if(!result)
+    {
+        qDebug() << mDb.lastError();
+    }
+}
+
 void flowRecordTable::updateNodeInfo(const std::string &uuid, const std::string &value)
 {
     QString sql = "update " + mTableName + " set " + FLOW_RECORD_TABLE_NODE_INFO + " = '" + value.c_str() + "' "

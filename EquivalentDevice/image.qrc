@@ -86,5 +86,7 @@
         <file>icon/icon128z.ico</file>
         <file>icon/icon128z.png</file>
         <file>img/treeCheck.png</file>
+        <file>img/icon3.png</file>
+        <file>img/icon1.png</file>
     </qresource>
 </RCC>

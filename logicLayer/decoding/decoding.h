@@ -20,8 +20,10 @@ class decoding : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    decoding(Json::Value param, std::string recordUuid, std::string uuid, std::string ptl, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg);
+    decoding();
     ~decoding();
+
+    void exe_decoding(Json::Value param, std::string recordUuid, std::string uuid, std::string ptl, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg);
 signals:
     /**
      * @brief result    解析结果
@@ -72,6 +74,7 @@ private:
     std::shared_ptr<Pf::PfAdapter::PfAdapterManager> mPfAdapterManager;
     std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> mIcdWorkBench; ///< ICD解析器
     QMap<QString, std::shared_ptr<Pf::PfIcdWorkBench::frameObj>> mParseObj; ///< 解析器
+    std::shared_ptr<decoding> mDecoding;
 };
 
 Q_DECLARE_METATYPE(Json::Value)

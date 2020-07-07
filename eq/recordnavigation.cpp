@@ -8,6 +8,7 @@
 #include "newprojectdialog.h"
 
 #include "./toXml/nullxml.h"
+#include "./toXml/copyxml.h"
 
 #include <iostream>
 #include <QMessageBox>
@@ -26,6 +27,9 @@ recordNavigation::recordNavigation(QWidget *parent) :
     mPopMenu = new QMenu(this);
     mPopMenu->addAction(ui->actionNewProject);
     mPopMenu->addAction(ui->actionDelete);
+    mPopMenu->addAction(ui->actionCopy);
+    mPopMenu->addAction(ui->actionPaste);
+
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &recordNavigation::onItemClicked);
@@ -47,11 +51,15 @@ recordNavigation::recordNavigation(QWidget *parent) :
             {
                 ui->actionDelete->setEnabled(false);
                 ui->actionNewProject->setEnabled(true);
+                ui->actionCopy->setEnabled(false);
+                ui->actionPaste->setEnabled(true);
             }
             else if(Flow_Node == role.nodeType)
             {
                 ui->actionDelete->setEnabled(true);
                 ui->actionNewProject->setEnabled(false);
+                ui->actionCopy->setEnabled(true);
+                ui->actionPaste->setEnabled(true);
             }
 
             mPopMenu->exec(QCursor::pos());
@@ -254,6 +262,35 @@ void recordNavigation::onProjectModify(QString uuid)
     mIsModify[uuid] = true;
 }
 
+QTreeWidgetItem *recordNavigation::copyNode(const QTreeWidgetItem *srcNode, const std::string &uuid, const std::string &name)
+{
+    QTreeWidgetItem *newItem = new QTreeWidgetItem();
+
+    recordRole srcRole = srcNode->data(Name_Index, Qt::UserRole).value<recordRole>();
+
+    recordRole newRole;
+    newRole.uuid = uuid;
+    newRole.nodeType = Flow_Node;
+    newRole.mNodeProperty = srcRole.mNodeProperty->clone();
+
+    Json::Value recordJs = flowRecordTable::getInstance()->getValue(uuid);
+
+    newRole.mNodeProperty->setProperty(PROPERTY_RECORD_NAME, recordJs[FLOW_RECORD_TABLE_FLOW_NAME]);
+    newRole.mNodeProperty->setProperty(PROPERTY_RECORD_CREATE_TIME, recordJs[FLOW_RECORD_TABLE_CREATE_TIME]);
+    newRole.mNodeProperty->setProperty(PROPERTY_RECORD__OPEN_TIME, recordJs[FLOW_RECORD_TABLE_RECENT_OPEN_TIME]);
+    newRole.mNodeProperty->setProperty(PROPERTY_RECORD__NODE, recordJs[FLOW_RECORD_TABLE_NOTE]);
+
+    QVariant data;
+
+    newItem->setText(Name_Index, QString::fromStdString(name));
+
+    data.setValue(newRole);
+
+    newItem->setData(Name_Index,Qt::UserRole,data);
+
+    return newItem;
+}
+
 QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, const std::string &uuid, const std::string &name, NodeType type)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -283,28 +320,7 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
             {
                 role.mNodeProperty = std::make_shared<nodeProperty>(value);
                 role.mNodeProperty->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devCurInfo);
-                role.mNodeProperty->getProperty(PROPERTY_RECORD_DEST_DEVICE, dstDevCurInfo);
-#if 0
-                if(devCurInfo.isNull())
-                {
-                    nodeProperty property(templateProperty::getInstance()->getProperty("record"));
-
-                    Json::Value localJs;
-                    Json::Value dstJs;
-
-                    property.getProperty(PROPERTY_RECORD_LOCAL_DEVICE, localJs);
-                    property.getProperty(PROPERTY_RECORD_DEST_DEVICE, dstJs);
-
-                    role.mNodeProperty->setProperty(PROPERTY_RECORD_LOCAL_DEVICE, localJs);
-                    role.mNodeProperty->setProperty(PROPERTY_RECORD_LOCAL_DEVICE, dstJs);
-
-                    //role.mNodeProperty->setInitValue(PROPERTY_RECORD_LOCAL_DEVICE, property.initValue(PROPERTY_RECORD_LOCAL_DEVICE));
-                    //role.mNodeProperty->setInitValue(PROPERTY_RECORD_DEST_DEVICE, property.initValue(PROPERTY_RECORD_DEST_DEVICE));
-
-                    role.mNodeProperty->getProperty(PROPERTY_RECORD_LOCAL_DEVICE, devCurInfo);
-                    role.mNodeProperty->getProperty(PROPERTY_RECORD_DEST_DEVICE, dstDevCurInfo);
-                }
-#endif                
+                role.mNodeProperty->getProperty(PROPERTY_RECORD_DEST_DEVICE, dstDevCurInfo);        
             }
             else
             {
@@ -316,22 +332,21 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
             role.mNodeProperty = std::make_shared<nodeProperty>(templateProperty::getInstance()->getProperty("record"));
         }
 
+        //modify xqx 2020-6-22 11:18:53 更新基本属性中的名称是否使能
+        nodeProperty tmpProperty(templateProperty::getInstance()->getProperty("record"));
+        Json::Value tmpV;
+        tmpProperty.getProperty(PROPERTY_RECORD_NAME, tmpV);
+
+        role.mNodeProperty->setReadOnly(PROPERTY_RECORD_NAME, tmpProperty.isReadOnly(PROPERTY_RECORD_NAME));
+        //end
+
         role.mNodeProperty->setProperty(PROPERTY_RECORD_NAME, recordJs[FLOW_RECORD_TABLE_FLOW_NAME]);
         role.mNodeProperty->setProperty(PROPERTY_RECORD_CREATE_TIME, recordJs[FLOW_RECORD_TABLE_CREATE_TIME]);
         role.mNodeProperty->setProperty(PROPERTY_RECORD__OPEN_TIME, recordJs[FLOW_RECORD_TABLE_RECENT_OPEN_TIME]);
         role.mNodeProperty->setProperty(PROPERTY_RECORD__NODE, recordJs[FLOW_RECORD_TABLE_NOTE]);
 
         //role.mNodeProperty->setProperty(PROPERTY_SRC_SYS_TYPE, );
-#if 0
-        //系统类型
-        Json::Value sysInfoJs = systemTable::getInstance()->getSysInfoByUuid(fatherUuid);
 
-        if(!sysInfoJs.isNull())
-        {
-            role.mNodeProperty->setProperty(PROPERTY_SRC_SYS_TYPE, sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE]);
-            role.sysType = sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE].asInt();
-        }
-#endif
         if(mDestDevInitValue.contains(fatherUuid))
         {
             role.mNodeProperty->setInitValue(PROPERTY_RECORD_LOCAL_DEVICE, mDestDevInitValue[fatherUuid]);
@@ -397,22 +412,30 @@ QTreeWidgetItem *recordNavigation::createNode(const std::string &fatherUuid, con
             role.mNodeProperty->setInitValue(PROPERTY_FE_DATA_TYPE_SEND_SYS, feJs);
             role.mNodeProperty->setInitValue(PROPERTY_FE_DATA_TYPE_RCV_SYS, feJs);
         }
+#if 0
+        //modify xqx 20200509 更新中间件确认标志属性
+        Json::Value frameJs;
+        role.mNodeProperty->getProperty(PROPERTY_FRAME, frameJs);
+        if(!frameJs.isNull() && (PROPERTY_FRAME_MIDDLE == frameJs.asString()))
+        {
+            Json::Value askJs;
+            role.mNodeProperty->getProperty(PROPERTY_ASK_FLAG, askJs);
+            if(askJs.isNull())
+            {
+                nodeProperty tmpProperty(templateProperty::getInstance()->getProperty("record"));
+
+                role.mNodeProperty->setInitValue(PROPERTY_ASK_FLAG, tmpProperty.initValue(PROPERTY_ASK_FLAG));
+                role.mNodeProperty->setCurValue(PROPERTY_ASK_FLAG, tmpProperty.curValue(PROPERTY_ASK_FLAG));
+            }
+        }
+        //end
+#endif
     }
     else
     {
         role.mNodeProperty = std::make_shared<nodeProperty>(templateProperty::getInstance()->getProperty("system"));
-#if 0
-        //系统类型
-        Json::Value sysInfoJs = systemTable::getInstance()->getSysInfoByUuid(uuid);
-
-        if(!sysInfoJs.isNull())
-        {
-            role.sysType = sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE].asInt();
-            role.mNodeProperty->setProperty(PROPERTY_SYS_NAME, sysInfoJs[SYSTEM_TABLE_SYSTEM_NAME]);
-            role.mNodeProperty->setProperty(PROPERTY_SYS_TYPE, sysInfoJs[SYSTEM_TABLE_SYSTEM_TYPE]);
-        }
-#endif
     }
+
     data.setValue(role);
 
     item->setData(Name_Index,Qt::UserRole,data);
@@ -437,12 +460,38 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
     recordRole role = curItem->data(0, Qt::UserRole).value<recordRole>();
     role.mNodeProperty->setProperty(attr.toStdString(), value);
 
+    //modify xqx 2020-6-22 11:32:35 名称可重命名，需更改数据库
+
+    if(attr.compare(PROPERTY_RECORD_NAME) == 0)
+    {
+        std::string name = value.asString();
+
+        role.mNodeProperty->setProperty(PROPERTY_RECORD_NAME, value);
+
+        QString tmpValue = QString::fromStdString(name);
+
+        QString srcText = curItem->text(0);
+        if(-1 != srcText.lastIndexOf(mModifyFlag))
+        {
+            tmpValue += mModifyFlag;
+        }
+
+        curItem->setText(0, tmpValue);
+
+        //写入数据库
+        flowRecordTable::getInstance()->updateNodeName(role.uuid, name);
+    }
+
+    //end
+
     if(attr.compare(PROPERTY_FRAME) == 0)
     {        
         std::string type = value.asString();
 
         if( (type == PROPERTY_FRAME_BE))
         {
+            disableAskAttr(role);
+
             emit removeGroupProperty(PROPERTY_SRC);
 
             //创建组
@@ -466,6 +515,8 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
         }
         else if( (PROPERTY_FRAME_FE == type ))
         {
+            disableAskAttr(role);
+
             emit removeGroupProperty(PROPERTY_SRC);
 
             //创建组
@@ -487,12 +538,16 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
         }
         else if( (PROPERTY_FRAME_93 == type ) || (PROPERTY_FRAME_1553B == type ))
         {
+            disableAskAttr(role);
+
             //删除属性，并设置隐藏
             emit removeGroupProperty(PROPERTY_SRC);
             role.mNodeProperty->setVisible(PROPERTY_SRC, false);
         }
         else if(type == PROPERTY_FRAME_MIDDLE)
-        {
+        {            
+            enableAskAttr(role);
+
             emit removeGroupProperty(PROPERTY_SRC);
 
             //创建组
@@ -525,6 +580,41 @@ void recordNavigation::onPropertyValueChange(QString uuid, QString attr, Json::V
     }
 
     onProjectModify(role.uuid.c_str());
+}
+
+void recordNavigation::enableAskAttr(recordRole role)
+{
+    emit removeGroupProperty(PROPERTY_FRAME_TYPE_ATTR);
+
+    //创建组
+    emit addGroupProperty(PROPERTY_FRAME_TYPE_ATTR);
+
+    role.mNodeProperty->setReadOnly(PROPERTY_FRAME_TYPE_ATTR, false);
+    role.mNodeProperty->setVisible(PROPERTY_FRAME_TYPE_ATTR, true);
+
+    //加入属性
+    emit addProperty(PROPERTY_FRAME_TYPE_ATTR, role.mNodeProperty->curAttr(PROPERTY_FRAME));
+    emit addProperty(PROPERTY_FRAME_TYPE_ATTR, role.mNodeProperty->curAttr(PROPERTY_ASK_FLAG));
+
+    role.mNodeProperty->setVisible(PROPERTY_FRAME, true);
+    role.mNodeProperty->setVisible(PROPERTY_ASK_FLAG, true);
+}
+
+void recordNavigation::disableAskAttr(recordRole role)
+{
+    emit removeGroupProperty(PROPERTY_FRAME_TYPE_ATTR);
+
+    //创建组
+    emit addGroupProperty(PROPERTY_FRAME_TYPE_ATTR);
+
+    role.mNodeProperty->setReadOnly(PROPERTY_FRAME_TYPE_ATTR, false);
+    role.mNodeProperty->setVisible(PROPERTY_FRAME_TYPE_ATTR, true);
+
+    //加入属性
+    emit addProperty(PROPERTY_FRAME_TYPE_ATTR, role.mNodeProperty->curAttr(PROPERTY_FRAME));
+
+    role.mNodeProperty->setVisible(PROPERTY_FRAME, true);
+    role.mNodeProperty->setVisible(PROPERTY_ASK_FLAG, false);
 }
 
 void recordNavigation::deleteItem(QTreeWidgetItem *item)
@@ -564,6 +654,14 @@ void recordNavigation::onMenuTrigger(QAction *action)
             onActionDelete();
         }
     }
+    else if("actionCopy" == actionObjName)
+    {
+        onActionCopy();
+    }
+    else if("actionPaste" == actionObjName)
+    {
+        onActionPaste();
+    }
 }
 
 void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
@@ -600,6 +698,90 @@ void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
     emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());
 }
 
+void recordNavigation::onActionCopy()
+{
+    mIsCopy = false;
+
+    mCopyItem = ui->treeWidget->currentItem();
+    if(mCopyItem)
+    {
+        recordRole role = mCopyItem->data(0, Qt::UserRole).value<recordRole>();
+
+        int type = role.nodeType;
+        if( (Flow_Node == type))
+        {
+            mIsCopy = true;
+        }
+    }
+}
+
+void recordNavigation::onActionPaste()
+{
+    if(mIsCopy && mCopyItem)
+    {
+        mIsCopy = false;
+
+        QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
+        if(curItem)
+        {
+            std::string fatherUuid;
+
+            recordRole role = curItem->data(0, Qt::UserRole).value<recordRole>();
+            if(Flow_Node == role.nodeType)
+            {
+                QTreeWidgetItem *fatherItem = curItem->parent();
+                if(fatherItem)
+                {
+                    fatherUuid = fatherItem->data(0, Qt::UserRole).value<recordRole>().uuid;
+                }
+            }
+            else if(System_Node == role.nodeType)
+            {
+                fatherUuid = role.uuid;
+            }
+
+            //增加记录
+            std::string uuid;
+            std::string name = mCopyItem->text(0).toStdString();
+            name += "-副本";
+
+            if(flowRecordTable::getInstance()->addRecord(fatherUuid, name, "", uuid))
+            {
+                QTreeWidgetItem *item = copyNode(mCopyItem, uuid, name);
+
+                //添加节点
+                if(Flow_Node == role.nodeType)
+                {
+                    QTreeWidgetItem *fatherItem = curItem->parent();
+                    if(fatherItem)
+                    {
+                        fatherItem->insertChild(fatherItem->indexOfChild(curItem) + 1, item);
+                    }
+                }
+                else if(System_Node == role.nodeType)
+                {
+                    curItem->addChild(item);
+                }
+
+                ui->treeWidget->setCurrentItem(item);
+
+                mNewUuid.append(uuid.c_str());
+
+                //拷贝文件
+                std::string dstPath = "./flowFile/" + uuid + ".xml";
+                std::string srcPath = "./flowFile/" + mCopyItem->data(0, Qt::UserRole).value<recordRole>().uuid + ".xml";
+
+                //创建空文件
+                //nullXml::create(dstPath);
+
+                copyXml::copy(QString::fromStdString(srcPath), QString::fromStdString(dstPath));
+
+                //更新主界面
+                emit flowChange(item->parent()->text(Name_Index), role.sysType, item->text(Name_Index),uuid.c_str(), false);
+            }
+        }
+    }
+}
 
 void recordNavigation::onActionNew()
 {

@@ -45,7 +45,7 @@ testflow::testflow(QWidget *parent,QString sysName,QString recUuid,QString flowN
     ui->pushButtonStop->setEnabled(false);
     //this->setAttribute(Qt::WA_TranslucentBackground,true);
     ui->textBrowserOutPut->setFrameShape(QTextBrowser::NoFrame);
-    ui->treeWidget->setColumnWidth(0,285);
+    ui->treeWidget->setColumnWidth(0,385);
     ui->treeWidget->setColumnWidth(1,135);
     ui->treeWidget->setColumnWidth(2,183);
     ui->treeWidget->setColumnWidth(3,125);
@@ -90,7 +90,6 @@ void testflow::testTreeShow(QJsonObject obj,QString msgType)
     ///检查流程类型
 
     QString recordUuid = obj["record_uuid"].toString();
-    qDebug() << recordUuid;
 
     if(recordUuid == m_recUuid){
 
@@ -106,12 +105,16 @@ void testflow::testTreeShow(QJsonObject obj,QString msgType)
         {
             onTestFlow(obj["sub_flow_uuid"].toString(), obj["status"].toString());
 
-        }else if("testOver" == msgType)
+        }else if(msgType == "restore_initial_state")
+        {
+            resetFlowState(obj["flow_uuid"].toString());
+        }
+        else if("testOver" == msgType)
         {
             if(obj["result"].toBool() == true)
             {
                 onShowMsg(CORRECT, "------测试已结束，测试通过!------");
-                QMessageBox::information(this, QStringLiteral("提示"), "测试已结束，测试通过！");
+                //QMessageBox::information(this, QStringLiteral("提示"), "测试已结束，测试通过！");
             }
             else
             {
@@ -128,20 +131,22 @@ void testflow::testTreeShow(QJsonObject obj,QString msgType)
             QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
         }else if(msgType == "start"){
             if(obj["result"].toString() != "ok"){
-                QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
+                //QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
             }
         }else if(msgType == "init_flow" &&obj["result"].toString().compare("")!=0&&obj["result"].toString().compare("ok") !=0){
             emit initFlowErr(m_recUuid,true);
             setBtnAble(3);
             emit sendErrRecid(m_recUuid);
             QMessageBox::information(this, QStringLiteral("提示"), obj["result"].toString());
-        }else if(msgType == "init_flow"){
+        }
+        else if(msgType == "init_flow"){
             setBtnAble(1);
             emit initFlowErr(m_recUuid,false);
             emit stopErrRecid(m_recUuid);
         }
 
-    }else{
+    }
+    else{
 
         return;
     }
@@ -202,9 +207,10 @@ void testflow::setTreeItemsSecond(QJsonArray obj,QTreeWidgetItem *item)
         if (jsonObject.contains("describe"))
         {
             QJsonValue describeSubFlow = jsonObject.take("describe");
+            QJsonValue tableName = jsonObject.take("table");
             if (describeSubFlow.isString())
             {
-                subFlowDesName = describeSubFlow.toString();
+                subFlowDesName = tableName.toString()+"_"+describeSubFlow.toString();
             }
             QJsonValue triggerSub = jsonObject.take("trigger");
             if (triggerSub.isString())
@@ -365,7 +371,7 @@ void testflow::startflowTest()
     value["msgType"] = "start";
     item["record_uuid"] = m_recUuid.toStdString();
 
-    qDebug() << currentItem->parent()->data(flowName,Qt::UserRole).toString();
+    //qDebug() << currentItem->parent()->data(flowName,Qt::UserRole).toString();
     if(currentItem->parent()){
         item["flow_uuid"] = currentItem->parent()->data(flowName,Qt::UserRole).toString().toStdString();
         item["sub_flow_uuid"] = currentItem->data(flowName,Qt::UserRole).toString().toStdString();
@@ -449,6 +455,10 @@ void testflow::onTestFlow(QString subFlowUuid, QString status)
         if (0 == text.compare("test"))
         {
             QLabel *lab = (QLabel*)(ui->treeWidget->itemWidget(item, findClumn));
+            QPushButton *btn = (QPushButton*)( ui->treeWidget->itemWidget(item, sendTime));
+            if(btn){
+                 btn->setDisabled(false);
+            }
             if (lab)
             {
                 lab->setMovie(mRuningMovie);
@@ -561,6 +571,36 @@ void testflow::onInitResultItem()
     }
 }
 
+void testflow::resetFlowState(QString flow_uuid)
+{
+    QTreeWidgetItem *item = NULL;
+    QTreeWidgetItemIterator Itor(ui->treeWidget);
+    int findClumn = testStatus;
+    QVariant var;
+
+    while (*Itor)
+    {
+        var = (*Itor)->data(flowName, Qt::UserRole);
+        if(var == QVariant(flow_uuid)){
+
+            if((*Itor)->childCount()>0){
+
+                for(int i = 0;i<(*Itor)->childCount();i++){
+
+                    if (var == QVariant(flow_uuid))
+                    {
+                        item = (*Itor)->child(i);
+                        QLabel *lab = (QLabel*)(ui->treeWidget->itemWidget(item, findClumn));
+                        QPixmap img(QString::fromUtf8(""));
+                        img.scaled(lab->size(), Qt::KeepAspectRatio);
+                        lab->setPixmap(img);
+                    }
+                }
+            }
+        }
+        ++Itor;
+    }
+}
 void testflow::initBtn()
 {
     connect(ui->pushButtonStart, &QPushButton::clicked, [=](){
@@ -716,3 +756,4 @@ void testflow::setStartBtn(QString record_uuid, QString msg)
             setBtnAble(1);
     }
 }
+

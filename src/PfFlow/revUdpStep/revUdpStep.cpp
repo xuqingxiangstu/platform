@@ -115,7 +115,7 @@ bool revUdpStep::exec()
             auto obj = mIcdAdapter->getFrameObj(strProtocolId);
             if(obj != nullptr)
             {
-                strJson =obj->parse((unsigned char *)buf,rcvSize);
+                //strJson =obj->parse((unsigned char *)buf,rcvSize);
                 UpDataObj->sendMsg(strJson.c_str(),strJson.size());
             }
             mRevResult = true;

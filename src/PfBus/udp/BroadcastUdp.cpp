@@ -75,32 +75,47 @@ namespace Pf
         {
             int RecvLen = 0;
 
-            auto beginTime = std::chrono::high_resolution_clock::now();
-
             bool bRes = false;
+            QHostAddress host;
+            quint16 port;
             QByteArray baRecv;
-            while(1)
+
+            if(mSocket->waitForReadyRead(u32TimeOut))
             {
                 if(mSocket->hasPendingDatagrams())
                 {
                     baRecv.resize(mSocket->pendingDatagramSize());
-                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size());
+                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size(), &host, &port);
                     *u32MsgLen = RecvLen;
+                    if(RecvLen > 0)
+                    {
+                        bRes = true;
+                    }
+
                     bRes = true;
-                    break;
-                }
-
-                auto endTime = std::chrono::high_resolution_clock::now();
-                auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
-
-                if(elapsedTime.count() >= u32TimeOut)   //超时退出
-                {
-                    break;
                 }
             }
+
             return bRes;
         }
+        bool BroadcastUdp::getAttribute(const std::string &attr, void *value)
+        {
+            bool result=true;
+            if(attr=="remoteIp")
+            {
+                *((std::string *)value)=sendaddrees.toString().toStdString(); ///< 发送地址
 
+            }
+            else if(attr=="remotePort")
+            {
+                *((std::string *)value)=sendPort.toStdString();//端口号
+            }
+            else
+            {
+                result=false;
+            }
+            return result;
+        }
         QString BroadcastUdp::getHostIpAddress()
         {
             QString strIpAddress;

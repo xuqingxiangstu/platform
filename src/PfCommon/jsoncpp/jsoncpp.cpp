@@ -3906,7 +3906,8 @@ bool Value::isIntegral() const {
   return false;
 }
 
-bool Value::isDouble() const { return type_ == intValue || type_ == uintValue || type_ == realValue; }
+//bool Value::isDouble() const { return type_ == intValue || type_ == uintValue || type_ == realValue; }
+bool Value::isDouble() const { return type_ == realValue; }
 
 bool Value::isNumeric() const { return isDouble(); }
 

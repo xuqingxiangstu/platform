@@ -34,6 +34,37 @@ namespace Pf
           udp->init(root["local_ip"].asString(), root["local_port"].asString(), root["remote_ip"].asString(), root["remote_port"].asString());
       }
 
+      void UnicastAdapter::init(const Json::Value &json)
+      {
+          std::string strLocalIp = "";
+          std::string strLocalPort = "";
+          std::string strRemoteIp = "255.255.255.255";
+          std::string strRemotePort = "";
+
+          if(!json["localIp"].isNull() && json["localIp"].isString())
+          {
+                strLocalIp = json["localIp"].asString();
+          }
+
+          if(!json["localPort"].isNull() && json["localPort"].isInt())
+          {
+                strLocalPort = json["localPort"].asString();
+          }
+
+          if(!json["remoteIp"].isNull() && json["remoteIp"].isString())
+          {
+                strRemoteIp = json["remoteIp"].asString();
+          }
+
+          if(!json["remotePort"].isNull() && json["remotePort"].isInt())
+          {
+                strRemotePort = json["remotePort"].asString();
+          }
+
+          udp = std::make_shared<PfBus::UnicastUdp>();
+
+          udp->init(strLocalIp, strLocalPort, strRemoteIp, strRemotePort);
+      }
 
       void UnicastAdapter::init(const TiXmlElement *xmlEle)
       {
@@ -108,7 +139,12 @@ namespace Pf
       }
       int UnicastAdapter::getAttribute(const std::string &attr, void *value)
       {
-          return 0;
+          int result=0;
+          if(udp->getAttribute(attr,value))
+          {
+              result= 1;
+          }
+          return result;
       }
 
       int UnicastAdapter::setAttribute(const std::string &attr, const void *value)

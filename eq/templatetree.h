@@ -28,10 +28,9 @@ private:
     void searchTreeAndHighlight(QString strKey);
     void expandNode(QTreeWidgetItem *);
 private:
-    void buildTree();
-
-    void updateConditionInit(dragRole *role);
+    void buildTree();    
     void updateDestDevInitValue(dragRole *role);
+
 
     /**
      * @brief updateParamType   更新参数属性类型，根据数据类型进行重新组合
@@ -41,7 +40,6 @@ private:
 
     QStringList getValueMeans(QString value);
 
-    void initConditionValue();
     void initDestDevInitValue();
 private:
     Ui::templateTree *ui;

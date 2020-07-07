@@ -7,7 +7,8 @@
 
 #include <chrono>
 #include <thread>
-
+#include <QEventLoop>
+#include <QTimer>
 #include <QDebug>
 
 namespace Pf
@@ -15,9 +16,9 @@ namespace Pf
     namespace PfBus
     {
 
-        UnicastUdp::UnicastUdp(void)
+        UnicastUdp::UnicastUdp()
         {
-            mSocket = std::make_shared<QUdpSocket>();            
+            mSocket = std::make_shared<QUdpSocket>();                        
         }
 
         UnicastUdp::~UnicastUdp(void)
@@ -27,7 +28,7 @@ namespace Pf
         void UnicastUdp::unInit()
         {
             delete this;
-        }
+        }       
 
         void UnicastUdp::init(std::string strLocalIp, std::string strLocalPort, std::string strRemoteIp, std::string strRemotePort)
         {
@@ -145,12 +146,14 @@ namespace Pf
         {
             int RecvLen = 0;
 
-            auto beginTime = std::chrono::high_resolution_clock::now();
-
             bool bRes = false;
             QHostAddress host;
             quint16 port;
             QByteArray baRecv;
+
+#ifndef QT_NO_DEBUG
+            auto beginTime = std::chrono::high_resolution_clock::now();
+
             while(1)
             {
                 if(mSocket->hasPendingDatagrams())
@@ -175,9 +178,76 @@ namespace Pf
                     break;
                 }
             }
+#else
+#if 1
+
+            if(mSocket->waitForReadyRead(u32TimeOut))
+            {
+                if(mSocket->hasPendingDatagrams())
+                {
+                    baRecv.resize(mSocket->pendingDatagramSize());
+                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size(), &host, &port);
+                    *u32MsgLen = RecvLen;
+                    if(RecvLen > 0)
+                    {
+                        bRes = true;
+                        rcvIp = host.toString().toStdString();
+                        rcvPort = port;
+                    }
+
+                    bRes = true;
+                }
+            }
+#else
+            auto beginTime = std::chrono::high_resolution_clock::now();
+
+            while(1)
+            {
+                if(mSocket->hasPendingDatagrams())
+                {
+                    baRecv.resize(mSocket->pendingDatagramSize());
+                    RecvLen += mSocket->readDatagram((char*)u8Msg+RecvLen,baRecv.size(), &host, &port);
+                    *u32MsgLen = RecvLen;
+                    if(RecvLen > 0)
+                    {
+                        bRes = true;
+                        rcvIp = host.toString().toStdString();
+                        rcvPort = port;
+                        break;
+                    }
+                }
+
+                auto endTime = std::chrono::high_resolution_clock::now();
+                auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
+
+                if(elapsedTime.count() >= u32TimeOut)   //超时退出
+                {
+                    break;
+                }
+            }
+#endif
+#endif
+
             return bRes;
         }
+        bool UnicastUdp::getAttribute(const std::string &attr, void *value)
+        {
+            bool result=true;
+            if(attr=="remoteIp")
+            {
+                *((std::string *)value)=sendaddrees; ///< 发送地址
 
+            }
+            else if(attr=="remotePort")
+            {
+                *((std::string *)value)=sendPort;//端口号
+            }
+            else
+            {
+                result=false;
+            }
+            return result;
+        }
         QString UnicastUdp::getHostIpAddress()
         {
             QString strIpAddress;

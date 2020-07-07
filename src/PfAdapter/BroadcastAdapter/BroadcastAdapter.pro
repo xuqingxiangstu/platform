@@ -20,6 +20,20 @@ unix {
 }
 
 LIBS += -L$$OUT_PWD/../../../ -lTinyXml
-
+LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
 LIBS += -L$$OUT_PWD/../../../ -ludp
     
+win32{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/BroadcastAdapter.dll
+    DSTFILE = $$OUT_PWD/../../../BroadcastAdapter.dll
+    SRCDIR = $$replace(SRCFILE, /, \\)
+    DSTDIR = $$replace(DSTFILE, /, \\)
+
+    QMAKE_POST_LINK += copy $$SRCDIR $$DSTDIR
+}
+unix{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/libBroadcastAdapter.so*
+    DSTFILE = $$OUT_PWD/../../../
+
+    QMAKE_POST_LINK += cp -d $$SRCFILE $$DSTFILE
+}

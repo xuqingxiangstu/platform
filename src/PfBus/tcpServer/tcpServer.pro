@@ -18,10 +18,10 @@ else:unix:!macx: TARGET = ../../../tcpServer
 
 DEFINES += TCPSERVER_LIBRARY
 
-SOURCES += tcpserver.cpp
+SOURCES += tcpServer.cpp
 
-HEADERS += tcpserver.h\
-        tcpserver_global.h
+HEADERS += tcpServer_global.h \
+    tcpServer.h
 
 unix {
     target.path = /usr/lib

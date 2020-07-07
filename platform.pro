@@ -6,4 +6,6 @@ SUBDIRS += \
     #template \
     #logicLayer \
     #EquivalentDevice\
-    eq
+    eq \
+    dataAnalysis
+

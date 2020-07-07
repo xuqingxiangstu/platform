@@ -59,6 +59,15 @@ namespace Pf
                  *- false 接收失败
                  */
                 bool receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut = 0xFFFFFFFF);
+                /**
+                 * @brief getAttribute 获取类属性的信息
+                 * @param attr 成员名字
+                 * @param value 属性的具体信息
+                 * @return 属性获取是否成功
+                 *- true 接收成功
+                 *- false 接收失败
+                 */
+                bool getAttribute(const std::string &attr, void *value);
             private:
                 QString getHostIpAddress();
             private:

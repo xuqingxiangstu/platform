@@ -30,9 +30,6 @@ unix {
     INSTALLS += target
 }
 
-LIBS += $$PWD/zmq/libzmq.lib
-
 win32:CONFIG(release, debug|release): LIBS += $$PWD/zmq/libzmq.lib
 else:win32:CONFIG(debug, debug|release): LIBS += $$PWD/zmq/libzmq.lib
 else:unix:!macx: LIBS += $$PWD/zmq/libzmq.so
-

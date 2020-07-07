@@ -8,7 +8,7 @@
 #include "../../src/PfCommon/tools/ut_error.h"
 
 #include <QString>
-#include <qDebug>
+#include <QDebug>
 
 /***********************************************/
 
@@ -16,6 +16,26 @@ void head1553B::init(TiXmlElement *xmlEle)
 {
     TiXmlElement *tmpEle = nullptr;
     const char *point = nullptr;
+
+    tmpEle = xmlEle->FirstChildElement("model");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["model"] = std::string(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("bus");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["bus"] = std::string(point);
+        }
+    }
 
     tmpEle = xmlEle->FirstChildElement("RT");
     if(tmpEle)
@@ -34,6 +54,56 @@ void head1553B::init(TiXmlElement *xmlEle)
         if(point)
         {
             mJsonV["SA"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("S_RT");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["S_RT"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("S_SA");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["S_SA"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("R_RT");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["R_RT"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("R_SA");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["R_SA"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("DATA_SIZE");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["DATA_SIZE"] = std::atoi(point);
         }
     }
 }
@@ -130,6 +200,16 @@ void headBe::init(TiXmlElement *xmlEle)
         }
     }
 
+    tmpEle = xmlEle->FirstChildElement("head_data");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_data"] = std::atoi(point);
+        }
+    }
+
     tmpEle = xmlEle->FirstChildElement("head_dev_num");
     if(tmpEle)
     {
@@ -170,6 +250,16 @@ void headMiddle::init(TiXmlElement *xmlEle)
         if(point)
         {
             mJsonV["head_frame_type"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_ask_flag");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_ask_flag"] = point;
         }
     }
 
@@ -293,6 +383,16 @@ void headMiddle::init(TiXmlElement *xmlEle)
         }
     }
 
+    tmpEle = xmlEle->FirstChildElement("head_data");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_data"] = std::atoi(point);
+        }
+    }
+
     tmpEle = xmlEle->FirstChildElement("head_dev_num");
     if(tmpEle)
     {
@@ -325,7 +425,7 @@ void headMiddle::init(TiXmlElement *xmlEle)
 }
 
 Json::Value headMiddle::serialize()
-{
+{    
     return mJsonV;
 }
 
@@ -393,6 +493,94 @@ void headFe::init(TiXmlElement *xmlEle)
     }
 }
 Json::Value headFe::serialize()
+{
+    return mJsonV;
+}
+
+/***********************************************/
+
+void headJg::init(TiXmlElement *xmlEle)
+{
+    TiXmlElement *tmpEle = nullptr;
+    const char *point = nullptr;
+
+    tmpEle = xmlEle->FirstChildElement("head_src_node");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_node"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_node");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_node"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_send_sys");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            QString tmp(point);
+            bool isOk;
+            mJsonV["head_send_sys"] = tmp.toUInt(&isOk, 16);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_rcv_sys");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            QString tmp(point);
+            bool isOk;
+            mJsonV["head_rcv_sys"] = tmp.toUInt(&isOk, 16);
+        }
+    }
+}
+Json::Value headJg::serialize()
+{
+    return mJsonV;
+}
+
+/***********************************************/
+
+void headCzxk::init(TiXmlElement *xmlEle)
+{
+    TiXmlElement *tmpEle = nullptr;
+    const char *point = nullptr;
+
+    tmpEle = xmlEle->FirstChildElement("head_src_node");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_src_node"] = std::atoi(point);
+        }
+    }
+
+    tmpEle = xmlEle->FirstChildElement("head_dst_node");
+    if(tmpEle)
+    {
+        point = tmpEle->GetText();
+        if(point)
+        {
+            mJsonV["head_dst_node"] = std::atoi(point);
+        }
+    }
+}
+Json::Value headCzxk::serialize()
 {
     return mJsonV;
 }
@@ -493,7 +681,12 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
     if(tmpObj == nullptr)
     {
         UT_THROW_EXCEPTION("get 中间件 frame obj faild!");
-    }   
+    }
+    //modify 2020-5-9 18:19:40 中间件时需选择确认标志
+    if(mHeadObj && FRAME_MIDDLE == mHeadObj->frameType())
+        tmpObj->setAttribute(mHeadObj->serialize());
+
+    //end
     mIcdFrameObj[FRAME_MIDDLE] = tmpObj;
 
     tmpObj = icdAdapter->getFrameObj(FRAME_XK);
@@ -516,6 +709,13 @@ void frame::setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter)
         UT_THROW_EXCEPTION("get 车长显控通讯协议 frame obj faild!");
     }
     mIcdFrameObj[FRAME_CZXK] = tmpObj;
+
+    tmpObj = icdAdapter->getFrameObj(FRAME_JG);
+    if(tmpObj == nullptr)
+    {
+        UT_THROW_EXCEPTION("get 机柜协议 frame obj faild!");
+    }
+    mIcdFrameObj[FRAME_JG] = tmpObj;
 
     tmpObj = icdAdapter->getFrameObj(FRAME_C3);
     if(tmpObj == nullptr)
@@ -595,8 +795,8 @@ void frame::init(TiXmlElement *xmlEle)
         TiXmlElement *czxkEle = headEle->FirstChildElement(FRAME_CZXK);
         if(czxkEle)
         {
-            //mHeadObj = std::make_shared<headMiddle>();
-            //mHeadObj->init(middleEle);
+            mHeadObj = std::make_shared<headCzxk>();
+            mHeadObj->init(czxkEle);
 
             mCurFrameType = FRAME_CZXK;
         }
@@ -607,6 +807,15 @@ void frame::init(TiXmlElement *xmlEle)
             //mHeadObj->init(middleEle);
 
             mCurFrameType = FRAME_C3;
+        }
+
+        TiXmlElement *jgEle = headEle->FirstChildElement(FRAME_JG);
+        if(jgEle)
+        {
+            mHeadObj = std::make_shared<headJg>();
+            mHeadObj->init(jgEle);
+
+            mCurFrameType = FRAME_JG;
         }
 
         TiXmlElement *m1553BEle = headEle->FirstChildElement(FRAME_M1553B);
@@ -707,17 +916,83 @@ void frame::init(TiXmlElement *xmlEle)
     }
 }
 
-bool frame::getRtAndSa(std::string &rtAddr, std::string &saAddr)
+bool frame::is1553B()
 {
+    if(!mHeadObj)
+        return false;
+
     if(FRAME_M1553B != mHeadObj->frameType())
+        return false;
+
+    return true;
+}
+
+std::string frame::get1553BModel()
+{
+    std::string model = "";
+
+    if(!is1553B())
+        return model;
+
+    Json::Value tmpJs = mHeadObj->serialize();
+    if( tmpJs["model"].isNull() )
+        return model;
+
+    model = tmpJs["model"].asString();
+
+    return model;
+}
+
+std::string frame::get1553BBus()
+{
+    std::string model = "";
+
+    if(!is1553B())
+        return model;
+
+    Json::Value tmpJs = mHeadObj->serialize();
+    if( tmpJs["bus"].isNull() )
+        return model;
+
+    model = tmpJs["bus"].asString();
+
+    return model;
+}
+
+
+bool frame::getBcModelInfo(int &rtAddr, int &saAddr)
+{
+    if(!is1553B())
         return false;
 
     Json::Value tmpJs = mHeadObj->serialize();
     if(tmpJs["RT"].isNull() || tmpJs["SA"].isNull())
         return false;
 
-    rtAddr = tmpJs["RT"].asString();
-    saAddr = tmpJs["SA"].asString();
+    rtAddr = tmpJs["RT"].asInt();
+    saAddr = tmpJs["SA"].asInt();
+
+    return true;
+}
+
+bool frame::getRtModelInfo(int &sRt, int &sSa, int &rRt, int &rSa, int &size)
+{
+    if(!is1553B())
+        return false;
+
+    Json::Value tmpJs = mHeadObj->serialize();
+    if(tmpJs["S_RT"].isNull() || tmpJs["S_SA"].isNull() || tmpJs["R_RT"].isNull() || tmpJs["R_SA"].isNull() || tmpJs["DATA_SIZE"].isNull())
+        return false;
+
+    sRt = tmpJs["S_RT"].asInt();
+    sSa = tmpJs["S_SA"].asInt();
+
+    rRt = tmpJs["R_RT"].asInt();
+    rSa = tmpJs["R_SA"].asInt();
+
+    size = tmpJs["DATA_SIZE"].asInt();
+
+    return true;
 }
 
 void frame::setCustomMsgFromTable(std::string table)
@@ -773,9 +1048,10 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
     msg.clear();
 
     //获取表号，编码
-    std::string table = std::get<Param_Table_Index>(mParamsVec.at(0));
-    std::string coding = std::get<Param_Coding_Index>(mParamsVec.at(0));
+    QString table = QString::fromStdString(std::get<Param_Table_Index>(mParamsVec.at(0)));
+    QString coding = QString::fromStdString(std::get<Param_Coding_Index>(mParamsVec.at(0)));
 
+    bool isOk;
     Json::Value info;
     paramsTable::getInstance()->getValue(table, coding, info);
     if(!info.isNull())
@@ -792,7 +1068,7 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
 
         //获取域信息
         Json::Value regionJs = fill(frameType, infoWordType);
-        qDebug() << regionJs.toStyledString().c_str();
+
         //获取头信息
         if(mHeadObj)
         {
@@ -817,7 +1093,7 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
                     regionJs["head"]["head_frame_type"] = 0;
                 }
 
-                regionJs["head"]["head_table"] = std::atoi(table.c_str());
+                regionJs["head"]["head_table"] = table.toInt(&isOk, 10);
             }
         }
 
@@ -832,6 +1108,7 @@ void frame::getFrameMsg(std::vector<unsigned char> &msg, bool &isAck, int resend
         auto findItor = mIcdFrameObj.find(frameType);
         if(findItor != mIcdFrameObj.end())
         {
+            (findItor->second)->setUuid(mCurUuid);
             (findItor->second)->simulation(msg, regionJs.toStyledString());
         }
         else
@@ -851,7 +1128,7 @@ Json::Value frame::fill(const std::string &frameType, const std::string &infoWor
     {
         regionJs = fill93();
     }
-    else if(frameType == FRAME_FE)
+    else if( (frameType == FRAME_FE) || (frameType == FRAME_JG))
     {
         regionJs = fillFe();
     }
@@ -942,7 +1219,7 @@ Json::Value frame::fillRegion()
                 if(!isOk)
                     tmpV = tmpConvert.toDouble(&isOk);
 
-                tmpJs["value"] = (unsigned long long)tmpV;
+                tmpJs["value"] = (Json::UInt64)tmpV;
             }
 
             dataJs.append(tmpJs);
@@ -980,9 +1257,9 @@ Json::Value frame::getRunItems()
     {
         Json::Value tmpJs;
 
-        std::string table = std::get<Param_Table_Index>(param);
-        std::string coding = std::get<Param_Coding_Index>(param);
-        std::string value = std::get<Param_Value_Index>(param)->getValue();
+        QString table = QString::fromStdString(std::get<Param_Table_Index>(param));
+        QString coding = QString::fromStdString(std::get<Param_Coding_Index>(param));
+        QString value = QString::fromStdString(std::get<Param_Value_Index>(param)->getValue());
 
         //获取名称
         Json::Value nameJs;
@@ -991,9 +1268,9 @@ Json::Value frame::getRunItems()
             tmpJs["name"] = nameJs[PARAM_TABLE_PARAM_NAME].asString();
 
         }
-        tmpJs["value"] = value;
-        tmpJs["table"] = table;
-        tmpJs["coding"] = coding;
+        tmpJs["value"] = value.toStdString();
+        tmpJs["table"] = table.toStdString();
+        tmpJs["coding"] = coding.toStdString();
 
         infoJs.append(tmpJs);
     }
@@ -1012,7 +1289,7 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
     Json::Value headJs = mHeadObj->serialize();
 
     //获取弹编号、设备序号、模块序号、备用字符串
-    int dNum = 0, devNum = 0, modelNum = 0;
+    int dNum = 0, devNum = 0, modelNum = 0, data = 0;
     std::string reserveStr = "";
 
     if(!headJs.isNull())
@@ -1035,6 +1312,11 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
         if(!headJs["head_reserve"].isNull())
         {
             reserveStr = headJs["head_reserve"].asString();
+        }
+
+        if(!headJs["head_data"].isNull())
+        {
+            data = headJs["head_data"].asInt();
         }
     }
 
@@ -1067,11 +1349,11 @@ Json::Value frame::fillMiddle(const std::string &infoWord)
 
                 if(InfoWord_One == infoWordType)
                 {
-                    tmpJs = fillMiddleInfoWord0(coding, dNum, 1, 4, Json::Value(0), false, reserveStr);
+                    tmpJs = fillMiddleInfoWord0(coding, dNum, 1, 4, Json::Value(data), false, reserveStr);
                 }
                 else if(InfoWord_Three == infoWordType)
                 {
-                    tmpJs = fillMiddleInfoWord2(coding, dNum, devNum, modelNum, 1, 4, Json::Value(0), false, reserveStr);
+                    tmpJs = fillMiddleInfoWord2(coding, dNum, devNum, modelNum, 1, 4, Json::Value(data), false, reserveStr);
                 }
 
                 infoWordJs.append(tmpJs);
@@ -1230,7 +1512,7 @@ Json::Value frame::fillBe(const std::string &infoWord)
     int infoWordType = std::atoi(infoWord.c_str());
 
     //获取弹编号、设备序号、模块序号、备用字符串
-    int dNum = 0, devNum = 0, modelNum = 0;
+    int dNum = 0, devNum = 0, modelNum = 0, data = 0;
     Json::Value headJs = mHeadObj->serialize();
 
     if(!headJs.isNull())
@@ -1248,6 +1530,11 @@ Json::Value frame::fillBe(const std::string &infoWord)
         if(!headJs["head_modle_num"].isNull())
         {
             modelNum = headJs["head_modle_num"].asInt();
+        }
+
+        if(!headJs["head_data"].isNull())
+        {
+            data = headJs["head_data"].asInt();
         }
     }
 
@@ -1279,11 +1566,11 @@ Json::Value frame::fillBe(const std::string &infoWord)
 
                 if(InfoWord_One == infoWordType)
                 {
-                    tmpJs = fillInfoOne(std::atoi(table.c_str()), coding, Json::Value((int)0), 2, false, dNum);
+                    tmpJs = fillInfoOne(std::atoi(table.c_str()), coding, Json::Value(data), 2, false, dNum);
                 }
                 else if(InfoWord_Three == infoWordType)
                 {
-                    tmpJs = fillInfoThree(std::atoi(table.c_str()), coding, Json::Value(0), Pf::PfIcdWorkBench::ncharType, false, 0, dNum);
+                    tmpJs = fillInfoThree(std::atoi(table.c_str()), coding, Json::Value(data), Pf::PfIcdWorkBench::intType, false, devNum, modelNum);
                 }
 
                 infoWordJs.append(tmpJs);
@@ -1376,7 +1663,7 @@ Json::Value frame::fillInfoOne(const unsigned short &table, const unsigned short
 
     value["info_1_table_num"] = table;
     value["info_1_code"] = coding;
-    value["info_1_data"] = num;
+    value["info_1_data"] = data;
     value["info_1_data_type"] = dataType;
     value["info_1_over"] = (int)isOver;
     value["info_1_num"] = num;

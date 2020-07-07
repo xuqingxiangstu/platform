@@ -7,13 +7,17 @@
 #include "../../src/PfCommon/jsoncpp/json.h"
 
 #include <memory>
+#include <QByteArray>
+#include <QString>
+#include <QObject>
 
 class frame;
 
-class action
+class action : public QObject
 {   
+    Q_OBJECT
 public:
-    action();
+    action(QObject *parent = 0);
     ~action();
 public:
     void init(TiXmlElement *);
@@ -26,6 +30,9 @@ public:
     static std::string className(){return "action";}
 private:
     void toUi(const std::string &msg, bool state = true);
+    void toLog(const char *msg, const int &msgSize);
+signals:
+    void record(QString uuid, QByteArray Msg);
 private:
     std::string mDstSysUuid;
     unsigned char mRcvBus[2048];

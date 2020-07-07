@@ -22,6 +22,7 @@ public:
     ~simulation();
     void initSystemTree();
     void initFlowTable();
+    void initFlowTree();
     void getSimTest(Json::Value &value);
 private:
     bool checkSimTree(QString record_uuid);

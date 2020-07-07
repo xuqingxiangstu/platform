@@ -5,7 +5,7 @@
 #include "../../PfCommon/tools/ut_error.h"
 #include "../icdData/datatype.h"
 #include "../../PfSql/paramsTable/paramstable.h"
-
+#include <QTextCodec>
 #include <QByteArray>
 
 namespace Pf
@@ -141,7 +141,7 @@ namespace Pf
                 else if(ncharType == dataType)
                 {
                     //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                    memcpy(tmpBuf + startPos, initValue.c_str(), initValue.size());
                     preStartPos = startPos + initValue.size();
                     outSize += initValue.size();
                 }
@@ -275,9 +275,9 @@ namespace Pf
                 {
                     memset(tmpBuf + pos, 0, byteSize);
                     if(root["file_name"].asString().size() < 25)
-                        memcpy_s(tmpBuf + pos, byteSize, root["file_name"].asString().c_str(), root["file_name"].asString().size());
+                        memcpy(tmpBuf + pos, root["file_name"].asString().c_str(), root["file_name"].asString().size());
                     else
-                        memcpy_s(tmpBuf + pos, byteSize, root["file_name"].asString().c_str(), byteSize);
+                        memcpy(tmpBuf + pos, root["file_name"].asString().c_str(), byteSize);
                 }
 
                 pos += byteSize;
@@ -392,7 +392,7 @@ namespace Pf
                 {
                     //文件长度
                     byteSize = 4;
-                    result["file_len"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                    result["file_len"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                     pos += byteSize;
                     //MD5(16字节)
 
@@ -416,14 +416,14 @@ namespace Pf
                 {
                     //序号帧
                     byteSize = 4;
-                    result["file_num"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                    result["file_num"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                     pos += byteSize;
                 }
                 else if(0xF7 == subFrameType)   //数据帧
                 {
                     //序号帧
                     byteSize = 4;
-                    result["file_num"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                    result["file_num"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                     pos += byteSize;
 
                     //数据 <= 1400
@@ -439,7 +439,7 @@ namespace Pf
             else if(0x61 == frameType)
             {
                 byteSize = 1;
-                result["data"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+                result["data"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
                 pos += byteSize;
             }
 

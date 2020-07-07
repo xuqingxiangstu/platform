@@ -1,4 +1,4 @@
-#include "tcpserver.h"
+#include "tcpServer.h"
 
 #include <sstream>
 
@@ -23,10 +23,14 @@ namespace Pf
             {
                 mServer->close();
             }
+
+            qDebug() << "close tcpServer";
         }
 
         void tcpServer::init(std::string remotIp, int remotPort)
         {
+            m_remotIp=remotIp;
+            m_remotPort=remotPort;
             mServer->listen(QHostAddress(remotIp.c_str()), remotPort);
             connect(mServer, &QTcpServer::newConnection, this, &tcpServer::onNewConnection);
 #if 0
@@ -48,7 +52,24 @@ namespace Pf
             }
 #endif
         }
+        bool tcpServer::getAttribute(const std::string &attr, void *value)
+        {
+            bool result=true;
+            if(attr=="remoteIp")
+            {
+                *((std::string *)value)=m_remotIp; ///< 发送地址
 
+            }
+            else if(attr=="remotePort")
+            {
+                *((std::string *)value)=m_remotPort;//端口号
+            }
+            else
+            {
+                result=false;
+            }
+            return result;
+        }
         void tcpServer::onNewConnection()
         {
             mSocket = mServer->nextPendingConnection();
@@ -67,8 +88,9 @@ namespace Pf
 
         void tcpServer::onDisConnect()
         {
+            mServer->errorString();
             mIsConnect = false;
-            qDebug() << "onDisConnect";
+            qDebug() << "onDisConnect" << mServer->errorString();
         }
 
         bool tcpServer::receiveMsg(unsigned char *u8Msg, unsigned int *u32MsgLen, const unsigned int u32RcvMax, const unsigned int u32TimeOut)

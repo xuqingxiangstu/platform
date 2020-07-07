@@ -1,6 +1,6 @@
 <?xml version="1.0"?>	
 <configure>
-		 <dev id="cmdSend" class="tcpAdapter">           
+		 <dev id="send" class="tcpAdapter">           
       
        <remoteIp>192.168.120.110</remoteIp>
        <!-- Ŀ˿ں-->

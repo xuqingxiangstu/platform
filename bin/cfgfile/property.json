@@ -42,7 +42,7 @@
                         {
                             "attr":"名称",
                             "type":"string", 
-                            "readOnly":true,  
+                            "readOnly":false,  
                             "initValue":"xxxx测试",
                             "isVisible":true
                         },
@@ -113,6 +113,18 @@
                                 
                             ],
                             "curValue":"FE",
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"确认标志",
+                            "type":"enum",                             
+                            "readOnly":false,
+                            "initValue":
+                            [
+                                "0x1",
+                                "0x3"
+                            ],
+                            "curValue":"0x1",
                             "isVisible":true
                         }
                     ]
@@ -228,6 +240,22 @@
                           "readOnly":true,  
                           "initValue":"qingxiangxu",
                           "isVisible":true
+                      },                      
+                      {
+                        "attr":"表号",
+                        "type":"string", 
+                        "readOnly":true,  
+                        "initValue":"",
+                        "curValue":"",
+                        "isVisible":true
+                      },
+                      {
+                        "attr":"编码",
+                        "type":"int", 
+                        "readOnly":true,  
+                        "initValue":0,
+                        "curValue":0,
+                        "isVisible":true
                       },
                       {
                         "attr":"信息字格式",
@@ -254,7 +282,7 @@
                             "attr":"delay",
                             "type":"int", 
                             "readOnly":false,
-                            "initValue":10,
+                            "initValue":1000,
                             "isVisible":true
                         },
                         {
@@ -279,11 +307,44 @@
                     ]
                 },
                 {
-                    "group":"RT属性",
+                    "group":"1553B属性",
                     "readOnly":false,
                     "isVisible":true,
                     "node":    
-                    [        
+                    [    
+                        {
+                            "attr":"模式",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "BC->RT",
+                                "RT->BC",
+                                "RT->RT"
+                            ],
+                            "curValue":"BC->RT",
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"总线",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "A",
+                                "B"
+                            ],
+                            "curValue":"A",
+                            "readOnly":false,
+                            "isVisible":true
+                        }                    
+                    ]
+                },
+                {
+                    "group":"BC->RT属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [    
                         {
                             "attr":"RT地址",
                             "type":"int", 
@@ -296,6 +357,64 @@
                         },
                         {
                             "attr":"SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        }
+                    ]
+                },
+                {
+                    "group":"RT->RT属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [    
+                        {
+                            "attr":"发送RT地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"发送SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"接收RT地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"接收SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"数据长度",
                             "type":"int", 
                             "minValue":1,
                             "maxValue":32,
@@ -369,13 +488,42 @@
                             "initValue":
                             [
                                 "0x01:首长软件",
-                                "0x02:作战计划软件",
-                                "0x03:态势综合软件",
-                                "0xA1:表示前端综合控制软件",
-                                "0xA2:表示密码集控装置软件",
-                                "0xA3:表示测发控中心机软件",
-                                "0xA4:表示测发控电源控制器软件",
-                                "0xA5:表示1号车车控主机软件"                                
+                                "0x02:表示作战计划软件",
+																"0x03:表示态势综合软件",
+																"0x04:表示LC运行调度软件",
+																"0x05:表示任务规划软件",
+																"0x06:表示集群发射软件",
+																"0x07:表示HAK软件",
+																"0x08:表示导弹测试软件",
+																"0x09:表示LC控制软件",
+																"0x0A:表示综合运维软件",
+																"0x0B:表示综合保障软件",
+																"0x31:表示2号车车控主机软件",
+																"0x32:表示2号车安监主机软件",
+																"0x33:表示供配电控制器",
+																"0x34:表示顶盖控制器",
+																"0x35:表示接触网拨离控制器",
+																"0x36:表示环境保障控制器",
+																"0x37:表示测发数据处理设备",
+																"0x3F:表示重力基准自主保障设备软件",
+																"0xF0:表示上级基地",
+																"0xF1:表示上级军委联指",
+																"0xF2:表示当前TL局（路局）",
+																"0xF3:表示铁总调度中心（铁总）",
+																"0xA1:表示前端综合控制软件",
+																"0xA2:表示密码集控装置软件",
+																"0xA3:表示测发控中心机软件",
+																"0xA4:表示测发控电源控制器软件",
+																"0xA5:表示1号车车控主机软件",
+																"0xA6:表示1号车安监主机软件",
+																"0xA7:表示展车起竖控制器",
+																"0xA8:表示定位定向设备",
+																"0xA9:表示车辆辅助控制器",
+																"0xAA:表示供配电控制器",
+																"0xAF:表示单车全样数据分析仪",
+																"0xB1:表示3号车综合控制软件",
+																"0xB2:表示3号车车控主机",
+																"0xB3:表示供配电控制器"                                
                                 
                             ],
                             "curValue":"0x01:首长软件",
@@ -388,8 +536,42 @@
                             "initValue":
                             [
                                 "0x01:首长软件",
-                                "0x02:作战计划软件",
-                                "0x03:态势综合软件"
+                                "0x02:表示作战计划软件",
+																"0x03:表示态势综合软件",
+																"0x04:表示LC运行调度软件",
+																"0x05:表示任务规划软件",
+																"0x06:表示集群发射软件",
+																"0x07:表示HAK软件",
+																"0x08:表示导弹测试软件",
+																"0x09:表示LC控制软件",
+																"0x0A:表示综合运维软件",
+																"0x0B:表示综合保障软件",
+																"0x31:表示2号车车控主机软件",
+																"0x32:表示2号车安监主机软件",
+																"0x33:表示供配电控制器",
+																"0x34:表示顶盖控制器",
+																"0x35:表示接触网拨离控制器",
+																"0x36:表示环境保障控制器",
+																"0x37:表示测发数据处理设备",
+																"0x3F:表示重力基准自主保障设备软件",
+																"0xF0:表示上级基地",
+																"0xF1:表示上级军委联指",
+																"0xF2:表示当前TL局（路局）",
+																"0xF3:表示铁总调度中心（铁总）",
+																"0xA1:表示前端综合控制软件",
+																"0xA2:表示密码集控装置软件",
+																"0xA3:表示测发控中心机软件",
+																"0xA4:表示测发控电源控制器软件",
+																"0xA5:表示1号车车控主机软件",
+																"0xA6:表示1号车安监主机软件",
+																"0xA7:表示展车起竖控制器",
+																"0xA8:表示定位定向设备",
+																"0xA9:表示车辆辅助控制器",
+																"0xAA:表示供配电控制器",
+																"0xAF:表示单车全样数据分析仪",
+																"0xB1:表示3号车综合控制软件",
+																"0xB2:表示3号车车控主机",
+																"0xB3:表示供配电控制器"  
                             ],
                             "curValue":"0x01:首长软件",
                             "readOnly":false,
@@ -410,6 +592,26 @@
                             "maxValue":65536,
                             "initValue":1,
                             "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"车辆类型",
+                            "type":"int", 
+                            "minValue":0,
+                            "maxValue":255,
+                            "initValue":0,
+                            "curValue":0,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"车辆编号",
+                            "type":"int", 
+                            "minValue":0,
+                            "maxValue":255,
+                            "initValue":0,
+                            "curValue":0,
                             "readOnly":false,
                             "isVisible":true
                         },
@@ -440,7 +642,17 @@
                             "curValue":"",
                             "readOnly":false,
                             "isVisible":true
-                        }
+                        },
+                        {
+                            "attr":"数据",
+                            "type":"int", 
+                            "minValue":0,
+                            "maxValue":4294967296,
+                            "initValue":0,
+                            "curValue":0,
+                            "readOnly":false,
+                            "isVisible":true
+                        }        
                     ]
                 }
             ]
@@ -461,6 +673,22 @@
                           "readOnly":true,  
                           "initValue":"xxxx测试",
                           "isVisible":true
+                      },
+                      {
+                        "attr":"表号",
+                        "type":"string", 
+                        "readOnly":true,  
+                        "initValue":"",
+                        "curValue":"",
+                        "isVisible":true
+                      },
+                      {
+                        "attr":"编码",
+                        "type":"int", 
+                        "readOnly":true,  
+                        "initValue":0,
+                        "curValue":0,
+                        "isVisible":true
                       },
                       {
                         "attr":"信息字格式",
@@ -487,7 +715,7 @@
                             "attr":"delay",
                             "type":"int", 
                             "readOnly":false,
-                            "initValue":0,
+                            "initValue":1000,
                             "isVisible":true
                         },
                         {
@@ -512,11 +740,44 @@
                     ]
                 },
                 {
-                    "group":"RT属性",
+                    "group":"1553B属性",
                     "readOnly":false,
                     "isVisible":true,
                     "node":    
-                    [        
+                    [    
+                        {
+                            "attr":"模式",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "BC->RT",
+                                "RT->BC",
+                                "RT->RT"
+                            ],
+                            "curValue":"BC->RT",
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"总线",
+                            "type":"enum",                             
+                            "initValue":
+                            [
+                                "A",
+                                "B"
+                            ],
+                            "curValue":"A",
+                            "readOnly":false,
+                            "isVisible":true
+                        }     
+                    ]
+                },
+                {
+                    "group":"BC->RT属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [    
                         {
                             "attr":"RT地址",
                             "type":"int", 
@@ -529,6 +790,64 @@
                         },
                         {
                             "attr":"SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        }
+                    ]
+                },
+                {
+                    "group":"RT->RT属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [    
+                        {
+                            "attr":"发送RT地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"发送SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"接收RT地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"接收SA地址",
+                            "type":"int", 
+                            "minValue":1,
+                            "maxValue":32,
+                            "initValue":1,
+                            "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"数据长度",
                             "type":"int", 
                             "minValue":1,
                             "maxValue":32,
@@ -602,13 +921,42 @@
                             "initValue":
                             [
                                 "0x01:首长软件",
-                                "0x02:作战计划软件",
-                                "0x03:态势综合软件",
-                                "0xA1:表示前端综合控制软件",
-                                "0xA2:表示密码集控装置软件",
-                                "0xA3:表示测发控中心机软件",
-                                "0xA4:表示测发控电源控制器软件",
-                                "0xA5:表示1号车车控主机软件"    
+                                "0x02:表示作战计划软件",
+																"0x03:表示态势综合软件",
+																"0x04:表示LC运行调度软件",
+																"0x05:表示任务规划软件",
+																"0x06:表示集群发射软件",
+																"0x07:表示HAK软件",
+																"0x08:表示导弹测试软件",
+																"0x09:表示LC控制软件",
+																"0x0A:表示综合运维软件",
+																"0x0B:表示综合保障软件",
+																"0x31:表示2号车车控主机软件",
+																"0x32:表示2号车安监主机软件",
+																"0x33:表示供配电控制器",
+																"0x34:表示顶盖控制器",
+																"0x35:表示接触网拨离控制器",
+																"0x36:表示环境保障控制器",
+																"0x37:表示测发数据处理设备",
+																"0x3F:表示重力基准自主保障设备软件",
+																"0xF0:表示上级基地",
+																"0xF1:表示上级军委联指",
+																"0xF2:表示当前TL局（路局）",
+																"0xF3:表示铁总调度中心（铁总）",
+																"0xA1:表示前端综合控制软件",
+																"0xA2:表示密码集控装置软件",
+																"0xA3:表示测发控中心机软件",
+																"0xA4:表示测发控电源控制器软件",
+																"0xA5:表示1号车车控主机软件",
+																"0xA6:表示1号车安监主机软件",
+																"0xA7:表示展车起竖控制器",
+																"0xA8:表示定位定向设备",
+																"0xA9:表示车辆辅助控制器",
+																"0xAA:表示供配电控制器",
+																"0xAF:表示单车全样数据分析仪",
+																"0xB1:表示3号车综合控制软件",
+																"0xB2:表示3号车车控主机",
+																"0xB3:表示供配电控制器"    
                             ],
                             "curValue":"0x01:首长软件",
                             "readOnly":false,
@@ -620,8 +968,42 @@
                             "initValue":
                             [
                                 "0x01:首长软件",
-                                "0x02:作战计划软件",
-                                "0x03:态势综合软件"
+                                "0x02:表示作战计划软件",
+																"0x03:表示态势综合软件",
+																"0x04:表示LC运行调度软件",
+																"0x05:表示任务规划软件",
+																"0x06:表示集群发射软件",
+																"0x07:表示HAK软件",
+																"0x08:表示导弹测试软件",
+																"0x09:表示LC控制软件",
+																"0x0A:表示综合运维软件",
+																"0x0B:表示综合保障软件",
+																"0x31:表示2号车车控主机软件",
+																"0x32:表示2号车安监主机软件",
+																"0x33:表示供配电控制器",
+																"0x34:表示顶盖控制器",
+																"0x35:表示接触网拨离控制器",
+																"0x36:表示环境保障控制器",
+																"0x37:表示测发数据处理设备",
+																"0x3F:表示重力基准自主保障设备软件",
+																"0xF0:表示上级基地",
+																"0xF1:表示上级军委联指",
+																"0xF2:表示当前TL局（路局）",
+																"0xF3:表示铁总调度中心（铁总）",
+																"0xA1:表示前端综合控制软件",
+																"0xA2:表示密码集控装置软件",
+																"0xA3:表示测发控中心机软件",
+																"0xA4:表示测发控电源控制器软件",
+																"0xA5:表示1号车车控主机软件",
+																"0xA6:表示1号车安监主机软件",
+																"0xA7:表示展车起竖控制器",
+																"0xA8:表示定位定向设备",
+																"0xA9:表示车辆辅助控制器",
+																"0xAA:表示供配电控制器",
+																"0xAF:表示单车全样数据分析仪",
+																"0xB1:表示3号车综合控制软件",
+																"0xB2:表示3号车车控主机",
+																"0xB3:表示供配电控制器"  
                             ],
                             "curValue":"0x01:首长软件",
                             "readOnly":false,
@@ -642,6 +1024,26 @@
                             "maxValue":65536,
                             "initValue":1,
                             "curValue":1,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"车辆类型",
+                            "type":"int", 
+                            "minValue":0,
+                            "maxValue":255,
+                            "initValue":0,
+                            "curValue":0,
+                            "readOnly":false,
+                            "isVisible":true
+                        },
+                        {
+                            "attr":"车辆编号",
+                            "type":"int", 
+                            "minValue":0,
+                            "maxValue":255,
+                            "initValue":0,
+                            "curValue":0,
                             "readOnly":false,
                             "isVisible":true
                         },
@@ -693,6 +1095,22 @@
                           "readOnly":true,  
                           "initValue":"xxxx测试",
                           "isVisible":true
+                      },
+                      {
+                        "attr":"表号",
+                        "type":"string", 
+                        "readOnly":true,  
+                        "initValue":"",
+                        "curValue":"",
+                        "isVisible":true
+                      },
+                      {
+                        "attr":"编码",
+                        "type":"int", 
+                        "readOnly":true,  
+                        "initValue":0,
+                        "curValue":0,
+                        "isVisible":true
                       }
                   ]
                 },

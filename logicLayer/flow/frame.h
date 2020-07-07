@@ -9,7 +9,7 @@
 #include "../src/PfCommon/TinyXml/tinyxml.h"
 #include "../src/PfCommon/jsoncpp/json.h"
 
-#define DEBUG_FRAME 0
+//#define DEBUG_FRAME 0
 
 class value;
 class head;
@@ -23,10 +23,11 @@ class head;
 #define FRAME_DM        "定位瞄准协议"
 #define FRAME_CZXK      "车长显控通讯协议"
 #define FRAME_M1553B    "M1553B协议"
+#define FRAME_JG        "机柜协议"
 
 /** 自定义消息 **/
 #define XK_CUSTOM_MSG   "60000"
-#define UI_CUSTOM_MSG   "60001"
+#define UI_CUSTOM_MSG   "80000001"
 //#define DM_CUSTOM_MSG   "61000"
 
 
@@ -77,12 +78,17 @@ public:
     void getResendMsg(std::vector<unsigned char> &msg);
 
     void setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter);
-
+    void setDevUuid(const std::string &uuid){mCurUuid = uuid;}
     Json::Value getRunItems();
 
     int getFrameType(){return mCurParamType;}
 
-    bool getRtAndSa(std::string &rtAddr, std::string &saAddr);
+    bool is1553B();
+
+    std::string get1553BModel();
+    std::string get1553BBus();
+    bool getBcModelInfo(int &rtAddr, int &saAddr);
+    bool getRtModelInfo(int &sRt, int &sSa, int &rRt, int &rSa, int &size);
 private:
     /**
      * @brief fill    数据域填充
@@ -150,7 +156,7 @@ private:
     std::map<std::string, std::shared_ptr<Pf::PfIcdWorkBench::frameObj>> mIcdFrameObj;
     std::string mCurFrameType;
     msgType mCurMsgType;
-
+    std::string mCurUuid;
 };
 
 class Algorithm;
@@ -203,6 +209,26 @@ public:
     void init(TiXmlElement *) override;
     Json::Value serialize() override;
     std::string frameType() override {return FRAME_FE;}
+private:
+    Json::Value mJsonV;
+};
+
+class headJg : public head
+{
+public:
+    void init(TiXmlElement *) override;
+    Json::Value serialize() override;
+    std::string frameType() override {return FRAME_JG;}
+private:
+    Json::Value mJsonV;
+};
+
+class headCzxk : public head
+{
+public:
+    void init(TiXmlElement *) override;
+    Json::Value serialize() override;
+    std::string frameType() override {return FRAME_CZXK;}
 private:
     Json::Value mJsonV;
 };

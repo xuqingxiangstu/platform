@@ -16,7 +16,7 @@ class addSysManage : public QDialog
     Q_OBJECT
 
 public:
-    explicit addSysManage(QWidget *parent = 0);
+    explicit addSysManage(QWidget *parent = 0, QString mouseActive = "", QString devOldUuid = "", QString sysName = "",int changeRow = NULL);
     ~addSysManage();
 signals:
     void update();    
@@ -35,6 +35,10 @@ private slots:
 private:
     Ui::addSysManage *ui;
     sysManageUi *Sparent;
+    QString m_mouseActive;
+    QString m_devUuid;
+    QString m_sysName;
+    int m_changeRow;
 };
 
 

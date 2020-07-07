@@ -9,20 +9,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>292</width>
-    <height>85</height>
+    <width>247</width>
+    <height>50</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>292</width>
-    <height>85</height>
+    <width>100</width>
+    <height>50</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>292</width>
-    <height>85</height>
+    <width>247</width>
+    <height>50</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -34,10 +34,10 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>47</x>
-     <y>36</y>
-     <width>21</width>
-     <height>21</height>
+     <x>26</x>
+     <y>21</y>
+     <width>17</width>
+     <height>17</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -48,14 +48,14 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>21</width>
-     <height>21</height>
+     <width>17</width>
+     <height>17</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>21</width>
-     <height>21</height>
+     <width>17</width>
+     <height>17</height>
     </size>
    </property>
    <property name="sizeIncrement">
@@ -110,7 +110,7 @@ height:20px;
   <widget class="QLabel" name="clickCurrent">
    <property name="geometry">
     <rect>
-     <x>250</x>
+     <x>200</x>
      <y>0</y>
      <width>48</width>
      <height>20</height>
@@ -160,16 +160,16 @@ color:#ffffff;
   <widget class="QLabel" name="sysName">
    <property name="geometry">
     <rect>
-     <x>71</x>
-     <y>37</y>
-     <width>221</width>
+     <x>46</x>
+     <y>20</y>
+     <width>201</width>
      <height>19</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>华文楷体</family>
-     <pointsize>16</pointsize>
+     <pointsize>14</pointsize>
     </font>
    </property>
    <property name="text">

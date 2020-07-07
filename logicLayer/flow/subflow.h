@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <atomic>
+#include <QMutex>
 
 #include "../src/PfCommon/dynCreate/dyncreate.h"
 #include "../src/PfCommon/TinyXml/tinyxml.h"
@@ -27,8 +28,9 @@ public:
     subFlow(TiXmlElement *);
     ~subFlow();
 public:
+    void enforceExe();
     void exe();
-    void exit(){isStop = true;}
+    void exit();
     void setAdapterManager(Pf::PfAdapter::PfAdapterManager *adapterManagerObj);
     void setIcdAdapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter);
     void setRecordUuid(std::string uuid);
@@ -52,6 +54,7 @@ private:
     std::string mDescribe;
     Pf::PfAdapter::Adapter *mUiAdapter;
     std::string mRecordUuid;
+    QMutex mWaitMutex;
 };
 
 #endif // SUBFLOW_H

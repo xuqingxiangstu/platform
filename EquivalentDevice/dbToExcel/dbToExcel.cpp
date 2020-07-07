@@ -50,29 +50,28 @@ void dbToExcel::run()
         xlsx.copySheet(firstName,msgBox[i]);
     }
 
-    DataValidation FType(DataValidation::List,DataValidation::Equal,"\"FE,BE,93\"");
+    DataValidation FType(DataValidation::List,DataValidation::Equal,"\"FE,BE,93,中间件\"");
     FType.addRange("B2:B10000");
-    FType.setPromptMessage("Please Input choose between BE, FE, 93");
+
 
     DataValidation InfoWord(DataValidation::List,DataValidation::Equal,"\"0,1,2\"");
     InfoWord.addRange("C2:C10000");
-    InfoWord.setPromptMessage("Please Input choose between 0, 1, 2");
+
 
     DataValidation ISACK(DataValidation::List,DataValidation::Equal,"\"是,否\"");
     ISACK.addRange("D2:D10000");
-    ISACK.setPromptMessage("Please Input choose between 是,否");
+
 
     DataValidation CMDTYPE(DataValidation::List,DataValidation::Equal,"\"指令,状态量,数值量\"");
     CMDTYPE.addRange("E2:E10000");
-    CMDTYPE.setPromptMessage("Please Input choose between 指令,状态量,数值量");
+
 
     DataValidation LBENDIAN(DataValidation::List,DataValidation::Equal,"\"大端,小端\"");
     LBENDIAN.addRange("L2:L10000");
-    LBENDIAN.setPromptMessage("Please Input choose between 大端,小端");
+
 
     DataValidation DATATYPE(DataValidation::List,DataValidation::Equal,"\"UINT16,UINT8,UINT32,IEEE32,IEEE64,NCHAR,NRAW\"");
     DATATYPE.addRange("P2:P10000");
-    DATATYPE.setPromptMessage("Please Input choose between UINT16,UINT8,UINT32,IEEE32,IEEE64,NCHAR");
 
     for(int i = 1;i<=msgBox.size();i++){
         QXlsx::Worksheet *writeSheet = static_cast<QXlsx::Worksheet*>(workBook->sheet(i));
@@ -82,7 +81,6 @@ void dbToExcel::run()
         if(sheetName == "50019"){
             paramsInfo.toStyledString();
             std::string out = Json::FastWriter().write(paramsInfo);
-            qDebug()<<QString::fromStdString(out);
         }
 
         for(int j = 0;j<paramsInfo.size();j++){

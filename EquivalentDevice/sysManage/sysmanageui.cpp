@@ -29,13 +29,12 @@ sysManageUi::sysManageUi(QWidget *parent) :
     initSystemTree();
 
     ui->systemTree->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->systemTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_tableWidget_customContextMenuRequested(const QPoint &pos)));
+    connect(ui->systemTree, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_systemTree_customContextMenuRequested(const QPoint &pos)));
 
     ui->information_tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->information_tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_flowTreeWidget_customContextMenuRequested(const QPoint &pos)));
+    connect(ui->information_tableWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(on_information_tableWidget_customContextMenuRequested(const QPoint &pos)));
 
     connect(ui->systemTree,SIGNAL(itemChanged(QTreeWidgetItem*,int)),this,SLOT(changeSysName(QTreeWidgetItem*,int)));
-
 
 }
 
@@ -68,9 +67,6 @@ void sysManageUi::update(my_sys *stu)
 {
     int rowIndex = ui->information_tableWidget->rowCount();
     ui->information_tableWidget->setRowCount(rowIndex + 1);
-    //QTableWidgetItem* p_check = new QTableWidgetItem();
-    //p_check->setCheckState(Qt::Unchecked);
-    //ui->information_tableWidget->setItem(rowIndex,0,p_check);
     ui->information_tableWidget->setItem(rowIndex,0,new QTableWidgetItem(stu->sysName));
     ui->information_tableWidget->setItem(rowIndex,1,new QTableWidgetItem(stu->dev_type));
     ui->information_tableWidget->setItem(rowIndex,2,new QTableWidgetItem(stu->describe));
@@ -80,6 +76,20 @@ void sysManageUi::update(my_sys *stu)
     }
 }
 
+void sysManageUi::changeUpdate(my_sys *stu,int col)
+{
+    ui->information_tableWidget->removeRow(col);
+
+    int rowIndex = ui->information_tableWidget->rowCount();
+    ui->information_tableWidget->setRowCount(rowIndex + 1);
+    ui->information_tableWidget->setItem(rowIndex,0,new QTableWidgetItem(stu->sysName));
+    ui->information_tableWidget->setItem(rowIndex,1,new QTableWidgetItem(stu->dev_type));
+    ui->information_tableWidget->setItem(rowIndex,2,new QTableWidgetItem(stu->describe));
+    ui->information_tableWidget->setItem(rowIndex,3,new QTableWidgetItem(stu->uuid));
+    for(int i = 0;i<4;i++){
+        ui->information_tableWidget->item(rowIndex, i)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+    }
+}
 void sysManageUi::on_systemTree_customContextMenuRequested(const QPoint &pos)
 {
     sysNameMenu = new QMenu(ui->systemTree);
@@ -154,7 +164,6 @@ void sysManageUi::deleDev()
 
             int row = ui->information_tableWidget->row(items.at(0));
             QString uuid = ui->information_tableWidget->item(row,3)->text();
-            qDebug()<<uuid;
             ok = DBTableOpt::getInstance()->deleteSystemDev(uuid);
             if(!ok){
                 QMessageBox::information(this, tr("消息"), tr("删除失败!"), QMessageBox::Ok);
@@ -182,7 +191,6 @@ void sysManageUi::deleD()
         QTreeWidgetItem* curItem=ui->systemTree->currentItem();
         QString systemName = curItem->text(0);
         QString uuid = curItem->text(1);
-        qDebug() << uuid;
         if(DBTableOpt::getInstance()->deleteSubSystem(uuid)){
 
         }
@@ -247,7 +255,6 @@ void sysManageUi::on_systemTree_itemClicked(QTreeWidgetItem *item, int column)
     {
         Json::Value value;
         QString systemUuid = item->text(1);
-        qDebug() << m_sysUuid;
         addDevSysName = systemUuid;
         DBTableOpt::getInstance()->getSystemDev(systemUuid,value);
         int rowNum =  ui->information_tableWidget->rowCount();
@@ -273,7 +280,18 @@ void sysManageUi::changeSysName(QTreeWidgetItem* item,int column)
 {
     QString uuid = item->text(1);
     QString Name = item->text(0);
-    qDebug() << uuid;
-    qDebug() << Name;
     DBTableOpt::getInstance()->alterSubSystem(uuid,Name);
+}
+
+void sysManageUi::on_information_tableWidget_itemDoubleClicked(QTableWidgetItem *item)
+{
+    QString mouseActive = "update";
+
+    int countRow = item->row();
+
+    QString devUuid = ui->information_tableWidget->item(countRow,3)->text();
+    QString sysName = ui->information_tableWidget->item(countRow,0)->text();
+
+    addSysManage *AI=new addSysManage(this,mouseActive,devUuid,sysName,countRow);
+    AI->show();
 }

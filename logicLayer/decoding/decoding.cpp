@@ -14,9 +14,10 @@ decodingPool::decodingPool(QObject *parent):
     QObject(parent),
     mPfAdapterManager(nullptr)
 {
-    mThreadPool = std::make_shared<QThreadPool>();
-    mThreadPool->setMaxThreadCount(4);  //最大线程数
-    mThreadPool->setExpiryTimeout(-1);
+//    mThreadPool = std::make_shared<QThreadPool>();
+//    mThreadPool->setMaxThreadCount(10);  //最大线程数
+//    mThreadPool->setExpiryTimeout(-1);
+    mDecoding = std::make_shared<decoding>();
 }
 
 void decodingPool::decode(Json::Value param, QString recordUuid, QString uuid, QString ptl, QByteArray msg, QString rcvIp, int rcvPort)
@@ -31,11 +32,11 @@ void decodingPool::decode(Json::Value param, QString recordUuid, QString uuid, Q
         mPfAdapterManager->getAdapter(uuid.toStdString(), &adapterObj);
     }
 
-    decoding *obj = new decoding(param, recordUuid.toStdString(), uuid.toStdString(), ptl.toStdString(), adapterObj, rcvIp.toStdString(), rcvPort, mParseObj[ptl], msg);
+    mDecoding->exe_decoding(param, recordUuid.toStdString(), uuid.toStdString(), ptl.toStdString(), adapterObj, rcvIp.toStdString(), rcvPort, mParseObj[ptl], msg);
 
-    connect(obj, &decoding::result, this, &decodingPool::result);
+//    connect(obj, &decoding::result, this, &decodingPool::result);
 
-    mThreadPool->start(obj);
+//    mThreadPool->start(obj);
 }
 
 void decodingPool::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> obj)
@@ -97,22 +98,34 @@ void decodingPool::setIcdFrameAdpter(std::shared_ptr<Pf::PfIcdWorkBench::icdFram
     {
         mParseObj[FRAME_M1553B] = m1553BObj;
     }
+
+    std::shared_ptr<Pf::PfIcdWorkBench::frameObj> mJgobj = mIcdWorkBench->getFrameObj(FRAME_JG);
+    if(mJgobj)
+    {
+        mParseObj[FRAME_JG] = mJgobj;
+    }
 }
 
 /****************************************************/
 
-decoding::decoding(Json::Value param, std::string recordUuid, std::string uuid, std::string ptl, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg):
-    mBusObj(adapterObj),
-    mUuid(uuid),
-    mCurPtrl(ptl),
-    mFrameObj(frameObj),
-    mCurMsg(msg),
-    mDstIp(ipAddr),
-    mDstPort(port),
-    mRecordUuid(recordUuid),
-    mParam(param)
+decoding::decoding()
 {
     mUiBus = uiBus::getInstance()->getUiAdapter();
+}
+
+void decoding::exe_decoding(Json::Value param, std::string recordUuid, std::string uuid, std::string ptl, Pf::PfAdapter::Adapter *adapterObj, const std::string &ipAddr, const int &port, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> frameObj, QByteArray msg)
+{
+    mBusObj = adapterObj;
+    mUuid = uuid;
+    mCurPtrl = ptl;
+    mFrameObj = frameObj;
+    mCurMsg = msg;
+    mDstIp = ipAddr;
+    mDstPort = port;
+    mRecordUuid = recordUuid;
+    mParam = param;
+
+    run();
 }
 
 decoding::~decoding()
@@ -150,6 +163,7 @@ void decoding::run()
     //解析
     try
     {        
+
         //modify xqx 20200422 TCP有粘包情况
         if("frameC3" == mFrameObj->getFrameName())
         {
@@ -222,7 +236,7 @@ void decoding::run()
             //step2：业务处理
 
             Pf::PfIcdWorkBench::byteArray readMsg;
-            std::copy((unsigned char*)mCurMsg.data(), (unsigned char*)mCurMsg.data() + mCurMsg.size(), std::back_inserter(readMsg));           
+            std::copy((unsigned char*)mCurMsg.data(), (unsigned char*)mCurMsg.data() + mCurMsg.size(), std::back_inserter(readMsg));
 
             auto businessObj = businessAdapter::getInstance()->getBusiness(mCurPtrl);
             if(businessObj)

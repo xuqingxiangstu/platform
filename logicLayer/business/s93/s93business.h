@@ -20,6 +20,8 @@ public:
     void setDevUuid(const std::string &uuid) override {mDevUuid = uuid;}
 private:
     void toUi(const std::string &msg, bool state = true);
+
+    std::string getVirtualCoding(unsigned char table);
 private:
     Pf::PfAdapter::Adapter *mBusObj;
     Pf::PfAdapter::Adapter *mUiBus;
@@ -28,6 +30,7 @@ private:
     std::string mRecordUuid;
     std::string mDevUuid;
     int mDstPort;
+    const std::string mViratulTableNum = "80000002";///< 虚拟表号（与数据库一致）
 };
 
 #endif // S93BUSINESS_H

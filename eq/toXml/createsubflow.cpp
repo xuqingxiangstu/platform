@@ -40,10 +40,10 @@ TiXmlElement *createEquivalent::element(nodeProperty *node)
     }
 
     //帧类型
-    Json::Value frameTypeJs;    
+    Json::Value frameTypeJs;
     node->getProperty(PROPERTY_FRAME, frameTypeJs);
     if(!frameTypeJs.isNull())
-    {        
+    {
         eqEle->LinkEndChild(createTextElement(EQ_PROTOCOL_ELEMENT, frameTypeJs.asString()));
     }
 #if 0
@@ -134,7 +134,8 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
     TiXmlElement *XmlEle = new TiXmlElement(SUB_FLOW_ELEMENT);
 
     //存储Json subJson
-    //TiXmlElement *jsonEle = new TiXmlElement(JSON_ELEMENT);
+
+
     XmlEle->LinkEndChild(createTextElement(JSON_ELEMENT, node->getSaveJson().toStyledString()));
 
     if(subNode.size() > 0)
@@ -202,6 +203,25 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
             startCondiEle->LinkEndChild(createTextElement(TABLE_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_TABLE_NUM].asString()));
             startCondiEle->LinkEndChild(createTextElement(CODING_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_CODING_NUM].asString()));
 
+            TiXmlElement *valueEle = new TiXmlElement(PROPERTY_CONDITION_VALUE_VALUE);
+
+            if(startCondJs[PROPERTY_CONDITION_VALUE_VALUE].isDouble())
+            {
+                valueEle->LinkEndChild(createTextElement(VALUE_TYPE_ELEMENT, "double"));
+            }
+            else if(startCondJs[PROPERTY_CONDITION_VALUE_VALUE].isString())
+            {
+                valueEle->LinkEndChild(createTextElement(VALUE_TYPE_ELEMENT, "string"));
+            }
+            else
+            {
+                valueEle->LinkEndChild(createTextElement(VALUE_TYPE_ELEMENT, "int"));
+            }
+
+            valueEle->LinkEndChild(createTextElement(VALUE_VALUE_CONTEXT_ELEMENT, startCondJs[PROPERTY_CONDITION_VALUE_VALUE].asString()));
+
+            startCondiEle->LinkEndChild(valueEle);
+
             XmlEle->LinkEndChild(startCondiEle);
         }
     }
@@ -231,6 +251,25 @@ TiXmlElement *createSubFlow::element(nodeProperty *headNode, nodeProperty *node,
 
             stopCondiEle->LinkEndChild(createTextElement(TABLE_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_TABLE_NUM].asString()));
             stopCondiEle->LinkEndChild(createTextElement(CODING_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_CODING_NUM].asString()));
+
+            TiXmlElement *valueEle = new TiXmlElement(PROPERTY_CONDITION_VALUE_VALUE);
+
+            if(startCondJs[PROPERTY_CONDITION_VALUE_VALUE].isDouble())
+            {
+                valueEle->LinkEndChild(createTextElement(VALUE_TYPE_ELEMENT, "double"));
+            }
+            else if(startCondJs[PROPERTY_CONDITION_VALUE_VALUE].isString())
+            {
+                valueEle->LinkEndChild(createTextElement(VALUE_TYPE_ELEMENT, "string"));
+            }
+            else
+            {
+                valueEle->LinkEndChild(createTextElement(VALUE_TYPE_ELEMENT, "int"));
+            }
+
+            valueEle->LinkEndChild(createTextElement(VALUE_VALUE_CONTEXT_ELEMENT, stopCondJs[PROPERTY_CONDITION_VALUE_VALUE].asString()));
+
+            stopCondiEle->LinkEndChild(valueEle);
 
             XmlEle->LinkEndChild(stopCondiEle);
         }
@@ -475,15 +514,34 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
             frameEle->LinkEndChild(createTextElement(EQ_SRC_DST_NODE_CODE_ELEMENT, dstNodeCode.asString()));
         }
 
-        //弹编号
-        Json::Value dNumJs;
-        node->getProperty(PROPERTY_OTHER_D_NUM, dNumJs);
-        if(!dNumJs.isNull())
+        //modify xqx 2020-5-19 11:13:12  车辆类型 车辆编号合成为弹编号
+
+        Json::Value clTypeJs, clNumJs;
+        node->getProperty(PROPERTY_OTHER_CL_TYPE, clTypeJs);
+        node->getProperty(PROPERTY_OTHER_CL_NUM, clNumJs);
+        if(!clTypeJs.isNull() && !clNumJs.isNull())
         {
-            frameEle->LinkEndChild(createTextElement(EQ_D_NUM_ELEMENT, dNumJs.asString()));
+            std::string tmp = clTypeJs.asString();
+            tmp = clNumJs.asString();
+            unsigned char type = (unsigned char)clTypeJs.asInt();
+            unsigned char num = (unsigned char)clNumJs.asInt();
+
+            int dNum = type + (num << 8);
+
+            frameEle->LinkEndChild(createTextElement(EQ_D_NUM_ELEMENT, std::to_string(dNum)));
+        }
+
+        //end
+
+        //数据
+        Json::Value dataJs;
+        node->getProperty(PROPERTY_OTHER_DATA, dataJs);
+        if(!dataJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_DATA_ELEMENT, dataJs.asString()));
         }
     }
-    else if(PROPERTY_FRAME_FE == type)
+    else if( (PROPERTY_FRAME_FE == type) || (PROPERTY_FRAME_JG == type) || (PROPERTY_FRAME_CZXK == type))
     {
         //源节点
         Json::Value srcTypeJs;
@@ -528,20 +586,82 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
     }
     else if(PROPERTY_FRAME_1553B == type)
     {
-        //RT地址
-        Json::Value rtJs;
-        node->getProperty(PROPERTY_1553B_RT_GROUP_RT_ADDR, rtJs);
-        if(!rtJs.isNull())
+        //总线
+        Json::Value busJs;
+        node->getProperty(PROPERTY_1553B_BUS, busJs);
+        if(!busJs.isNull())
         {
-            frameEle->LinkEndChild(createTextElement(RT_ELEMENT, rtJs.asString()));
+            frameEle->LinkEndChild(createTextElement(BUS_ELEMENT, busJs.asString()));
         }
 
-        //SA地址
-        Json::Value saJs;
-        node->getProperty(PROPERTY_1553B_RT_GROUP_SA_ADDR, saJs);
-        if(!saJs.isNull())
+        //模式
+        Json::Value modelJs;
+        node->getProperty(PROPERTY_1553B_MODE, modelJs);
+        if(!modelJs.isNull())
         {
-            frameEle->LinkEndChild(createTextElement(SA_ELEMENT, saJs.asString()));
+            frameEle->LinkEndChild(createTextElement(MODEL_ELEMENT, modelJs.asString()));
+
+            std::string model = modelJs.asString();
+            if(PROPERTY_1553B_MODE_BC_RT == model)
+            {
+                //RT地址
+                Json::Value rtJs;
+                node->getProperty(PROPERTY_1553B_BC_RT_RT_ADDR, rtJs);
+                if(!rtJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(RT_ELEMENT, rtJs.asString()));
+                }
+
+                //SA地址
+                Json::Value saJs;
+                node->getProperty(PROPERTY_1553B_BC_RT_SA_ADDR, saJs);
+                if(!saJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(SA_ELEMENT, saJs.asString()));
+                }
+            }
+            else if(PROPERTY_1553B_MODE_RT_RT == model)
+            {
+                //sRT地址
+                Json::Value sRtJs;
+                node->getProperty(PROPERTY_1553B_RT_RT_S_RT_ADDR, sRtJs);
+                if(!sRtJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(S_RT_ELEMENT, sRtJs.asString()));
+                }
+
+                //sSA地址
+                Json::Value sSaJs;
+                node->getProperty(PROPERTY_1553B_RT_RT_S_SA_ADDR, sSaJs);
+                if(!sSaJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(S_SA_ELEMENT, sSaJs.asString()));
+                }
+
+                //rRT地址
+                Json::Value rRtJs;
+                node->getProperty(PROPERTY_1553B_RT_RT_R_RT_ADDR, rRtJs);
+                if(!rRtJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(R_RT_ELEMENT, rRtJs.asString()));
+                }
+
+                //rSA地址
+                Json::Value rSaJs;
+                node->getProperty(PROPERTY_1553B_RT_RT_R_SA_ADDR, rSaJs);
+                if(!rSaJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(R_SA_ELEMENT, rSaJs.asString()));
+                }
+
+                //长度
+                Json::Value sizeJs;
+                node->getProperty(PROPERTY_1553B_RT_RT_DATA_SIZE, sizeJs);
+                if(!sizeJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(DATA_SIZE_ELEMENT, sizeJs.asString()));
+                }
+            }
         }
     }
     else if(PROPERTY_FRAME_MIDDLE == type)
@@ -563,6 +683,21 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
             frameEle->LinkEndChild(createTextElement(EQ_SRC_SYS_CODE_ELEMENT, sysCodeJs.asString()));
         }
 
+        //帧类型
+        Json::Value frameTypeJs;
+        headNode->getProperty(PROPERTY_FRAME, frameTypeJs);
+        if(!frameTypeJs.isNull())
+        {
+            if(PROPERTY_FRAME_MIDDLE == frameTypeJs.asString())
+            {
+                Json::Value askJs;
+                headNode->getProperty(PROPERTY_ASK_FLAG, askJs);
+                if(!askJs.isNull())
+                {
+                    frameEle->LinkEndChild(createTextElement(EQ_ASK_FLAG_ELEMENT, askJs.asString()));
+                }
+            }
+        }
 
         //节点编码
         Json::Value nodeCodeJs;
@@ -669,6 +804,14 @@ TiXmlElement *createSubFlow::createHeadElement(nodeProperty *headNode, nodePrope
         {
             frameEle->LinkEndChild(createTextElement(EQ_RESERVE_ELEMENT, ""));
         }
+
+        //数据
+        Json::Value dataJs;
+        node->getProperty(PROPERTY_OTHER_DATA, dataJs);
+        if(!dataJs.isNull())
+        {
+            frameEle->LinkEndChild(createTextElement(EQ_DATA_ELEMENT, dataJs.asString()));
+        }        
     }
 
     headEle->LinkEndChild(frameEle);

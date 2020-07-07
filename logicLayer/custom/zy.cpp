@@ -3,7 +3,7 @@
 #include "../src/PfCommon/tools/ut_error.h"
 #include "../../src/PfCommon/jsoncpp/json.h"
 #include "../../src/PfCommon/crc/crc.h"
-
+#include "../../src/PfAdapter/tcpAdapter/tcpAdapter.h"
 #include "../business/xk/xkbusiness.h"
 
 #include <exception>
@@ -13,7 +13,110 @@
 #include <QDebug>
 #include <chrono>
 
+#include "../decoding/partpackage.h"
+
 using namespace  Pf::PfIcdWorkBench;
+
+/****************************************************/
+
+zyPackages::zyPackages(QObject *parent):
+    QThread(parent),
+    mIsStop(false)
+{
+    mHead = QByteArray::fromHex("EB 90");
+
+    mAllMsg.clear();
+
+    start();
+}
+
+zyPackages::~zyPackages()
+{
+    if(isRunning())
+    {
+        mIsStop = true;
+        mMsgCondition.wakeOne();
+        quit();
+
+        wait();
+
+        mIsStop = false;
+    }
+}
+
+void zyPackages::clearMsg()
+{
+    mMsgMutex.lock();
+
+    mDecoderQueue.clear();
+
+    mMsgMutex.unlock();
+}
+
+void zyPackages::encodeMsg(QByteArray msg)
+{
+    mMsgMutex.lock();
+
+    mDecoderQueue.enqueue(msg);
+
+    mMsgMutex.unlock();
+
+    mMsgCondition.wakeOne();
+}
+
+void zyPackages::run()
+{   
+    while(!mIsStop)
+    {
+        mMsgMutex.lock();
+
+        if(mDecoderQueue.empty())
+            mMsgCondition.wait(&mMsgMutex);
+
+        if(!mDecoderQueue.isEmpty())
+            mAllMsg += mDecoderQueue.dequeue();
+
+        mMsgMutex.unlock();
+
+        if(mIsStop)
+            break;
+
+        //找到有效帧
+
+        while(1)
+        {
+            //step1 find eb 90
+
+            int startPos = mAllMsg.indexOf(mHead);
+
+            if(-1 == startPos)
+                break;
+
+            //step2 find len 头 + 长度 = 4
+            if( !((mAllMsg.size() - startPos) > 4) )
+                break;
+
+            //step3 获取长度
+            unsigned short len = (unsigned char)mAllMsg.at(startPos + 2) + ((unsigned char)mAllMsg.at(startPos + 3) << 8);
+
+            if( (mAllMsg.size() - startPos) >= len)
+            {
+                //有效数据
+
+                QByteArray msg = mAllMsg.mid(startPos, len + 4);
+
+                emit vaildMsg(msg);
+
+                //剩余数据
+                mAllMsg = mAllMsg.right(mAllMsg.size() - startPos - len - 4);
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+}
 
 /****************************************************/
 
@@ -98,9 +201,19 @@ bool zyReadFile::getPackData(int index, std::string &msg, int &msgSize)
 
 /****************************************************/
 
-zy::zy(const std::string &uuid, const std::string &node, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> icdObj, Pf::PfAdapter::Adapter *busObj, Pf::PfAdapter::Adapter *uiObj)
+zy::zy(QObject *parent):
+    QObject(parent)
+{
+    mZyPackages = std::make_shared<zyPackages>();
+    connect(this, &zy::zyMsg, mZyPackages.get(), &zyPackages::encodeMsg);
+    connect(mZyPackages.get(), &zyPackages::vaildMsg, this, &zy::vaildZyMsg, Qt::DirectConnection);
+}
+
+void zy::exe(const std::string &uuid, const std::string &node, std::shared_ptr<Pf::PfIcdWorkBench::frameObj> icdObj, Pf::PfAdapter::Adapter *busObj, Pf::PfAdapter::Adapter *uiObj)
 {
     std::ostringstream errInfo;
+
+    QObject::connect(dynamic_cast<Pf::PfAdapter::tcpAdapter*>(busObj), &Pf::PfAdapter::tcpAdapter::rcvMsg, this, &zy::zyMsg);    
 
     mRecordUuid = uuid;
     mFrameObj = icdObj;
@@ -130,9 +243,8 @@ zy::zy(const std::string &uuid, const std::string &node, std::shared_ptr<Pf::PfI
     else if(Down_Up_Zy == transType)
     {
         down_Up(index);
-    }
+    }       
 }
-
 
 void zy::up(Zy_Index index)
 {
@@ -201,10 +313,12 @@ void zy::up(Zy_Index index)
                 {
                     heart();
                 }
-            }        
+            }
+
+            beginTime = std::chrono::high_resolution_clock::now();
         }
 
-        QThread::msleep(1);
+        QThread::msleep(0);
 
         auto endTime = std::chrono::high_resolution_clock::now();
         auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
@@ -277,175 +391,184 @@ bool zy::package(QByteArray &srcMsg, QByteArray &curMsg)
     return true;
 }
 
-void zy::down(Zy_Index index, DownType type)
+void zy::onMsg(QByteArray msg)
+{
+    qDebug() << msg;
+}
+
+void zy::vaildZyMsg(QByteArray msg)
 {
     std::ostringstream showInfo;
-    int fileSize = 0;
-    std::string md5 = "";
-    std::string fileName = "";    
     std::ostringstream errInfo;
-    int rcvDataSize = 0;
 
-    QByteArray rcvFileContext;
+    try
+    {
+        Json::Value result;
+        mFrameObj->parse((unsigned char *)msg.data(), msg.size(), result);
+        if(!result.isNull())
+        {
+            int frameType = result["frame_type"].asInt();
 
-    int pckIndex = 1;
+            if(frameType >= ZY_STAT && frameType <= ZY_STOP)  //诸元处理
+            {
+                if(mSubFrameType[Sub_File_Info_Index] == result["sub_frame_type"].asInt())//文件信息
+                {
+                    if(!result["file_len"].isNull())
+                    {
+                        mDownFileSize = result["file_len"].asInt();
+                    }
 
-    const int rcvMaxSize = 2048;
-    char rcvBuf[rcvMaxSize] = {0};
+                    if(!result["MD5"].isNull())
+                    {
+                        mDownMd5 = result["MD5"].asString();
+                    }
+
+                    if(!result["file_name"].isNull())
+                    {
+                        mDownFileName = "HC";
+                        mDownFileName += result["file_name"].asString();
+                    }
+
+                    showInfo.str("");
+                    showInfo << "文件信息 [" << mDownFileName << "] size(" << std::dec << mDownFileSize << ")";
+                    toUi(showInfo.str());
+
+                    mDownPckIndex = 1;
+                    mDownRcvSize = 0;
+                    mDownFileContext.clear();
+
+                    //读取文件信息之后请求帧
+                    showInfo.str("");
+                    showInfo << "请求第 （ " << std::dec << mDownPckIndex << "）包";
+                    toUi(showInfo.str());
+
+                    //文件数据请求指令
+                    requestFileDataCmd(mZyFrameType[mDownZyIndex], mDownPckIndex++);
+                }
+                else if(mSubFrameType[Sub_File_Data_Index] == result["sub_frame_type"].asInt())//文件数据帧
+                {                    
+                    int packNum = 0;
+                    int msgSize = 0;
+                    std::string msg;
+                    if(!result["file_num"].isNull())
+                    {
+                        packNum = result["file_num"].asInt();
+                    }
+
+                    if(!result["data_size"].isNull())
+                    {
+                        msgSize = result["data_size"].asInt();
+                    }
+
+                    if(!result["data"].isNull())
+                    {
+                        msg = result["data"].asString();
+                    }
+
+                    mDownFileContext.append(msg.c_str(), msgSize);
+
+                    showInfo.str("");
+                    showInfo << "接收第 （ " << std::dec << packNum << "）包, size(" << msgSize << ")";
+                    //toUi(showInfo.str());
+
+                    mDownRcvSize += msgSize;
+
+                    if(mDownRcvSize >= mDownFileSize)
+                    {
+                        std::string downFile = mZyFilePath + mDownFileName;
+
+                        zyWriteFile::save(QString::fromStdString(downFile), mDownFileContext);
+
+                        //文件校验
+                        std::string calMd5 = Pf::PfCommon::Crc::calMd5((const unsigned char*)mDownFileContext.data(), mDownFileContext.size());
+
+                        if(calMd5 != mDownMd5)
+                        {
+                            errInfo.str("");
+                            errInfo << "md5 check error src(" << mDownMd5 << "), cal(" << calMd5 << ")";
+                            toUi(errInfo.str());
+                        }
+
+                        //文件传输结束
+
+                        showInfo.str("");
+                        showInfo << "文件传输结束";
+
+                        toUi(showInfo.str());
+
+                        requestFileDataOverCmd(mZyFrameType[mDownZyIndex]);
+                        mDownRcvSize = 0;
+                        mDownIsOver = true;
+                        mDownFileContext.clear();
+                    }
+                    else
+                    {
+                        if(Down_Request == mDownZyType)
+                        {
+                            showInfo.str("");
+                            showInfo << "请求第 （ " << std::dec << mDownPckIndex << "）包";
+                            toUi(showInfo.str());
+
+                            //文件数据请求指令
+                            requestFileDataCmd(mZyFrameType[mDownZyIndex], mDownPckIndex++);
+                        }
+                    }
+                }
+            }
+            else if(0x61 == frameType)//发射进程
+            {
+                testFlow(result);
+            }
+            else if(0xAF == frameType)//心跳
+            {
+                heart();
+            }
+        }
+
+        mDownStartTime = std::chrono::high_resolution_clock::now();
+    }
+    catch(std::runtime_error err)
+    {
+        toUi(err.what(), false);
+    }
+}
+
+
+void zy::down(Zy_Index index, DownType type)
+{
+    std::ostringstream showInfo;   
+
     int rcvSize = 0;
-    std::string rcvIp;
-    unsigned short rcvPort;
+
+    //情况队列消息
+    mZyPackages->clearMsg();
+
+    //modify xqx 2020-6-22 19:42:10 切换接收方法，由于TCP下载时数据量太大，采用触发方式
+    dynamic_cast<Pf::PfAdapter::tcpAdapter*>(mBusAdapter)->setTrigger(true);
+    //end
+
+    mDownZyIndex = index;
+    mDownZyType = type;
 
     showInfo.str("");
     showInfo << "请求下发文件 ";
     toUi(showInfo.str());
 
     //下发文件请求
-    downFileCmd(mZyFrameType[index]);
-
-    rcvDataSize = 0;
-
-    QByteArray curMsg;
+    downFileCmd(mZyFrameType[mDownZyIndex]);
 
     int timeOut = 5000; //5s超时退出
-    auto beginTime = std::chrono::high_resolution_clock::now();
-    while(1)
+
+    mDownStartTime = std::chrono::high_resolution_clock::now();
+
+    mDownIsOver = false;
+
+    while(!mDownIsOver)
     {
-        if(mBusAdapter->receiveMsg(rcvBuf, rcvSize, rcvMaxSize, 0))
-        {            
-            //QByteArray srcMsg(rcvBuf, rcvSize);
-            //qDebug() << srcMsg.toHex();
-
-            //TCP出现粘包
-            //while(package(srcMsg, curMsg))
-            {
-                Json::Value result;
-                mFrameObj->parse((unsigned char *)rcvBuf, rcvSize, result);
-                if(!result.isNull())
-                {
-                    int frameType = result["frame_type"].asInt();
-
-                    if(frameType >= ZY_STAT && frameType <= ZY_STOP)  //诸元处理
-                    {
-                        if(mSubFrameType[Sub_File_Info_Index] == result["sub_frame_type"].asInt())//文件信息
-                        {
-                            if(!result["file_len"].isNull())
-                            {
-                                fileSize = result["file_len"].asInt();
-                            }
-
-                            if(!result["MD5"].isNull())
-                            {
-                                md5 = result["MD5"].asString();
-                            }
-
-                            if(!result["file_name"].isNull())
-                            {
-                                fileName = "HC";
-                                fileName += result["file_name"].asString();
-                            }
-
-                            showInfo.str("");
-                            showInfo << "文件信息 [" << fileName << "] size(" << std::dec << fileSize << ")";
-                            toUi(showInfo.str());
-
-                            pckIndex = 1;
-                            rcvDataSize = 0;
-                            rcvFileContext.clear();
-
-                            //读取文件信息之后请求帧
-                            showInfo.str("");
-                            showInfo << "请求第 （ " << std::dec << pckIndex << "）包";
-                            toUi(showInfo.str());
-
-                            //文件数据请求指令
-                            requestFileDataCmd(mZyFrameType[index], pckIndex++);
-                        }
-                        else if(mSubFrameType[Sub_File_Data_Index] == result["sub_frame_type"].asInt())//文件数据帧
-                        {
-                            int packNum = 0;
-                            int msgSize = 0;
-                            std::string msg;
-                            if(!result["file_num"].isNull())
-                            {
-                                packNum = result["file_num"].asInt();
-                            }
-
-                            if(!result["data_size"].isNull())
-                            {
-                                msgSize = result["data_size"].asInt();
-                            }
-
-                            if(!result["data"].isNull())
-                            {
-                                msg = result["data"].asString();
-                            }
-
-                            rcvFileContext.append(msg.c_str(), msgSize);
-
-                            showInfo.str("");
-                            showInfo << "接收第 （ " << std::dec << packNum << "）包, size(" << msgSize << ")";
-                            toUi(showInfo.str());
-
-                            rcvDataSize += msgSize;
-
-                            if(rcvDataSize >= fileSize)
-                            {
-                                std::string downFile = mZyFilePath + fileName;
-
-                                zyWriteFile::save(QString::fromStdString(downFile), rcvFileContext);
-
-                                //文件校验
-                                std::string calMd5 = Pf::PfCommon::Crc::calMd5((const unsigned char*)rcvFileContext.data(), rcvFileContext.size());
-
-                                if(calMd5 != md5)
-                                {
-                                    errInfo.str("");
-                                    errInfo << "md5 check error src(" << md5 << "), cal(" << calMd5 << ")";
-                                    toUi(errInfo.str());
-                                }
-
-                                //文件传输结束
-
-                                showInfo.str("");
-                                showInfo << "文件传输结束";
-
-                                toUi(showInfo.str());
-
-                                requestFileDataOverCmd(mZyFrameType[index]);
-
-                                break;
-                            }
-                            else
-                            {
-                                if(Down_Request == type)
-                                {
-                                    showInfo.str("");
-                                    showInfo << "请求第 （ " << std::dec << pckIndex << "）包";
-                                    toUi(showInfo.str());
-
-                                    //文件数据请求指令
-                                    requestFileDataCmd(mZyFrameType[index], pckIndex++);
-                                }
-                            }
-                        }
-                    }
-                    else if(0x61 == frameType)//发射进程
-                    {
-                        testFlow(result);
-                    }
-                    else if(0xAF == frameType)//心跳
-                    {
-                        heart();
-                    }
-                }
-            }
-        }
-
-        QThread::usleep(10);
+        QThread::usleep(0);
 
         auto endTime = std::chrono::high_resolution_clock::now();
-        auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - beginTime);
+        auto elapsedTime= std::chrono::duration_cast<std::chrono::milliseconds>(endTime - mDownStartTime);
 
         if(elapsedTime.count() >= timeOut)   //超时退出
         {
@@ -453,6 +576,10 @@ void zy::down(Zy_Index index, DownType type)
             break;
         }
     }
+
+    //modify xqx 2020-6-22 19:42:10 切换接收方法，由于TCP下载时数据量太大，采用触发方式
+    dynamic_cast<Pf::PfAdapter::tcpAdapter*>(mBusAdapter)->setTrigger(false);
+    //end
 }
 
 void zy::down_Up(Zy_Index index)

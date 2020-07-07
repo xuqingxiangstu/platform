@@ -10,9 +10,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 win32:CONFIG(release, debug|release): TARGET =  ../../eq
 else:win32:CONFIG(debug, debug|release): TARGET =  ../../eq
-else:unix:!macx: TARGET =  ../eq
+else:unix:!macx: TARGET =  ../eqTool
 
-CONFIG += C++11
+CONFIG += c++11
 
 TEMPLATE = app
 
@@ -25,7 +25,10 @@ SOURCES += main.cpp\
     recordnavigation.cpp \
     newprojectdialog.cpp \
     progresswidget.cpp \
-    cmddecode.cpp
+    cmddecode.cpp \
+    versionform.cpp \
+    copypaste.cpp \
+    triggercondition.cpp
 
 HEADERS  += mainwindow.h \
     templatetree.h \
@@ -34,7 +37,10 @@ HEADERS  += mainwindow.h \
     recordnavigation.h \
     newprojectdialog.h \
     progresswidget.h \
-    cmddecode.h
+    cmddecode.h \
+    versionform.h \
+    copypaste.h \
+    triggercondition.h
 
 FORMS    += mainwindow.ui \
     templatetree.ui \
@@ -42,7 +48,8 @@ FORMS    += mainwindow.ui \
     newdialog.ui \
     recordnavigation.ui \
     newprojectdialog.ui \
-    progresswidget.ui
+    progresswidget.ui \
+    versionform.ui
 
 LIBS += -L$$OUT_PWD/../ -ljsoncpp
 
@@ -77,8 +84,3 @@ INCLUDEPATH += $$PWD/QtPropertyBrowser/include
 DEPENDPATH += $$PWD/QtPropertyBrowser/include
 
 LIBS += -L$$OUT_PWD/../../../ -lTinyXml
-
-LIBS += -L$$OUT_PWD/../adapterLib/ -lZmqRcvAdapter
-
-LIBS += -L$$OUT_PWD/../adapterLib/ -lZmqSendAdapter
-

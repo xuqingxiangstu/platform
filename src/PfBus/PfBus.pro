@@ -1,8 +1,6 @@
 TEMPLATE = subdirs
 
-SUBDIRS += \
-    #netWork \
-    serialPort \
+SUBDIRS += \    
     zeroMq \
     udp \
     tcpClient \

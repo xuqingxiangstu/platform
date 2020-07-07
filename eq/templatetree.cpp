@@ -5,7 +5,7 @@
 #include "../src/PfCommon/jsoncpp/json.h"
 #include "../src/PfSql/paramsTable/paramstable.h"
 #include "../src/PfSql/paramsTable/systemtable.h"
-#include "../src/PfSql/paramsTable/sysInterfacetable.h"
+#include "../src/PfSql/paramsTable/sysinterfacetable.h"
 
 #include <QMessageBox>
 #include "dragTree/dragrole.h"
@@ -21,8 +21,7 @@ templateTree::templateTree(QWidget *parent) :
     ui->paramTreeWidget->header()->setStretchLastSection(true);
     ui->paramTreeWidget->setDragDropMode(QAbstractItemView::DragOnly);
 
-    initDestDevInitValue();
-    initConditionValue();
+    initDestDevInitValue();    
 
     connect(ui->serchLineEdit, &QLineEdit::textChanged, [=](const QString &txt){
 
@@ -46,15 +45,21 @@ templateTree::~templateTree()
 
 void templateTree::showAllItem()
 {
-    QTreeWidget *CurTree = ui->paramTreeWidget;
-
-    //遍历查找
-    QTreeWidgetItemIterator Itor(CurTree);
-
+    //重新展开与关闭
+    QTreeWidgetItemIterator Itor(ui->paramTreeWidget);
     while (*Itor)
     {
-        (*Itor)->setHidden(false);
-        (*Itor)->setExpanded(true);
+        std::shared_ptr<dragRole> role = (*Itor)->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+        if(dragRole::Node_Param_Group == role->getNodeType())
+        {
+            ui->paramTreeWidget->collapseItem(*Itor);
+        }
+        else
+        {
+            ui->paramTreeWidget->expandItem(*Itor);
+        }
+
         ++Itor;
     }
 }
@@ -141,7 +146,7 @@ QStringList templateTree::getValueMeans(QString value)
 
 void templateTree::updateParamType(dragRole *role)
 {
-    std::string tableNum = role->getProperty()->tableNum();
+    QString tableNum = QString::fromStdString(role->getProperty()->tableNum());
     int codingNum = role->getProperty()->codingNum();
 
     Json::Value infoJs;
@@ -223,33 +228,6 @@ void templateTree::updateParamType(dragRole *role)
     }
 }
 
-void templateTree::initConditionValue()
-{
-    Json::Value cmdJs;
-
-    if(paramsTable::getInstance()->getCmdValues(cmdJs))
-    {
-        Json::Value noJs;
-        noJs[PROPERTY_CONDITION_VALUE_NAME] = PROPERTY_CONDITION_NO;
-        noJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = -1;
-        noJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = -1;
-
-        mConditionCurValue = noJs;
-
-        mConditionInitValue.append(noJs);
-
-        for(int index = 0; index < cmdJs.size(); index++)
-        {
-            Json::Value tmpJs;
-
-            tmpJs[PROPERTY_CONDITION_VALUE_NAME] = cmdJs[index][PARAM_TABLE_PARAM_NAME];
-            tmpJs[PROPERTY_CONDITION_VALUE_TABLE_NUM] = cmdJs[index][PARAM_TABLE_TABLE_NUM];
-            tmpJs[PROPERTY_CONDITION_VALUE_CODING_NUM] = cmdJs[index][PARAM_TABLE_CODING_NUM];
-
-            mConditionInitValue.append(tmpJs);
-        }
-    }
-}
 
 void templateTree::initDestDevInitValue()
 {
@@ -282,27 +260,9 @@ void templateTree::initDestDevInitValue()
     } 
 }
 
-void templateTree::updateConditionInit(dragRole *role)
-{
-    if(!mConditionInitValue.isNull())
-    {
-        role->getProperty()->setInitValue(PROPERTY_START_CONDITION, mConditionInitValue);
-        role->getProperty()->setInitValue(PROPERTY_STOP_CONDITION, mConditionInitValue);
-    }
-
-    if(!mConditionCurValue.isNull())
-    {
-        if(role->getProperty()->curValue(PROPERTY_START_CONDITION).isNull())
-            role->getProperty()->setCurValue(PROPERTY_START_CONDITION, mConditionCurValue);
-
-        if(role->getProperty()->curValue(PROPERTY_STOP_CONDITION).isNull())
-            role->getProperty()->setCurValue(PROPERTY_STOP_CONDITION, mConditionCurValue);
-    }
-}
-
 
 void templateTree::buildTree()
-{
+{   
     Json::Value systemN;
     if(paramsTable::getInstance()->getValueFrameParamSys(systemN)){
         QMessageBox::about(NULL,"","数据库连接错误！");
@@ -344,11 +304,11 @@ void templateTree::buildTree()
             {
                 QTreeWidgetItem *itemSubSub = new QTreeWidgetItem(itemSub);
                 bool ifHaveCheckbox1 = false;
-                if(groupN[h][PARAM_TABLE_CMD_TYPE].asString() == CMD_TYPE_CMD){
+                if( (groupN[h][PARAM_TABLE_CMD_TYPE].asString() == CMD_TYPE_STATE) || (groupN[h][PARAM_TABLE_CMD_TYPE].asString() == CMD_TYPE_CMD)){
                     ifHaveCheckbox1 = true;
                 }else{
                     ifHaveCheckbox1 = false;
-                }
+                }                
 
                 //关联数据
                 QVariant variant;                
@@ -356,22 +316,28 @@ void templateTree::buildTree()
 
                 if(ifHaveCheckbox1){
                     dragData->setNodeType(dragRole::Node_Cmd_Group);
+
+                    dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Cmd])));
+
                     itemSubSub->setText(Table_Or_Coding_Index, QString::fromStdString(groupN[h][PARAM_TABLE_TABLE_NUM].asString()));
                     itemSubSub->setText(Name_Index, QString::fromStdString(groupN[h][PARAM_TABLE_GROUP_NAME].asString()));
+
                     //itemSubSub->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
                 }else{
                     dragData->setNodeType(dragRole::Node_Param_Group);
                     dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Param_Group])));                    
 
                     dragData->getProperty()->setProperty(PROPERTY_BASE_INFO_WORD, groupN[h][PARAM_TABLE_INFO_WORD_TYPE]);
-                    updateConditionInit(dragData.get());
+
+                    dragData->getProperty()->setProperty(PROPERTY_BASE_TABLE_NUM, groupN[h][PARAM_TABLE_TABLE_NUM]);
+                    dragData->getProperty()->setProperty(PROPERTY_BASE_CODING_NUM, groupN[h][PARAM_TABLE_CODING_NUM]);
+
+                    dragData->setTableAndCoding(groupN[h][PARAM_TABLE_TABLE_NUM].asString(), 0);
+
                     updateDestDevInitValue(dragData.get());
 
                     itemSubSub->setText(Table_Or_Coding_Index, QString::fromStdString(groupN[h][PARAM_TABLE_TABLE_NUM].asString()));
-                    itemSubSub->setText(Name_Index, QString::fromStdString(groupN[h][PARAM_TABLE_GROUP_NAME].asString()));
-                    //itemSubSub->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-                    //itemSubSub->setCheckState (0, Qt::Unchecked);//复选框
-
+                    itemSubSub->setText(Name_Index, QString::fromStdString(groupN[h][PARAM_TABLE_GROUP_NAME].asString()));                    
 
                 }
                 variant.setValue(dragData);
@@ -387,7 +353,7 @@ void templateTree::buildTree()
                     QTreeWidgetItem *itemSubSubSub = new QTreeWidgetItem(itemSubSub);
 
                     bool ifHaveCheckbox2 = false;
-                    if(paramN[g][PARAM_TABLE_CMD_TYPE].asString() == CMD_TYPE_CMD){
+                    if( (groupN[h][PARAM_TABLE_CMD_TYPE].asString() == CMD_TYPE_STATE) || (paramN[g][PARAM_TABLE_CMD_TYPE].asString() == CMD_TYPE_CMD)){
                         ifHaveCheckbox2 = true;
                     }else{
                         ifHaveCheckbox2 = false;
@@ -395,7 +361,8 @@ void templateTree::buildTree()
 
                     //关联数据
                     QVariant variant;                    
-                    std::shared_ptr<dragRole> dragData = std::make_shared<dragRole>();                   
+                    std::shared_ptr<dragRole> dragData = std::make_shared<dragRole>();
+
 
                     if(!ifHaveCheckbox2){
                         dragData->setNodeType(dragRole::Node_Param);
@@ -405,6 +372,9 @@ void templateTree::buildTree()
 
                         dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asString(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());
 
+                        dragData->getProperty()->setProperty(PROPERTY_BASE_TABLE_NUM, paramN[g][PARAM_TABLE_TABLE_NUM]);
+                        dragData->getProperty()->setProperty(PROPERTY_BASE_CODING_NUM, paramN[g][PARAM_TABLE_CODING_NUM]);
+
                         updateParamType(dragData.get());
                     }else{
                         dragData->setNodeType(dragRole::Node_Cmd);
@@ -412,7 +382,10 @@ void templateTree::buildTree()
 
                         dragData->getProperty()->setProperty(PROPERTY_BASE_INFO_WORD, paramN[g][PARAM_TABLE_INFO_WORD_TYPE]);
                         dragData->setTableAndCoding(paramN[g][PARAM_TABLE_TABLE_NUM].asString(), paramN[g][PARAM_TABLE_CODING_NUM].asInt());
-                        updateConditionInit(dragData.get());
+
+                        dragData->getProperty()->setProperty(PROPERTY_BASE_TABLE_NUM, paramN[g][PARAM_TABLE_TABLE_NUM]);
+                        dragData->getProperty()->setProperty(PROPERTY_BASE_CODING_NUM, paramN[g][PARAM_TABLE_CODING_NUM]);
+
                         updateDestDevInitValue(dragData.get());
 
                         itemSubSubSub->setText(Table_Or_Coding_Index, QString::fromStdString(paramN[g][PARAM_TABLE_CODING_NUM].asString()));

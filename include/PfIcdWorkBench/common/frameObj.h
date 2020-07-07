@@ -10,7 +10,7 @@
  */
 
 #include "../../PfCommon/TinyXml/tinyxml.h"
-
+#include "../../PfCommon/jsoncpp/json.h"
 #include "./type.h"
 
 #include <string>
@@ -74,9 +74,40 @@ namespace Pf
             /**
              * @brief simulation    协议仿真
              * @param outValue 仿真数据
-             * @param json json协议
+             * @param json json协议             
              */
             virtual void simulation(byteArray &outValue, const std::string &json){}
+
+
+            virtual void simulation(byteArray &outValue, const Json::Value &json){}
+            /**
+             * @brief simulation    协议仿真
+             * @param outValue 仿真数据
+             * @param json json协议
+             */
+            virtual void simulation(byteArray &outValue, const byteArray &inValue){}
+
+            /**
+             * @brief getAskMsg 获取应答帧
+             * @param outValue  应答数据
+             * @param json  协议
+             * @return
+             */
+            virtual bool getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json){return false;}
+
+            /**
+             * @brief getValidValue 获取有效值
+             * @param json  值
+             * @param infoType  信息字类型
+             * @return
+             */
+            virtual bool getValidValue(const Json::Value &result, Json::Value &value, int &infoType){return false;}
+
+            /**
+             * @brief resendMsg 重传消息，只改变重传次数
+             * @param outValue  数据
+             */
+            virtual void resendMsg(byteArray &outValue){}
 
             /**
              * @brief 协议解析，根据配置协议进行参数解析
@@ -93,7 +124,19 @@ namespace Pf
              * @param[in] inSize 数据长度
              * @return json帧
              */
-            virtual std::string parse(const unsigned char *inBuf, const unsigned int inSize){return "";}
+            virtual bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &value){return false;}
+
+            /**
+             * @brief setAttribute  设置属性
+             * @param attr  属性
+             */
+            virtual void setAttribute(const Json::Value &attr){}
+
+            /**
+             * @brief setUuid   设置UUID
+             * @param uuid
+             */
+            virtual void setUuid(const std::string &uuid){}
         };
 
         /** 类导出函数指针 **/

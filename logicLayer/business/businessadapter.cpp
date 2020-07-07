@@ -9,6 +9,7 @@
 #include "./c3/c3business.h"
 #include "./s93/s93business.h"
 #include "./m1553b/m1553bbusiness.h"
+#include "./jg/jgbusiness.h"
 
 std::shared_ptr<businessAdapter> businessAdapter::mInstance = nullptr;
 
@@ -24,6 +25,7 @@ businessAdapter::businessAdapter()
     mBusinessManagement[FRAME_CZXK] = std::make_shared<czxkBusiness>();
     mBusinessManagement[FRAME_C3] = std::make_shared<c3Business>();
     mBusinessManagement[FRAME_93] = std::make_shared<s93Business>();
+    mBusinessManagement[FRAME_JG] = std::make_shared<jgBusiness>();
 }
 
 

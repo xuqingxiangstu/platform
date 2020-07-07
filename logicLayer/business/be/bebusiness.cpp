@@ -26,24 +26,67 @@ void beBusiness::deal(const Pf::PfIcdWorkBench::byteArray &inData, Json::Value &
         mBusObj->sendMsg((const char*)&askMsg.at(0), askMsg.size());
     }
 
-    //更新参数
+    //更新信息字格式1、3参数
     Json::Value newJs;
-    if(mFrameObj->getValidValue(result, newJs))
+    int infoType = -1;
+    if(mFrameObj->getValidValue(result, newJs, infoType))
     {
-        for(int index = 0; index < newJs.size(); index++)
+        if(infoType != 1)
         {
-            int coding = 0, table = 0;
-            if(!newJs[index]["coding"].isNull())
+            for(int index = 0; index < newJs.size(); index++)
             {
-                coding = newJs[index]["coding"].asInt();
-            }
+                int coding = 0, table = 0;
+                Json::Value value = Json::Value();
+                if(!newJs[index]["coding"].isNull())
+                {
+                    coding = newJs[index]["coding"].asInt();
+                }
 
-            if(!newJs[index]["table"].isNull())
+                if(!newJs[index]["table"].isNull())
+                {
+                    table = newJs[index]["table"].asInt();
+                }
+
+                if(!newJs[index]["value"].isNull())
+                {
+                    value = newJs[index]["value"];
+                }
+
+    #ifndef QT_NO_DEBUG
+                qDebug() << "[BE]->" << mDevUuid.c_str() << "," << QString::number(table) << "," << QString::number(coding) << "," << value.asString().c_str();
+    #endif
+
+                mapKey vKey(mDevUuid.c_str(), std::to_string(table).c_str(), std::to_string(coding).c_str());
+
+                virtualParams::getInstance()->setValue(vKey, value);
+            }
+        }
+    }
+
+    //更新信息字格式2参数
+    if(1 == infoType)
+    {
+        if(!result["region"].isNull())
+        {
+            Json::Value regionValue = result["region"];
+
+            if(!regionValue["table_num"].isNull())
             {
-                table = newJs[index]["table"].asInt();
-            }
+                unsigned int table = regionValue["table_num"].asUInt();
 
-            virtualParams::getInstance()->setValue({mDevUuid, std::to_string(table), std::to_string(coding)}, mapValue());
+                Json::Value array = regionValue["data"];
+                for(int index = 0; index < array.size(); index++)
+                {
+                    int coding = array[index]["coding"].asInt();
+
+                    mapKey vKey(mDevUuid.c_str(), QString::number(table, 10), std::to_string(coding).c_str());
+
+                    virtualParams::getInstance()->setValue(vKey, array[index]["value"]);
+    #ifndef QT_NO_DEBUG
+                    qDebug() << "[BE]->" << mDevUuid.c_str() << + ":" << QString::number(table, 10) << "," << QString::number(coding) << "," << array[index]["value"].asString().c_str();
+    #endif
+                }
+            }
         }
     }
 }

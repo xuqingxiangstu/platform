@@ -7,7 +7,7 @@
 #include <tuple>
 #include <set>
 
-#include "../../src/PfCommon/tools/ut_error.h"
+#include "../src/PfCommon/tools/ut_error.h"
 #include "../src/PfCommon/cmdToJson/cmdtojson.h"
 #include "../src/PfSql/paramsTable/paramstable.h"
 #include "../src/PfSql/paramsTable/flowrecordtable.h"
@@ -19,8 +19,9 @@
 #include "../src/PfSql/paramsTable/tcpservertable.h"
 #include "../src/PfAdapter/UnicastAdapter/UnicastAdapter.h"
 #include "../src/PfAdapter/tcpAdapter/tcpAdapter.h"
-#include "../src/PfAdapter/tcpServerAdapter/tcpServerAdapter.h"
+#include "../src/PfAdapter/tcpServerAdapter/tcpserveradapter.h"
 #include "../src/PfAdapter/m1553Adapter/m1553adapter.h"
+#include "./logRecord/logmanager.h"
 #include "uibus.h"
 #include "virtualParams/virtualparams.h"
 #include "./custom/custommsg.h"
@@ -33,9 +34,9 @@ cmdDecode::cmdDecode(PfAdapter::Adapter  *obj, QObject *parent )
       mIsInitSuccessful(false)
 
 {
-    mRcvMsgTask = std::make_shared<rcvTask>();
+    //mRcvMsgTask = std::make_shared<rcvTask>();
 
-    connect(customMsg::getInstance().get(), &customMsg::switchPermiss, mRcvMsgTask.get(), &rcvTask::onSwitchPermiss);
+    //connect(customMsg::getInstance().get(), &customMsg::switchPermiss, mRcvMsgTask.get(), &rcvTask::onSwitchPermiss);
 }
 cmdDecode::~cmdDecode()
 {
@@ -130,6 +131,10 @@ void cmdDecode::cmdMsg(Json::Value jsValue)
     else if(type == LOAD)
     {
         load(jsValue["flow"].asString(), jsValue["path"].asString());
+    }
+    else if(type == ENFORCE_EXE)
+    {
+        enforceExe(jsValue["msg"]);
     }
     else
     {
@@ -418,6 +423,51 @@ void cmdDecode::stopTest(const Json::Value &msg)
     respond(resultMsg(STOP_TEST, errCode, uuid));
 }
 
+void cmdDecode::enforceExe(const Json::Value &msg)
+{
+    std::string errCode;
+    std::string uuid = "";
+    std::string flowUuid= "";
+    std::string subFlowUuid = "";
+    try
+    {
+        uuid = msg["record_uuid"].asString();
+
+        if(!mIsInitFlow.contains(uuid))
+        {
+            mIsInitFlow[uuid] = false;
+        }
+
+        if(!mIsInitFlow[uuid])
+        {
+            respond(resultMsg(ENFORCE_EXE, "[ERROR]", uuid));
+            return;
+        }
+
+        flowUuid = msg["flow_uuid"].asString();
+
+        subFlowUuid = msg["sub_flow_uuid"].asString();
+
+        auto it = mFLowsObj.find(uuid);
+
+        if(it != mFLowsObj.end())
+        {
+            if(mFLowsObj[uuid]->isRunning())
+            {
+                mFLowsObj[uuid]->enforceExe(flowUuid, subFlowUuid);
+            }
+        }
+    }
+    catch(std::runtime_error err)
+    {
+        errCode = err.what();
+    }
+
+    ///返回结果
+
+    respond(resultMsg(ENFORCE_EXE, errCode, uuid));
+}
+
 void cmdDecode::manualTrigger(const Json::Value &msg)
 {
     std::string errCode;
@@ -437,7 +487,9 @@ void cmdDecode::manualTrigger(const Json::Value &msg)
             return;
         }
 
-        virtualParams::getInstance()->setValue({uuid, "UI", ""}, mapValue());
+        mapKey vKey(uuid.c_str(), "UI", "");
+
+        virtualParams::getInstance()->setValue(vKey);
     }
     catch(std::runtime_error err)
     {
@@ -505,6 +557,15 @@ void cmdDecode::startTest(const Json::Value &msg)
         errCode = err.what();
     }
 
+    if(errCode == OK)
+    {
+        //mRcvMsgTasks.emplace_back(task);
+        for(auto task : mRcvMsgTasks)
+        {
+            task->startTask();
+        }
+    }
+
     ///返回结果
 
     respond(resultMsg(START_TEST, errCode, uuid));
@@ -567,7 +628,7 @@ void cmdDecode::initPrograme()
 
             mAdpterManagerObj = std::make_shared<PfAdapter::PfAdapterManager>();
 
-            mRcvMsgTask->setPfAdapterManager(mAdpterManagerObj);
+
             //mAdpterManagerObj->init("./cfgfile/logic_devcfg.xml");
 
             //将发送UI适配器加入管理
@@ -577,7 +638,7 @@ void cmdDecode::initPrograme()
 
             mIcdFrameAdpter = std::make_shared<PfIcdWorkBench::icdFrameAdapter>();
             mIcdFrameAdpter->init("./cfgfile/icd.xml");
-            mRcvMsgTask->setIcdFrameAdpter(mIcdFrameAdpter);
+            //mRcvMsgTask->setIcdFrameAdpter(mIcdFrameAdpter);
 
             //mSingleTestObj = std::make_shared<singleTest>();
             //connect(this, &cmdDecode::singleTestSig, mSingleTestObj, &singleTest::onTest);
@@ -608,7 +669,12 @@ void cmdDecode::initFlow(const Json::Value &msg)
     errorInfo.str("");
 
     //停止所有接收线程
-    mRcvMsgTask->stopTask();
+    for(auto task : mRcvMsgTasks)
+    {
+        task->stopTask();
+        task.reset();
+    }
+    mRcvMsgTasks.clear();
 
     //清空之前流程
 
@@ -720,6 +786,11 @@ void cmdDecode::initFlow(const Json::Value &msg)
     }
 }
 
+void cmdDecode::onTestMsg(QByteArray msg)
+{
+    qDebug() << msg;
+}
+
 bool cmdDecode::resetAdapter()
 {
     bool res = true;
@@ -770,6 +841,8 @@ bool cmdDecode::resetAdapter()
 
     //step2:清空之前所有
     mAdpterManagerObj->deleteAll();
+
+    logManager::getInstance()->reset();
 
     //step3:重新初始化各系统
 
@@ -864,10 +937,11 @@ bool cmdDecode::resetAdapter()
 
                 Json::Value paramJs;
 
+
                 paramJs["ip_addr"] = devInfo["ip_addr"];
                 paramJs["port"] = devInfo["port"];
 
-                Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::tcpAdapter();
+                Pf::PfAdapter::Adapter *eqObj = new Pf::PfAdapter::tcpAdapter(this);
 
                 eqObj->init(paramJs.toStyledString());
                 mAdpterManagerObj->setAdapter(eqSysUuid, eqObj);
@@ -947,10 +1021,24 @@ bool cmdDecode::resetAdapter()
         respond(resultMsg(INIT_FLOW, "", std::get<1>(uuid)));
     }
 
-    //step4：启动接收线程
-    mRcvMsgTask->setRcvUuid(eqUuids);
+    //初始化日志
+    logManager::getInstance()->init(eqUuids);
 
-    mRcvMsgTask->startTask();
+    //step4：启动接收线程
+    for(auto id: eqUuids)
+    {
+        std::shared_ptr<rcvTask> task = std::make_shared<rcvTask>();
+
+        connect(task.get(), &rcvTask::record, logManager::getInstance().get(), &logManager::record);
+
+        task->setIcdFrameAdpter(mIcdFrameAdpter);
+        task->setPfAdapterManager(mAdpterManagerObj);
+        connect(customMsg::getInstance().get(), &customMsg::switchPermiss, task.get(), &rcvTask::onSwitchPermiss);
+        task->setRcvUuid(id);
+        //task->startTask();
+
+        mRcvMsgTasks.emplace_back(task);
+    }
 
     return res;
 }

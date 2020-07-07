@@ -15,9 +15,6 @@ public:
     explicit progressWidget(QWidget *parent = 0);
     ~progressWidget();
 public slots:
-    void onMinMaxValue(int min, int max);
-    void onCurValue(int v);
-
     void onClose();
 private:
     QMovie *mMove;

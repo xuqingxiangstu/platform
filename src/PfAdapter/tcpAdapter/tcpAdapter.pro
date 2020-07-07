@@ -26,3 +26,19 @@ else:unix:!macx: LIBS += -L$$OUT_PWD/../../../ -lTinyXml
     
 LIBS += -L$$OUT_PWD/../../../ -ljsoncpp
 LIBS += -L$$OUT_PWD/../../../ -ltcpClient
+
+win32{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/tcpAdapter.dll
+    DSTFILE = $$OUT_PWD/../../../tcpAdapter.dll
+    SRCDIR = $$replace(SRCFILE, /, \\)
+    DSTDIR = $$replace(DSTFILE, /, \\)
+
+    QMAKE_POST_LINK += copy $$SRCDIR $$DSTDIR
+}
+unix{
+    SRCFILE = $$OUT_PWD/../../../adapterLib/libtcpAdapter.so*
+    DSTFILE = $$OUT_PWD/../../../
+
+    QMAKE_POST_LINK += cp -d $$SRCFILE $$DSTFILE
+}
+

@@ -21,7 +21,8 @@ void test()
     std::shared_ptr<PfAdapter::PfAdapterManager> obj = std::make_shared<PfAdapter::PfAdapterManager>();
 
     //step2：初始化配置文件
-    obj->init("./cfgfile/dev.xml");
+    //obj->init("./cfgfile/dev.xml");
+    obj->initPassJsonFile("./cfgfile/devcfg.json");
 
     //step3：获取适配器句柄
     PfAdapter::Adapter *ada = nullptr;
@@ -41,11 +42,10 @@ void test()
             std::cout << "send error" << std::endl;
         }
 
-
         char str[1024] = {0};        
         int rcvSize=0;
         int maxRcvSize = 1024;
-        unsigned int timeOut = 500;
+        unsigned int timeOut = 5000;
 
         while(1)
         {            

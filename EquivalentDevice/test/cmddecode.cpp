@@ -50,7 +50,7 @@ void cmdDecode::run()
     if(mRcvObj == nullptr)
         return ;
 
-    const int BUF_SIZE = 102400;
+    const int BUF_SIZE = 1024000;
     char buf[BUF_SIZE] = {0};
     int rcvSize = 0;
 

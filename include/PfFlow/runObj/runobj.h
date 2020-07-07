@@ -11,6 +11,7 @@
 
 #include "../../PfCommon/TinyXml/tinyxml.h"
 #include "../../PfAdapter/PfAdapterManager/pfadaptermanager.h"
+#include "../../PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
 
 #include <string>
 
@@ -97,6 +98,12 @@ public:
      * @param[in] adapter 适配器
      */
     virtual void setAdapter(Pf::PfAdapter::PfAdapterManager *adapter){}
+
+    /**
+     * @brief setIcdframeadapter 设置ICD帧管理（解析仿真）句柄
+     * @param icdAdapter ICD帧管理
+     */
+    virtual void setIcdframeadapter(Pf::PfIcdWorkBench::icdFrameAdapter *icdAdapter){}
 
     /**
      * @brief version 版本号

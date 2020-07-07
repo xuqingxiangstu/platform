@@ -6,11 +6,12 @@
 #include "../../PfCommon/tools/ut_error.h"
 #include "../icdData/datatype.h"
 #include "../../PfSql/paramsTable/paramstable.h"
+#include "../frameNumber/framenumber.h"
 
+#include <QTextCodec>
 #include <QByteArray>
 #include <QDateTime>
 
-#include <qDebug>
 
 namespace Pf
 {
@@ -67,6 +68,7 @@ namespace Pf
 
             //获取域信息
             Json::Value regionJson = root["region"];
+            Json::Value headJson = root["head"];
 
             byteArray msg;
 
@@ -86,7 +88,7 @@ namespace Pf
             QString tmpValue = regionJson["table_num"].asString().c_str();
 
             bool isOk;
-            unsigned int frameType = tmpValue.toUInt(&isOk, 16);
+            unsigned int frameType = tmpValue.toUInt(&isOk, 10);
 
             byteSize = 4;
             data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, frameType);
@@ -101,9 +103,13 @@ namespace Pf
             data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, 0);
             pos += byteSize;
 
-            //信源
-            unsigned char src = 0x7;
-            unsigned char dst = 0x5;
+
+            //step5：源节点填充
+            unsigned char src = headJson["head_src_node"].asInt() & 0xFF;
+
+            //step5：目标节点填充
+            unsigned char dst = headJson["head_dst_node"].asInt() & 0xFF;
+
 
             byteSize = 1;
             data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, src);
@@ -124,17 +130,11 @@ namespace Pf
             pos += byteSize;
 
             //帧计数
-            auto findItor = mProtocolCnt.find(std::make_pair(src, dst));
-            if(findItor == mProtocolCnt.end())
-            {
-                mProtocolCnt[std::make_pair(src, dst)] = 0;
-            }
+            int cmdCnt = frameNumberManager::getInstance()->getFrameNumber(mCurUuid, getFrameName(), src, dst);
 
             byteSize = 4;
-            data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, mProtocolCnt[std::make_pair(src, dst)]);
+            data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, cmdCnt);
             pos += byteSize;
-
-            mProtocolCnt[std::make_pair(src, dst)] = mProtocolCnt[std::make_pair(src, dst)] + 1;
 
             //校验和
             byteSize = 1;
@@ -170,7 +170,7 @@ namespace Pf
 
             //从数据库中获取参数信息
 
-            int tableNum = regionJs["table_num"].asInt();
+            unsigned int tableNum = regionJs["table_num"].asUInt();
 
             Json::Value paramValues;
             paramsTable::getInstance()->getValues(tableNum, paramValues);
@@ -213,13 +213,19 @@ namespace Pf
                 }
                 else if(ncharType == dataType)
                 {
+
+                    //modify xqx 2020-6-16 09:52:18 UTF8转GBK编码
+                    QString utf8Str = QString::fromStdString(initValue);
+                    initValue = QTextCodec::codecForName("gb2312")->fromUnicode(utf8Str).data();
+                    //end
+
                     //sprintf((char*)&tmpBuf[startPos], "%s", initValue.c_str());
-                    memcpy_s(tmpBuf + startPos, msgSize - startPos, initValue.c_str(), initValue.size());
+                    memcpy(tmpBuf + startPos, initValue.c_str(), initValue.size());
                     preStartPos = startPos + initValue.size();
                     outSize += initValue.size();
 
                     //modify xqx 20200420 更新字符串长度
-                    data.setData(tmpBuf, msgSize, strLenPos, strLenByteSize, 0, 0, initValue.size());
+                    data.setData(tmpBuf, msgSize, strLenPos, strLenByteSize, 0, 0, (int)initValue.size());
                 }
                 else if(nRawType == dataType)   //十六进制原始数据
                 {
@@ -298,8 +304,11 @@ namespace Pf
             pos += byteSize;
 
             //信源
-            unsigned char src = 0x7;
-            unsigned char dst = 0x5;
+            //step5：源节点填充
+            unsigned char src = json["src_node"].asInt() & 0xFF;
+
+            //step5：目标节点填充
+            unsigned char dst = json["dst_node"].asInt() & 0xFF;
 
             byteSize = 1;
             data.setData(tmpBuf, msgSize, pos, byteSize, 0, 0, src);
@@ -415,32 +424,32 @@ namespace Pf
 
             //重传次数
             byteSize = 1;
-            result["resend_cnt"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["resend_cnt"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //确认标记
             byteSize = 1;
-            result["is_ask"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["is_ask"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //源节点表号
             byteSize = 1;
-            result["src_num"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["src_num"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //目标节点表号
             byteSize = 1;
-            result["dst_num"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["dst_num"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //时间
             byteSize = 4;
-            result["time"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["time"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
             //帧计数
             byteSize = 4;
-            result["count"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["count"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
             pos += byteSize;
 
 
@@ -450,15 +459,13 @@ namespace Pf
 
             //特征吗
             byteSize = 1;
-            result["cmd_code"] = data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
+            result["cmd_code"] = (int)data.getData(u8Msg, u32Size, pos, byteSize, 0, 0);
 
             // 根据帧类型查找数据库进行解析
 
             Json::Value regionJs;
 
             _parseRegion(frameType, &u8Msg[pos], u32Size - pos, regionJs);
-
-            qDebug() << regionJs.toStyledString().c_str();
 
             result["region"] = regionJs;
 

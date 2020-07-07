@@ -11,6 +11,7 @@ simulation::simulation(QWidget *parent) :
     ui->setupUi(this);
     initFlowTable();
     initSystemTree();
+    initFlowTree();
     ui->simTableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidget_3->setContextMenuPolicy(Qt::CustomContextMenu);
     ui->treeWidget_3->setColumnHidden(2,true);
@@ -47,7 +48,6 @@ void simulation::initSystemTree()
     if(value.size()>0){
         Json::Value init;
         QString systemUuid = QString::fromStdString(value[0]["UUID"].asString());
-        qDebug()<< systemUuid;
         DBTableOpt::getInstance()->getValueAllFlowRecord(systemUuid,init);
         int rowNum =  ui->simTableWidget->rowCount();
         for(int i = 0;i < rowNum;i++)
@@ -86,6 +86,22 @@ void simulation::initFlowTable()
     ui->simTableWidget->horizontalHeader()->setStretchLastSection(true);//最后一个单元格扩展
 }
 
+void simulation::initFlowTree()
+{
+    Json::Value m_value;
+    ui->treeWidget_3->clear();
+    DBTableOpt::getInstance()->getRecTestNotes(m_value);
+
+    for(int i = 0;i<m_value["SYSTEM_NAME"].size();i++)
+    {
+        QTreeWidgetItem *item = new QTreeWidgetItem();
+        item->setText(0,QString::fromStdString(m_value["SYSTEM_NAME"][i].asString()));
+        item->setText(1,QString::fromStdString(m_value["FLOW_NAME"][i].asString()));
+        item->setText(2,QString::fromStdString(m_value["RECORD_UUID"][i].asString()));
+        ui->treeWidget_3->addTopLevelItem(item);
+    }
+
+}
 void simulation::on_simTreeWidget_itemClicked(QTreeWidgetItem *item, int column)
 {
 

@@ -19,11 +19,12 @@ public:
 private:
     void initTreeItem();
 signals:
-    sendToMain(QString,bool);
+    void sendToMain(QString,bool);
 public slots:
     void showCurrent(QString recid);
     void setErrTreeBg(QString recoid, bool flag);
     void setErrId(QVector<QString> &msg);
+    void setChecked(bool flag);
 protected:
     void paintEvent(QPaintEvent *event);
 private slots:
@@ -35,8 +36,10 @@ private:
     QString m_recUuid;
     QString m_flowName;
     bool m_flag;
+    bool m_isAllSelectflag;
     QString m_checkUuid;
     QVector<QString> m_errId;
+
 };
 
 #endif // QTREEITEMDELEGATE_H

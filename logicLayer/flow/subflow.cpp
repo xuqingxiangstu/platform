@@ -4,11 +4,13 @@
 #include "../src/PfCommon/tools/ut_error.h"
 #include "../src/PfCommon/jsoncpp/json.h"
 #include "condition.h"
+#include "../virtualParams/virtualparams.h"
 #include "action.h"
 #include <thread>
 #include <chrono>
 #include <sstream>
-
+#include <QDebug>
+#include <QThread>
 #include <QDateTime>
 
 subFlow::subFlow(TiXmlElement *element)
@@ -127,6 +129,33 @@ void subFlow::setRecordUuid(std::string uuid)
     mAction->setRecordUuid(uuid);
 }
 
+void subFlow::exit()
+{
+    isStop = true;
+#if USE_BLOCK_MODE
+    virtualParams::mParamsUpdateCondition.wakeAll();
+#endif
+}
+
+void subFlow::enforceExe()
+{
+    if(mStartCond)
+    {
+        mapKey key;
+        key.first = mStartCond->getId();
+        key.second = mStartCond->getTable();
+        key.three = mStartCond->getCoding();
+
+        Json::Value value = mStartCond->getValue();
+
+#ifndef QT_NO_DEBUG
+            qDebug() << "[MANNEL]->" << key.first << "," << key.second << "," << key.three << "," << value.asString().c_str();
+#endif
+
+        virtualParams::getInstance()->setValue(key, value);
+    }
+}
+
 void subFlow::exe()
 {
     bool res = false;
@@ -153,18 +182,30 @@ void subFlow::exe()
         uiTestStatus(TEST_NORMAL);
     else
         uiTestStatus(TEST_ERROR);
+
+    isStop = false;
 }
 
 bool subFlow::_exe()
 {  
     bool res = false;
+    isStop = false;
 
     //如果有启动条件则判断
     if(mStartCond)
-    {
-        while( (!mStartCond->isConform()) && (!isStop) ) //判断是否满足启动条件
+    {       
+        while((!isStop) && (!mStartCond->isConform())) //判断是否满足启动条件
         {
-            std::this_thread::sleep_for(std::chrono::microseconds(100));
+#if USE_BLOCK_MODE
+            mWaitMutex.lock();
+            virtualParams::mParamsUpdateCondition.wait(&mWaitMutex);
+            mWaitMutex.unlock();
+            //virtualParams::mParamsUpDateMutex.lock();
+            //virtualParams::mParamsUpdateCondition.wait(&virtualParams::mParamsUpDateMutex);
+            //virtualParams::mParamsUpDateMutex.unlock();
+#else
+            std::this_thread::sleep_for(std::chrono::microseconds(20));
+#endif
         }
     }
 
@@ -182,12 +223,21 @@ bool subFlow::_exe()
     {
         while(!isStop) //强制退出
         {
+            //判断是否结束
+            if(mStopCond)
+            {
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+                if(mStopCond->isConform())
+                    break;
+            }
+
             //执行
             res = perform(false);
 
             //判断是否结束
             if(mStopCond)
             {
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
                 if(mStopCond->isConform())
                     break;
             }
@@ -195,9 +245,24 @@ bool subFlow::_exe()
     }
     else if(timing::MANUAL == type)
     {
-        while( (!startCondition::isConform(mRecordUuid, "UI", "")) && (!isStop) ) //判断是否满足触发条件
+        mapKey key(mRecordUuid.c_str(), "UI", "");
+
+        while( (!isStop) && (!virtualParams::getInstance()->isMeet(key))) //判断是否满足触发条件
         {
+#if USE_BLOCK_MODE
+            mWaitMutex.lock();
+            virtualParams::mParamsUpdateCondition.wait(&mWaitMutex);
+            mWaitMutex.unlock();
+#else
             std::this_thread::sleep_for(std::chrono::microseconds(100));
+#endif
+        }
+
+        if(isStop)
+        {
+            isStop = false;
+
+            return false;
         }
 
         res = perform();
@@ -207,6 +272,8 @@ bool subFlow::_exe()
         //立即发送及手动发送执行一次(手动发送时设置启动条件)
         res = perform();
     }
+
+    isStop = false;
 
     return res;
 }

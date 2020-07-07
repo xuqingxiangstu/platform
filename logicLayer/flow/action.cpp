@@ -7,20 +7,23 @@
 #include "frame.h"
 #include <QDebug>
 
+#include "../logRecord/logmanager.h"
 #include "../custom/custommsg.h"
 #include "../src/PfSql/paramsTable/sysinterfacetable.h"
 #include "../../src/PfCommon/tools/ut_error.h"
 #include "../src/PfAdapter/m1553Adapter/m1553adapter.h"
+#include "../virtualParams/virtualparams.h"
 
 //#define DEBUG_ACTION 1
 
-action::action()
-    :mTimeOut(0),
+action::action(QObject *parent)
+    :QObject(parent),
+      mTimeOut(0),
       mFrameObj(nullptr),
       mAdapterManagerObj(nullptr),
       mUiAdapter(nullptr)
 {
-
+    QObject::connect(this, &action::record, logManager::getInstance().get(), &logManager::record);
 }
 
 action::~action()
@@ -53,6 +56,7 @@ void action::init(TiXmlElement *xmlEle)
     {
         mFrameObj = std::make_shared<frame>();
         mFrameObj->init(tmpEle);
+        mFrameObj->setDevUuid(mDstSysUuid);
     }
 #ifdef DEBUG_ACTION
 #else    
@@ -95,20 +99,55 @@ bool action::exe()
         std::string coding;
         mFrameObj->getCustomMsg(table, coding);
         auto icdObj = mFrameObj->getCurFrameObj();        
-        customMsg::getInstance()->exe(mFrameObj, mRecordUuid, icdObj, obj, mUiAdapter,table, coding);
+
+        if(UI_CUSTOM_MSG == table) //界面内容消息触发
+        {
+            //更新参数
+            mapKey vKey("UI", UI_CUSTOM_MSG, coding.c_str());
+
+            virtualParams::getInstance()->setValue(vKey);
+        }
+        else if(XK_CUSTOM_MSG == table)
+        {
+            customMsg::getInstance()->exe(mFrameObj, mRecordUuid, icdObj, obj, mUiAdapter,table, coding);
+        }
+
         return true;
     }
 
     //modify xqx 2020-4-26 20:14:50 1553B时发送前需设置RT地址及SA地址
-    std::string rtAddr;
-    std::string saAddr;
 
-    if(mFrameObj->getRtAndSa(rtAddr, saAddr))
+    if(mFrameObj->is1553B() && ("m1553Adapter" == obj->getClassName()))
     {
-        //设置
-        if("m1553Adapter" == obj->getClassName())
+        std::string model = mFrameObj->get1553BModel();
+        std::string bus = mFrameObj->get1553BBus();
+
+        if("A" == bus)
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->set1553BBus(Pf::PfAdapter::m1553Adapter::Bus_A);
+        else
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->set1553BBus(Pf::PfAdapter::m1553Adapter::Bus_B);
+
+        if("BC->RT" == model)
         {
-            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->setSendRtAndSa(rtAddr, saAddr);
+            int rtAddr = 0;
+            int saAddr = 0;
+
+            mFrameObj->getBcModelInfo(rtAddr, saAddr);
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->set1553BModel(Pf::PfAdapter::m1553Adapter::BC_2_RT);
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->setBc2RtInfo(rtAddr, saAddr);
+        }
+        else if("RT->RT" == model)
+        {
+            int sRt = 0;
+            int sSa = 0;
+            int rRt = 0;
+            int rSa = 0;
+            int dataSize = 0;
+
+            mFrameObj->getRtModelInfo(sRt, sSa, rRt, rSa, dataSize);
+
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->set1553BModel(Pf::PfAdapter::m1553Adapter::RT_2_RT);
+            dynamic_cast<Pf::PfAdapter::m1553Adapter*>(obj)->setRt2RtInfo(sRt, sSa, rRt, rSa, dataSize);
         }
     }
 
@@ -136,6 +175,8 @@ bool action::exe()
         {
             if(!obj->atomicTrMsg((const char*)&msg.at(0), msg.size(), (char*)mRcvBus, rcvSize, 400))
             {
+                toLog((const char*)&msg.at(0), msg.size());
+
                 int resendCnt = 0;
                 while(1)
                 {
@@ -143,7 +184,13 @@ bool action::exe()
                     mFrameObj->getResendMsg(msg);                    
 
                     if(obj->atomicTrMsg((const char*)&msg.at(0), msg.size(), (char*)mRcvBus, rcvSize, 400))
+                    {
+                        toLog((const char*)&msg.at(0), msg.size());
+
                         break;
+                    }
+
+                    toLog((const char*)&msg.at(0), msg.size());
 
                     resendCnt++;
 
@@ -158,12 +205,16 @@ bool action::exe()
             else
             {
                 res = true;
+
+                toLog((const char*)&msg.at(0), msg.size());
             }
         }
         else    //不需要应答
         {
             //step4：发送
             res = obj->sendMsg((const char*)&msg.at(0), msg.size());
+
+            toLog((const char*)&msg.at(0), msg.size());
         }
     }
     catch(std::runtime_error err)
@@ -182,6 +233,24 @@ bool action::exe()
 
 
     return res;
+}
+
+void action::toLog(const char *msg, const int &msgSize)
+{
+    //modify xqx 2020-6-2 10:52:28 二进制源码转换为十六进制字符串+时间
+    QByteArray recordMsg;
+    recordMsg += "[";
+    recordMsg += QDateTime::currentDateTime().toString("yyyy.MM.dd hh:mm:ss.zzz");
+    recordMsg += "]";
+    recordMsg += "[s]->";
+
+    recordMsg += QByteArray((char*)msg, msgSize).toHex();
+    recordMsg += "\n";
+
+    emit record(QString::fromStdString(mDstSysUuid), recordMsg);
+
+    //end
+
 }
 
 bool action::isConform()

@@ -1,13 +1,11 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    #PfCommon \
-    #PfSql \
+    PfCommon \
+    PfSql \
     PfBus \
     PfAdapter \
-    #PfNi \
-    #PfFlow \
-    #PfIcdWorkBench \
+    PfIcdWorkBench \
     PfSmlModel
 
 HEADERS += platform.h

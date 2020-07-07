@@ -21,20 +21,6 @@ progressWidget::~progressWidget()
     delete ui;
 }
 
-void progressWidget::onMinMaxValue(int min, int max)
-{
-    //ui->progressBar->setMinimum(min);
-   // ui->progressBar->setMaximum(max);
-}
-
-void progressWidget::onCurValue(int v)
-{
-   // if( (v >= ui->progressBar->minimum()) && (v <= ui->progressBar->maximum()))
-    {
-        //ui->progressBar->setValue(v);
-    }
-}
-
 void progressWidget::onClose()
 {
     mMove->stop();

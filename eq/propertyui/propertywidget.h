@@ -8,7 +8,7 @@
 #include "QtPropertyBrowser/include/qtpropertymanager.h"
 #include "QtPropertyBrowser/include/qteditorfactory.h"
 #include "QtPropertyBrowser/include/qttreepropertybrowser.h"
-#include "QtPropertyBrowser/include/qtbuttonpropertybrowser"
+#include "QtPropertyBrowser/include/qtbuttonpropertybrowser.h"
 #include "QtPropertyBrowser/include/qtgroupboxpropertybrowser.h"
 #include "QtPropertyBrowser/include/QtCheckBoxFactory"
 

@@ -26,7 +26,7 @@ public:
      * @brief setRcvUuid    设置接收uuids
      * @param uuids
      */
-    void setRcvUuid(const std::vector<std::tuple<std::string, std::string, std::string,std::string>> &uuids);
+    void setRcvUuid(std::tuple<std::string, std::string, std::string,std::string> &uuids);
 
     /**
      * @brief setPfAdapterManager   设置适配器管理
@@ -86,8 +86,7 @@ private:
     };
     std::vector<std::tuple<std::string, std::string, Pf::PfAdapter::Adapter*, std::string,std::string>> mAdapters;
     std::shared_ptr<Pf::PfAdapter::PfAdapterManager> mPfAdapterManager;
-    std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> mIcdFrameManager;
-    std::vector<std::shared_ptr<Pf::PfCommon::RecordLog>> mRecordsObj; //日志记录
+    std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> mIcdFrameManager;    
     std::shared_ptr<decodingPool> mDecodingPoolObj;    //解码    
     std::atomic_bool mIsStop;
 

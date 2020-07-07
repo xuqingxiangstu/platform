@@ -98,14 +98,25 @@ private:
      * @return
      */
     QTreeWidgetItem *findItem(QString uuid);
+
     QTreeWidgetItem *createNode(const std::string &fatherUuid, const std::string &uuid, const std::string &name, NodeType type);
+
+    QTreeWidgetItem *copyNode(const QTreeWidgetItem *srcNode, const std::string &uuid, const std::string &name);
+
     void deleteItem(QTreeWidgetItem *item);
+
+    void enableAskAttr(recordRole);
+    void disableAskAttr(recordRole);
 private:
     void waring(QString text);
 private:
     void onActionNew();
     void onActionDelete();
+    void onActionCopy();
+    void onActionPaste();
 private:
+    QTreeWidgetItem *mCopyItem;
+    bool mIsCopy;
     QMenu *mPopMenu;
     QTreeWidgetItem *mCurSelectItem;    //当前选择Item
     QString mCurSelectUuid;             //当前选择的uuid

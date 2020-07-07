@@ -19,12 +19,13 @@ DEFINES += M1553B_LIBRARY
 SOURCES += m1553b.cpp
 
 HEADERS += m1553b.h\
-        m1553b_global.h \
-    ZHHK1553/include/defines.h \
-    ZHHK1553/include/os.h \
-    ZHHK1553/include/ZHHK1553_lib.h
+        m1553b_global.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+win32:CONFIG(release, debug|release): LIBS += $$PWD/ZHHK1553/windows/ZHHK1553.lib
+else:win32:CONFIG(debug, debug|release): LIBS += $$PWD/ZHHK1553/windows/ZHHK1553.lib
+else:unix:!macx: LIBS += -L$$PWD/ZHHK1553/linux/ -lZHHK1553
+

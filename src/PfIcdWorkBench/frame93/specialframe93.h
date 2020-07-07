@@ -42,11 +42,12 @@ namespace Pf
             void simulation(byteArray &outValue, const std::string &json) override;
             bool getAskMsg(const byteArray &inValue, byteArray &outValue, const Json::Value &json) override;
             bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &result) override;
+            void setUuid(const std::string &uuid) override {mCurUuid = uuid;}
         private:
-            void _parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue);
+            void _parseRegion(const unsigned int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue);
             void _fillRegion(byteArray &outValue, const Json::Value &jsValue);
         private:
-            std::unordered_map<std::pair<unsigned int, unsigned int>, int, pair_hash> mProtocolCnt; ///< 命令计数
+            std::string mCurUuid;
         };
         extern "C"
         {

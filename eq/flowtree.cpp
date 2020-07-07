@@ -15,6 +15,7 @@
 #include "../src/PfSql/paramsTable/systemtable.h"
 #include "../src/PfSql/paramsTable/sysinterfacetable.h"
 #include "./fromXml/readxml.h"
+#include "triggercondition.h"
 #include <QDebug>
 #include <QMessageBox>
 #include <QFileInfo>
@@ -27,7 +28,9 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     mCurProjectUuid(uuid),
     mIsUpdateTree(false),
     mCurSystemType(sysType),
-    mCurSelectItem(nullptr)
+    mCurSelectItem(nullptr),
+    mIsCopy(false),
+    mCopyItem(nullptr)
 {
     ui->setupUi(this);
 
@@ -41,58 +44,61 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
 
     mPopMenu = new QMenu(this);
-       mPopMenu->addAction(ui->actionNewFlow);
-       //mPopMenu->addAction(ui->actionNewSubFlow);
-       mPopMenu->addAction(ui->actionCopy);
-       mPopMenu->addAction(ui->actionPase);
-       mPopMenu->addAction(ui->actionDelete);
+    mPopMenu->addAction(ui->actionNewFlow);
+    mPopMenu->addAction(ui->actionDelete);
+    mPopMenu->addAction(ui->actionCopy);
+    mPopMenu->addAction(ui->actionPase);
 
-       connect(mPopMenu, &QMenu::triggered, [=](QAction *action){
-          //onMenuTrigger(action);
-       });
+    connect(mPopMenu, &QMenu::triggered, [=](QAction *action){
+        //onMenuTrigger(action);
+    });
 
-       connect(ui->treeWidget,&PfTreeWidget::customContextMenuRequested,[=](const QPoint &point){
-           mRightMousePoint = point;
-           QTreeWidgetItem *currentItem = ui->treeWidget->itemAt(mRightMousePoint);
+    connect(ui->treeWidget,&PfTreeWidget::customContextMenuRequested,[=](const QPoint &point){
+            mRightMousePoint = point;
+            QTreeWidgetItem *currentItem = ui->treeWidget->itemAt(mRightMousePoint);
 
-           mCurItem = currentItem;
+            mCurItem = currentItem;
 
-           if(currentItem)
-           {
-               std::shared_ptr<dragRole> data = currentItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+            if(currentItem)
+            {
+                std::shared_ptr<dragRole> data = currentItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
 
-               if(dragRole::Node_Flow == data->getNodeType())
-               {
-                   ui->actionCopy->setEnabled(false);
-                   ui->actionDelete->setEnabled(false);
-                   ui->actionPase->setEnabled(false);
-                   ui->actionNewFlow->setEnabled(true);
-               }
-               else if( (dragRole::Node_Cmd == data->getNodeType()) || (dragRole::Node_Param_Group == data->getNodeType()))
-               {
-                   ui->actionCopy->setEnabled(false);
-                   ui->actionDelete->setEnabled(true);
-                   ui->actionPase->setEnabled(false);
-                   ui->actionNewFlow->setEnabled(true);
-               }
-               else if((dragRole::Node_Param == data->getNodeType()))
-               {
-                   ui->actionCopy->setEnabled(false);
-                   ui->actionDelete->setEnabled(false);
-                   ui->actionPase->setEnabled(false);
-                   ui->actionNewFlow->setEnabled(false);
-               }
-           }
-           else
-           {
-               ui->actionCopy->setEnabled(false);
-               ui->actionDelete->setEnabled(false);
-               ui->actionPase->setEnabled(false);
-               ui->actionNewFlow->setEnabled(true);
-           }
+                if(dragRole::Node_Flow == data->getNodeType())
+                {
+                    ui->actionDelete->setEnabled(false);
+                    ui->actionNewFlow->setEnabled(true);
 
-           mPopMenu->exec(QCursor::pos());
-       });
+                    ui->actionCopy->setEnabled(false);
+                    ui->actionPase->setEnabled(false);
+
+                }
+                else if( (dragRole::Node_Cmd == data->getNodeType()) || (dragRole::Node_Param_Group == data->getNodeType()))
+                {
+                    ui->actionDelete->setEnabled(true);
+                    ui->actionNewFlow->setEnabled(true);
+
+                    ui->actionCopy->setEnabled(true);
+
+                    ui->actionPase->setEnabled(true);
+                }
+                else if((dragRole::Node_Param == data->getNodeType()))
+                {
+                    ui->actionDelete->setEnabled(false);
+                    ui->actionNewFlow->setEnabled(false);
+
+                    ui->actionCopy->setEnabled(false);
+                    ui->actionPase->setEnabled(false);
+                }
+            }
+            else
+            {
+                ui->actionDelete->setEnabled(false);
+                ui->actionNewFlow->setEnabled(true);
+            }
+
+            mPopMenu->exec(QCursor::pos());
+        }
+    );
 
     this->addAction(ui->actionCopy);
     this->addAction(ui->actionPase);
@@ -100,20 +106,33 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     this->addAction(ui->actionNewFlow);
 
     connect(ui->actionNewFlow, &QAction::triggered,  [=](){
-
-        mCurItem = ui->treeWidget->currentItem();
-
-        if(mCurItem)
-        {
-            dragRole *role = mCurItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
-
-            auto type = role->getNodeType();
-            if( (dragRole::Node_Flow == type))
+            newDialog dlg;
+            dlg.setTitleText("新建测试流程");
+            dlg.exec();
+            if(QDialog::Accepted == dlg.result())
             {
-                onNewFlowNode();
+                QTreeWidgetItem *item = new QTreeWidgetItem();
+
+                item->setText(0, dlg.getDes());
+                //关联数据
+                QVariant variant;
+                std::shared_ptr<dragRole> dragData = std::make_shared<dragRole>();
+                dragData->setNodeType(dragRole::Node_Flow);
+                dragData->setProperty(new nodeProperty(templateProperty::getInstance()->getProperty(dragData->mNodeKey[dragRole::Node_Flow])));
+                dragData->getProperty()->setProperty(PROPERTY_DESCRIBE, Json::Value(dlg.getDes().toStdString()));
+                variant.setValue(dragData);
+                item->setData(0,Qt::UserRole,variant);
+                if(mCurItem)
+                {
+                    ui->treeWidget->insertTopLevelItem(ui->treeWidget->indexOfTopLevelItem(mCurItem) + 1, item);
+                }
+                else
+                {
+                    ui->treeWidget->addTopLevelItem(item);
+                }
             }
         }
-    });
+    );
 
     connect(ui->actionCopy, &QAction::triggered, [=](){
         onCopyNode();
@@ -130,6 +149,9 @@ flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     ui->treeWidget->expandAll();
 
     setFocusPolicy(Qt::StrongFocus);
+
+    //初始化启动终止条件初始值
+    triggerCondition::getInstance();
 }
 
 flowTree::~flowTree()
@@ -149,6 +171,7 @@ QTreeWidgetItem *flowTree::newItem(QTreeWidgetItem *dropItem)
         return nullptr;
 
     std::shared_ptr<dragRole> drapData = dropItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
     if( (dragRole::Node_Cmd == drapData->getNodeType()))
     {
         return newCmdItem(dropItem);
@@ -369,6 +392,7 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
 
     std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
 
+
     if( ( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
     {
         updateFrameAttr(drapData);
@@ -382,9 +406,30 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
         updateParamSelAttr(drapData);
     }
 
-    //qDebug() << drapData->getProperty()->getJson().toStyledString().c_str();
+    Json::Value startJs;
+    drapData->getProperty()->getProperty(PROPERTY_START_CONDITION, startJs);
+    if(!startJs.isNull())
+    {
+        qDebug() << startJs.toStyledString().c_str();
+    }
 
-    emit toShowProperty(mUiUuid, drapData->getProperty()->getJson());
+
+    //modify xqx 2020-6-20 09:17:05 在此处增加启动条件初始值，在模板中加载时内存太大
+
+    nodeProperty tmpProperty(drapData->getProperty()->getJson());
+
+    Json::Value initValue;
+    triggerCondition::getInstance()->getInitValue(initValue);
+
+    if(!initValue.isNull())
+    {
+        tmpProperty.setInitValue(PROPERTY_START_CONDITION, initValue);
+        tmpProperty.setInitValue(PROPERTY_STOP_CONDITION, initValue);
+    }
+
+    //end
+
+    emit toShowProperty(mUiUuid, tmpProperty.getJson());
 
     mCurSelectItem = item;
 }
@@ -454,6 +499,10 @@ void flowTree::onPropertyValueChange(QString uuid, QString attr, Json::Value val
         else if(PROPERTY_TIMING == propertyName)
         {
             curItem->setText(Timming_Index, value.asString().c_str());
+        }
+        else if(PROPERTY_1553B_MODE == propertyName)
+        {
+            enable1553BAttr(drapData, false);
         }
 #if 0//modify xqx 2020-4-26
         else if(PROPERTY_DESTDEVICE == propertyName)
@@ -538,7 +587,23 @@ void flowTree::onShowCurItemProperty(QString uuid)
     {
         std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
         //qDebug() << drapData->getProperty()->getJson().toStyledString().c_str();
-        emit toShowProperty(mUiUuid, drapData->getProperty()->getJson());
+
+        //modify xqx 2020-6-20 09:17:05 在此处增加启动条件初始值，在模板中加载时内存太大
+
+        nodeProperty tmpProperty(drapData->getProperty()->getJson());
+
+        Json::Value initValue;
+        triggerCondition::getInstance()->getInitValue(initValue);
+
+        if(!initValue.isNull())
+        {
+            tmpProperty.setInitValue(PROPERTY_START_CONDITION, initValue);
+            tmpProperty.setInitValue(PROPERTY_STOP_CONDITION, initValue);
+        }
+
+        //end
+
+        emit toShowProperty(mUiUuid, tmpProperty.getJson());
     }
     else
     {
@@ -618,12 +683,54 @@ void flowTree::onActionTestSend(QTreeWidgetItem *item)
 
 void flowTree::onCopyNode()
 {
-    qDebug() << "onCopy";
+    mIsCopy = false;
+
+    mCopyItem = ui->treeWidget->currentItem();
+    if(mCopyItem)
+    {
+        dragRole *role = mCopyItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
+
+        auto type = role->getNodeType();
+        if( (dragRole::Node_Cmd == type) || (dragRole::Node_Param_Group == type))
+        {
+            mIsCopy = true;
+        }
+    }
 }
 
 void flowTree::onParseNode()
 {
-    qDebug() << "onParse";
+    if(mIsCopy && mCopyItem)
+    {
+        mIsCopy = false;
+
+        QTreeWidgetItem *item = ui->treeWidget->currentItem();
+        if(item)
+        {
+            QTreeWidgetItem *insertItem = newItem(mCopyItem);
+
+            dragRole *role = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
+            auto type = role->getNodeType();
+            if( (dragRole::Node_Cmd == type) || (dragRole::Node_Param_Group == type))
+            {
+                QTreeWidgetItem *parentItem = item->parent();
+                if(parentItem)
+                {
+                    parentItem->insertChild(parentItem->indexOfChild(item) + 1, insertItem);
+
+                    //增加修改提示
+                    emit projectModify(mCurProjectUuid);
+                }
+            }
+            else if(dragRole::Node_Flow == type)
+            {
+                item->addChild(insertItem);
+
+                //增加修改提示
+                emit projectModify(mCurProjectUuid);
+            }
+        }
+    }
 }
 
 void flowTree::onDeleteNode()
@@ -789,10 +896,8 @@ void flowTree::onSaveProject(QTreeWidgetItem *item)
     xmlObj.setTreeWidget(ui->treeWidget);
     xmlObj.setSystemInfo(item);
     progressWidget dlg;
-    dlg.onMinMaxValue(0, itemSize);
 
     connect(&xmlObj, &saveXml::saveOver, &dlg, &progressWidget::onClose);
-    connect(&xmlObj, &saveXml::saveProgress, &dlg, &progressWidget::onCurValue);
 
     xmlObj.startTask();
 
@@ -822,12 +927,11 @@ void flowTree::onUpdateProject(QString uuid)
     //dlg.onMinMaxValue(0, itemSize);
 
     connect(&readObj, &readXml::readOver, &dlg, &progressWidget::onClose);
-    connect(&readObj, &readXml::readProgress, &dlg, &progressWidget::onCurValue);
 
     connect(&readObj, &readXml::flowItemValue, this, &flowTree::setFlowItemValue);
-    connect(&readObj, &readXml::subFlowItemValue, this, &flowTree::setSubFlowItemValue);
-    connect(&readObj, &readXml::cmdItemValue, this, flowTree::setCmdItemValue);
-    connect(&readObj, &readXml::paramItemValue, this, flowTree::setParamItemValue);
+    connect(&readObj, &readXml::subFlowItemValue, this, &flowTree::setSubFlowItemValue);    
+    connect(&readObj, SIGNAL(cmdItemValue(QString, const std::shared_ptr<dragRole>&)), this, SLOT(setCmdItemValue(QString,const std::shared_ptr<dragRole>&)));
+    connect(&readObj, SIGNAL(paramItemValue(QString,const std::shared_ptr<dragRole> &, const std::vector<std::shared_ptr<dragRole>> &)), this, SLOT(setParamItemValue(QString, const std::shared_ptr<dragRole> &, const std::vector<std::shared_ptr<dragRole>> &)));
 
     readObj.startTask();
 
@@ -856,7 +960,7 @@ QTreeWidgetItem *flowTree::findItem(QString uuid)
     return item;
 }
 
-void flowTree::setFlowItemValue(std::shared_ptr<dragRole> role)
+void flowTree::setFlowItemValue(const std::shared_ptr<dragRole> &role)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem();
 
@@ -874,7 +978,7 @@ void flowTree::setFlowItemValue(std::shared_ptr<dragRole> role)
     ui->treeWidget->addTopLevelItem(item);
 }
 
-void flowTree::setSubFlowItemValue(QString flowUuid, std::shared_ptr<dragRole> role)
+void flowTree::setSubFlowItemValue(QString flowUuid, const std::shared_ptr<dragRole> &role)
 {
     //查找UUID
     QTreeWidgetItem *flowItem = findItem(flowUuid);
@@ -900,7 +1004,38 @@ void flowTree::setSubFlowItemValue(QString flowUuid, std::shared_ptr<dragRole> r
 
 }
 
-void flowTree::setCmdItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role)
+QTreeWidgetItem *flowTree::getPasteBrother(const dragRole::nodeType &parseType)
+{
+    QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
+
+    if(curItem)
+    {
+        dragRole *role = curItem->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>().get();
+
+        auto type = role->getNodeType();
+
+        if(dragRole::Node_Flow == type)
+        {
+
+        }
+        else if(dragRole::Node_Param_Group == type)
+        {
+
+        }
+        else if(dragRole::Node_Cmd == type)
+        {
+
+        }
+    }
+
+}
+
+void flowTree::onPasteCmdItem(std::shared_ptr<dragRole> role)
+{
+
+}
+
+void flowTree::setCmdItemValue(QString subFlowUuid, const std::shared_ptr<dragRole> &role)
 {
     QTreeWidgetItem *subFlowItem = findItem(subFlowUuid);
     if(subFlowItem)
@@ -926,7 +1061,7 @@ void flowTree::setCmdItemValue(QString subFlowUuid, std::shared_ptr<dragRole> ro
     ui->treeWidget->expandItem(subFlowItem);
 }
 
-void flowTree::setParamItemValue(QString subFlowUuid, std::shared_ptr<dragRole> role, std::vector<std::shared_ptr<dragRole>> subRoles)
+void flowTree::setParamItemValue(QString subFlowUuid, const std::shared_ptr<dragRole> &role, const std::vector<std::shared_ptr<dragRole>> &subRoles)
 {
     QTreeWidgetItem *subFlowItem = findItem(subFlowUuid);
     if(subFlowItem)
@@ -1021,14 +1156,16 @@ void flowTree::updateInfoWordAttr(std::shared_ptr<dragRole> role)
         emit removeGroupProperty(PROPERTY_OTHER);
         emit addGroupProperty(PROPERTY_OTHER);
 
-        emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_D_NUM));
+        emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_CL_TYPE));
+        emit addProperty(PROPERTY_OTHER, role->getProperty()->curAttr(PROPERTY_OTHER_CL_NUM));
 
         role->getProperty()->setVisible(PROPERTY_OTHER, true);
-        role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, true);
+        role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_TYPE, true);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_NUM, true);
         role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, false);
-
     }
     else if( (PROPERTY_FRAME_FE == mCurFrameType ))
     {
@@ -1037,6 +1174,8 @@ void flowTree::updateInfoWordAttr(std::shared_ptr<dragRole> role)
 
         role->getProperty()->setVisible(PROPERTY_OTHER, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_TYPE, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_NUM, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, false);
@@ -1048,6 +1187,8 @@ void flowTree::updateInfoWordAttr(std::shared_ptr<dragRole> role)
 
         role->getProperty()->setVisible(PROPERTY_OTHER, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_TYPE, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_NUM, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_DEV_INDEX, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_MODLE_INDEX, false);
         role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, false);
@@ -1084,9 +1225,77 @@ void flowTree::updateInfoWordAttr(std::shared_ptr<dragRole> role)
 
         role->getProperty()->setVisible(PROPERTY_OTHER_D_NUM, true);
         role->getProperty()->setVisible(PROPERTY_OTHER_RESERVE, true);
-
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_TYPE, false);
+        role->getProperty()->setVisible(PROPERTY_OTHER_CL_NUM, false);
         role->getProperty()->setVisible(PROPERTY_OTHER, true);
     }
+}
+
+void flowTree::enable1553BAttr(std::shared_ptr<dragRole> role, bool isNew)
+{
+    if(isNew)
+    {
+        emit addGroupProperty(PROPERTY_1553B);
+        emit addProperty(PROPERTY_1553B, role->getProperty()->curAttr(PROPERTY_1553B_MODE));
+        emit addProperty(PROPERTY_1553B, role->getProperty()->curAttr(PROPERTY_1553B_BUS));
+
+        role->getProperty()->setVisible(PROPERTY_1553B, true);
+        role->getProperty()->setVisible(PROPERTY_1553B_MODE, true);
+        role->getProperty()->setVisible(PROPERTY_1553B_BUS, true);
+    }
+
+    Json::Value modeJs;
+    role->getProperty()->getProperty(PROPERTY_1553B_MODE, modeJs);
+    if(!modeJs.isNull() && modeJs.isString())
+    {
+        std::string m1553BMode = modeJs.asString();
+
+        if(PROPERTY_1553B_MODE_BC_RT == m1553BMode)
+        {
+            emit removeGroupProperty(PROPERTY_1553B_RT_RT);
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT, false);
+
+            emit addGroupProperty(PROPERTY_1553B_BC_RT);
+            emit addProperty(PROPERTY_1553B_BC_RT, role->getProperty()->curAttr(PROPERTY_1553B_BC_RT_RT_ADDR));
+            emit addProperty(PROPERTY_1553B_BC_RT, role->getProperty()->curAttr(PROPERTY_1553B_BC_RT_SA_ADDR));
+
+            role->getProperty()->setVisible(PROPERTY_1553B_BC_RT, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_BC_RT_RT_ADDR, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_BC_RT_SA_ADDR, true);
+
+        }
+        else if(PROPERTY_1553B_MODE_RT_RT == m1553BMode)
+        {
+            emit removeGroupProperty(PROPERTY_1553B_BC_RT);
+            role->getProperty()->setVisible(PROPERTY_1553B_BC_RT, false);
+
+            emit addGroupProperty(PROPERTY_1553B_RT_RT);
+            emit addProperty(PROPERTY_1553B_RT_RT, role->getProperty()->curAttr(PROPERTY_1553B_RT_RT_S_RT_ADDR));
+            emit addProperty(PROPERTY_1553B_RT_RT, role->getProperty()->curAttr(PROPERTY_1553B_RT_RT_S_SA_ADDR));
+            emit addProperty(PROPERTY_1553B_RT_RT, role->getProperty()->curAttr(PROPERTY_1553B_RT_RT_R_RT_ADDR));
+            emit addProperty(PROPERTY_1553B_RT_RT, role->getProperty()->curAttr(PROPERTY_1553B_RT_RT_R_SA_ADDR));
+            emit addProperty(PROPERTY_1553B_RT_RT, role->getProperty()->curAttr(PROPERTY_1553B_RT_RT_DATA_SIZE));
+
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT_S_RT_ADDR, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT_S_SA_ADDR, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT_R_RT_ADDR, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT_R_SA_ADDR, true);
+            role->getProperty()->setVisible(PROPERTY_1553B_RT_RT_DATA_SIZE, true);
+        }
+    }
+}
+
+void flowTree::disable1553BAttr(std::shared_ptr<dragRole> role)
+{
+    emit removeGroupProperty(PROPERTY_1553B);
+    role->getProperty()->setVisible(PROPERTY_1553B, false);
+
+    emit removeGroupProperty(PROPERTY_1553B_BC_RT);
+    role->getProperty()->setVisible(PROPERTY_1553B_BC_RT, false);
+
+    emit removeGroupProperty(PROPERTY_1553B_RT_RT);
+    role->getProperty()->setVisible(PROPERTY_1553B_RT_RT, false);
 }
 
 void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
@@ -1095,8 +1304,7 @@ void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
 
     if( (mCurFrameType == PROPERTY_FRAME_BE))
     {
-        emit removeGroupProperty(PROPERTY_1553B_RT_GROUP);
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP, false);
+        disable1553BAttr(role);
 
         //删除信宿属性
         emit removeGroupProperty(PROPERTY_DST);
@@ -1123,10 +1331,35 @@ void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
         emit removeGroupProperty(PROPERTY_FE_DATA_TYPE);
         role->getProperty()->setVisible(PROPERTY_FE_DATA_TYPE, false);
     }
-    else if( (PROPERTY_FRAME_FE == mCurFrameType ))
+    else if((PROPERTY_FRAME_JG == mCurFrameType ) || (PROPERTY_FRAME_CZXK == mCurFrameType ))
     {
-        emit removeGroupProperty(PROPERTY_1553B_RT_GROUP);
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP, false);
+        disable1553BAttr(role);
+
+        emit removeGroupProperty(PROPERTY_DST);
+
+        //创建组
+        emit addGroupProperty(PROPERTY_DST);
+
+        //加入属性
+        emit addProperty(PROPERTY_DST, role->getProperty()->curAttr(PROPERTY_SRC_SYS_TYPE));
+
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_TYPE, true);
+        role->getProperty()->setVisible(PROPERTY_SRC_SYS_CODING, false);
+        role->getProperty()->setVisible(PROPERTY_SRC_NODE_CODING, false);
+
+        role->getProperty()->setVisible(PROPERTY_USER, false);
+        role->getProperty()->setVisible(PROPERTY_SOFT_VERSION, false);
+
+        role->getProperty()->setReadOnly(PROPERTY_DST, false);
+        role->getProperty()->setVisible(PROPERTY_DST, true);
+
+        //删除数据帧类型
+        emit removeGroupProperty(PROPERTY_FE_DATA_TYPE);
+        role->getProperty()->setVisible(PROPERTY_FE_DATA_TYPE, false);
+    }
+    else if( (PROPERTY_FRAME_FE == mCurFrameType ) )
+    {
+        disable1553BAttr(role);
 
         emit removeGroupProperty(PROPERTY_DST);
 
@@ -1159,8 +1392,7 @@ void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
     }
     else if( (PROPERTY_FRAME_93 == mCurFrameType ))
     {
-        emit removeGroupProperty(PROPERTY_1553B_RT_GROUP);
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP, false);
+        disable1553BAttr(role);
 
         //删除属性，并设置隐藏
         emit removeGroupProperty(PROPERTY_DST);
@@ -1172,6 +1404,8 @@ void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
     }
     else if( PROPERTY_FRAME_1553B == mCurFrameType)
     {
+        enable1553BAttr(role);
+
         //删除其它属性
         emit removeGroupProperty(PROPERTY_OTHER);
 
@@ -1183,24 +1417,10 @@ void flowTree::updateFrameAttr(std::shared_ptr<dragRole> role)
         //删除数据帧类型
         emit removeGroupProperty(PROPERTY_FE_DATA_TYPE);
         role->getProperty()->setVisible(PROPERTY_FE_DATA_TYPE, false);
-
-
-        //创建组
-        emit addGroupProperty(PROPERTY_1553B_RT_GROUP);
-
-        //加入属性
-        emit addProperty(PROPERTY_1553B_RT_GROUP, role->getProperty()->curAttr(PROPERTY_1553B_RT_GROUP_RT_ADDR));
-        emit addProperty(PROPERTY_1553B_RT_GROUP, role->getProperty()->curAttr(PROPERTY_1553B_RT_GROUP_SA_ADDR));
-
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP, true);
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP_RT_ADDR, true);
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP_RT_ADDR, true);
-
     }
     else if(mCurFrameType == PROPERTY_FRAME_MIDDLE)
     {
-        emit removeGroupProperty(PROPERTY_1553B_RT_GROUP);
-        role->getProperty()->setVisible(PROPERTY_1553B_RT_GROUP, false);
+        disable1553BAttr(role);
 
         emit removeGroupProperty(PROPERTY_DST);
 
@@ -1256,7 +1476,22 @@ void flowTree::onFrameTypeChange(QString uuid, QString type)
     //更新参数变化属性
     //updateParamSelAttr(role);
 
-    emit toShowProperty(mUiUuid, role->getProperty()->getJson());
+    //modify xqx 2020-6-20 09:17:05 在此处增加启动条件初始值，在模板中加载时内存太大
+
+    nodeProperty tmpProperty(role->getProperty()->getJson());
+
+    Json::Value initValue;
+    triggerCondition::getInstance()->getInitValue(initValue);
+
+    if(!initValue.isNull())
+    {
+        tmpProperty.setInitValue(PROPERTY_START_CONDITION, initValue);
+        tmpProperty.setInitValue(PROPERTY_STOP_CONDITION, initValue);
+    }
+
+    //end
+
+    emit toShowProperty(mUiUuid, tmpProperty.getJson());
 }
 
 void flowTree::keyPressEvent(QKeyEvent *event)

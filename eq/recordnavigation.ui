@@ -38,6 +38,19 @@
     <string>删除</string>
    </property>
   </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>复制</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>粘贴</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S, Ctrl+S, Ctrl+S</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="qrc.qrc"/>
