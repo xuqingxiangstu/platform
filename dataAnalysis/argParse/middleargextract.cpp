@@ -1,6 +1,7 @@
 #include "middleargextract.h"
 
 #include "../src/PfSql/paramsTable/paramstable.h"
+#include "../src/PfCommon/tools/ut_error.h"
 #include <QDebug>
 #include <QString>
 
@@ -90,10 +91,40 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
     bool findMean = false;
     std::string chMean = "";
 
+    bool isOver = false;
+
     Json::Value confJs;
     if(paramsTable::getInstance()->getValue(QString::number(table, 10), coding, confJs))
     {
-        //获取物理含义，判断是否超差
+        //step1:判断是否超差
+
+        std::string minStr = confJs[PARAM_TABLE_MIN_VALUE].asString();
+        std::string maxStr = confJs[PARAM_TABLE_MAX_VALUE].asString();
+
+        if(minStr == "" && maxStr == "")
+        {
+            //不进行判断
+        }
+        else
+        {
+            double minV = QString::fromStdString(minStr).toDouble();
+            double maxV = QString::fromStdString(maxStr).toDouble();
+
+            if(value.isInt())
+            {
+                int curV = value.asInt();
+                if( !(curV >= minV && curV <= maxV) )
+                    isOver = true;
+            }
+            else if(value.isDouble())
+            {
+                double curV = value.asDouble();
+                if( !(curV >= minV && curV <= maxV) )
+                    isOver = true;
+            }
+        }
+
+        //step2：获取物理含义
         QString mean = QString::fromStdString(confJs[PARAM_TABLE_VALUE_MEAN].asString());
         if(mean.compare("") == 0)
         {
@@ -150,12 +181,17 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
                 }
             }
         }
+
     }
 
 #ifdef PRINT_RESULT
 
+    QString overStr = "";
+    isOver == true ? overStr = "异常" : overStr = "正常";
 #ifndef QT_NO_DEBUG
-    qDebug() << "[middle]->" << QString::number(table, 10) << "," << QString::number(coding) << "," << srcValue.c_str() << "," << value.asString().c_str();
+    qDebug() << "[middle]->" << QString::number(table, 10) << "," << QString::number(coding) << "," << srcValue.c_str() << "," << value.asString().c_str()
+             << "," ;
+    SHOW(chMean + "," + overStr.toStdString());
 #endif
 
 #endif
