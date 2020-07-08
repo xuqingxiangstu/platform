@@ -2,8 +2,13 @@
 #define ARGUMENTPARSE_H
 
 #include <QObject>
+#include <QMap>
+
 #include <memory>
-#include "../../src/PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
+
+#include "../src/PfCommon/jsoncpp/json.h"
+
+#include "argextract.h"
 
 /**
  * @brief The argumentParse class   参数解析类
@@ -15,15 +20,39 @@ class argumentParse : public QObject
 public:
     explicit argumentParse(QObject *parent = 0);
 public:
-    /**
-     * @brief init  初始化参数解析相关类
-     */
-    void init();
-signals:
 
+signals:
+    /**
+     * @brief showMessage   显示消息提示
+     * @param msg           消息
+     * @param state         消息状态
+     * -true:正常
+     * -false:异常
+     */
+    void showMessage(QString msg, bool state);
 public slots:
+    /**
+     * @brief parse     参数解析
+     * @param param     参数
+     * @param validMsg  有效数据
+     */
+    void parse(Json::Value param, QByteArray validMsg);
 private:
-    std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> mIcdFrameAdpter; ///<组帧、解帧协议适配对象
+    /**
+     * @brief feParamExtract    FE帧参数提取
+     * @param result
+     */
+    void feParamExtract(std::shared_ptr<PfIcdWorkBench::frameObj> obj, const Json::Value &result);
+
+    /**
+     * @brief beParamExtract    BE帧参数提取
+     * @param result
+     */
+    void beParamExtract(std::shared_ptr<PfIcdWorkBench::frameObj> obj, const Json::Value &result);    
+private:
+    QMap<QString, std::shared_ptr<argExtract>> mArgExtracts;
 };
+
+//Q_DECLARE_METATYPE(Json::Value)
 
 #endif // ARGUMENTPARSE_H

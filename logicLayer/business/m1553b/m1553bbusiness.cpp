@@ -104,3 +104,12 @@ void m1553bBusiness::toUi(const std::string &msg, bool state)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
+
+std::shared_ptr<business> m1553bBusiness::clone()
+{
+    m1553bBusiness *obj = new m1553bBusiness();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
+}

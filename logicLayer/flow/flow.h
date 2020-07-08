@@ -13,7 +13,7 @@
 
 //#define LH_TEST 0     //老化测试开关
 
-#define USE_STD_THRED   1   //1:c++，0:qt
+#define USE_STD_THRED   0   //1:c++，0:qt
 
 class flowManager;
 

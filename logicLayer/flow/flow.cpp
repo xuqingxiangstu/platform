@@ -151,7 +151,9 @@ void flowManager::exe(std::string flowUuid, std::string subFlowUuid)
                         UT_SHOW("-------------" + std::get<0>(flow) + "-------------");
                 #endif
                         std::get<Flow_Index>(obj)->exe(this, subFlowUuid);
-
+#if !USE_STD_THRED
+                        thread->quit();
+#endif
                 });
 #if USE_STD_THRED
                 thread.detach();
@@ -183,6 +185,9 @@ void flowManager::exe(std::string flowUuid, std::string subFlowUuid)
 
                    std::get<Flow_Index>(*findItor)->exe(this, subFlowUuid);
 
+#if !USE_STD_THRED
+                    thread->quit();
+#endif
                 });
 
 #if USE_STD_THRED
@@ -426,6 +431,9 @@ void flow::exe(flowManager *manager, std::string subFlowUuid)
 
                 QObject::connect(thread, &QThread::started, [=](){
                     obj->exe();
+#if !USE_STD_THRED
+                    thread->quit();
+#endif
                 });
 
                 thread->start();

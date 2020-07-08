@@ -200,3 +200,12 @@ void middleBusiness::toUi(const std::string &msg, bool state)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
+
+std::shared_ptr<business> middleBusiness::clone()
+{
+    middleBusiness *obj = new middleBusiness();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
+}

@@ -218,3 +218,11 @@ void czxkBusiness::toUi(const std::string &msg, bool state)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
+std::shared_ptr<business> czxkBusiness::clone()
+{
+    czxkBusiness *obj = new czxkBusiness();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
+}

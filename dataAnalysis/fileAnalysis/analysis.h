@@ -7,6 +7,7 @@
 #include <QPair>
 #include <memory>
 #include "analysisrule.h"
+#include "../argParse/argumentparse.h"
 #include "filter.h"
 
 /**
@@ -32,6 +33,13 @@ signals:
      * @brief analysisOver  解析结束
      */
     void analysisOver();
+
+    /**
+     * @brief toParse   解析
+     * @param frameType 帧类型
+     * @param validMsg  有效数据
+     */
+    void toParse(Json::Value param, QByteArray validMsg);
 public slots:
     /**
      * @brief onAnalysis    文件分析
@@ -44,6 +52,7 @@ public slots:
 private:
     QString mCurUuid;
     QString mCurFile;
+    std::shared_ptr<argumentParse> mArgParse;   ///< 参数解析
 };
 
 #endif // ANALYSIS_H

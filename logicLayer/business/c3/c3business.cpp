@@ -273,3 +273,11 @@ void c3Business::toUi(const std::string &msg, bool state)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
+std::shared_ptr<business> c3Business::clone()
+{
+    c3Business *obj = new c3Business();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
+}

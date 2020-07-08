@@ -54,10 +54,6 @@ void xkBusiness::setFrameObj(std::shared_ptr<Pf::PfIcdWorkBench::frameObj> obj)
     mFrameObj = obj;
 }
 
-std::shared_ptr<business> xkBusiness::clone()
-{
-
-}
 
 void xkBusiness::zy(const Json::Value &result)
 {
@@ -185,4 +181,12 @@ void xkBusiness::toUi(const std::string &msg, bool state)
 
     if(mUiBus)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
+}
+std::shared_ptr<business> xkBusiness::clone()
+{
+    xkBusiness *obj = new xkBusiness();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
 }

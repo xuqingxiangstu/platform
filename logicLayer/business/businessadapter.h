@@ -6,7 +6,7 @@
  */
 
 #include <memory>
-
+#include <QMutex>
 #include "business.h"
 
 
@@ -17,9 +17,15 @@ public:
 
     static std::shared_ptr<businessAdapter> getInstance()
     {
-        if(mInstance.get() == nullptr)
+        if(mInstance == nullptr)
         {
-            mInstance = std::make_shared<businessAdapter>();
+            mInMutex.lock();
+            if(mInstance == nullptr)
+            {
+                mInstance = std::make_shared<businessAdapter>();
+            }
+            mInMutex.unlock();
+
         }
         return mInstance;
     }
@@ -32,6 +38,7 @@ public:
     std::shared_ptr<business> getBusiness(const std::string &ptl);
 
 private:
+    static QMutex mInMutex;
     static std::shared_ptr<businessAdapter> mInstance;
     std::unordered_map<std::string, std::shared_ptr<business>> mBusinessManagement; ///< 业务管理适
 };

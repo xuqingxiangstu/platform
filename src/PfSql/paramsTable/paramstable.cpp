@@ -12,6 +12,7 @@
 #include "sqltable.h"
 #include "../../PfCommon/tools/ut_error.h"
 
+QMutex paramsTable::mInstanceMutex;
 paramsTable *paramsTable::mInstance = nullptr;
 
 paramsTable::paramsTable()

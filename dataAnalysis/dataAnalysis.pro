@@ -41,6 +41,7 @@ include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)
 include($$PWD/argParse/argParse.pri)
 include($$PWD/fileAnalysis/fileAnalysis.pri)
+include($$PWD/icdAdapter/icdAdapter.pri)
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/QtPropertyBrowser/lib/ -lQtPropertyBrowser
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/QtPropertyBrowser/lib/ -lQtPropertyBrowserd

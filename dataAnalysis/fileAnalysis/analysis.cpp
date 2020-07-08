@@ -7,7 +7,11 @@
 
 analysis::analysis(QObject *parent) : QObject(parent)
 {
+    mArgParse = std::make_shared<argumentParse>();
 
+    connect(this, &analysis::toParse, mArgParse.get(), &argumentParse::parse);
+
+    connect(mArgParse.get(), &argumentParse::showMessage, this, &analysis::showMessage);
 }
 
 void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analysisRule> rule, std::shared_ptr<filterManager> filterManager)
@@ -38,6 +42,9 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
 
     foreach (QString frame, frames)
     {
+        if(frame.compare("") == 0)
+            continue;
+
         //根据日志格式，匹配时间、系统、方向、类型、有效数据
         logFormatMath match(rule, frame);
 
@@ -47,38 +54,53 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
         //获取待过滤项
         QStringList items = filterItem::items();
 
-        //根据匹配值进行过滤判断
-        for(QString item : items)
+        if(filterManager != nullptr)    ///无效则认为不进行过滤
         {
-            QString value = match.getValue(item);
-            if(value.compare("") == 0)
+            //根据匹配值进行过滤判断
+            for(QString item : items)
             {
-                QString errInfo;
-                errInfo += "[ERROR]";
-                errInfo += "第";
-                errInfo += QString::number(rowIndex, 10);
-                errInfo += "行->";
+                QString value = match.getValue(item);
+                if(value.compare("") == 0)
+                {
+                    QString errInfo;
+                    errInfo += "[ERROR]";
+                    errInfo += "第";
+                    errInfo += QString::number(rowIndex, 10);
+                    errInfo += "行->";
 
-                errInfo += filterItem::chName(item);
+                    errInfo += filterItem::chName(item);
 
-                errInfo += "获取失败";
+                    errInfo += "获取失败";
 
-                emit showMessage(errInfo, false);
+                    emit showMessage(errInfo, false);
 
-                filterRes = false;
-                break;
-            }
-            else
-            {
-                res = filterManager->isMeet(item, value);
+                    filterRes = false;
+                    break;
+                }
+                else
+                {
+                    res = filterManager->isMeet(item, value);
 
-                filterRes &= res;
+                    filterRes &= res;
+                }
             }
         }
 
         if(filterRes)
-        {
-            //TODO:解析
+        {           
+            //获取帧类型
+            QString typeStr = match.getValue(VAR_NAME(frameTypeFilter));
+            int type = typeStr.toInt();
+
+            //获取有效数据
+            QByteArray msg = match.getVaildMsg().toUtf8();
+
+            Json::Value param;
+            param["frameType"] = type;
+            param["rowIndex"] = rowIndex;
+
+            //解析
+            emit toParse(param, QByteArray::fromHex(msg));
         }
 
         rowIndex++;

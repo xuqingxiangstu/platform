@@ -27,8 +27,15 @@ public:
      * @return
      */
     QString getValue(const QString &name);
+
+    /**
+     * @brief getVaildMsg   获取有效消息
+     * @return
+     */
+    QString getVaildMsg(){return mVaildMsg;}
 private:
     QMap<QString, QString> mContexts;
+    QString mVaildMsg;      ///< 有效消息
 };
 
 #endif // FORMATMATH_H

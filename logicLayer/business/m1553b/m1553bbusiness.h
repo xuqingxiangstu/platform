@@ -19,6 +19,7 @@ public:
     void setRecordUuid(const std::string &uuid) override {mRecordUuid = uuid;}
     void setDevUuid(const std::string &uuid) override {mDevUuid = uuid;}
     void setParam(const Json::Value &param) override;
+    std::shared_ptr<business> clone() override;
 private:
     void toUi(const std::string &msg, bool state = true);
 

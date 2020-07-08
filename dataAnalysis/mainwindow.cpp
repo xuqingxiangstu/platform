@@ -73,5 +73,5 @@ void MainWindow::test()
 
     //filterManager *fm = new
 
-    analy.onAnalysis("1", "./logRecord/前端To测发控等效1/2020-06-24/18.32.56.729.dat", rule, nullptr);
+    analy.onAnalysis("1", "./logRecord/前端To信息处理1/2020-06-30/09.37.01.692.dat", rule, nullptr);
 }

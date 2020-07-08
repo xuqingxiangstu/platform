@@ -59,7 +59,12 @@ public:
     static paramsTable *getInstance(){
         if(mInstance == nullptr)
         {
-            mInstance = new paramsTable();
+            mInstanceMutex.lock();
+            if(mInstance == nullptr)
+            {
+                mInstance = new paramsTable();
+            }
+            mInstanceMutex.unlock();
         }
         return mInstance;
     }
@@ -150,6 +155,7 @@ private:
     QSqlDatabase mDb;
     QMutex mMutex;
 private:
+    static QMutex mInstanceMutex;
     static paramsTable *mInstance;
 };
 

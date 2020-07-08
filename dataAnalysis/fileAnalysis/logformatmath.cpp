@@ -11,10 +11,12 @@ logFormatMath::logFormatMath(std::shared_ptr<analysisRule> rule, const QString &
     //qDebug() << values;
     if(values.size() > 4)
     {
-        mContexts[VAR_NAME(timeFilter)] = values[0];
-        mContexts[VAR_NAME(systemFilter)] = values[1];
-        mContexts[VAR_NAME(msgDirectFilter)] = values[2];
-        mContexts[VAR_NAME(frameTypeFilter)] = values[3];
+        int index = 0;
+        mContexts[VAR_NAME(timeFilter)] = values[index++];
+        mContexts[VAR_NAME(systemFilter)] = values[index++];
+        mContexts[VAR_NAME(msgDirectFilter)] = values[index++];
+        mContexts[VAR_NAME(frameTypeFilter)] = values[index++];
+        mVaildMsg = values[index++];
     }
 }
 

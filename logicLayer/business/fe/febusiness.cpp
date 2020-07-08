@@ -140,3 +140,12 @@ void feBusiness::toUi(const std::string &msg, bool state)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
+
+std::shared_ptr<business> feBusiness::clone()
+{
+    feBusiness *obj = new feBusiness();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
+}

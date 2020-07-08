@@ -61,6 +61,7 @@ public:
     void setFrameObj(std::shared_ptr<Pf::PfIcdWorkBench::frameObj> obj) override;
     void setRecordUuid(const std::string &uuid) override {mRecordUuid = uuid;}
     void setDevUuid(const std::string &uuid) override {mDevUuid = uuid;}
+    std::shared_ptr<business> clone() override;
 private:
     void respondCmd(int frameType, int code, Json::Value array, unsigned char srcNode, unsigned char dstNode);
     void toUi(const std::string &msg, bool state = true);

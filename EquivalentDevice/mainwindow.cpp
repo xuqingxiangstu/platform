@@ -453,9 +453,9 @@ void MainWindow::on_expBtn_clicked()
 
 void MainWindow::on_resetBtn_clicked()
 {
-    QString recordUuid = "{cd509e5b-d441-43ad-ba38-ab156afb4227}";
-    QString flowUuid = "{23f4cc6b-746e-433b-bd2b-1ad7792295d8}";
-    QString subFlowUuid = "{066c6392-a1f5-438d-a741-1fd493ed1ad9}";
+    QString recordUuid = "{e52153a8-f737-4e57-9faa-3dae75e86a4d}";
+    QString flowUuid = "{8ffa6148-3912-46f4-91ac-3776c811dbe4}";
+    QString subFlowUuid = "{7cc5c63e-8af3-46f3-8de4-afb236447033}";
 
     QString cmd = "";
 
@@ -473,6 +473,27 @@ void MainWindow::on_resetBtn_clicked()
     cmd += "\"";
     cmd += subFlowUuid;
     cmd += "\"}}";
+
+    emit sendCmd(cmd);
+
+    QString subFlowUuid1 = "{2bfae69c-4028-4e91-bf8e-92373a111aca}";
+
+    QString cmd1 = "";
+
+    cmd1 += "{\"msgType\":\"enforceExe\",\"msg\":{";
+    cmd1 += "\"record_uuid\":\"";
+    cmd1 += recordUuid;
+    cmd1 += "\",";
+
+    cmd1 += "\"flow_uuid\":";
+    cmd1 += "\"";
+    cmd1 += flowUuid;
+    cmd1 += "\",";
+
+    cmd1 += "\"sub_flow_uuid\":";
+    cmd1 += "\"";
+    cmd1 += subFlowUuid1;
+    cmd1 += "\"}}";
 
     emit sendCmd(cmd);
 #if 0

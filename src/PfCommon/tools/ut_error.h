@@ -9,6 +9,9 @@
 #include <iostream>
 
 #include <mutex>
+#include <QDebug>
+#include <QString>
+#include <QTextCodec>
 
 #define INFO_STR(info) infoStr(info, __PRETTY_FUNCTION__, __FILE__, __LINE__)
 
@@ -53,7 +56,22 @@ inline void show(std::string arg, char const * funcName, char const * fileName, 
 
 inline void show(std::string arg)
 {
+#ifndef QT_NO_DEBUG
+
+    QString utf8Str = QString::fromStdString(arg);
+    arg = QTextCodec::codecForName("gb2312")->fromUnicode(utf8Str).data();
+
     std::cout << arg << std::endl;
+#endif
+}
+
+#define QSHOW(err) qShow(err)
+
+inline void qShow(std::string msg)
+{
+#ifndef QT_NO_DEBUG
+    qDebug() << QString::fromStdString(msg);
+#endif
 }
 
 #endif // UT_ERROR_H

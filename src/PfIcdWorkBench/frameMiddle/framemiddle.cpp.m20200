@@ -1628,7 +1628,7 @@ namespace Pf
             //step6：数据
             byteSize = value["info_1_data_len"].asInt();
 
-            value["info_1_src_data"] = QByteArray((const char*)&inBuf[pos], byteSize).toHex().toStdString();
+            value["info_1_src_data"] = QByteArray((const char*)inBuf, byteSize).toHex().toStdString();
 
             if(0 == dataType)
             {
@@ -1761,7 +1761,7 @@ namespace Pf
             //step8：数据
             byteSize = value["info_3_data_len"].asInt();
 
-            value["info_3_src_data"] = QByteArray((const char*)&inBuf[pos], byteSize).toHex().toStdString();
+            value["info_3_src_data"] = QByteArray((const char*)inBuf, byteSize).toHex().toStdString();
 
             if(0 == dataType)
             {
@@ -1818,7 +1818,6 @@ namespace Pf
                 std::string codeKey = "info_" + std::to_string(type + 1) + "_code";
                 std::string tableKey = "info_" + std::to_string(type + 1) + "_table_num";
                 std::string valueKey = "info_" + std::to_string(type + 1) + "_data";
-                std::string srcValueKey = "info_" + std::to_string(type + 1) + "_src_data";
 
                 if(!result["infoWord"].isNull())
                 {
@@ -1838,11 +1837,6 @@ namespace Pf
                         if(!infoWord[index][valueKey].isNull())
                         {
                             tmpJs["value"] = infoWord[index][valueKey].asInt();
-                        }
-
-                        if(!infoWord[index][srcValueKey].isNull())
-                        {
-                            tmpJs["src_value"] = infoWord[index][srcValueKey].asString();
                         }
 
                         value.append(tmpJs);
@@ -1982,8 +1976,6 @@ namespace Pf
                 {
                     std::string calResult = std::string((const char*)&u8Msg[startPos], preValue);
 
-                    tmpValue["src_value"] = QByteArray((const char*)&u8Msg[startPos], preValue).toHex().toStdString();
-
                     tmpValue["value"] = calResult;
 
                     preStartPos = startPos + preValue;
@@ -1991,8 +1983,6 @@ namespace Pf
                 else
                 {
                     unDataConvert pValue = data.getAutoData(u8Msg, u32Size, startPos, byteSize, bitPos, bitSize, bigSmall);
-
-                    tmpValue["src_value"] = QByteArray((const char*)&u8Msg[startPos], byteSize).toHex().toStdString();
 
                     preValue = pValue.i32Value;
                     preStartPos = startPos + byteSize;

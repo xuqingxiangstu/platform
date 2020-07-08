@@ -12,6 +12,7 @@
 #include "./jg/jgbusiness.h"
 
 std::shared_ptr<businessAdapter> businessAdapter::mInstance = nullptr;
+QMutex businessAdapter::mInMutex;
 
 businessAdapter::businessAdapter()
 {
@@ -39,5 +40,5 @@ std::shared_ptr<business> businessAdapter::getBusiness(const std::string &key)
         return nullptr;
     }
 
-    return (itor->second);
+    return (itor->second)->clone();
 }

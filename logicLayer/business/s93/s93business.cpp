@@ -118,3 +118,11 @@ void s93Business::toUi(const std::string &msg, bool state)
         mUiBus->sendMsg(js.toStyledString().c_str(), js.toStyledString().size());
 
 }
+std::shared_ptr<business> s93Business::clone()
+{
+    s93Business *obj = new s93Business();
+
+    std::shared_ptr<business> tmp(obj);
+
+    return tmp;
+}
