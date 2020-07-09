@@ -244,6 +244,7 @@ namespace Pf
                 pos += byteSize;
 
                 //step10：数据字符串
+
                 memcpy(&tmpBuf[pos], str.c_str(), str.size());
                 pos += str.size();
 
@@ -1276,7 +1277,13 @@ namespace Pf
                     startPos = preStartPos;
 
                 if(ncharType == dataType)
-                {
+                {                    
+                    //modify xqx 2020-6-28 09:28:17 字符串长度大于总长度时按照最小获取（字符串异常），软件不至于崩溃
+
+                    preValue > (u32Size - startPos) ? preValue = u32Size - startPos : preValue;
+
+                    //end
+
                     std::string calResult = std::string((const char*)&u8Msg[startPos], preValue);
 
                     tmpValue["value"] = calResult;

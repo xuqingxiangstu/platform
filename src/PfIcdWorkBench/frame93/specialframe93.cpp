@@ -228,10 +228,13 @@ namespace Pf
 
             if(0x93 == frameType)//93帧由 消息标识+子类型组成
             {
-                //子帧标识
-                unsigned char subFrameType = u8Msg[2];
+                if(u32Size > 2)
+                {
+                    //子帧标识
+                    unsigned char subFrameType = u8Msg[2];
 
-                frameType = (u8Msg[0] << 8) | u8Msg[2];
+                    frameType = (u8Msg[0] << 8) | u8Msg[2];
+                }
             }
 
             // 根据帧类型查找数据库进行解析

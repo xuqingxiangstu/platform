@@ -44,4 +44,6 @@ unix {
     INSTALLS += target
 }
 
+include($$PWD/parseResult/parseResult.pri)
+
 LIBS += -L$$OUT_PWD/../../../ -ljsoncpp

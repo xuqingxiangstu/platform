@@ -10,6 +10,7 @@
 
 #include "virtualParams/virtualparams.h"
 
+#include <QDateTime>
 #include <QDebug>
 #include "flow/flow.h"
 #include "../src/PfCommon/jsoncpp/json.h"
@@ -25,8 +26,9 @@ int main(int argc, char *argv[])
 
     qRegisterMetaType<Value>("Value");
 
+    //qDebug() << QDateTime::currentDateTime().toString("hh:mm.ss.zzz");
     paramsTable::getInstance();
-
+    //qDebug() << QDateTime::currentDateTime().toString("hh:mm.ss.zzz");
     virtualParams::getInstance();
 
 #if 0
