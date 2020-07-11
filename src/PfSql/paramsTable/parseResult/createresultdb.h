@@ -1,6 +1,8 @@
 #ifndef CREATERESULTDB_H
 #define CREATERESULTDB_H
 
+#include "../paramstable_global.h"
+
 #include <QMutex>
 #include <memory>
 #include <QString>
@@ -9,7 +11,7 @@
  * @brief The createResultDb class  创建解析结果db文件
  */
 
-class createResultDb
+class PARAMSTABLESHARED_EXPORT createResultDb
 {
 public:
     static std::shared_ptr<createResultDb> getInstance(){
@@ -18,24 +20,21 @@ public:
             mInstanceMutex.lock();
             if(mInstance == nullptr)
             {
-                createResultDb *obj = new createResultDb();
-
-                mInstance = std::shared_ptr<createResultDb>(obj);
+                mInstance = std::make_shared<createResultDb>();
             }
             mInstanceMutex.unlock();
         }
         return mInstance;
     }
-private:
-    createResultDb();
 public:
+    createResultDb();
     ~createResultDb();
 public:
     /**
      * @brief create    创建新数据库
      * @param uuid
      */
-    void create(const QString &uuid);
+    QString create(const QString &uuid);
 private:
     const QString mTemplatePath = "./parseResult/template.db";
     static QMutex mInstanceMutex;

@@ -30,13 +30,19 @@ signals:
      * -false:异常
      */
     void showMessage(QString msg, bool state);
+
+    /**
+     * @brief toDataBase    存储数据库
+     * @param value         数据
+     */
+    void toDataBase(QJsonObject value);
 public slots:
     /**
      * @brief parse     参数解析
      * @param param     参数
      * @param validMsg  有效数据
      */
-    void parse(Json::Value param, QByteArray validMsg);
+    void parse(QString uuid, Json::Value param, QByteArray validMsg);
 private:
     /**
      * @brief feParamExtract    FE帧参数提取
@@ -51,6 +57,7 @@ private:
     void beParamExtract(std::shared_ptr<PfIcdWorkBench::frameObj> obj, const Json::Value &result);    
 private:
     QMap<QString, std::shared_ptr<argExtract>> mArgExtracts;
+    QString mCurUuid;
 };
 
 //Q_DECLARE_METATYPE(Json::Value)

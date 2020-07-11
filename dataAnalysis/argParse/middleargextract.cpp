@@ -1,5 +1,6 @@
 #include "middleargextract.h"
 
+#include "../src/PfSql/paramsTable/parseResult/resulttable.h"
 #include "../src/PfSql/paramsTable/paramstable.h"
 #include "../src/PfCommon/tools/ut_error.h"
 #include <QDebug>
@@ -16,12 +17,13 @@ middleArgExtract::~middleArgExtract()
 
 }
 
-void middleArgExtract::extract(const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result)
+void middleArgExtract::extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result)
 {
     //更新参数
     Json::Value newJs;
     int infoType = -1;
 
+    mCurUuid = uuid;
     mOtherParam = otherParam;
 
     if(frameObj->getValidValue(result, newJs, infoType))
@@ -183,6 +185,23 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
         }
 
     }
+
+    //存入数据库
+    QJsonObject objJs;
+
+    objJs.insert(RESULT_TABLE_TABLE_NUM, QString::number(table, 10));
+    objJs.insert(RESULT_TABLE_CODING_NUM, (int)coding);
+    objJs.insert(RESULT_TABLE_HEX_VALUE, QString::fromStdString(srcValue));
+    objJs.insert(RESULT_TABLE_MEAN, QString::fromStdString(chMean));
+    objJs.insert(RESULT_TABLE_PARSE_VALUE, QString::fromStdString(value.asString()));
+    objJs.insert(RESULT_TABLE_TIME, QString::fromStdString(mOtherParam["time"].asString()));
+
+    if(isOver)
+        objJs.insert(RESULT_TABLE_IS_OVER, 1);
+    else
+        objJs.insert(RESULT_TABLE_IS_OVER, 0);
+
+    emit writeToDb(objJs);
 
 #ifdef PRINT_RESULT
 

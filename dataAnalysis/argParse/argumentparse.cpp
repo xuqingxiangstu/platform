@@ -12,14 +12,23 @@
 
 argumentParse::argumentParse(QObject *parent) : QObject(parent)
 {
-    mArgExtracts[FRAME_MIDDLE] = std::make_shared<middleArgExtract>();
+
+    auto middleObj = std::make_shared<middleArgExtract>();
+
+    connect(middleObj.get(), &middleArgExtract::writeToDb, this, &argumentParse::toDataBase);
+
+    mArgExtracts[FRAME_MIDDLE] = middleObj;
+
+
     mArgExtracts[FRAME_BE] = std::make_shared<beArgExtract>();
     mArgExtracts[FRAME_FE] = std::make_shared<feArgExtract>();
 }
 
-void argumentParse::parse(Json::Value param, QByteArray vaildMsg)
+void argumentParse::parse(QString uuid, Json::Value param, QByteArray vaildMsg)
 {
     std::ostringstream errorInfo;
+
+    mCurUuid = uuid;
 
     int frameType = param["frameType"].asInt();
     int rowIndex = param["rowIndex"].asInt();
@@ -50,7 +59,7 @@ void argumentParse::parse(Json::Value param, QByteArray vaildMsg)
 
         if(mArgExtracts.contains(frameKey))
         {
-            mArgExtracts[frameKey]->extract(param, frameObj, result);
+            mArgExtracts[frameKey]->extract(mCurUuid, param, frameObj, result);
         }
         else
         {

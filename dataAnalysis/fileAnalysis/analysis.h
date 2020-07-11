@@ -39,7 +39,13 @@ signals:
      * @param frameType 帧类型
      * @param validMsg  有效数据
      */
-    void toParse(Json::Value param, QByteArray validMsg);
+    void toParse(QString uuid, Json::Value param, QByteArray validMsg);
+
+    /**
+     * @brief toDataBase    存储数据库
+     * @param value         数据
+     */
+    void toDataBase(QJsonObject value);
 public slots:
     /**
      * @brief onAnalysis    文件分析

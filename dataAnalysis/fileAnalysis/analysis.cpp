@@ -9,6 +9,7 @@ analysis::analysis(QObject *parent) : QObject(parent)
 {
     mArgParse = std::make_shared<argumentParse>();
 
+    connect(mArgParse.get(), &argumentParse::toDataBase, this, &analysis::toDataBase);
     connect(this, &analysis::toParse, mArgParse.get(), &argumentParse::parse);
 
     connect(mArgParse.get(), &argumentParse::showMessage, this, &analysis::showMessage);
@@ -98,9 +99,10 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
             Json::Value param;
             param["frameType"] = type;
             param["rowIndex"] = rowIndex;
+            param["time"] = match.getValue(VAR_NAME(timeFilter)).toStdString();
 
             //解析
-            emit toParse(param, QByteArray::fromHex(msg));
+            emit toParse(mCurUuid, param, QByteArray::fromHex(msg));
         }
 
         rowIndex++;

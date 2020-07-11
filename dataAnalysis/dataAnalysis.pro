@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-
+QT       += sql
 CONFIG += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -23,25 +23,29 @@ SOURCES += main.cpp\
     workspacearea.cpp \
     messagearea.cpp \
     fileanalysisbusiness.cpp \
-    standardtime.cpp
+    standardtime.cpp \
+    datashowtable.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
     workspacearea.h \
     messagearea.h \
     fileanalysisbusiness.h \
-    standardtime.h
+    standardtime.h \
+    datashowtable.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \
     workspacearea.ui \
-    messagearea.ui
+    messagearea.ui \
+    datashowtable.ui
 
 include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)
 include($$PWD/argParse/argParse.pri)
 include($$PWD/fileAnalysis/fileAnalysis.pri)
 include($$PWD/icdAdapter/icdAdapter.pri)
+include($$PWD/argSave/argSave.pri)
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/QtPropertyBrowser/lib/ -lQtPropertyBrowser
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/QtPropertyBrowser/lib/ -lQtPropertyBrowserd

@@ -13,7 +13,7 @@ feArgExtract::~feArgExtract()
 
 }
 
-void feArgExtract::extract(const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result)
+void feArgExtract::extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result)
 {
     if(!result["region"].isNull())
     {

@@ -10,12 +10,19 @@ createResultDb::createResultDb()
 
 }
 
-void createResultDb::create(const QString &uuid)
+createResultDb::~createResultDb()
+{
+
+}
+
+QString createResultDb::create(const QString &uuid)
 {
     QString dstFilePath = "./parseResult/" + uuid + ".db";
 
-    if(QFile::exists(mTemplatePath))
+    if(QFile::exists(mTemplatePath) && !QFile::exists(dstFilePath))
     {
         QFile::copy(mTemplatePath, dstFilePath);
     }
+
+    return dstFilePath;
 }

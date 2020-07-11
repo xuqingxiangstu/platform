@@ -15,7 +15,7 @@ public:
 signals:
 
 public:
-    void extract(const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result) override;
+    void extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result) override;
 };
 
 #endif // FEARGEXTRACT_H

@@ -6,6 +6,9 @@ workspaceArea::workspaceArea(QWidget *parent) :
     ui(new Ui::workspaceArea)
 {
     ui->setupUi(this);
+
+    mDataShowTable = new dataShowTable();
+    ui->verticalLayout_2->addWidget(mDataShowTable);
 }
 
 workspaceArea::~workspaceArea()

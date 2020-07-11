@@ -2,7 +2,9 @@
 #include "ui_mainwindow.h"
 #include "./fileAnalysis/analysis.h"
 #include "./property/templateproperty.h"
+#include "./argSave/saveDataBaseTask.h"
 
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QDebug>
 
@@ -57,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
         exit(0);
     }
 
-    test();
+   // test();
 }
 
 MainWindow::~MainWindow()
@@ -67,11 +69,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::test()
 {
+    QEventLoop lp;
+
     analysis analy;
     std::shared_ptr<analysisRule> rule = std::make_shared<analysisRule>();
     rule->setSegmentationMark("\n");
 
     //filterManager *fm = new
 
+    std::shared_ptr<saveDataBaseTask > saveTask = std::make_shared<saveDataBaseTask>();
+
+    connect(&analy, &analysis::toDataBase, saveTask.get(), &saveDataBaseTask::onWrite);
+
+    connect(saveTask.get(), &saveDataBaseTask::noMsg, &lp, &QEventLoop::quit);
+
+    saveTask->startTask("test");
+
     analy.onAnalysis("1", "./logRecord/前端To信息处理1/2020-06-30/09.37.01.692.dat", rule, nullptr);
+
+    saveTask->onOver();
+
+    lp.exec();
 }

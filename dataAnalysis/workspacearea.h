@@ -3,6 +3,8 @@
 
 #include <QWidget>
 
+#include "datashowtable.h"
+
 namespace Ui {
 class workspaceArea;
 }
@@ -14,7 +16,8 @@ class workspaceArea : public QWidget
 public:
     explicit workspaceArea(QWidget *parent = 0);
     ~workspaceArea();
-
+private:
+    dataShowTable *mDataShowTable;
 private:
     Ui::workspaceArea *ui;
 };

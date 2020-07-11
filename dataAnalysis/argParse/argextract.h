@@ -4,8 +4,9 @@
 #include "../icdAdapter/icdmanager.h"
 
 #include <QObject>
+#include <QJsonObject>
 
-#define PRINT_RESULT    0   //打印结果宏定义，屏蔽则不需要打印
+//#define PRINT_RESULT    0   //打印结果宏定义，屏蔽则不需要打印
 
 /**
  * @brief The argExtract class  参数提取基类
@@ -29,7 +30,7 @@ public:
      * @param frameObj  解析类
      * @param result    解析结果
      */
-    virtual void extract(const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result){}
+    virtual void extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result){}
 };
 
 #endif // ARGEXTRACT_H

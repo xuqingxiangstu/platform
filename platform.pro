@@ -4,9 +4,9 @@ SUBDIRS += \
     src \
     #examples \
     #template \
-    logicLayer \
+    #logicLayer \
     #EquivalentDevice\
     #eq \
-    #dataAnalysis \
+    dataAnalysis \
     #mulitThreadSqlite
 

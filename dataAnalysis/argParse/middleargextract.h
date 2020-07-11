@@ -3,6 +3,7 @@
 
 #include "argextract.h"
 
+
 /**
  * @brief The middleArgExtract class    中间件参数提取
  */
@@ -13,9 +14,13 @@ public:
     middleArgExtract(QObject *parent = 0);
     ~middleArgExtract();
 signals:
-
+    /**
+     * @brief writeToDb 存入数据库
+     * @param value     值
+     */
+    void writeToDb(QJsonObject value);
 public:
-    void extract(const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result) override;
+    void extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result) override;
 private:
     /**
      * @brief judge     参数判读
@@ -26,6 +31,7 @@ private:
     void judge(const unsigned int &table, const unsigned int &coding, const Json::Value &value, const std::string &srcValue);
 private:
     Json::Value mOtherParam;
+    QString mCurUuid;
 };
 
 #endif // MIDDLEARGEXTRACT_H

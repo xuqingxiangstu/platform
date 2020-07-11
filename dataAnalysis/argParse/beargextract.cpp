@@ -13,7 +13,7 @@ beArgExtract::~beArgExtract()
 
 }
 
-void beArgExtract::extract(const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result)
+void beArgExtract::extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result)
 {
     //更新信息字格式1、3参数
     Json::Value newJs;
