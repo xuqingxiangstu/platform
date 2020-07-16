@@ -39,6 +39,10 @@
     <property name="title">
      <string>文件</string>
     </property>
+    <addaction name="actionNewPrj"/>
+    <addaction name="actionUsedPrj"/>
+    <addaction name="actionCloseAll"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menu_2">
     <property name="title">
@@ -55,6 +59,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionParse"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -176,6 +181,37 @@ border: 1px solid gray;
     </layout>
    </widget>
   </widget>
+  <action name="actionNewPrj">
+   <property name="text">
+    <string>新建工程</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>退出</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionUsedPrj">
+   <property name="text">
+    <string>最近使用项目</string>
+   </property>
+  </action>
+  <action name="actionCloseAll">
+   <property name="text">
+    <string>关闭所有项目</string>
+   </property>
+  </action>
+  <action name="actionParse">
+   <property name="text">
+    <string>解析</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -68,6 +68,11 @@ void resultTable::insertMultiValue(const QJsonArray &values)
         value += ",";
 
         value += "'";
+        value += obj.value(RESULT_TABLE_NAME).toString();
+        value += "'";
+        value += ",";
+
+        value += "'";
         value += obj.value(RESULT_TABLE_TIME).toString();
         value += "'";
         value += ",";
@@ -92,6 +97,7 @@ void resultTable::insertMultiValue(const QJsonArray &values)
         QString sql = "insert into " + mTableName + "("
                     + RESULT_TABLE_TABLE_NUM +
                     ", " + RESULT_TABLE_CODING_NUM
+                    + ", " + RESULT_TABLE_NAME
                     + ", " + RESULT_TABLE_TIME
                     + "," + RESULT_TABLE_HEX_VALUE
                     + "," + RESULT_TABLE_PARSE_VALUE

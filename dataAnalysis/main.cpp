@@ -8,9 +8,14 @@
 
 #include "./argSave/databasemanager.h"
 
+#include "./project/projectcfg.h"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    projectCfg cfg;
+    cfg.loadCfg("./project/test.xml");
 
 #if 0
    // QString dbPath = createResultDb::getInstance()->create("test");

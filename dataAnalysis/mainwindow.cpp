@@ -5,6 +5,9 @@
 #include "./argSave/saveDataBaseTask.h"
 
 #include <QEventLoop>
+#include "newprjdialog.h"
+
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QDebug>
 
@@ -59,7 +62,23 @@ MainWindow::MainWindow(QWidget *parent) :
         exit(0);
     }
 
-   // test();
+    //test();
+
+    connect(ui->actionNewPrj, &QAction::triggered, [=](){
+        newPrjDialog dlg;
+        int res = dlg.exec();
+        qDebug() << res;
+        if(QDialog::Accepted == res)
+        {
+            QString name = dlg.getPrjName();
+            QString path = dlg.getPrjPath();
+            mProjectNavigationWidget->createProject(name, "1234");
+        }
+        else
+        {
+
+        }
+    });
 }
 
 MainWindow::~MainWindow()

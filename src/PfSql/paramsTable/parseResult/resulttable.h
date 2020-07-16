@@ -23,6 +23,7 @@
 #define RESULT_TABLE_PARSE_VALUE    "PARSE_VALUE"
 #define RESULT_TABLE_MEAN           "MEAN"
 #define RESULT_TABLE_IS_OVER        "IS_OVER"
+#define RESULT_TABLE_NAME           "NAME"
 
 /**
  * @brief The resultTable class 解析结果表
@@ -64,6 +65,8 @@ public:
     void clearTable();
 
     QSqlDatabase getDataBase(){return mDb;}
+public:
+    //bool queryAfterContextFromTime(const QString &user, const QDateTime &time, const int &count, QJsonArray &values);
 private:
     bool query(const QString &sql, QJsonArray &values);
 private:

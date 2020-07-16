@@ -92,7 +92,7 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
 {
     bool findMean = false;
     std::string chMean = "";
-
+    std::string paramName = "";
     bool isOver = false;
 
     Json::Value confJs;
@@ -102,6 +102,7 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
 
         std::string minStr = confJs[PARAM_TABLE_MIN_VALUE].asString();
         std::string maxStr = confJs[PARAM_TABLE_MAX_VALUE].asString();
+        paramName = confJs[PARAM_TABLE_PARAM_NAME].asString();
 
         if(minStr == "" && maxStr == "")
         {
@@ -191,6 +192,7 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
 
     objJs.insert(RESULT_TABLE_TABLE_NUM, QString::number(table, 10));
     objJs.insert(RESULT_TABLE_CODING_NUM, (int)coding);
+    objJs.insert(RESULT_TABLE_NAME, QString::fromStdString(paramName));
     objJs.insert(RESULT_TABLE_HEX_VALUE, QString::fromStdString(srcValue));
     objJs.insert(RESULT_TABLE_MEAN, QString::fromStdString(chMean));
     objJs.insert(RESULT_TABLE_PARSE_VALUE, QString::fromStdString(value.asString()));
