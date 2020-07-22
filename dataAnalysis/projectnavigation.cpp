@@ -1,11 +1,14 @@
 #include "projectnavigation.h"
 #include "ui_projectnavigation.h"
 #include "./property/templateproperty.h"
+#include "./project/projecttemplate.h"
 #include <QVariant>
+#include <QFile>
 #include <QUuid>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
+#include <QSettings>
 
 projectNavigation::projectNavigation(QWidget *parent) :
     QWidget(parent),
@@ -20,7 +23,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
     mPopMenu->addAction(ui->actionParse);
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-    //connect(ui->treeWidget, &QTreeWidget::itemClicked, this, &recordNavigation::onItemClicked);
+    connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &projectNavigation::onDoubleClicked);
 
     connect(mPopMenu, &QMenu::triggered, [=](QAction *action){
        //onMenuTrigger(action);
@@ -67,11 +70,36 @@ projectNavigation::projectNavigation(QWidget *parent) :
     connect(ui->actionParse, &QAction::triggered, [=](){
        onAnalysis();
     });
+
+    mFileAnalysisBusiness = std::make_shared<fileAnalysisBusiness>();
+    connect(this, &projectNavigation::analysis, mFileAnalysisBusiness.get(), &fileAnalysisBusiness::onAnalysis);
+    connect(mFileAnalysisBusiness.get(), &fileAnalysisBusiness::showMessage, this, &projectNavigation::showMessage);
 }
 
 projectNavigation::~projectNavigation()
 {
     delete ui;
+}
+
+void projectNavigation::onDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    if(item)
+    {
+        recordRole role = item->data(Name_Index, Qt::UserRole).value<recordRole>();
+
+        if(Table_Node == role.nodeType)
+        {
+            emit showTableWidget(role.uuid, role.uuid);
+        }
+        else if(S_Img_Node == role.nodeType)
+        {
+            emit showSingleImgWidget(role.uuid, role.uuid);
+        }
+        else if(Time_Img_Node == role.nodeType)
+        {
+            emit showMultImgWidget(role.uuid, role.uuid);
+        }
+    }
 }
 
 QTreeWidgetItem *projectNavigation::findPrjFromUuid(const QString &uuid)
@@ -92,6 +120,58 @@ QTreeWidgetItem *projectNavigation::findPrjFromUuid(const QString &uuid)
     return item;
 }
 
+QString projectNavigation::getDbPathByUuid(const QString &uuid)
+{
+    QString path;
+
+    QTreeWidgetItem *prjItem = findPrjFromUuid(uuid);
+    if(!prjItem)
+    {
+        return path;
+    }
+
+    recordRole role = prjItem->data(Name_Index, Qt::UserRole).value<recordRole>();
+
+    path = role.proPath;
+
+    path += "/result/";
+    path += uuid;
+    path += ".db";
+
+    return path;
+}
+
+QStringList projectNavigation::getDataFiles(const QString &uuid)
+{
+    QStringList resultFiles;
+
+    QTreeWidgetItem *prjItem = findPrjFromUuid(uuid);
+    if(!prjItem)
+    {
+        return resultFiles;
+    }
+
+    for(int index = 0; index < prjItem->childCount(); index++)
+    {
+        auto item = prjItem->child(index);
+        recordRole role = item->data(Name_Index, Qt::UserRole).value<recordRole>();
+        if(DataFile_Group_Node == role.nodeType)
+        {
+
+            for(int subIndex = 0; subIndex < item->childCount(); subIndex++)
+            {
+                auto subItem = item->child(subIndex);
+                recordRole subRole = subItem->data(Name_Index, Qt::UserRole).value<recordRole>();
+                if(DataFile_Node == subRole.nodeType)
+                {
+                    resultFiles.append(subRole.filePath);
+                }
+            }
+            break;
+        }
+    }
+}
+
 void projectNavigation::onAnalysis()
 {
     QStringList allFiles;
@@ -108,38 +188,24 @@ void projectNavigation::onAnalysis()
     //通过uuid找到工程item
     recordRole role = curItem->data(Name_Index, Qt::UserRole).value<recordRole>();
 
-    QTreeWidgetItem *prjItem = findPrjFromUuid(role.uuid);
-    if(!prjItem)
+    allFiles = getDataFiles(role.uuid);
+
+    //step2：解析
+
+    QVector<QPair<QString, std::shared_ptr<analysisRule>>> fileInfo;
+
+    for(QString path : allFiles)
     {
-        QMessageBox::information(this, "提示", "未找到工程item节点");
-        return ;
+        //规则
+        std::shared_ptr<analysisRule> rule = std::make_shared<analysisRule>();
+        rule->setSegmentationMark("\n");
+
+        fileInfo.append(qMakePair(path, rule));
     }
 
-    for(int index = 0; index < prjItem->childCount(); index++)
-    {
-        auto item = prjItem->child(index);
-        recordRole role = item->data(Name_Index, Qt::UserRole).value<recordRole>();
-        if(DataFile_Group_Node == role.nodeType)
-        {
+    QString dbPath = getDbPathByUuid(role.uuid);
 
-            for(int subIndex = 0; subIndex < item->childCount(); subIndex++)
-            {
-                auto subItem = item->child(subIndex);
-                recordRole subRole = subItem->data(Name_Index, Qt::UserRole).value<recordRole>();
-                if(DataFile_Node == subRole.nodeType)
-                {
-                    allFiles.append(subRole.filePath);
-                }
-            }
-
-            break;
-        }
-    }
-
-    qDebug() << allFiles;
-    //step2；显示进度条
-
-    //step3：解析
+    emit analysis(role.uuid, dbPath, fileInfo);
 }
 
 void projectNavigation::onAddFiles()
@@ -157,17 +223,69 @@ void projectNavigation::onAddFiles()
     if (fileDialog.exec() == QDialog::Accepted)
     {
         //strPathList  返回值是一个list，如果是单个文件选择的话，只要取出第一个来就行了。
-        QStringList files = fileDialog.selectedFiles();
+        QStringList srcFiles = fileDialog.selectedFiles();
 
         recordRole role = mCurSelectItem->data(Name_Index, Qt::UserRole).value<recordRole>();
 
-        createFileNode(mCurSelectItem, role.uuid, files);
+        //将文件拷贝到工程目录下
+
+        QStringList dstFiles;
+
+        if(mProjcetCfgManager.contains(role.uuid))
+        {
+             dstFiles = mProjcetCfgManager[role.uuid]->copy(srcFiles);
+
+             createFileNode(mCurSelectItem, role.uuid, dstFiles);
+
+             mProjcetCfgManager[role.uuid]->setDataFiles(getDataFiles(role.uuid));
+
+             mProjcetCfgManager[role.uuid]->save();
+        }
     }
 }
 
-void projectNavigation::createProject(const QString &name, const QString &uuid, const QStringList &files)
+void projectNavigation::loadProject(const QString &proFile)
 {
-    QTreeWidgetItem *prjItem = createPrjNode(uuid, name);
+    if(!QFile::exists(proFile))
+        return ;
+
+    QString proPath = proFile.left(proFile.lastIndexOf("/"));
+
+    //加载工程配置
+    std::shared_ptr<projectCfg> prjCfg = std::make_shared<projectCfg>();
+    prjCfg->load(proPath, "");
+
+    QString uuid = prjCfg->getUuid();
+
+    mProjcetCfgManager[uuid] = prjCfg;
+
+    QTreeWidgetItem *prjItem = createPrjNode(uuid, proPath, prjCfg->getPrjName());
+
+    auto *fileGroupItem = createFileGroupNode(uuid);
+
+    createFileNode(fileGroupItem, uuid, prjCfg->getDataFiles());
+
+    prjItem->addChild(fileGroupItem);
+
+    prjItem->addChild(createTableNode(uuid));
+
+    prjItem->addChild(createSingleImgNode(uuid));
+
+    prjItem->addChild(createTimeImgNode(uuid));
+
+    prjItem->setExpanded(true);
+
+    ui->treeWidget->addTopLevelItem(prjItem);
+
+    ui->treeWidget->expandItem(prjItem);
+}
+
+QString projectNavigation::createProject(const QString &name, const QString &proPath, const QStringList &files)
+{
+    //创建uuid
+    QString uuid = QUuid::createUuid().toString();
+
+    QTreeWidgetItem *prjItem = createPrjNode(uuid, proPath, name);
 
     auto *fileGroupItem = createFileGroupNode(uuid);
 
@@ -186,9 +304,28 @@ void projectNavigation::createProject(const QString &name, const QString &uuid, 
     ui->treeWidget->addTopLevelItem(prjItem);
 
     ui->treeWidget->expandItem(prjItem);
+
+    //创建工程模板
+    projectTemplate::create(name, proPath, uuid);
+
+    //加载工程配置
+    std::shared_ptr<projectCfg> prjCfg = std::make_shared<projectCfg>();
+    prjCfg->load(proPath + "/" + name, uuid);
+    prjCfg->setPrjName(name);
+    prjCfg->save();
+
+    mProjcetCfgManager[uuid] = prjCfg;
+
+    //存储最近使用路径
+    QSettings prjSettings("BJTU", "dataAnalysis");
+    QStringList recentlyPrj = prjSettings.value("recently_used").toStringList();
+    recentlyPrj.append(proPath + "/" + name + "/" + name + ".prj");
+    prjSettings.setValue("recently_used", recentlyPrj);
+
+    return uuid;
 }
 
-QTreeWidgetItem *projectNavigation::createPrjNode(const QString &uuid, const QString &name)
+QTreeWidgetItem *projectNavigation::createPrjNode(const QString &uuid, const QString &proPath, const QString &name)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem();
 
@@ -197,6 +334,7 @@ QTreeWidgetItem *projectNavigation::createPrjNode(const QString &uuid, const QSt
     recordRole role;
     role.nodeType = Prj_Node;
     role.uuid = uuid;
+    role.proPath = proPath;
 
     data.setValue(role);
 

@@ -27,12 +27,12 @@ signals:
      * -true:正常
      * -false:异常
      */
-    void showMessage(QString msg, bool state);
+    void showMessage(QString msg, bool state = true);
 
     /**
      * @brief analysisOver  解析结束
      */
-    void analysisOver();
+    void analysisOver(QString uuid);
 
     /**
      * @brief toParse   解析
@@ -46,6 +46,12 @@ signals:
      * @param value         数据
      */
     void toDataBase(QJsonObject value);
+
+    /**
+     * @brief analyStep 解析步骤
+     * @param cur       当前步骤
+     */
+    void step(int cur);
 public slots:
     /**
      * @brief onAnalysis    文件分析
@@ -60,5 +66,7 @@ private:
     QString mCurFile;
     std::shared_ptr<argumentParse> mArgParse;   ///< 参数解析
 };
+
+
 
 #endif // ANALYSIS_H

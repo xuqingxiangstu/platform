@@ -22,6 +22,12 @@ public:
     ~MainWindow();
 private:
     void test();
+
+    /**
+     * @brief loadProject   加载已有工程
+     * @param path
+     */
+    void loadProject(const QString &path);
 private:
     projectNavigation *mProjectNavigationWidget;    ///< 导航区
     propertyWidget *mNavigationPropertyObj; //导航属性

@@ -24,7 +24,7 @@ public:
     explicit saveDataBaseTask(QObject *parent = 0);
     ~saveDataBaseTask();
 public:
-    void startTask(const QString &uuid);
+    void startTask(const QString &dbPath, const QString &uuid);
 private:
     void run();
 signals:
@@ -36,6 +36,8 @@ private:
     std::shared_ptr<resultTable> mResultTable;
     QQueue<QJsonObject> mDataQueue;
     QMutex mMsgMutex;
+    QString mDbPath;
+    QString mUuid;
     std::atomic_bool mIsStop;
     std::atomic_bool mIsOver;
 };

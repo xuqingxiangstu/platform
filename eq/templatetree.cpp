@@ -85,6 +85,7 @@ void templateTree::searchTreeAndHighlight(QString strKey)
     while (*Itor)
     {
 
+        //只查第二级，第一级不查寻
         std::shared_ptr<dragRole> role = (*Itor)->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
         if( (dragRole::Node_Cmd == role->getNodeType())
                 || (dragRole::Node_Cmd_Group == role->getNodeType())

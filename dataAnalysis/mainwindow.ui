@@ -32,15 +32,20 @@
      <x>0</x>
      <y>0</y>
      <width>1039</width>
-     <height>30</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
      <string>文件</string>
     </property>
+    <widget class="QMenu" name="useredMenu">
+     <property name="title">
+      <string>最近使用项目</string>
+     </property>
+    </widget>
     <addaction name="actionNewPrj"/>
-    <addaction name="actionUsedPrj"/>
+    <addaction name="useredMenu"/>
     <addaction name="actionCloseAll"/>
     <addaction name="actionExit"/>
    </widget>
@@ -64,20 +69,20 @@
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>400</width>
      <height>102</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>524287</width>
+     <width>400</width>
      <height>524287</height>
     </size>
    </property>
@@ -110,6 +115,18 @@ border: 1px solid gray;
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget_2">
+   <property name="minimumSize">
+    <size>
+     <width>400</width>
+     <height>55</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>524287</height>
+    </size>
+   </property>
    <property name="styleSheet">
     <string notr="true">QDockWidget &gt; QWidget {
 border: 1px solid gray;
@@ -157,10 +174,22 @@ border: 1px solid gray;
   </widget>
   <widget class="QDockWidget" name="dockWidget_4">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>55</width>
+     <height>55</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>524287</height>
+    </size>
    </property>
    <property name="styleSheet">
     <string notr="true">QDockWidget &gt; QWidget {
@@ -197,11 +226,6 @@ border: 1px solid gray;
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionUsedPrj">
-   <property name="text">
-    <string>最近使用项目</string>
-   </property>
-  </action>
   <action name="actionCloseAll">
    <property name="text">
     <string>关闭所有项目</string>
@@ -210,6 +234,11 @@ border: 1px solid gray;
   <action name="actionParse">
    <property name="text">
     <string>解析</string>
+   </property>
+  </action>
+  <action name="action123">
+   <property name="text">
+    <string>123</string>
    </property>
   </action>
  </widget>

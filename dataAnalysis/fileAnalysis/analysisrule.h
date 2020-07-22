@@ -3,6 +3,8 @@
 
 #include <QString>
 #include <QDateTime>
+#include <QObject>
+#include <memory>
 
 /**
  * @brief The analysisRule class    解析规则
@@ -39,5 +41,7 @@ private:
     QString mSegmentationMark = "\n";               ///< 分割标志（每帧之间分割标志）
     QString mTimeFormat = "yyyy/M/d h:mm:ss.zz";    ///< 时间解析格式
 };
+
+Q_DECLARE_METATYPE(std::shared_ptr<analysisRule>)
 
 #endif // ANALYSISRULE_H

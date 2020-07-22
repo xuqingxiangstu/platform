@@ -73,6 +73,7 @@ private:
     const QString mTableName = "result";
     QReadWriteLock mDataMutex;
     QSqlDatabase mDb;
+    QString mUuid;
 };
 
 #endif // RESULTTABLE_H

@@ -27,7 +27,7 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
 
         emit showMessage(errInfo, false);
 
-        emit analysisOver();
+        emit analysisOver(uuid);
 
         return ;
     }
@@ -105,6 +105,10 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
             emit toParse(mCurUuid, param, QByteArray::fromHex(msg));
         }
 
+        emit step(rowIndex);
+
         rowIndex++;
     }
+
+    emit analysisOver(uuid);
 }

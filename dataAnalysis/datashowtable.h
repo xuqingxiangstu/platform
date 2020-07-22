@@ -6,6 +6,7 @@
 
 #include "./argSave/databasemanager.h"
 
+
 namespace Ui {
 class dataShowTable;
 }
@@ -37,7 +38,7 @@ const QStringList mTableFiledName = {
 };
 
 public:
-    explicit dataShowTable(QWidget *parent = 0);
+    explicit dataShowTable(QString dbName, QWidget *parent = 0);
     ~dataShowTable();
 private:
     void initTable();
@@ -48,7 +49,7 @@ private:
     void query(const QString &sql);
 private:
     QSqlQueryModel *mDataModel;
-    QSqlDatabase db;
+    QSqlDatabase mDb;
     QString mSelectField;
     const QString mTableName = "result";
 private:

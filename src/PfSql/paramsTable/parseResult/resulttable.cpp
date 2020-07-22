@@ -10,29 +10,46 @@
 
 resultTable::resultTable(QString dbPath, QString uuid)
 {
-    mDb = QSqlDatabase::addDatabase("QSQLITE", uuid);
-
-    QString filePath = dbPath;
-
-    QFileInfo info(filePath);
-
-    if(!info.exists(filePath))
+    if(QSqlDatabase::contains(uuid))
     {
-        throw std::runtime_error("open error" + filePath.toStdString());
+        mDb = QSqlDatabase::database(uuid);
+    }
+    else
+    {
+        mDb = QSqlDatabase::addDatabase("QSQLITE", uuid);
+
+        mUuid = uuid;
+
+        QString filePath = dbPath;
+
+        QFileInfo info(filePath);
+
+        if(!info.exists(filePath))
+        {
+            throw std::runtime_error("open error" + filePath.toStdString());
+        }
+
+        mDb.setDatabaseName(filePath);
+
+        if(!mDb.open() )
+        {
+            throw std::runtime_error(mDb.lastError().text().toStdString());
+        }
     }
 
-    mDb.setDatabaseName(filePath);
-
-    if(!mDb.open() )
-    {
-        throw std::runtime_error(mDb.lastError().text().toStdString());
-    }
 }
 
 resultTable::~resultTable()
 {
+#if 0
     if(mDb.isOpen())
+    {
         mDb.close();
+    }
+
+    if(QSqlDatabase::contains(mUuid))
+        QSqlDatabase::removeDatabase(mUuid);
+#endif
 }
 
 void resultTable::clearTable()

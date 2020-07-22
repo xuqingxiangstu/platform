@@ -26,7 +26,10 @@ SOURCES += main.cpp\
     fileanalysisbusiness.cpp \
     standardtime.cpp \
     datashowtable.cpp \
-    newprjdialog.cpp
+    newprjdialog.cpp \
+    datashowwidget.cpp \
+    dssingleimg.cpp \
+    dsmuiltimg.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
@@ -35,14 +38,20 @@ HEADERS  += mainwindow.h \
     fileanalysisbusiness.h \
     standardtime.h \
     datashowtable.h \
-    newprjdialog.h
+    newprjdialog.h \
+    datashowwidget.h \
+    dssingleimg.h \
+    dsmuiltimg.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \
     workspacearea.ui \
     messagearea.ui \
     datashowtable.ui \
-    newprjdialog.ui
+    newprjdialog.ui \
+    datashowwidget.ui \
+    dssingleimg.ui \
+    dsmuiltimg.ui
 
 include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)

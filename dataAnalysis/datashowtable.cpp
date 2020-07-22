@@ -5,8 +5,9 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QSqlError>
+#include <QUuid>
 
-dataShowTable::dataShowTable(QWidget *parent) :
+dataShowTable::dataShowTable(QString dbName, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::dataShowTable)
 {
@@ -18,9 +19,23 @@ dataShowTable::dataShowTable(QWidget *parent) :
         if(index != (mTableFiledName.size() - 1))
             mSelectField += ",";
     }
+#if 1
+    if(QSqlDatabase::contains(dbName))
+    {
+        mDb = QSqlDatabase::database(dbName);
+    }
+#else
+    QString uuid = QUuid::createUuid().toString();
 
+    mDb = QSqlDatabase::addDatabase("QSQLITE", uuid);
 
-    db = databaseManager::getInstance()->getDataBase("test")->getDataBase();
+    mDb.setDatabaseName(dbName);
+
+    if(!mDb.open() )
+    {
+        throw std::runtime_error(mDb.lastError().text().toStdString());
+    }
+#endif
 
     initTable();
 
@@ -83,7 +98,7 @@ void dataShowTable::initTable()
 
 void dataShowTable::query(const QString &sql)
 {
-    QSqlQuery query(db);
+    QSqlQuery query(mDb);
     query.prepare(sql);
     if(query.exec())
     {
@@ -91,7 +106,7 @@ void dataShowTable::query(const QString &sql)
     }
     else
     {
-        qDebug() << db.lastError();
+        qDebug() << mDb.lastError();
     }
 
     for(int index = 0; index < mTableTitle.size(); index++)

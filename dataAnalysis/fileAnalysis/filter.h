@@ -2,7 +2,9 @@
 #define FILTER_H
 
 #include <QDateTime>
+#include <QObject>
 #include <QMap>
+#include <memory>
 #include "../standardtime.h"
 
 #define VAR_NAME(var) (#var)
@@ -158,5 +160,7 @@ public:
 private:
     QMap<QString, filter*> mFilterManager;
 };
+
+Q_DECLARE_METATYPE(std::shared_ptr<filterManager>)
 
 #endif // FILTER_H

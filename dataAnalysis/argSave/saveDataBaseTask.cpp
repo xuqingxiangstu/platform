@@ -22,12 +22,13 @@ saveDataBaseTask::~saveDataBaseTask()
     }
 }
 
-void saveDataBaseTask::startTask(const QString &uuid)
+void saveDataBaseTask::startTask(const QString &dbPath, const QString &uuid)
 {
+    mDbPath = dbPath;
+    mUuid = uuid;
+
     if(!isRunning())
-    {
-        mResultTable = databaseManager::getInstance()->getDataBase(uuid);
-        mResultTable->clearTable();
+    {        
         mIsStop = false;
         start();
     }
@@ -49,6 +50,9 @@ void saveDataBaseTask::onOver()
 
 void saveDataBaseTask::run()
 {
+    mResultTable = std::make_shared<resultTable>(mDbPath, mUuid);
+    mResultTable->clearTable();
+
     while(!mIsStop)
     {
         QJsonArray values;
