@@ -23,23 +23,23 @@ public slots:
      * @brief onShowTableWidget    显示表格窗体
      * @param uuid          工程uuid
      */
-    void onShowTableWidget(QString uuid, QString dbname);
+    void onShowTableWidget(QString uuid, QString proPath);
 
     /**
      * @brief onShowSingleImgWidget   显示单图
      * @param uuid                  工程uuid
      */
-    void onShowSingleImgWidget(QString uuid, QString dbname);
+    void onShowSingleImgWidget(QString uuid, QString proPath);
 
     /**
      * @brief onShowMultImgWidget 显示全图
      * @param uuid
      */
-    void onShowMultImgWidget(QString uuid, QString dbname);
+    void onShowMultImgWidget(QString uuid, QString proPath);
 signals:
     void showMessage(QString msg, bool state);
 private:
-    void loadDataShowWidget(QString uuid, QString dbPath);
+    void loadDataShowWidget(QString uuid, QString proPath);
 private:
     //dataShowTable *mDataShowTable;
     QMap<QString, QWidget*> mDataShowWidgetManager;

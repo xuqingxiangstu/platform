@@ -12,7 +12,7 @@ class dsMuiltImg : public QWidget
     Q_OBJECT
 
 public:
-    explicit dsMuiltImg(QString dbPath, QWidget *parent = 0);
+    explicit dsMuiltImg(QString proUuid, QString proPath, QWidget *parent = 0);
     ~dsMuiltImg();
 
 private:

@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QVariant>
 #include <QSqlField>
+#include <QDateTime>
 
 resultTable::resultTable(QString dbPath, QString uuid)
 {
@@ -122,8 +123,6 @@ void resultTable::insertMultiValue(const QJsonArray &values)
                     + "," + RESULT_TABLE_IS_OVER
                     + ") values("+value+ ")";
 
-       // qDebug() << sql;
-
         QSqlQuery query(mDb);
         bool result = query.exec(sql);
         if(!result)
@@ -133,7 +132,7 @@ void resultTable::insertMultiValue(const QJsonArray &values)
     }
 
     //提交
-    mDb.commit();
+    mDb.commit();    
 
     mDataMutex.unlock();
 }

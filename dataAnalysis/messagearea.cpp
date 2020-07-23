@@ -56,4 +56,6 @@ void messageArea::showMessage(QString msg, bool state)
         this->ui->tableWidget->item(rowcount,0)->setTextColor(QColor(255,0,0));
         this->ui->tableWidget->item(rowcount,1)->setTextColor(QColor(255,0,0));
     }
+
+    this->ui->tableWidget->scrollToBottom();
 }

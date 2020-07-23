@@ -37,9 +37,22 @@ public:
      * @return
      */
     QString getTimeFormat(){return mTimeFormat;}
+
+    /**
+     * @brief setLogFormat 设置日志格式
+     * @param format
+     */
+    void setLogFormat(const QString &format){mLogFormat = format;}
+
+    /**
+     * @brief getLogFormat 获取日志格式
+     * @return
+     */
+    QString getLogFormat(){return mLogFormat;}
 private:
     QString mSegmentationMark = "\n";               ///< 分割标志（每帧之间分割标志）
     QString mTimeFormat = "yyyy/M/d h:mm:ss.zz";    ///< 时间解析格式
+    QString mLogFormat = "";    ///< 行日志格式
 };
 
 Q_DECLARE_METATYPE(std::shared_ptr<analysisRule>)

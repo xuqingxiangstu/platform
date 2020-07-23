@@ -26,7 +26,7 @@ void dataShowWidget::onShowTableWidget()
     }
     else
     {
-        dataShowTable *tableW = new dataShowTable(mDbName);
+        dataShowTable *tableW = new dataShowTable(mProUuid, mProPath);
 
         mTabWidgetManager[TABLE_WIDGET] = tableW;
         ui->tabWidget->addTab(tableW, TABLE_WIDGET);
@@ -42,7 +42,7 @@ void dataShowWidget::onShowSingleImgWidget()
     }
     else
     {
-        dsSingleImg *tableW = new dsSingleImg(mDbName);
+        dsSingleImg *tableW = new dsSingleImg(mProUuid, mProPath);
 
         mTabWidgetManager[S_IMG_WIDGET] = tableW;
         ui->tabWidget->addTab(tableW, S_IMG_WIDGET);
@@ -58,7 +58,7 @@ void dataShowWidget::onShowMultImgWidget()
     }
     else
     {
-        dsMuiltImg *tableW = new dsMuiltImg(mDbName);
+        dsMuiltImg *tableW = new dsMuiltImg(mProUuid, mProPath);
 
         mTabWidgetManager[M_IMG_WIDGET] = tableW;
         ui->tabWidget->addTab(tableW, M_IMG_WIDGET);

@@ -2,6 +2,8 @@
 #define PROJECTCFG_H
 
 #include <QObject>
+#include <QPair>
+#include <QVector>
 
 #define PRJ_VERSION "V1.0.0"
 
@@ -51,13 +53,13 @@ public:
      * @brief getDataFiles
      * @return
      */
-    QStringList getDataFiles(){return mDataFiles;}
+    QVector<QPair<QString, QString>> getDataFiles(){return QVector<QPair<QString, QString>>(mDataFiles);}
 
     /**
      * @brief setDataFiles  设置文件路径
      * @param files         文件路径
      */
-    void setDataFiles(const QStringList &files){mDataFiles = files;}
+    void setDataFiles(QVector<QPair<QString, QString>> files){mDataFiles.swap(files);}
 
     /**
      * @brief getPrjName    获取工程名称
@@ -82,15 +84,16 @@ public:
      * @param ver   版本号
      */
     void setPrjVersion(const QString &ver){mPrjVersion = ver;}
+
 private:
     QString mPrjPath;       ///< 工程路径
     QString mPrjFile;       ///< 工程文件
-    QString mDbPath;        ///<
-    QString mProperty;      ///< 属性
+    QString mDbPath;        ///<    
     QString mPrjName;
     QString mUuid;
     QString mPrjVersion;
-    QStringList mDataFiles;
+    //QStringList mDataFiles;
+    QVector<QPair<QString, QString>> mDataFiles;
 };
 
 #endif // PROJECTCFG_H

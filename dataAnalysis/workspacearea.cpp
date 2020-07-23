@@ -16,7 +16,7 @@ workspaceArea::~workspaceArea()
     delete ui;
 }
 
-void workspaceArea::loadDataShowWidget(QString uuid, QString dbname)
+void workspaceArea::loadDataShowWidget(QString uuid, QString proPath)
 {
     //如果已有窗体则切换，否则新建窗体
     if(mDataShowWidgetManager.contains(uuid))
@@ -29,7 +29,7 @@ void workspaceArea::loadDataShowWidget(QString uuid, QString dbname)
         //新创建
 
         dataShowWidget *dataShow = new dataShowWidget();
-        dataShow->setDbName(dbname);
+        dataShow->setProUuidAndPath(uuid, proPath);
 
         mDataShowWidgetManager[uuid] = dataShow;
 
@@ -38,23 +38,23 @@ void workspaceArea::loadDataShowWidget(QString uuid, QString dbname)
     }
 }
 
-void workspaceArea::onShowTableWidget(QString uuid, QString dbname)
+void workspaceArea::onShowTableWidget(QString uuid, QString proPath)
 {
-    loadDataShowWidget(uuid, dbname);
+    loadDataShowWidget(uuid, proPath);
 
     dynamic_cast<dataShowWidget*>(mDataShowWidgetManager[uuid])->onShowTableWidget();
 }
 
-void workspaceArea::onShowSingleImgWidget(QString uuid, QString dbname)
+void workspaceArea::onShowSingleImgWidget(QString uuid, QString proPath)
 {
-    loadDataShowWidget(uuid, dbname);
+    loadDataShowWidget(uuid, proPath);
 
     dynamic_cast<dataShowWidget*>(mDataShowWidgetManager[uuid])->onShowSingleImgWidget();
 }
 
-void workspaceArea::onShowMultImgWidget(QString uuid, QString dbname)
+void workspaceArea::onShowMultImgWidget(QString uuid, QString proPath)
 {
-    loadDataShowWidget(uuid, dbname);
+    loadDataShowWidget(uuid, proPath);
 
     dynamic_cast<dataShowWidget*>(mDataShowWidgetManager[uuid])->onShowMultImgWidget();
 }

@@ -74,7 +74,11 @@ void propertyWidget::showProperty(QString uuid, Json::Value value)
     deleteAllExistProperty();
 #ifdef DEBUG_PRINT
     qDebug() << value.toStyledString().c_str();
-#endif
+#endif    
+
+    if(value.empty())
+        return ;
+
     Json::Value propertyJs = value["property"];
     if(propertyJs.isNull())
         return ;
@@ -391,7 +395,8 @@ void propertyWidget::deleteAllExistProperty()
     mstrManager->clear();
     mboolManager->clear();
     mDoubleManager->clear();
-
+    mDateTimeManager->clear();
+    mFlagManager->clear();
 }
 
 void propertyWidget::onIntValueChanged(QtProperty *property, int val)
@@ -526,85 +531,12 @@ void propertyWidget::removeGroupProperty(QString propertyName)
 
 void propertyWidget::updateSimChange()
 {
-    foreach(QtProperty *pro, mEnumManager->properties())
-    {
-        if(pro->propertyName().compare(PROPERTY_SIM_MODEL) == 0)
-        {
-            std::string type = pro->valueText().toStdString();
 
-            setChange(type);
-        }
-    }
 }
 
 void propertyWidget::setChange(std::string type)
 {
-    if(PROPERTY_MODEL_FIX == type)
-    {
-        foreach(QtProperty *pro, mGroupManager->properties())
-        {
-            if( (pro->propertyName().compare(PROPERTY_MODEL_RAND) == 0)|| (pro->propertyName().compare(PROPERTY_MODEL_LINE) == 0))
-            {
-                pro->setEnabled(false);
-            }
-            else if(pro->propertyName().compare(PROPERTY_MODEL_FIX) == 0)
-            {
-                //更新参数值
-                foreach (QtProperty *subPro, pro->subProperties())
-                {
-                    if(isUpDate)
-                        emit valueChange(mCurUuid, subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
-                    //qDebug() << "[FIX]" << subPro->propertyName() << ":" << subPro->valueText();
-                }
-                pro->setEnabled(true);
-                //break;
-            }
-        }
-    }
-    else if(PROPERTY_MODEL_RAND == type)
-    {
-        foreach(QtProperty *pro, mGroupManager->properties())
-        {
-            if( (pro->propertyName().compare(PROPERTY_MODEL_FIX) == 0)|| (pro->propertyName().compare(PROPERTY_MODEL_LINE) == 0))
-            {
-                pro->setEnabled(false);
-            }
-            else if(pro->propertyName().compare(PROPERTY_MODEL_RAND) == 0)
-            {
-                //更新参数值
-                foreach (QtProperty *subPro, pro->subProperties())
-                {
-                    if(isUpDate)
-                        emit valueChange(mCurUuid, subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
-                    //qDebug() << "[RAND]" << subPro->propertyName() << ":" << subPro->valueText();
-                }
-                pro->setEnabled(true);
-                //break;
-            }
-        }
-    }
-    else if(PROPERTY_MODEL_LINE == type)
-    {
-        foreach(QtProperty *pro, mGroupManager->properties())
-        {
-            if( (pro->propertyName().compare(PROPERTY_MODEL_FIX) == 0)|| (pro->propertyName().compare(PROPERTY_MODEL_RAND) == 0))
-            {
-                pro->setEnabled(false);
-            }
-            else if(pro->propertyName().compare(PROPERTY_MODEL_LINE) == 0)
-            {
-                //更新参数值
-                foreach (QtProperty *subPro, pro->subProperties())
-                {
-                    if(isUpDate)
-                        emit valueChange(mCurUuid, subPro->propertyName(), Json::Value(subPro->valueText().toStdString()));
-                    //qDebug() << "[LINE]" << subPro->propertyName() << ":" << subPro->valueText();
-                }
-                pro->setEnabled(true);
-                //break;
-            }
-        }
-    }
+
 }
 
 void propertyWidget::onFlagValueChanged(QtProperty *property, int val)
@@ -658,15 +590,7 @@ void propertyWidget::onFlagValueChanged(QtProperty *property, int val)
 }
 
 void propertyWidget::onEnumValueChanged(QtProperty *property, int val)
-{
-    //选择仿真模型时需关联下面属性
-    if(property->propertyName().compare(PROPERTY_SIM_MODEL) == 0)
-    {
-        std::string type = mEnumManager->enumNames(property).at(val).toStdString();
-
-        setChange(type);
-    }
-
+{    
     if(isUpDate)
     {
         emit valueChange(mCurUuid, property->propertyName(), mEnumManager->data(property).value<Json::Value>());

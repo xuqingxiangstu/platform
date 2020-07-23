@@ -12,7 +12,7 @@ class dsSingleImg : public QWidget
     Q_OBJECT
 
 public:
-    explicit dsSingleImg(QString dbPath, QWidget *parent = 0);
+    explicit dsSingleImg(QString proUuid, QString proPath, QWidget *parent = 0);
     ~dsSingleImg();
 
 private:

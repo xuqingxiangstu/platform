@@ -33,8 +33,7 @@ void fileAnalysisBusiness::onAnalysis(const QString &proUuid, const QString &dbP
 
         mAnalysisObj = std::make_shared<analysis>();
         connect(mAnalysisObj.get(), &analysis::showMessage, this, &fileAnalysisBusiness::showMessage);
-        connect(this, SIGNAL(toAnalysis(QString, QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>)), mAnalysisObj.get(), SLOT(onAnalysis(QString, QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>)));
-        connect(mAnalysisObj.get(), SIGNAL(showMessage(QString,bool)), this, SIGNAL(showMessage(QString, bool)));
+        connect(this, SIGNAL(toAnalysis(QString, QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>)), mAnalysisObj.get(), SLOT(onAnalysis(QString, QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>)));        
         connect(mAnalysisObj.get(), SIGNAL(analysisOver(QString)), this, SLOT(onAnalysisOver(QString)));
         connect(mAnalysisObj.get(), SIGNAL(step(int)), this, SLOT(onAnalysisStep(int)));
 

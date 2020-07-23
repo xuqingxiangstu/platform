@@ -2,7 +2,6 @@
 #include "ui_projectnavigation.h"
 #include "./property/templateproperty.h"
 #include "./project/projecttemplate.h"
-#include "./fileAnalysis/filter.h"
 #include <QVariant>
 #include <QFile>
 #include <QUuid>
@@ -20,8 +19,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
     mUiUuid = QUuid::createUuid().toString();
 
     mPopMenu = new QMenu(this);
-    mPopMenu->addAction(ui->actionAddFile);    
-    mPopMenu->addAction(ui->actionDelete);
+    mPopMenu->addAction(ui->actionAddFile);
     mPopMenu->addAction(ui->actionParse);
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -47,14 +45,6 @@ projectNavigation::projectNavigation(QWidget *parent) :
                     ui->actionParse->setEnabled(true);
                 else
                     ui->actionParse->setEnabled(false);
-
-                ui->actionDelete->setEnabled(false);
-            }
-            else if(DataFile_Node == role.nodeType)
-            {
-                ui->actionAddFile->setEnabled(false);
-                ui->actionParse->setEnabled(false);
-                ui->actionDelete->setEnabled(true);
             }
             else if(Prj_Node == role.nodeType)
             {
@@ -62,14 +52,11 @@ projectNavigation::projectNavigation(QWidget *parent) :
 
                 //TODO:判断是否有文件
                 ui->actionParse->setEnabled(true);
-
-                ui->actionDelete->setEnabled(false);
             }
             else
             {
                 ui->actionAddFile->setEnabled(false);
                 ui->actionParse->setEnabled(false);
-                ui->actionDelete->setEnabled(false);
             }
 
             mPopMenu->exec(QCursor::pos());
@@ -83,10 +70,6 @@ projectNavigation::projectNavigation(QWidget *parent) :
 
     connect(ui->actionParse, &QAction::triggered, [=](){
        onAnalysis();
-    });
-
-    connect(ui->actionDelete, &QAction::triggered, [=](){
-       onDeleteFile();
     });
 
     mFileAnalysisBusiness = std::make_shared<fileAnalysisBusiness>();
@@ -107,51 +90,20 @@ void projectNavigation::onClicked(QTreeWidgetItem *item, int column)
 
         if(DataFile_Node == role.nodeType)
         {
-            emit toShowProperty(role.nodeUuid, role.mNodeProperty->getJson());
+            emit toShowProperty(role.proUuid, role.mNodeProperty->getJson());
         }
         else
         {
-            emit toShowProperty(role.nodeUuid, Json::Value());
+            emit toShowProperty(role.proUuid, Json::Value());
         }
     }
 }
 
-QString projectNavigation::nodeUuidConvertProUuid(const QString &nodeUuid)
+void projectNavigation::onPropertyValueChange(QString uuid, QString attr, Json::Value val)
 {
-    QString proUuid;
+    onProjectModify(uuid);
+    //qDebug() << uuid << "_" << attr << "_" << val.toStyledString().c_str();
 
-    QTreeWidgetItemIterator Itor(ui->treeWidget);
-    while (*Itor)
-    {
-        recordRole role = (*Itor)->data(0, Qt::UserRole).value<recordRole>();
-
-        if(role.nodeUuid.compare(nodeUuid) == 0)
-        {
-            proUuid = role.proUuid;
-            break;
-        }
-
-        ++Itor;
-    }
-
-    return proUuid;
-}
-
-void projectNavigation::onPropertyValueChange(QString nodeUuid, QString attr, Json::Value val)
-{
-    //nodeUuid 转为 proUuid
-
-    onProjectModify(nodeUuidConvertProUuid(nodeUuid));
-
-    //找到uuid对应item
-
-    QTreeWidgetItem *item = findItemByNodeUuid(nodeUuid);
-    if(item)
-    {
-        //更新值
-        recordRole role = item->data(Name_Index, Qt::UserRole).value<recordRole>();
-        role.mNodeProperty->setProperty(attr.toStdString(), val);
-    }
 }
 
 void projectNavigation::onSaveProject(QString uuid)
@@ -164,7 +116,7 @@ void projectNavigation::onSaveProject(QString uuid)
     }
     else
     {
-        curItem = findItemByProUuid(uuid);
+        curItem = findItem(uuid);
     }
 
     if(curItem)
@@ -176,7 +128,7 @@ void projectNavigation::onSaveProject(QString uuid)
 
         if(mIsModify[role.proUuid])
         {
-            mProjcetCfgManager[role.proUuid]->setDataFiles(getDataFilesJson(role.proUuid));
+            mProjcetCfgManager[role.proUuid]->setDataFiles(getDataFiles(role.proUuid));
 
             mProjcetCfgManager[role.proUuid]->save();
 
@@ -188,7 +140,7 @@ void projectNavigation::onSaveProject(QString uuid)
     }
 }
 
-QTreeWidgetItem *projectNavigation::findItemByProUuid(QString uuid)
+QTreeWidgetItem *projectNavigation::findItem(QString uuid)
 {
     QTreeWidgetItem *item = nullptr;
     QTreeWidgetItemIterator Itor(ui->treeWidget);
@@ -197,26 +149,6 @@ QTreeWidgetItem *projectNavigation::findItemByProUuid(QString uuid)
         recordRole role = (*Itor)->data(0, Qt::UserRole).value<recordRole>();
 
         if(Prj_Node == role.nodeType && role.proUuid.compare(uuid) == 0)
-        {
-            item = *Itor;
-            break;
-        }
-
-        ++Itor;
-    }
-
-    return item;
-}
-
-QTreeWidgetItem *projectNavigation::findItemByNodeUuid(QString uuid)
-{
-    QTreeWidgetItem *item = nullptr;
-    QTreeWidgetItemIterator Itor(ui->treeWidget);
-    while (*Itor)
-    {
-        recordRole role = (*Itor)->data(0, Qt::UserRole).value<recordRole>();
-
-        if(role.nodeUuid.compare(uuid) == 0)
         {
             item = *Itor;
             break;
@@ -373,7 +305,7 @@ QString projectNavigation::getDbPathByUuid(const QString &uuid)
     return path;
 }
 
-QVector<QPair<QString, QString>> projectNavigation::getDataFilesJson(const QString &uuid)
+QVector<QPair<QString, QString>> projectNavigation::getDataFiles(const QString &uuid)
 {
     QVector<QPair<QString, QString>> resultFiles;
 
@@ -406,39 +338,6 @@ QVector<QPair<QString, QString>> projectNavigation::getDataFilesJson(const QStri
     return resultFiles;
 }
 
-QVector<QPair<QString, QString>> projectNavigation::getDataFilesUuid(const QString &uuid)
-{
-    QVector<QPair<QString, QString>> resultFiles;
-
-    QTreeWidgetItem *prjItem = findPrjFromUuid(uuid);
-    if(!prjItem)
-    {
-        return resultFiles;
-    }
-
-    for(int index = 0; index < prjItem->childCount(); index++)
-    {
-        auto item = prjItem->child(index);
-        recordRole role = item->data(Name_Index, Qt::UserRole).value<recordRole>();
-        if(DataFile_Group_Node == role.nodeType)
-        {
-
-            for(int subIndex = 0; subIndex < item->childCount(); subIndex++)
-            {
-                auto subItem = item->child(subIndex);
-                recordRole subRole = subItem->data(Name_Index, Qt::UserRole).value<recordRole>();
-                if(DataFile_Node == subRole.nodeType)
-                {
-                    resultFiles.append(qMakePair(subRole.filePath, subRole.nodeUuid));
-                }
-            }
-            break;
-        }
-    }
-
-    return resultFiles;
-}
-
 void projectNavigation::onAnalysis()
 {    
     //step1：获取待解析文件
@@ -453,7 +352,7 @@ void projectNavigation::onAnalysis()
     //通过uuid找到工程item
     recordRole role = curItem->data(Name_Index, Qt::UserRole).value<recordRole>();
 
-    auto allFiles = getDataFilesUuid(role.proUuid);
+    auto allFiles = getDataFiles(role.proUuid);
 
     //step2：解析
 
@@ -463,179 +362,14 @@ void projectNavigation::onAnalysis()
     {
         //规则
         std::shared_ptr<analysisRule> rule = std::make_shared<analysisRule>();
+        rule->setSegmentationMark("\n");
 
-        QTreeWidgetItem *nodeItem = findItemByNodeUuid(info.second);
-
-        if(nodeItem)
-        {
-            //获取解析规则
-            recordRole nodeRole = nodeItem->data(Name_Index, Qt::UserRole).value<recordRole>();
-
-            //获取分隔符
-            Json::Value splitJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_SPLIT, splitJs);
-            if(!splitJs.isNull())
-            {
-                rule->setSegmentationMark(splitJs.asString().c_str());
-            }
-
-            //获取日期格式
-            Json::Value timeFormatJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_TIME_FORMAT, timeFormatJs);
-            if(!timeFormatJs.isNull())
-            {
-                rule->setTimeFormat(timeFormatJs.asString().c_str());
-            }
-
-            //获取日志格式
-            Json::Value logFormatJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_LOG_FORMAT, logFormatJs);
-            if(!logFormatJs.isNull())
-            {
-                rule->setTimeFormat(logFormatJs.asString().c_str());
-            }
-
-            //获取过滤算法
-
-            std::shared_ptr<filterManager> flManager = std::make_shared<filterManager>();
-
-            //通信对象
-            Json::Value txdxJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_TXDX, txdxJs);
-            if(!txdxJs.isNull() && txdxJs.isArray())
-            {
-                systemFilter *ft = new systemFilter();
-
-                QStringList conditions;
-
-                for(int index = 0; index < txdxJs.size(); index++)
-                {
-                    if(txdxJs[index]["enable"].asBool())
-                    {
-                        conditions.append(txdxJs[index]["name"].asString().c_str());
-                    }
-                }
-
-                ft->setFilterCondition(conditions);
-
-                flManager->addFilter(VAR_NAME(systemFilter), ft);
-            }
-
-            //通信方向
-            Json::Value txfxJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_TXFX, txfxJs);
-            if(!txfxJs.isNull() && txfxJs.isArray())
-            {
-                msgDirectFilter *ft = new msgDirectFilter();
-
-                QStringList conditions;
-
-                for(int index = 0; index < txfxJs.size(); index++)
-                {
-                    if(txfxJs[index]["enable"].asBool())
-                    {
-                        conditions.append(txfxJs[index]["name"].asString().c_str());
-                    }
-                }
-
-                ft->setFilterCondition(conditions);
-
-                flManager->addFilter(VAR_NAME(msgDirectFilter), ft);
-            }
-
-
-            //消息类型
-            Json::Value msgTypeJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_MSG_TYPE, msgTypeJs);
-            if(!msgTypeJs.isNull() && msgTypeJs.isArray())
-            {
-                frameTypeFilter *ft = new frameTypeFilter();
-
-                QStringList conditions;
-
-                for(int index = 0; index < msgTypeJs.size(); index++)
-                {
-                    if(msgTypeJs[index]["enable"].asBool())
-                    {
-                        conditions.append(msgTypeJs[index]["name"].asString().c_str());
-                    }
-                }
-
-                ft->setFilterCondition(conditions);
-
-                flManager->addFilter(VAR_NAME(frameTypeFilter), ft);
-            }
-
-            QStringList timeCondition;
-
-            //起始时间
-            Json::Value startTimeJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_START_TIME, startTimeJs);
-            if(!startTimeJs.isNull())
-            {
-                timeCondition.append(startTimeJs.asString().c_str());
-            }
-
-            //起始时间
-            Json::Value stopTimeJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_STOP_TIME, stopTimeJs);
-            if(!stopTimeJs.isNull())
-            {
-                timeCondition.append(stopTimeJs.asString().c_str());
-            }
-
-            timeFilter *ft = new timeFilter();
-            ft->setFilterCondition(timeCondition);
-
-            flManager->addFilter(VAR_NAME(timeFilter), ft);
-
-            fileInfo.append(qMakePair(info.first, rule));
-        }
+        fileInfo.append(qMakePair(info.first, rule));
     }
 
     QString dbPath = getDbPathByUuid(role.proUuid);
 
     emit analysis(role.proUuid, dbPath, fileInfo);
-}
-
-void projectNavigation::onDeleteFile()
-{
-    QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
-    if(curItem)
-    {
-        recordRole role = curItem->data(Name_Index, Qt::UserRole).value<recordRole>();
-        if(role.nodeType == DataFile_Node)
-        {
-            //删除属性
-            role.mNodeProperty.reset();
-
-            //更新修改标志
-            onProjectModify(role.proUuid);
-
-            //删除item
-            deleteItem(curItem);
-
-            //更新属性
-        }
-    }
-}
-
-void projectNavigation::deleteItem(QTreeWidgetItem *item)
-{
-    if(!item)
-        return ;
-
-    QTreeWidgetItem *parentItem = item->parent();
-    if(parentItem)
-    {
-        QTreeWidgetItem *del = parentItem->takeChild(parentItem->indexOfChild(item));
-        if(del)
-            delete del;
-    }
-    else
-    {
-        ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(item));
-    }
 }
 
 void projectNavigation::onAddFiles()
@@ -674,7 +408,7 @@ void projectNavigation::onAddFiles()
 
              createFileNode(mCurSelectItem, role.proUuid, role.proPath, tmpInfo, true);
 
-             mProjcetCfgManager[role.proUuid]->setDataFiles(getDataFilesJson(role.proUuid));
+             mProjcetCfgManager[role.proUuid]->setDataFiles(getDataFiles(role.proUuid));
 
              mProjcetCfgManager[role.proUuid]->save();
         }
@@ -702,8 +436,6 @@ void projectNavigation::loadProject(const QString &proFile)
 
     createFileNode(fileGroupItem, uuid, proPath, prjCfg->getDataFiles());
 
-    ui->treeWidget->expandItem(fileGroupItem);
-
     prjItem->addChild(fileGroupItem);
 
     prjItem->addChild(createTableNode(uuid, proPath));
@@ -717,10 +449,6 @@ void projectNavigation::loadProject(const QString &proFile)
     ui->treeWidget->addTopLevelItem(prjItem);
 
     ui->treeWidget->expandItem(prjItem);
-
-    ui->treeWidget->expandAll();
-
-    //expandNode(prjItem);
 }
 
 QString projectNavigation::createProject(const QString &name, const QString &proPath, const QStringList &files)
@@ -769,7 +497,7 @@ QString projectNavigation::createProject(const QString &name, const QString &pro
     //存储最近使用路径
     QSettings prjSettings("BJTU", "dataAnalysis");
     QStringList recentlyPrj = prjSettings.value("recently_used").toStringList();
-    recentlyPrj.insert(0, proPath + "/" + name + "/" + name + ".prj");
+    recentlyPrj.append(proPath + "/" + name + "/" + name + ".prj");
     prjSettings.setValue("recently_used", recentlyPrj);
 
     return uuid;
@@ -784,13 +512,12 @@ QTreeWidgetItem *projectNavigation::createPrjNode(const QString &uuid, const QSt
     recordRole role;
     role.nodeType = Prj_Node;
     role.proUuid = uuid;
-    role.nodeUuid = uuid;
     role.proPath = proPath;
 
     data.setValue(role);
 
     item->setData(Name_Index,Qt::UserRole,data);
-    item->setExpanded(true);
+
     item->setText(Name_Index, name);
 
     return item;
@@ -807,11 +534,11 @@ QTreeWidgetItem *projectNavigation::createFileGroupNode(const QString &uuid, con
     role.proPath = proPath;
     role.nodeType = DataFile_Group_Node;
     role.proUuid = uuid;
-    role.nodeUuid = QUuid::createUuid().toString();
+
     data.setValue(role);
 
     item->setData(Name_Index,Qt::UserRole,data);
-    item->setExpanded(true);
+
     item->setText(Name_Index, "数据文件");
 
     return item;
@@ -828,11 +555,10 @@ void projectNavigation::createFileNode(QTreeWidgetItem *fatherItem, const QStrin
 
         QVariant subData;
         recordRole subRole;
-        subRole.proUuid = uuid;
+        subRole.uuid = uuid;
         subRole.proPath = proPath;
         subRole.nodeType = DataFile_Node;
         subRole.filePath = file;
-        subRole.nodeUuid = QUuid::createUuid().toString();
 
         QString showFile = file.right(file.size() - file.lastIndexOf("/") - 1);
 
@@ -868,19 +594,6 @@ void projectNavigation::createFileNode(QTreeWidgetItem *fatherItem, const QStrin
     }
 }
 
-void projectNavigation::expandNode(QTreeWidgetItem *item)
-{
-    if(!item)
-        return ;
-
-    if(item->parent())
-    {
-        item->parent()->setHidden(false);
-        item->parent()->setExpanded(true);
-        expandNode(item->parent());
-    }
-}
-
 QTreeWidgetItem *projectNavigation::createTableNode(const QString &uuid, const QString &proPath)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem();
@@ -888,15 +601,14 @@ QTreeWidgetItem *projectNavigation::createTableNode(const QString &uuid, const Q
     //关联数据
     QVariant data;
     recordRole role;
-    role.proUuid = uuid;
+    role.uuid = uuid;
     role.proPath = proPath;
     role.nodeType = Table_Node;
-    role.nodeUuid = QUuid::createUuid().toString();
 
     data.setValue(role);
 
     item->setData(Name_Index,Qt::UserRole,data);
-    item->setExpanded(true);
+
     item->setText(Name_Index, "表格显示");
 
     return item;
@@ -909,15 +621,15 @@ QTreeWidgetItem *projectNavigation::createSingleImgNode(const QString &uuid, con
     //关联数据
     QVariant data;
     recordRole role;
-    role.proUuid = uuid;
+    role.uuid = uuid;
     role.proPath = proPath;
     role.nodeType = S_Img_Node;
-    role.nodeUuid = QUuid::createUuid().toString();
 
     data.setValue(role);
 
     item->setData(Name_Index,Qt::UserRole,data);
-    item->setExpanded(true);
+
+
     item->setText(Name_Index, "单图显示");
 
     return item;
@@ -930,15 +642,14 @@ QTreeWidgetItem *projectNavigation::createTimeImgNode(const QString &uuid, const
     //关联数据
     QVariant data;
     recordRole role;
-    role.proUuid = uuid;
+    role.uuid = uuid;
     role.proPath = proPath;
     role.nodeType = Time_Img_Node;
-    role.nodeUuid = QUuid::createUuid().toString();
 
     data.setValue(role);
 
     item->setData(Name_Index,Qt::UserRole,data);
-    item->setExpanded(true);
+
     item->setText(Name_Index, "全图显示");
 
     return item;

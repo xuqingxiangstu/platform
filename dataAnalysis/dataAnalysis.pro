@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     newprjdialog.cpp \
     datashowwidget.cpp \
     dssingleimg.cpp \
-    dsmuiltimg.cpp
+    dsmuiltimg.cpp \
+    versionform.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     newprjdialog.h \
     datashowwidget.h \
     dssingleimg.h \
-    dsmuiltimg.h
+    dsmuiltimg.h \
+    versionform.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \
@@ -51,7 +53,8 @@ FORMS    += mainwindow.ui \
     newprjdialog.ui \
     datashowwidget.ui \
     dssingleimg.ui \
-    dsmuiltimg.ui
+    dsmuiltimg.ui \
+    versionform.ui
 
 include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)

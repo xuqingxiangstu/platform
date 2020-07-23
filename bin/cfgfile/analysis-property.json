@@ -1,8 +1,29 @@
 {
     "config":
     [
+        {
+            "key":"pro",
+            "property":
+            [
+                {
+                    "group":"基本属性",
+                    "readOnly":false,
+                    "isVisible":true,
+                    "node":    
+                    [        
+                          {
+                              "attr":"工程名称",
+                              "type":"string", 
+                              "readOnly":true,  
+                              "initValue":"xxxx测试",
+                              "isVisible":true
+                          }
+                    ]
+                  }
+            ]
+        },
         {    
-            "key":"log",
+            "key":"dataFile",
             "property":
             [
                 {
@@ -14,7 +35,7 @@
                         {
                             "attr":"文件名称",
                             "type":"string", 
-                            "readOnly":false,  
+                            "readOnly":true,  
                             "initValue":"xxxx测试",
                             "isVisible":true
                         }
@@ -71,15 +92,15 @@
                             [
                                 {
                                     "name":"CL",
-                                    "enable":false
+                                    "enable":true
                                 },
                                 {
                                     "name":"DXQ",
-                                    "enable":false
+                                    "enable":true
                                 },
                                 {
                                     "name":"MMJK",
-                                    "enable":false
+                                    "enable":true
                                 }                              
                             ]
                         },
@@ -92,11 +113,11 @@
                             [
                                 {
                                     "name":"S",
-                                    "enable":false
+                                    "enable":true
                                 },
                                 {
                                     "name":"R",
-                                    "enable":false
+                                    "enable":true
                                 }                       
                             ]
                         },
@@ -108,19 +129,19 @@
                             [
                                 {
                                     "name":"BE",
-                                    "enable":false
+                                    "enable":true
                                 },
                                 {
                                     "name":"FE",
-                                    "enable":false
+                                    "enable":true
                                 },
                                 {
                                     "name":"密码集控装置协议",
-                                    "enable":false
+                                    "enable":true
                                 },
                                 {
                                     "name":"中间件",
-                                    "enable":false
+                                    "enable":true
                                 }                  
                             ],
                             "isVisible":true

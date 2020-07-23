@@ -7,7 +7,7 @@
 #include <QSqlError>
 #include <QUuid>
 
-dataShowTable::dataShowTable(QString dbName, QWidget *parent) :
+dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::dataShowTable)
 {
@@ -19,23 +19,24 @@ dataShowTable::dataShowTable(QString dbName, QWidget *parent) :
         if(index != (mTableFiledName.size() - 1))
             mSelectField += ",";
     }
-#if 1
-    if(QSqlDatabase::contains(dbName))
+
+    if(QSqlDatabase::contains(proUuid))
     {
-        mDb = QSqlDatabase::database(dbName);
+        mDb = QSqlDatabase::database(proUuid);
     }
-#else
-    QString uuid = QUuid::createUuid().toString();
-
-    mDb = QSqlDatabase::addDatabase("QSQLITE", uuid);
-
-    mDb.setDatabaseName(dbName);
-
-    if(!mDb.open() )
+    else
     {
-        throw std::runtime_error(mDb.lastError().text().toStdString());
+        mDb = QSqlDatabase::addDatabase("QSQLITE", proUuid);
+
+        QString dbPath = proPath + "/result/" + proUuid + ".db";
+
+        mDb.setDatabaseName(dbPath);
+
+        if(!mDb.open() )
+        {
+            throw std::runtime_error(mDb.lastError().text().toStdString());
+        }
     }
-#endif
 
     initTable();
 
@@ -47,6 +48,10 @@ dataShowTable::dataShowTable(QString dbName, QWidget *parent) :
         }
 
         conditionQuery(queryCon);
+    });
+
+    connect(ui->refreshBtn, &QPushButton::clicked, [=](){
+        query("select " + mSelectField +  " from " + mTableName);
     });
 
     query("select " + mSelectField +  " from " + mTableName);

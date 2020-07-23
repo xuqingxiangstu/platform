@@ -20,7 +20,7 @@ public:
     explicit dataShowWidget(QWidget *parent = 0);
     ~dataShowWidget();
 public:
-    void setDbName(const QString &dbname){mDbName = dbname;}
+    void setProUuidAndPath(const QString &proUuid, const QString &proPath){mProUuid = proUuid;mProPath = proPath;}
 public slots:
     /**
      * @brief onShowTableWidget    显示表格窗体
@@ -37,8 +37,9 @@ public slots:
      * @param uuid
      */
     void onShowMultImgWidget();
-private:
-    QString mDbName;
+private: 
+    QString mProUuid;
+    QString mProPath;
     QMap<QString, QWidget*> mTabWidgetManager;
 private:
     Ui::dataShowWidget *ui;    

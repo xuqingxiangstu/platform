@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QSettings>
 #include <QEventLoop>
+#include <QCloseEvent>
 #include "newprjdialog.h"
 
 #include <QEventLoop>
@@ -16,7 +17,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    isExit(false)
 {
     ui->setupUi(this);    
 
@@ -58,6 +60,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mProjectNavigationWidget = new projectNavigation(this);
     ui->navigationVerticalLayout->addWidget(mProjectNavigationWidget);
 
+    connect(this, &MainWindow::saveProject, mProjectNavigationWidget, &projectNavigation::onSaveProject);
+
     connect(mProjectNavigationWidget, &projectNavigation::showMultImgWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowMultImgWidget);
     connect(mProjectNavigationWidget, &projectNavigation::showSingleImgWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowSingleImgWidget);
     connect(mProjectNavigationWidget, &projectNavigation::showTableWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowTableWidget);
@@ -69,20 +73,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mProjectNavigationWidget, &projectNavigation::showMessage, mMessageAreaWidget, &messageArea::showMessage);
     connect(mWorkSpaceAreaWidget, &workspaceArea::showMessage, mMessageAreaWidget, &messageArea::showMessage);
 
+    connect(mProjectNavigationWidget, &projectNavigation::saveProjectOver, this, &MainWindow::onProjectAlreadySave);
+
     //初始化属性区
     mNavigationPropertyObj = new propertyWidget();
     ui->propertyVerticalLayout->addWidget(mNavigationPropertyObj);
 
     connect(mProjectNavigationWidget, &projectNavigation::toShowProperty, mNavigationPropertyObj, &propertyWidget::showProperty);
+    connect(mNavigationPropertyObj, &propertyWidget::valueChange, mProjectNavigationWidget, &projectNavigation::onPropertyValueChange);
 
     try
     {
         templateProperty::getInstance()->init("./cfgfile/analysis-property.json");
-
-        Json::Value logJs = templateProperty::getInstance()->getProperty("log");
-
-        mNavigationPropertyObj->showProperty("", logJs);
-
     }
     catch(std::runtime_error err)
     {
@@ -96,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionNewPrj, &QAction::triggered, [=](){
         newPrjDialog dlg;
         int res = dlg.exec();
-        qDebug() << res;
+
         if(QDialog::Accepted == res)
         {
             QString name = dlg.getPrjName();
@@ -109,16 +111,61 @@ MainWindow::MainWindow(QWidget *parent) :
         }
     });
 
+    connect(ui->actionSave, &QAction::triggered, [=](){
+        emit saveProject("");
+    });
 
-#if 1
-    //TODO:测试
-   // projectCfg
-#endif
+    mVersionWidget = new versionForm();
+
+    ui->mainToolBar->addWidget(mVersionWidget);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(QMessageBox::No == QMessageBox::warning(this, "提示", "是否退出",QMessageBox::Yes | QMessageBox::No))
+    {
+        event->ignore();
+        return ;
+    }
+
+    if(mProjectNavigationWidget)
+    {
+        mSaveProjectUuid.clear();
+        mSaveProjectUuid = mProjectNavigationWidget->getModifyProject();
+        if(mSaveProjectUuid.size() > 0)
+        {
+            if(QMessageBox::Yes == QMessageBox::warning(this, "提示", "有未保存的更改，是否保存",QMessageBox::Yes | QMessageBox::No))
+            {
+                isExit = true;
+
+                foreach (QString uuid, mSaveProjectUuid)
+                {
+                    //保存
+                    emit saveProject(uuid);
+                }
+
+                event->ignore();
+                return ;
+            }
+        }
+    }
+    event->accept();
+}
+
+void MainWindow::onProjectAlreadySave(QString uuid)
+{
+    if(isExit)
+    {
+        mSaveProjectUuid.removeOne(uuid);
+
+        if(mSaveProjectUuid.size() == 0)
+            exit(1);
+    }
 }
 
 void MainWindow::loadProject(const QString &path)

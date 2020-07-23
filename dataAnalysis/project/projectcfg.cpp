@@ -89,7 +89,22 @@ void projectCfg::load(const QString &prjPath, const QString &uuid)
 
             for (mChildEle; mChildEle; mChildEle = mChildEle->NextSiblingElement())
             {                
-                mDataFiles.append(mChildEle->GetText());
+                QString name, property;
+                TiXmlElement *nameEle = mChildEle->FirstChildElement("name");
+                point = nameEle->GetText();
+                if(point)
+                {
+                    name = QString(point);
+                }
+
+                TiXmlElement *propertyEle = mChildEle->FirstChildElement("property");
+                point = propertyEle->GetText();
+                if(point)
+                {
+                    property = QString(point);
+                }
+
+                mDataFiles.append(qMakePair(name, property));
             }
         }
 
@@ -97,7 +112,7 @@ void projectCfg::load(const QString &prjPath, const QString &uuid)
         if(resultEle)
         {
             mDbPath = resultEle->GetText();
-        }
+        }        
     }
 
     if(mDbPath.compare("") == 0)   //为空时说明以配置文件为主
@@ -119,15 +134,27 @@ void projectCfg::save()
 
     TiXmlElement *dataEle = new TiXmlElement("data");
 
-    for(QString file : mDataFiles)
+    for(QPair<QString, QString> info : mDataFiles)
     {
-        TiXmlElement *tixmlgEle = new TiXmlElement("file");
+        TiXmlElement *fileEle = new TiXmlElement("file");
 
-        TiXmlText *tixmlText = new TiXmlText(file.toStdString().c_str());
 
-        tixmlgEle->LinkEndChild(tixmlText);
+        TiXmlElement *nameEle = new TiXmlElement("name");
+        TiXmlText *nameText = new TiXmlText(info.first.toStdString().c_str());
 
-        dataEle->LinkEndChild(tixmlgEle);
+        nameEle->LinkEndChild(nameText);
+
+        fileEle->LinkEndChild(nameEle);
+
+
+        TiXmlElement *propertyEle = new TiXmlElement("property");
+        TiXmlText *propertyText = new TiXmlText(info.second.toStdString().c_str());
+
+        propertyEle->LinkEndChild(propertyText);
+
+        fileEle->LinkEndChild(propertyEle);
+
+        dataEle->LinkEndChild(fileEle);
     }
 
     projectEle->LinkEndChild(dataEle);
@@ -138,7 +165,7 @@ void projectCfg::save()
 
     tixmlgEle->LinkEndChild(tixmlText);
 
-    projectEle->LinkEndChild(tixmlgEle);
+    projectEle->LinkEndChild(tixmlgEle);    
 
 
     //保存文件

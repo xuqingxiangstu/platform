@@ -341,19 +341,8 @@ Json::Value nodeProperty::getSaveJson()
                 });
 
             if(itor != mProperty.end())
-            {
-                //modify xqx 20200421 由于指令太多，保存时不保存初始化值（软件启动后会自动读取数据库进行更新）
-                if( (PROPERTY_START_CMDORPARAM == name) || (PROPERTY_STOP_CMDORPARAM == name)
-                        || (PROPERTY_FE_DATA_TYPE_SEND_SYS == name) || (PROPERTY_FE_DATA_TYPE_RCV_SYS == name)
-                        || (PROPERTY_START_SYSTEM == name) || (PROPERTY_STOP_SYSTEM == name)
-                        )
-                {
-                    proJs["initValue"] = Json::Value();
-                }
-                else
-                {
-                    proJs["initValue"] = (*itor)->initValue();
-                }
+            {                
+                proJs["initValue"] = (*itor)->initValue();
 
                 proJs["readOnly"] = (*itor)->isReadOnly();
                 proJs["type"] = (*itor)->type();

@@ -5,6 +5,18 @@
 
 #include "../src/PfCommon/jsoncpp/json.h"
 
+/*************数据文件属性********************/
+#define PROPERTY_DATAFILE_NAME  "文件名称"
+#define PROPERTY_DATAFILE_LOG_FORMAT  "日志格式"
+#define PROPERTY_DATAFILE_SPLIT         "行分隔符"
+#define PROPERTY_DATAFILE_TIME_FORMAT   "日期格式"
+#define PROPERTY_DATAFILE_TXDX          "通信对象"
+#define PROPERTY_DATAFILE_TXFX          "通信方向"
+#define PROPERTY_DATAFILE_MSG_TYPE      "消息类型"
+#define PROPERTY_DATAFILE_START_TIME    "起始时间"
+#define PROPERTY_DATAFILE_STOP_TIME     "终止时间"
+
+#if 0
 /*************基本属性********************/
 #define PROPERTY_BASE_INFO_WORD "信息字格式"
 #define PROPERTY_BASE_TABLE_NUM    "表号"
@@ -133,7 +145,7 @@
 #define PROPERTY_ENUM_TYPE      "enum"
 #define PROPERTY_TRIGGER_TYPE   "trigger"
 
-
+#endif
 class property
 {
 public:

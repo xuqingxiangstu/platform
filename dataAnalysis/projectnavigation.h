@@ -19,7 +19,8 @@ class projectNavigation;
 struct recordRole
 {
     int nodeType;       ///< 节点类型
-    QString uuid;       ///< uuid
+    QString proUuid;    ///< proUuid：工程UUID
+    QString nodeUuid;    ///< 节点UUID
     QString proPath;    ///< 工程路径
     QString filePath;   ///< 文件路径,当DataFile_Node有效
     int sysType;        ///< 系统类型
@@ -61,19 +62,24 @@ signals:
      * @brief showWidget    显示表格窗体
      * @param uuid          工程uuid
      */
-    void showTableWidget(QString uuid, QString dbname);
+    void showTableWidget(QString uuid, QString proPath);
 
     /**
      * @brief showSingleImgWidget   显示单图
      * @param uuid                  工程uuid
      */
-    void showSingleImgWidget(QString uuid, QString dbname);
+    void showSingleImgWidget(QString uuid, QString proPath);
 
     /**
      * @brief showMultImgWidget 显示全图
      * @param uuid
      */
-    void showMultImgWidget(QString uuid, QString dbname);
+    void showMultImgWidget(QString uuid, QString proPath);
+
+    /**
+     * @brief saveProjectOver   保存结束
+     */
+    void saveProjectOver(QString uuid);
 public slots:
     /**
      * @brief analysisResult    数据分析结果
@@ -107,7 +113,61 @@ public slots:
      * @param column
      */
     void onDoubleClicked(QTreeWidgetItem *item, int column);
+
+    /**
+     * @brief onClicked   单机击槽函数
+     * @param item
+     * @param column
+     */
+    void onClicked(QTreeWidgetItem *item, int column);
+
+    /**
+     * @brief onPropertyValueChange
+     * @param uuid
+     * @param attr
+     * @param val
+     */
+    void onPropertyValueChange(QString uuid, QString attr, Json::Value val);
+
+    void onProjectModify(QString uuid);
+
+    void onSaveProject(QString uuid);
+
+    /**
+     * @brief onProjectAlreadySave  工程已保存
+     * @param uuid
+     */
+    void onProjectAlreadySave(QString uuid);
+public:
+    bool isModify(QString uuid);
+    /**
+     * @brief getModifyProject  获取已修改的工程
+     * @return
+     */
+    QStringList getModifyProject();
 private:
+
+    /**
+     * @brief nodeUuidConvertProUuid    节点uuid转工程uuid
+     * @param nodeUuid                  节点uuid
+     * @return          工程uuid
+     */
+    QString nodeUuidConvertProUuid(const QString &nodeUuid);
+
+    void expandNode(QTreeWidgetItem *item);
+    /**
+     * @brief findItemByProUuid 通过工程uuid查找
+     * @param uuid
+     * @return
+     */
+    QTreeWidgetItem *findItemByProUuid(QString uuid);
+
+    /**
+     * @brief findItemByNodeUuid 通过节点uuid查找
+     * @param uuid
+     * @return
+     */
+    QTreeWidgetItem *findItemByNodeUuid(QString uuid);
     /**
      * @brief createPrjNode 创建工程节点
      * @param name
@@ -120,23 +180,31 @@ private:
      * @param files             文件列表
      * @return
      */
-    QTreeWidgetItem *createFileGroupNode(const QString &uuid);
+    QTreeWidgetItem *createFileGroupNode(const QString &uuid, const QString &proPath);
 
-    void createFileNode(QTreeWidgetItem *fatherItem, const QString &uuid, const QStringList &files);
+    void createFileNode(QTreeWidgetItem *fatherItem, const QString &uuid, const QString &proPath, const QVector<QPair<QString, QString>> &files, bool isInit = false);
 
-    QTreeWidgetItem *createTableNode(const QString &uuid);
+    QTreeWidgetItem *createTableNode(const QString &uuid, const QString &proPath);
 
-    QTreeWidgetItem *createSingleImgNode(const QString &uuid);
+    QTreeWidgetItem *createSingleImgNode(const QString &uuid, const QString &proPath);
 
-    QTreeWidgetItem *createTimeImgNode(const QString &uuid);
+    QTreeWidgetItem *createTimeImgNode(const QString &uuid, const QString &proPath);
 
     void onAddFiles();
 
+    void onDeleteFile();
+
     /**
-     * @brief getDataFiles  获取数据文件路径
+     * @brief getDataFilesJson  获取数据文件路径及json
      * @return
      */
-    QStringList getDataFiles(const QString &uuid);
+    QVector<QPair<QString, QString>> getDataFilesJson(const QString &uuid);
+
+    /**
+     * @brief getDataFiles  获取数据文件路径及uuid
+     * @return
+     */
+    QVector<QPair<QString, QString>> getDataFilesUuid(const QString &uuid);
 
     /**
      * @brief getDbPathByUuid   通过uuid找到数据库文件路径
@@ -151,12 +219,16 @@ private:
      * @return
      */
     QTreeWidgetItem *findPrjFromUuid(const QString &uuid);
+
+    void deleteItem(QTreeWidgetItem *item);
 private:
     QTreeWidgetItem *mCurSelectItem;    //当前选择Item
     QString mUiUuid;    //界面UUID
     QMenu *mPopMenu;
     QMap<QString, std::shared_ptr<projectCfg>> mProjcetCfgManager;  ///<系统配置管理
     std::shared_ptr<fileAnalysisBusiness> mFileAnalysisBusiness;    ///< 文件分析业务
+    const QString mModifyFlag = "[* 已修改]";   //已修改标志
+    QMap<QString, bool> mIsModify; //是否修改
 private:
     Ui::projectNavigation *ui;
 };

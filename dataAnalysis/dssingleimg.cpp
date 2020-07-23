@@ -1,7 +1,7 @@
 #include "dssingleimg.h"
 #include "ui_dssingleimg.h"
 
-dsSingleImg::dsSingleImg(QString dbPath, QWidget *parent) :
+dsSingleImg::dsSingleImg(QString proUuid, QString proPath, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::dsSingleImg)
 {

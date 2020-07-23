@@ -38,12 +38,23 @@
   </layout>
   <action name="actionAddFile">
    <property name="text">
-    <string>添加文件</string>
+    <string>添加</string>
    </property>
   </action>
   <action name="actionParse">
    <property name="text">
     <string>分析</string>
+   </property>
+   <property name="toolTip">
+    <string>解析</string>
+   </property>
+  </action>
+  <action name="actionDelete">
+   <property name="text">
+    <string>删除</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>

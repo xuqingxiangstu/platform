@@ -38,7 +38,7 @@ const QStringList mTableFiledName = {
 };
 
 public:
-    explicit dataShowTable(QString dbName, QWidget *parent = 0);
+    explicit dataShowTable(QString proUuid, QString proPath, QWidget *parent = 0);
     ~dataShowTable();
 private:
     void initTable();
