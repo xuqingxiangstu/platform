@@ -60,6 +60,62 @@ public:
     void insertMultiValue(const QJsonArray &values);
 
     /**
+     * @brief getTableGroupName 获取所有表名称（不重复）
+     * @param values    查询结果
+     * @return
+     */
+    bool getTableGroupName(QJsonArray &values);
+
+    /**
+     * @brief getCodingByTableName  通过表号获取所有编码值及名称
+     * @param table             表号名称
+     * @param values            查询结果
+     * @return
+     */
+    bool getCodingByTableName(const QString &table, QJsonArray &values);
+
+    /**
+     * @brief getTimeByTableCoding  通过表号获取所有编码值及数值
+     * @param name            表号名称
+     * @param coding          编号
+     * @param values          查询结果
+     * @return
+     */
+    bool getTimeByTableCoding(const QString &name, const QString &coding, QJsonArray &values );
+
+    /**
+     * @brief getTimeList  获取所有时间（不重复）
+     * @param values            查询结果
+     * @return
+     */
+    bool getTimeList(QJsonArray &values);
+
+    /**
+     * @brief getValueList  获取所有数值（不重复）
+     * @param values            查询结果
+     * @return
+     */
+    bool getValueList(QJsonArray &values);
+
+    /**
+     * @brief getTableNameByTime  通过时间获取表号
+     * @param time            时间
+     * @param name            表号名称
+     * @param values          查询结果
+     * @return
+     */
+    bool getTableNameByTime(const QString &time, const QString &name, QJsonArray &values);
+
+    /**
+     * @brief getCodingByNameAndTime  通过时间和表号获取编码
+     * @param time            时间
+     * @param name            表号名称
+     * @param values          查询结果
+     * @return
+     */
+    bool getCodingByNameAndTime(const QString &time, const QString &name, QJsonArray &values);
+
+    /**
      * @brief clearTable    清空表数据
      */
     void clearTable();

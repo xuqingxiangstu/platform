@@ -167,3 +167,118 @@ bool resultTable::query(const QString &sql, QJsonArray &values)
     return !values.isEmpty();
 }
 
+bool resultTable::getTableGroupName(QJsonArray &values)
+{
+    QString sql  = "SELECT ";
+            sql += RESULT_TABLE_TABLE_NUM;
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " GROUP BY ";
+            sql += RESULT_TABLE_TABLE_NUM;
+
+    return query(sql, values);
+}
+
+bool resultTable::getCodingByTableName(const QString &table, QJsonArray &values)
+{
+    QString sql  = "SELECT * ";
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " WHERE ";
+            sql += RESULT_TABLE_TABLE_NUM;
+            sql += " = ";
+            sql += table;
+            sql += "";
+            sql += " GROUP BY ";
+            sql += RESULT_TABLE_CODING_NUM;
+            sql += " ORDER BY ";
+            sql += RESULT_TABLE_CODING_NUM;
+
+    return query(sql, values);
+}
+
+bool resultTable::getTimeByTableCoding(const QString &name, const QString &coding, QJsonArray &values)
+{
+    QString sql  = "SELECT * ";
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " WHERE ";
+            sql += RESULT_TABLE_TABLE_NUM;
+            sql += " = ";
+            sql += name;
+            sql += " AND ";
+            sql += RESULT_TABLE_CODING_NUM;
+            sql += " = ";
+            sql += coding;
+            sql += "";
+            sql += " ORDER BY ";
+            sql += RESULT_TABLE_TIME;
+
+    return query(sql, values);
+}
+
+bool resultTable::getTimeList(QJsonArray &values)
+{
+    QString sql  = "SELECT ";
+            sql += RESULT_TABLE_TIME;
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " GROUP BY ";
+            sql += RESULT_TABLE_TIME;
+            sql += " ORDER BY ";
+            sql += RESULT_TABLE_TIME;
+
+    return query(sql, values);
+}
+
+bool resultTable::getValueList(QJsonArray &values)
+{
+    QString sql  = "SELECT ";
+            sql += RESULT_TABLE_PARSE_VALUE;
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " ORDER BY ";
+            sql += RESULT_TABLE_PARSE_VALUE;
+
+    return query(sql, values);
+}
+
+bool resultTable::getTableNameByTime(const QString &time, const QString &name, QJsonArray &values)
+{
+    QString sql  = "SELECT * ";
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " WHERE ";
+            sql += RESULT_TABLE_TIME;
+            sql += " = \"" ;
+            sql += time;
+            sql += "\" AND ";
+            sql += RESULT_TABLE_TABLE_NUM;
+            sql += " = ";
+            sql += name;
+            sql += "";
+            sql += " ORDER BY ";
+            sql += RESULT_TABLE_TABLE_NUM;
+
+    return query(sql, values);
+}
+
+bool resultTable::getCodingByNameAndTime(const QString &time, const QString &name, QJsonArray &values)
+{
+    QString sql  = "SELECT * ";
+            sql += " FROM ";
+            sql += mTableName;
+            sql += " WHERE ";
+            sql += RESULT_TABLE_TIME;
+            sql += " = \"" ;
+            sql += time;
+            sql += "\" AND ";
+            sql += RESULT_TABLE_TABLE_NUM;
+            sql += " = ";
+            sql += name;
+            sql += "";
+            sql += " ORDER BY ";
+            sql += RESULT_TABLE_CODING_NUM;
+
+    return query(sql, values);
+}

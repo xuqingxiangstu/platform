@@ -7,6 +7,7 @@
 QT       += core gui
 QT       += sql
 QT       += xml
+QT       += charts
 CONFIG += c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -30,7 +31,8 @@ SOURCES += main.cpp\
     datashowwidget.cpp \
     dssingleimg.cpp \
     dsmuiltimg.cpp \
-    versionform.cpp
+    versionform.cpp \
+    dssingleupdatethread.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
@@ -43,7 +45,8 @@ HEADERS  += mainwindow.h \
     datashowwidget.h \
     dssingleimg.h \
     dsmuiltimg.h \
-    versionform.h
+    versionform.h \
+    dssingleupdatethread.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \
@@ -63,6 +66,7 @@ include($$PWD/fileAnalysis/fileAnalysis.pri)
 include($$PWD/icdAdapter/icdAdapter.pri)
 include($$PWD/argSave/argSave.pri)
 include($$PWD/project/project.pri)
+include($$PWD/chart/chart.pri)
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/QtPropertyBrowser/lib/ -lQtPropertyBrowser
