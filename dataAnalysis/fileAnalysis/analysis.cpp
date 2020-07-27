@@ -37,7 +37,12 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
     //step1：分割帧
     QString tmpAllData = allData;
 
-    QStringList frames = tmpAllData.split(rule->getSegmentationMark());
+    QString sMark = rule->getLineSegmentationMark();
+
+    QStringList frames = tmpAllData.split(sMark, QString::SkipEmptyParts, Qt::CaseSensitive);
+
+    //TODO:分割失败，提示用户
+//    if(frames.)
 
     int rowIndex = 1;
 

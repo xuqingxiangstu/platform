@@ -49,7 +49,7 @@ void projectCfg::load(const QString &prjPath, const QString &uuid)
 
     mDataFiles.clear();
 
-    TiXmlDocument *mXmlDoc = new TiXmlDocument(mPrjFile.toStdString().c_str());
+    TiXmlDocument *mXmlDoc = new TiXmlDocument(mPrjFile.toLocal8Bit().data());
 
     if(!mXmlDoc->LoadFile())
     {
@@ -173,7 +173,7 @@ void projectCfg::save()
 
     myDocument->LinkEndChild(projectEle);
 
-    myDocument->SaveFile(mPrjFile.toStdString().c_str());
+    myDocument->SaveFile(mPrjFile.toLocal8Bit().data());
 
     delete myDocument;
     myDocument = nullptr;

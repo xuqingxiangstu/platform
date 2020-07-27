@@ -8,7 +8,7 @@ class nullXml
 {
 public:
     static void create(const std::string &filePath);
-    static void create(const QString &filePath);
+    static void create(QString filePath);
 };
 
 #endif // NULLXML_H

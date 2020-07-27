@@ -9,4 +9,5 @@ SUBDIRS += \
     eq \
     dataAnalysis \
     #mulitThreadSqlite
+    test
 

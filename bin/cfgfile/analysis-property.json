@@ -46,14 +46,43 @@
                     "readOnly":false,
                     "isVisible":true,
                     "node":    
-                    [                           
+                    [   
                         {
-                            "attr":"日志格式",
+                            "attr":"日志分隔符",
                             "type":"string", 
                             "readOnly":false,                              
                             "isVisible":true,
-                            "initValue":"[TIME][SYSTEM][DIR][TYPE][MSG]",
-                            "curValue":"[TIME][SYSTEM][DIR][TYPE][MSG]"
+                            "initValue":"\\t",
+                            "curValue":"\\t"
+                        },                
+                        {
+                            "attr":"日志格式",
+                            "type":"flags", 
+                            "readOnly":false,
+                            "initValue":
+                            [
+                                {
+                                    "name":"时间",
+                                    "enable":true
+                                },
+                                {
+                                    "name":"通信系统",
+                                    "enable":true
+                                },
+                                {
+                                    "name":"通信方向",
+                                    "enable":true
+                                },
+                                {
+                                    "name":"消息类型",
+                                    "enable":true
+                                },
+                                {
+                                    "name":"消息内容",
+                                    "enable":true
+                                }                    
+                            ],
+                            "isVisible":true
                         },     
                         {
                             "attr":"行分隔符",
@@ -65,7 +94,7 @@
                                 "\\r\\n",
                                 "\\n"                                
                             ],
-                            "curValue":"\\r\\n"
+                            "curValue":"\\n"
                         },
                         {
                             "attr":"日期格式",
@@ -150,14 +179,14 @@
                             "attr":"起始时间",
                             "type":"date_time", 
                             "readOnly":false,
-                            "initValue":"2020/7/6 16:07:53",                           
+                            "initValue":"2020/7/6 16:07:53.1",                           
                             "isVisible":true
                         },
                         {
                             "attr":"终止时间",
                             "type":"date_time", 
                             "readOnly":false,
-                            "initValue":"2020/7/6 16:07:58",
+                            "initValue":"2020/7/6 16:07:58.1",
                             "isVisible":true
                         }
                     ]

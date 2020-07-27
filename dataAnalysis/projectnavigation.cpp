@@ -152,6 +152,8 @@ void projectNavigation::onPropertyValueChange(QString nodeUuid, QString attr, Js
         recordRole role = item->data(Name_Index, Qt::UserRole).value<recordRole>();
         role.mNodeProperty->setProperty(attr.toStdString(), val);
     }
+
+    qDebug() << attr << "_" << val.toStyledString().c_str();
 }
 
 void projectNavigation::onSaveProject(QString uuid)
@@ -457,7 +459,7 @@ void projectNavigation::onAnalysis()
 
     //step2：解析
 
-    QVector<QPair<QString, std::shared_ptr<analysisRule>>> fileInfo;
+    QVector<std::tuple<QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>>> fileInfo;
 
     for(auto info : allFiles)
     {
@@ -471,12 +473,27 @@ void projectNavigation::onAnalysis()
             //获取解析规则
             recordRole nodeRole = nodeItem->data(Name_Index, Qt::UserRole).value<recordRole>();
 
-            //获取分隔符
+            //获取行分隔符
             Json::Value splitJs;
             nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_SPLIT, splitJs);
             if(!splitJs.isNull())
             {
-                rule->setSegmentationMark(splitJs.asString().c_str());
+                QString sMark = "";
+
+                //modify xqx 2020-7-27 16:20:00 由于属性栏中\r\n显示不出只能为\\r\\n在此转换，去除转移
+                std::string tmp = splitJs.asString();
+
+                if(tmp == "\\n")
+                {
+                    sMark = "\n";
+                }
+                else if(tmp == "\\r\\n")
+                {
+                    sMark = "\r\n";
+                }
+
+                //end
+                rule->setLineSegmentationMark(sMark);
             }
 
             //获取日期格式
@@ -487,12 +504,32 @@ void projectNavigation::onAnalysis()
                 rule->setTimeFormat(timeFormatJs.asString().c_str());
             }
 
+            //获取日志分隔符
+            Json::Value logSplitJs;
+            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_LOG_SPLIT, logSplitJs);
+            if(!logSplitJs.isNull())
+            {
+                QString sMark = logSplitJs.asString().c_str();
+
+                //TODO:字符串转移为字符 "\\n \n
+
+                rule->setLogSegmentationMark(sMark);
+            }
+
             //获取日志格式
             Json::Value logFormatJs;
-            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_LOG_FORMAT, logFormatJs);
-            if(!logFormatJs.isNull())
+            nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_LOG_FORMAT, logFormatJs);            
+            if(!logFormatJs.isNull() && logFormatJs.isArray())
             {
-                rule->setTimeFormat(logFormatJs.asString().c_str());
+                QStringList tmpList;
+                for(int index = 0; index < logFormatJs.size(); index++)
+                {
+                    if(logFormatJs[index]["enable"].asBool())
+                    {
+                        tmpList.append(logFormatJs[index]["name"].asString().c_str());
+                    }
+                }
+                rule->setLogFormat(tmpList);
             }
 
             //获取过滤算法
@@ -571,6 +608,7 @@ void projectNavigation::onAnalysis()
             //起始时间
             Json::Value startTimeJs;
             nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_START_TIME, startTimeJs);
+            qDebug() << startTimeJs.toStyledString().c_str();
             if(!startTimeJs.isNull())
             {
                 timeCondition.append(startTimeJs.asString().c_str());
@@ -579,6 +617,7 @@ void projectNavigation::onAnalysis()
             //起始时间
             Json::Value stopTimeJs;
             nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_STOP_TIME, stopTimeJs);
+            qDebug() << stopTimeJs.toStyledString().c_str();
             if(!stopTimeJs.isNull())
             {
                 timeCondition.append(stopTimeJs.asString().c_str());
@@ -589,11 +628,11 @@ void projectNavigation::onAnalysis()
 
             flManager->addFilter(VAR_NAME(timeFilter), ft);
 
-            fileInfo.append(qMakePair(info.first, rule));
+            fileInfo.append(std::make_tuple(info.first, rule, flManager));
         }
     }
 
-    QString dbPath = getDbPathByUuid(role.proUuid);
+    QString dbPath = getDbPathByUuid(role.proUuid);    
 
     emit analysis(role.proUuid, dbPath, fileInfo);
 }
@@ -723,10 +762,13 @@ void projectNavigation::loadProject(const QString &proFile)
     //expandNode(prjItem);
 }
 
-QString projectNavigation::createProject(const QString &name, const QString &proPath, const QStringList &files)
+QString projectNavigation::createProject(const QString &name, QString proPath, const QStringList &files)
 {
     //创建uuid
     QString uuid = QUuid::createUuid().toString();
+
+    proPath += "/";
+    proPath += name;
 
     QTreeWidgetItem *prjItem = createPrjNode(uuid, proPath, name);
 
@@ -760,7 +802,7 @@ QString projectNavigation::createProject(const QString &name, const QString &pro
 
     //加载工程配置
     std::shared_ptr<projectCfg> prjCfg = std::make_shared<projectCfg>();
-    prjCfg->load(proPath + "/" + name, uuid);
+    prjCfg->load(proPath, uuid);
     prjCfg->setPrjName(name);
     prjCfg->save();
 
@@ -769,7 +811,7 @@ QString projectNavigation::createProject(const QString &name, const QString &pro
     //存储最近使用路径
     QSettings prjSettings("BJTU", "dataAnalysis");
     QStringList recentlyPrj = prjSettings.value("recently_used").toStringList();
-    recentlyPrj.insert(0, proPath + "/" + name + "/" + name + ".prj");
+    recentlyPrj.insert(0, proPath + "/" + name + ".prj");
     prjSettings.setValue("recently_used", recentlyPrj);
 
     return uuid;

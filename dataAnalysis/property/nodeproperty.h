@@ -7,6 +7,9 @@
 
 /*************数据文件属性********************/
 #define PROPERTY_DATAFILE_NAME  "文件名称"
+
+#define PROPERTY_DATAFILE_LOG_SPLIT     "日志分隔符"
+
 #define PROPERTY_DATAFILE_LOG_FORMAT  "日志格式"
 #define PROPERTY_DATAFILE_SPLIT         "行分隔符"
 #define PROPERTY_DATAFILE_TIME_FORMAT   "日期格式"

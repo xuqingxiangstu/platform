@@ -342,13 +342,26 @@ void ChartView::tooltip(QPointF point, bool state)
 	}
 
     if (state) {
-        m_tooltip->setText(QString("X: %1 \nY: %2 ").arg(point.x()).arg(point.y()));
-        m_tooltip->setAnchor(point);
-        m_tooltip->updateGeometry();
-		m_tooltip->setBrush(QBrush(series->pen().color()));
-		m_tooltip->setSeriesName(series->name());
-		m_tooltip->setZValue(13);
-        m_tooltip->show();
+        //qDebug() << series->points() << "-" << point;
+        //qFuzzyCompare
+#if 0
+        QList<QPointF> points = series->points();
+
+        auto minItor = std::find_if(points.begin(), points.end(), [=](const QPointF &tmp){
+           return point.x() >=
+        });
+
+        if(itor != points.end())
+        {
+            m_tooltip->setText(QString("X: %1 \nY: %2 ").arg(point.x()).arg(point.y()));
+            m_tooltip->setAnchor(point);
+            m_tooltip->updateGeometry();
+            m_tooltip->setBrush(QBrush(series->pen().color()));
+            m_tooltip->setSeriesName(series->name());
+            m_tooltip->setZValue(13);
+            m_tooltip->show();
+        }
+#endif
     } else {
         m_tooltip->hide();
     }

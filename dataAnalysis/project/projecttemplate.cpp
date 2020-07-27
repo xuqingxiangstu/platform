@@ -9,7 +9,7 @@ void projectTemplate::create(const QString &name, const QString &path, const QSt
 {
     //step1：创建工程文件夹
     QDir tmp;
-    QString dstPath = path + "/" + name;
+    QString dstPath = path;
 
     tmp.mkdir(dstPath);
 

@@ -37,6 +37,15 @@ void LineSeries::append(qreal x, qreal y)
 	QLineSeries::append(x, y);
 }
 
+void LineSeries::append(QPointF point)
+{
+    if (point.x() > m_xMax){ m_xMax = point.x();}
+    if (point.x() < m_xMin){ m_xMin = point.x();}
+    if (point.y() > m_yMax){ m_yMax = point.y();}
+    if (point.y() < m_yMin){ m_yMin = point.y();}
+    QLineSeries::append(point);
+}
+
 // --------------------------------------------------------------------------------
 // 	FUNCTION: bounds ()
 // --------------------------------------------------------------------------------

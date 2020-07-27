@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QMenu>
 #include <QPair>
+#include <tuple>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include "./project/projectcfg.h"
@@ -54,7 +55,7 @@ signals:
      * @param proUuid   工程UUID
      * @param fileInfo  文件信息（多个文件:uuid+filepath）
      */  
-    void analysis(const QString &proUuid, const QString &dbPath, QVector<QPair<QString, std::shared_ptr<analysisRule>>> fileInfo);
+    void analysis(const QString &proUuid, const QString &dbPath, QVector<std::tuple<QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>>> fileInfo);
 
     void toShowProperty(QString uuid, Json::Value);
 
@@ -94,7 +95,7 @@ public slots:
      * @param files         数据文件
      * @return uuid
      */
-    QString createProject(const QString &name, const QString &proPath, const QStringList &files = {});
+    QString createProject(const QString &name, QString proPath, const QStringList &files = {});
 
     /**
      * @brief loadProject   加载工程

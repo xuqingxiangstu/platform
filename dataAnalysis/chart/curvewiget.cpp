@@ -114,7 +114,7 @@ LineSeries *curveWiget::createSeries()
     series->setPointsVisible(true);
     //series->setUseOpenGL(true);
 
-    connect(series, &QSplineSeries::hovered, this, &curveWiget::tooltip);
+    //connect(series, &QSplineSeries::hovered, this, &curveWiget::tooltip);
 
     return series;
 }
@@ -141,7 +141,7 @@ void curveWiget::onAddCurve(QString uuid, QString name)
 
         if(mResultTable->getTimeByTableCoding(tableNum, codingNum, values))
         {
-            QList<QPointF> points;
+            //QList<QPointF> points;
 
             for(int index = 0; index < values.size(); index++)
             {
@@ -154,8 +154,10 @@ void curveWiget::onAddCurve(QString uuid, QString name)
                 mXMaxValue < index ? mXMaxValue = index : mXMaxValue = mXMaxValue;
                 mYMaxValue < tmp ? mYMaxValue = tmp : mYMaxValue = mYMaxValue;
 
-                points.append(QPointF(index, tmp));
-                mLineSeries[uuid]->append(index, tmp);
+                //points.append(QPointF(index, tmp));
+                QPointF point = QPointF(index, tmp);
+                qDebug() << point;
+                mLineSeries[uuid]->append(point);
             }
 
             //mLineSeries[uuid]->append(points);

@@ -1,6 +1,6 @@
 #include "standardtime.h"
 
-QString standardTime::mDateTimeFormat = "yyyy/M/d h:mm:ss.zz";
+QString standardTime::mDateTimeFormat = "yyyy/M/d H:mm:ss.z";
 
 QDateTime standardTime::fromString(const QString &time)
 {

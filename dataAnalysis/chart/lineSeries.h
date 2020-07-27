@@ -51,6 +51,8 @@ public:
 
 	void append(qreal x, qreal y);
 
+    void append(QPointF point);
+
 	QRectF bounds() const;
 	
 signals:

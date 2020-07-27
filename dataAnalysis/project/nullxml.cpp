@@ -8,10 +8,16 @@ void nullXml::create(const std::string &filePath)
 
     myDocument.LinkEndChild(new TiXmlElement("project"));
 
-    myDocument.SaveFile(filePath.c_str());
+    bool res = myDocument.SaveFile(filePath.c_str());
+    int i = 0;
+    i++;
 }
 
-void nullXml::create(const QString &filePath)
+void nullXml::create(QString filePath)
 {
-    create(filePath.toStdString());
+    TiXmlDocument myDocument;
+
+    myDocument.LinkEndChild(new TiXmlElement("project"));
+
+    bool res = myDocument.SaveFile(filePath.toLocal8Bit().data());
 }

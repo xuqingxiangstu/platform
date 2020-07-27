@@ -6,6 +6,8 @@
 #include <QPair>
 #include <atomic>
 #include "fileAnalysis/analysis.h"
+#include <tuple>
+#include "fileAnalysis/filter.h"
 #include "./argSave/saveDataBaseTask.h"
 #include "fileAnalysis/analysisprogress.h"
 
@@ -46,7 +48,7 @@ public slots:
      * @param proUuid   工程UUID
      * @param fileInfo  文件信息（多个文件:uuid+filepath）
      */
-    void onAnalysis(const QString &proUuid, const QString &dbPath, QVector<QPair<QString, std::shared_ptr<analysisRule>>> fileInfo);
+    void onAnalysis(const QString &proUuid, const QString &dbPath, QVector<std::tuple<QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>>> fileInfo);
 
     /**
      * @brief onAnalysisOver    解析结束
@@ -64,7 +66,7 @@ private:
      * @brief getAnalysisMaxSize    获取待解析总个数
      * @return
      */
-    int getAnalysisMaxSize(const QVector<QPair<QString, std::shared_ptr<analysisRule>>> &fileInfo);
+    int getAnalysisMaxSize(const QVector<std::tuple<QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>>> &fileInfo);
 private:
 
     std::shared_ptr<analysis> mAnalysisObj; ///<数据解析实体

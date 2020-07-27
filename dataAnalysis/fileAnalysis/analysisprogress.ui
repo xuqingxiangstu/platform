@@ -10,6 +10,13 @@
     <height>80</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <weight>75</weight>
+    <italic>true</italic>
+    <bold>true</bold>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>

@@ -12,7 +12,7 @@ fileAnalysisBusiness::fileAnalysisBusiness()
 
 }
 
-void fileAnalysisBusiness::onAnalysis(const QString &proUuid, const QString &dbPath, QVector<QPair<QString, std::shared_ptr<analysisRule>> > fileInfo)
+void fileAnalysisBusiness::onAnalysis(const QString &proUuid, const QString &dbPath, QVector<std::tuple<QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>>> fileInfo)
 {
     //step1：显示进度条窗体
 
@@ -49,13 +49,13 @@ void fileAnalysisBusiness::onAnalysis(const QString &proUuid, const QString &dbP
         progress.setMinMaxV(1, maxCount);
 
         //解析
-        for(QPair<QString, std::shared_ptr<analysisRule>> info : fileInfo)
+        for(auto info : fileInfo)
         {
             QString uuid = QUuid::createUuid().toString();
 
             mAnalysisUuids.append(uuid);
 
-            emit toAnalysis(uuid, info.first, info.second, nullptr);
+            emit toAnalysis(uuid, std::get<0>(info), std::get<1>(info), std::get<2>(info));
         }
 
         mSaveDbTask->onOver();
@@ -95,13 +95,13 @@ void fileAnalysisBusiness::onAnalysisOver(QString uuid)
     }
 }
 
-int fileAnalysisBusiness::getAnalysisMaxSize(const QVector<QPair<QString, std::shared_ptr<analysisRule>>> &fileInfo)
+int fileAnalysisBusiness::getAnalysisMaxSize(const QVector<std::tuple<QString, std::shared_ptr<analysisRule>, std::shared_ptr<filterManager>>> &fileInfo)
 {
     int maxCount = 0;
 
-    for(QPair<QString, std::shared_ptr<analysisRule>> info : fileInfo)
+    for(auto info : fileInfo)
     {
-        QFile fileObj(info.first);
+        QFile fileObj(std::get<0>(info));
         if(!fileObj.open(QIODevice::ReadOnly))
         {
             continue;
@@ -112,7 +112,7 @@ int fileAnalysisBusiness::getAnalysisMaxSize(const QVector<QPair<QString, std::s
         //step1：分割帧
         QString tmpAllData = allData;
 
-        QStringList frames = tmpAllData.split(info.second->getSegmentationMark());
+        QStringList frames = tmpAllData.split(std::get<1>(info)->getLineSegmentationMark());
 
         maxCount += frames.size();
 

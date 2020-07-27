@@ -49,26 +49,28 @@ newPrjDialog::newPrjDialog(QWidget *parent) :
 
     connect(ui->pushButton, &QPushButton::clicked, [=](){
 
-        QString directory = "";
-        //已有则加载，没有则默认工程目录下
-        QSettings prjSettings("BJTU", "dataAnalysis");
-        directory = prjSettings.value("recently_open_pro").toString();
-        if(directory.compare("") == 0)
-        {
-            directory = QDir::currentPath();
-        }
-
-        ui->pathLineEdit->setText(directory);
-
         QString path = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                     directory,
+                                                     ui->pathLineEdit->text(),
                                                      QFileDialog::ShowDirsOnly
                                                      | QFileDialog::DontResolveSymlinks);
+        QSettings prjSettings("BJTU", "dataAnalysis");
+
         prjSettings.setValue("recently_open_pro", path);
 
         ui->pathLineEdit->setText(path);
 
     });
+
+    QString directory = "";
+    //已有则加载，没有则默认工程目录下
+    QSettings prjSettings("BJTU", "dataAnalysis");
+    directory = prjSettings.value("recently_open_pro").toString();
+    if(directory.compare("") == 0)
+    {
+        directory = QDir::currentPath();
+    }
+
+    ui->pathLineEdit->setText(directory);
 
     connect(ui->pathLineEdit, &QLineEdit::textChanged, [=](){
 

@@ -14,17 +14,17 @@ class analysisRule
 {   
 public:
     /**
-     * @brief getSegmentationMark   获取分割标志
+     * @brief getLineSegmentationMark   获取行分割标志
      * @return
      */
-    QString getSegmentationMark(){return mSegmentationMark;}
+    QString getLineSegmentationMark(){return mLineSegmentationMark;}
 
     /**
-     * @brief setSegmentationMark   设置分割标志
+     * @brief setLineSegmentationMark   设置行分割标志
      * @param mark
      * @return
      */
-    void setSegmentationMark(const QString &mark){mSegmentationMark = mark;}
+    void setLineSegmentationMark(const QString &mark){mLineSegmentationMark = mark;}
 
     /**
      * @brief setTimeFormat 设置时间解析格式
@@ -42,17 +42,31 @@ public:
      * @brief setLogFormat 设置日志格式
      * @param format
      */
-    void setLogFormat(const QString &format){mLogFormat = format;}
+    void setLogFormat(const QStringList &format){mLogFormat = format;}
 
     /**
      * @brief getLogFormat 获取日志格式
      * @return
      */
-    QString getLogFormat(){return mLogFormat;}
+    QStringList getLogFormat(){return mLogFormat;}
+
+    /**
+     * @brief getLogSegmentationMark   获取日志分割标志
+     * @return
+     */
+    QString getLogSegmentationMark(){return mLogSegmentationMark;}
+
+    /**
+     * @brief setLogSegmentationMark   设置日志分割标志
+     * @param mark
+     * @return
+     */
+    void setLogSegmentationMark(const QString &mark){mLogSegmentationMark = mark;}
 private:
-    QString mSegmentationMark = "\n";               ///< 分割标志（每帧之间分割标志）
-    QString mTimeFormat = "yyyy/M/d h:mm:ss.zz";    ///< 时间解析格式
-    QString mLogFormat = "";    ///< 行日志格式
+    QString mLogSegmentationMark = "\t";                ///< 日志分割标志（每行直接分割）
+    QString mLineSegmentationMark = "\n";               ///< 行分割标志（每帧之间分割标志）
+    QString mTimeFormat = "yyyy/M/d h:mm:ss.zz";        ///< 时间解析格式
+    QStringList mLogFormat;                             ///< 行日志格式
 };
 
 Q_DECLARE_METATYPE(std::shared_ptr<analysisRule>)
