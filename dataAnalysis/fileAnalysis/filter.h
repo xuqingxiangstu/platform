@@ -108,7 +108,8 @@ class msgDirectFilter : public filter
 public:
     bool isMeet(const QString &context) override
     {
-        return mMsgDirect.contains(context);
+        //大小写皆可
+        return mMsgDirect.contains(context) || mMsgDirect.contains(context.toUpper())|| mMsgDirect.contains(context.toLower());
     }
 
     void setFilterCondition(const QStringList &msgDirect) override {mMsgDirect = msgDirect;}

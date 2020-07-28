@@ -2,6 +2,7 @@
 #define MESSAGEAREA_H
 
 #include <QWidget>
+#include <QMenu>
 
 namespace Ui {
 class messageArea;
@@ -22,6 +23,7 @@ public slots:
      */
     void showMessage(QString msg, bool state);
 private:
+    QMenu *mPopMenu;
     Ui::messageArea *ui;
 };
 

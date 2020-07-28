@@ -38,6 +38,17 @@ void workspaceArea::loadDataShowWidget(QString uuid, QString proPath)
     }
 }
 
+void workspaceArea::onCloseProject(QString uuid)
+{
+    if(mDataShowWidgetManager.contains(uuid))
+    {
+        QWidget *widget = mDataShowWidgetManager[uuid];
+        mDataShowWidgetManager.remove(uuid);
+        delete widget;
+        widget = nullptr;
+    }
+}
+
 void workspaceArea::onShowTableWidget(QString uuid, QString proPath)
 {
     loadDataShowWidget(uuid, proPath);
@@ -57,4 +68,11 @@ void workspaceArea::onShowMultImgWidget(QString uuid, QString proPath)
     loadDataShowWidget(uuid, proPath);
 
     dynamic_cast<dataShowWidget*>(mDataShowWidgetManager[uuid])->onShowMultImgWidget();
+}
+
+void workspaceArea::onShowFileWidget(QString proUuid, QString fileUuid, QString proPath, QString filePath)
+{
+    loadDataShowWidget(proUuid, proPath);
+
+    dynamic_cast<dataShowWidget*>(mDataShowWidgetManager[proUuid])->onShowFileWiget(fileUuid, filePath);
 }

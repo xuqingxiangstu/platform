@@ -57,6 +57,11 @@
     <string>Del</string>
    </property>
   </action>
+  <action name="actionCloseProject">
+   <property name="text">
+    <string>关闭项目</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

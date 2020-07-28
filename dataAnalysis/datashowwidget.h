@@ -7,6 +7,7 @@
 #define TABLE_WIDGET    "表格显示"
 #define S_IMG_WIDGET    "单图显示"
 #define M_IMG_WIDGET    "全图显示"
+#define FILE_WIDGET     "文件显示"
 
 namespace Ui {
 class dataShowWidget;
@@ -37,6 +38,13 @@ public slots:
      * @param uuid
      */
     void onShowMultImgWidget();
+
+    /**
+     * @brief onShowFileWiget   显示文件内容
+     * @param uuid              文件UUID
+     * @param path              文件路径
+     */
+    void onShowFileWiget(const QString &uuid, const QString &path);
 private: 
     QString mProUuid;
     QString mProPath;

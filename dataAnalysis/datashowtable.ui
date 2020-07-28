@@ -65,21 +65,21 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="curPageLabel">
        <property name="text">
         <string>共1000条第1页</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="firstPageBtn">
        <property name="text">
         <string>第一页</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="upPageBtn">
        <property name="text">
         <string>上一页</string>
        </property>
@@ -96,21 +96,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="downPageBtn">
        <property name="text">
         <string>下一页</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_5">
+      <widget class="QPushButton" name="lastPageBtn">
        <property name="text">
         <string>末页</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="maxPageLabel">
        <property name="text">
         <string>共 3 页</string>
        </property>

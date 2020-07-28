@@ -22,7 +22,7 @@ void fileAnalysisBusiness::onAnalysis(const QString &proUuid, const QString &dbP
     analysisProgress progress;
     connect(this, &fileAnalysisBusiness::curAnalysisStep, &progress, &analysisProgress::setCurV);
 
-    emit showMessage("正在解析，请稍等...");
+    //emit showMessage("正在解析，请稍等...");
 
     //启动解析线程
     QThread *thread = new QThread;
@@ -76,7 +76,7 @@ void fileAnalysisBusiness::onAnalysis(const QString &proUuid, const QString &dbP
 
     progress.exec();
 
-    emit showMessage("解析完成");
+    emit showMessage("解析存储完成");
 
     delete thread;
     thread = nullptr;

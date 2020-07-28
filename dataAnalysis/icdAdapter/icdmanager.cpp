@@ -9,8 +9,14 @@ icdManager::icdManager()
     mIcdFrameAdpter->init("./cfgfile/icd.xml");
 
     mFrameTypeMapping[Frame_BE] = FRAME_BE;
+    mInverseMapping[FRAME_BE] = Frame_BE;
+
     mFrameTypeMapping[Frame_FE] = FRAME_FE;
+    mInverseMapping[FRAME_FE] = Frame_FE;
+
     mFrameTypeMapping[Frame_Middle] = FRAME_MIDDLE;
+    mInverseMapping[FRAME_MIDDLE] = Frame_Middle;
+
 }
 
 icdManager::~icdManager()
@@ -47,3 +53,13 @@ QString icdManager::getMapping(const int &type)
     return keyName;
 }
 
+int icdManager::inverseMapping(const QString &type)
+{
+    int res = -1;
+    if(mInverseMapping.contains(type))
+    {
+        res = mInverseMapping[type];
+    }
+
+    return res;
+}

@@ -62,9 +62,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(this, &MainWindow::saveProject, mProjectNavigationWidget, &projectNavigation::onSaveProject);
 
+    connect(mProjectNavigationWidget, &projectNavigation::closeProject, mWorkSpaceAreaWidget, &workspaceArea::onCloseProject);
     connect(mProjectNavigationWidget, &projectNavigation::showMultImgWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowMultImgWidget);
     connect(mProjectNavigationWidget, &projectNavigation::showSingleImgWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowSingleImgWidget);
     connect(mProjectNavigationWidget, &projectNavigation::showTableWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowTableWidget);
+    connect(mProjectNavigationWidget, &projectNavigation::showFileWidget, mWorkSpaceAreaWidget, &workspaceArea::onShowFileWidget);
 
     //初始化消息区
     mMessageAreaWidget = new messageArea(this);

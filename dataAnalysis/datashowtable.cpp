@@ -2,6 +2,7 @@
 #include "ui_datashowtable.h"
 
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QMessageBox>
 #include <QDebug>
 #include <QSqlError>
@@ -51,10 +52,8 @@ dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) 
     });
 
     connect(ui->refreshBtn, &QPushButton::clicked, [=](){
-        query("select " + mSelectField +  " from " + mTableName);
+        updateTable();
     });
-
-    query("select " + mSelectField +  " from " + mTableName);
 
     connect(ui->lineEdit, &QLineEdit::returnPressed, [=](){
 
@@ -66,11 +65,153 @@ dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) 
 
         conditionQuery(queryCon);
     });
+
+    updateTable();
+
+    connect(ui->firstPageBtn, &QPushButton::clicked, this, [=](){
+        mCurPageIndex = 1;
+
+        query(pageSql(mCurPageIndex));
+
+        updateButtonAndInfo();
+    });
+
+    connect(ui->upPageBtn, &QPushButton::clicked, this, [=](){
+
+        mCurPageIndex--;
+
+        query(pageSql(mCurPageIndex));
+
+        updateButtonAndInfo();
+    });
+
+    connect(ui->downPageBtn, &QPushButton::clicked, this, [=](){
+
+        mCurPageIndex++;
+
+        query(pageSql(mCurPageIndex));
+
+        updateButtonAndInfo();
+    });
+
+    connect(ui->lastPageBtn, &QPushButton::clicked, this, [=](){
+
+        mCurPageIndex = mMaxPageIndex;
+
+        query(pageSql(mCurPageIndex));
+
+        updateButtonAndInfo();
+    });
+
+    connect(ui->spinBox, SIGNAL(valueChanged(int)), this, SLOT(onSpinValueChange(int)));
 }
 
 dataShowTable::~dataShowTable()
 {
     delete ui;
+}
+
+void dataShowTable::updateTable()
+{
+    mMaxRecordSize = getRecordSize();
+
+    if(mMaxRecordSize % MAX_RECORD_SIZE)
+        mMaxPageIndex = mMaxRecordSize / MAX_RECORD_SIZE + 1;
+    else
+        mMaxPageIndex = mMaxRecordSize / MAX_RECORD_SIZE;
+
+    mCurPageIndex = 1;
+
+    query(pageSql(mCurPageIndex));
+
+    updateButtonAndInfo();
+
+    QString maxPageText = "共 ";
+    maxPageText += QString::number(mMaxPageIndex, 10);
+    maxPageText += " 页";
+
+    ui->maxPageLabel->setText(maxPageText);
+
+    ui->spinBox->setMinimum(1);
+    ui->spinBox->setMaximum(mMaxPageIndex);
+}
+
+void dataShowTable::onSpinValueChange(int value)
+{
+    if(mCurPageIndex == value)
+        return ;
+
+    mCurPageIndex = value;
+
+    query(pageSql(mCurPageIndex));
+
+    updateButtonAndInfo();
+}
+
+void dataShowTable::updateButtonAndInfo()
+{
+    if(mMaxPageIndex == mCurPageIndex)
+    {
+        if(mCurPageIndex == 1)
+        {
+            ui->firstPageBtn->setEnabled(false);
+            ui->upPageBtn->setEnabled(false);
+            ui->downPageBtn->setEnabled(false);
+            ui->lastPageBtn->setEnabled(false);
+        }
+        else
+        {
+            ui->firstPageBtn->setEnabled(true);
+            ui->upPageBtn->setEnabled(true);
+            ui->downPageBtn->setEnabled(false);
+            ui->lastPageBtn->setEnabled(false);
+        }
+    }
+    else if(mMaxPageIndex != mCurPageIndex)
+    {
+        if(mCurPageIndex == 1)
+        {
+            ui->firstPageBtn->setEnabled(false);
+            ui->upPageBtn->setEnabled(false);
+            ui->downPageBtn->setEnabled(true);
+            ui->lastPageBtn->setEnabled(true);
+        }
+        else
+        {
+            ui->firstPageBtn->setEnabled(true);
+            ui->upPageBtn->setEnabled(true);
+            ui->downPageBtn->setEnabled(true);
+            ui->lastPageBtn->setEnabled(true);
+        }
+    }
+
+    ui->spinBox->setValue(mCurPageIndex);
+
+    QString curPageText = "共 ";
+
+    if(mCurPageIndex != mMaxPageIndex)
+        curPageText += QString::number(MAX_RECORD_SIZE, 10);
+    else
+        curPageText += QString::number(mMaxRecordSize % MAX_RECORD_SIZE, 10);
+
+    curPageText += " 条第";
+    curPageText += QString::number(mCurPageIndex, 10);
+    curPageText += "页";
+
+    ui->curPageLabel->setText(curPageText);
+}
+
+QString dataShowTable::pageSql(int pageIndex)
+{
+    QString sql = "";
+
+    sql = "select " + mSelectField +  " from " + mTableName;
+    sql += " limit ";
+    sql += QString::number(MAX_RECORD_SIZE, 10);
+    sql += " offset ";
+    sql += QString::number((pageIndex - 1) * MAX_RECORD_SIZE);
+
+    return sql;
 }
 
 void dataShowTable::conditionQuery(QString cond)
@@ -118,4 +259,23 @@ void dataShowTable::query(const QString &sql)
     {
         mDataModel->setHeaderData(index, Qt::Horizontal, mTableTitle.at(index));
     }
+}
+
+int dataShowTable::getRecordSize()
+{
+    int size = -1;
+    QString sql = "select count (*) as num from " + mTableName;
+    QSqlQuery query(sql, mDb);
+    QSqlRecord rec = query.record();
+
+    while(query.next())
+    {
+        rec = query.record();
+        for(int index =0; index<rec.count();index++)
+        {
+            size = rec.value(index).toInt();
+        }
+    }
+
+    return size;
 }

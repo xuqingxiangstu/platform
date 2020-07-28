@@ -74,9 +74,17 @@ public:
      * @return
      */
     QString getMapping(const int &type);
+
+    /**
+     * @brief inverseMapping    通过字符串获取帧类型
+     * @param type              字符串
+     * @return
+     */
+    int inverseMapping(const QString &type);
 private:
     std::shared_ptr<Pf::PfIcdWorkBench::icdFrameAdapter> mIcdFrameAdpter; ///<组帧、解帧协议适配对象
     QMap<int, QString> mFrameTypeMapping;   ///< 帧类型映射
+    QMap<QString, int> mInverseMapping;     ///< 反映射
 private:
     static std::mutex mMutex;
     static std::shared_ptr<icdManager> mInstance;

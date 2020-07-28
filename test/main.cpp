@@ -8,9 +8,13 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    QString tmp = "\\n";
+    QString tmp = " ";
+
+    QByteArray tB = tmp.toUtf8();
+
     qDebug() << tmp.right(1);
     QString ss = "\n";
+    QByteArray sb = ss.toUtf8();
     qDebug() << ss;
     qDebug() << tmp.replace("\\", "");
 

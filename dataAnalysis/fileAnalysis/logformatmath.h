@@ -20,6 +20,13 @@ public:
      */
     logFormatMath(std::shared_ptr<analysisRule> rule, const QString &context);
     ~logFormatMath();
+private:
+    /**
+     * @brief chToEn    中文标识转为英文标识
+     * @param ch
+     * @return
+     */
+    QString chToEn(const QString &ch);
 public:
     /**
      * @brief getValue  根据名称获取值
@@ -33,8 +40,15 @@ public:
      * @return
      */
     QString getVaildMsg(){return mVaildMsg;}
+
+    /**
+     * @brief getFilterItem 获取实际要过滤项
+     * @return
+     */
+    QStringList getFilterItem(){return mFilterItems;}
 private:
     QMap<QString, QString> mContexts;
+    QStringList mFilterItems;
     QString mVaildMsg;      ///< 有效消息
 };
 

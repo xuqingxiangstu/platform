@@ -13,7 +13,9 @@
 
 projectNavigation::projectNavigation(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::projectNavigation)
+    ui(new Ui::projectNavigation),
+    mCurCloseItem(nullptr),
+    mPreHightUuid("")
 {
     ui->setupUi(this);
 
@@ -23,6 +25,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
     mPopMenu->addAction(ui->actionAddFile);    
     mPopMenu->addAction(ui->actionDelete);
     mPopMenu->addAction(ui->actionParse);
+    mPopMenu->addAction(ui->actionCloseProject);
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &projectNavigation::onDoubleClicked);
@@ -36,11 +39,13 @@ projectNavigation::projectNavigation(QWidget *parent) :
         //mRightMousePoint = point;
         QTreeWidgetItem *currentItem = ui->treeWidget->itemAt(point);
         mCurSelectItem = currentItem;
+        mCurCloseItem = currentItem;
         if(currentItem)
         {
             recordRole role = currentItem->data(Name_Index, Qt::UserRole).value<recordRole>();
             if(DataFile_Group_Node == role.nodeType)
             {
+                ui->actionCloseProject->setEnabled(false);
                 ui->actionAddFile->setEnabled(true);
 
                 if(currentItem->childCount() > 0)
@@ -52,12 +57,19 @@ projectNavigation::projectNavigation(QWidget *parent) :
             }
             else if(DataFile_Node == role.nodeType)
             {
+                ui->actionCloseProject->setEnabled(false);
                 ui->actionAddFile->setEnabled(false);
                 ui->actionParse->setEnabled(false);
                 ui->actionDelete->setEnabled(true);
             }
             else if(Prj_Node == role.nodeType)
             {
+                QString text = "关闭工程 \"";
+                text += currentItem->text(Name_Index);
+                text += "\"";
+
+                ui->actionCloseProject->setText(text);
+                ui->actionCloseProject->setEnabled(true);
                 ui->actionAddFile->setEnabled(false);
 
                 //TODO:判断是否有文件
@@ -67,6 +79,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
             }
             else
             {
+                ui->actionCloseProject->setEnabled(false);
                 ui->actionAddFile->setEnabled(false);
                 ui->actionParse->setEnabled(false);
                 ui->actionDelete->setEnabled(false);
@@ -87,6 +100,14 @@ projectNavigation::projectNavigation(QWidget *parent) :
 
     connect(ui->actionDelete, &QAction::triggered, [=](){
        onDeleteFile();
+    });
+
+    connect(ui->actionCloseProject, &QAction::triggered, [=]{
+        if(mCurCloseItem)
+        {
+            recordRole role = mCurCloseItem->data(Name_Index, Qt::UserRole).value<recordRole>();
+            onCloseProject(role.proUuid);
+        }
     });
 
     mFileAnalysisBusiness = std::make_shared<fileAnalysisBusiness>();
@@ -113,6 +134,8 @@ void projectNavigation::onClicked(QTreeWidgetItem *item, int column)
         {
             emit toShowProperty(role.nodeUuid, Json::Value());
         }
+
+        projectHighlight(role.proUuid);
     }
 }
 
@@ -333,6 +356,10 @@ void projectNavigation::onDoubleClicked(QTreeWidgetItem *item, int column)
         {
             emit showMultImgWidget(role.proUuid, role.proPath);
         }
+        else if(DataFile_Node == role.nodeType)
+        {
+            emit showFileWidget(role.proUuid, role.nodeUuid, role.proPath, role.filePath);
+        }
     }
 }
 
@@ -512,6 +539,26 @@ void projectNavigation::onAnalysis()
                 QString sMark = logSplitJs.asString().c_str();
 
                 //TODO:字符串转移为字符 "\\n \n
+                if(sMark.compare("\\t") == 0)
+                {
+                    sMark = "\t";
+                }
+                else if(sMark.compare("\\n") == 0)
+                {
+                    sMark = "\n";
+                }
+                else if(sMark.compare("\\r") == 0)
+                {
+                    sMark = "\r";
+                }
+                else if(sMark.compare("\\r\\n") == 0)
+                {
+                    sMark = "\r\n";
+                }
+                else if(sMark.compare("\\n\\r") == 0)
+                {
+                    sMark = "\n\r";
+                }
 
                 rule->setLogSegmentationMark(sMark);
             }
@@ -593,8 +640,20 @@ void projectNavigation::onAnalysis()
                 for(int index = 0; index < msgTypeJs.size(); index++)
                 {
                     if(msgTypeJs[index]["enable"].asBool())
-                    {
-                        conditions.append(msgTypeJs[index]["name"].asString().c_str());
+                    {                        
+                        //类型映射
+                        QString frameName = msgTypeJs[index]["name"].asString().c_str();
+
+                        int type = icdManager::getInstance()->inverseMapping(frameName);
+
+                        if(-1 != type)
+                        {
+                            conditions.append(QString::number(type, 10));
+                        }
+                        else
+                        {
+                            qDebug() << "[ERROR] not found " << frameName;
+                        }
                     }
                 }
 
@@ -608,7 +667,7 @@ void projectNavigation::onAnalysis()
             //起始时间
             Json::Value startTimeJs;
             nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_START_TIME, startTimeJs);
-            qDebug() << startTimeJs.toStyledString().c_str();
+
             if(!startTimeJs.isNull())
             {
                 timeCondition.append(startTimeJs.asString().c_str());
@@ -617,7 +676,7 @@ void projectNavigation::onAnalysis()
             //起始时间
             Json::Value stopTimeJs;
             nodeRole.mNodeProperty->getProperty(PROPERTY_DATAFILE_STOP_TIME, stopTimeJs);
-            qDebug() << stopTimeJs.toStyledString().c_str();
+
             if(!stopTimeJs.isNull())
             {
                 timeCondition.append(stopTimeJs.asString().c_str());
@@ -760,6 +819,56 @@ void projectNavigation::loadProject(const QString &proFile)
     ui->treeWidget->expandAll();
 
     //expandNode(prjItem);
+    projectHighlight(uuid);
+}
+
+void projectNavigation::onCloseProject(QString uuid)
+{
+    QTreeWidgetItem *proItem = findItemByProUuid(uuid);
+    if(proItem)
+    {
+        //step1：查看是否有需要保存
+        if(isModify(uuid))
+        {
+            if(QMessageBox::Yes == QMessageBox::warning(this, "提示", "工程有更改，是否保存",QMessageBox::Yes | QMessageBox::No))
+            {
+                onSaveProject(uuid);
+            }
+        }
+
+        //step2：删除item
+        ui->treeWidget->takeTopLevelItem(ui->treeWidget->indexOfTopLevelItem(proItem));
+
+        //step3：关闭已打开工作区窗体
+        emit closeProject(uuid);
+    }
+}
+
+void projectNavigation::projectHighlight(QString uuid)
+{
+    if(mPreHightUuid.compare(uuid) == 0)
+        return ;
+
+    QTreeWidgetItem *item = findItemByProUuid(uuid);
+    if(item)
+    {
+        QFont font = item->font(Name_Index);
+        font.setBold(true);
+        item->setFont(Name_Index, font);
+    }
+
+    if(mPreHightUuid.compare("") != 0)
+    {
+        QTreeWidgetItem *item = findItemByProUuid(mPreHightUuid);
+        if(item)
+        {
+            QFont font = item->font(Name_Index);
+            font.setBold(false);
+            item->setFont(Name_Index, font);
+        }
+    }
+
+    mPreHightUuid = uuid;
 }
 
 QString projectNavigation::createProject(const QString &name, QString proPath, const QStringList &files)
@@ -813,6 +922,8 @@ QString projectNavigation::createProject(const QString &name, QString proPath, c
     QStringList recentlyPrj = prjSettings.value("recently_used").toStringList();
     recentlyPrj.insert(0, proPath + "/" + name + ".prj");
     prjSettings.setValue("recently_used", recentlyPrj);
+
+    projectHighlight(uuid);
 
     return uuid;
 }

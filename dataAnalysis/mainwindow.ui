@@ -301,6 +301,11 @@ border: 1px solid gray;
     <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
+  <action name="actionCloseProject">
+   <property name="text">
+    <string>关闭项目</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

@@ -11,6 +11,23 @@ messageArea::messageArea(QWidget *parent) :
     ui->tableWidget->setColumnWidth(0, 200);
 
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
+
+    ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    connect(ui->tableWidget,QTableWidget::customContextMenuRequested,[=](const QPoint &point){
+        mPopMenu->exec(QCursor::pos());
+    });
+
+    mPopMenu = new QMenu(this);
+    mPopMenu->addAction(ui->actionClear);
+
+    connect(ui->actionClear, &QAction::triggered, this, [=](){
+        //ui->tableWidget->clear();
+        for(int row = ui->tableWidget->rowCount() - 1;row >= 0; row--)
+        {
+            ui->tableWidget->removeRow(row);
+        }
+    }, Qt::AutoConnection);
 }
 
 messageArea::~messageArea()

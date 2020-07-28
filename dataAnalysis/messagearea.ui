@@ -29,6 +29,11 @@
     </widget>
    </item>
   </layout>
+  <action name="actionClear">
+   <property name="text">
+    <string>清空</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

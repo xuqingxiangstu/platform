@@ -190,22 +190,18 @@ void dsSingleImg::updateTree()
 
     mCurveWidget->setDbInfo(dbPath, mProUuid);
 
-    QEventLoop loop;
-
+    analysisProgress progress;
     dssingleUpdateThread *thread  = new dssingleUpdateThread(dbPath, mProUuid);
     connect(thread, &dssingleUpdateThread::updateTableNode, this, &dsSingleImg::createTableNode);
     connect(thread, &dssingleUpdateThread::updateCodingNode, this, &dsSingleImg::createCodingNode);
 
-    connect(thread, &dssingleUpdateThread::finished, &loop, &QEventLoop::quit);
+    connect(thread, &dssingleUpdateThread::finished, &progress, &analysisProgress::onClose);
 
-    analysisProgress progress;
     progress.show();
 
     thread->startTask();
 
-    loop.exec();
-
-    progress.onClose();
+    progress.exec();
 
     delete thread;
     thread = nullptr;

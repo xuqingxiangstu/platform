@@ -6,6 +6,7 @@
 
 #include "./argSave/databasemanager.h"
 
+#define MAX_RECORD_SIZE 1000    ///<一页最大记录
 
 namespace Ui {
 class dataShowTable;
@@ -42,15 +43,32 @@ public:
     ~dataShowTable();
 private:
     void initTable();
-private:
 
+    void updateTable();
+private:
     void conditionQuery(QString cond);
 
     void query(const QString &sql);
+
+    /**
+     * @brief getRecordSize 获取总记录数
+     * @return
+     */
+    int getRecordSize();
+
+    QString pageSql(int pageIndex);
+
+    void updateButtonAndInfo();
+
+public slots:
+    void onSpinValueChange(int value);
 private:
     QSqlQueryModel *mDataModel;
     QSqlDatabase mDb;
     QString mSelectField;
+    int mCurPageIndex;
+    int mMaxPageIndex;
+    int mMaxRecordSize;
     const QString mTableName = "result";
 private:
     Ui::dataShowTable *ui;

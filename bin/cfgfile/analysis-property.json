@@ -101,8 +101,8 @@
                             "type":"string", 
                             "readOnly":false,                              
                             "isVisible":true,
-                            "initValue":"yyyy/M/d h:mm:ss.zz",
-                            "curValue":"yyyy/M/d h:mm:ss.zz"
+                            "initValue":"yyyy/M/d h:mm:ss.z",
+                            "curValue":"yyyy/M/d h:mm:ss.z"
                         }
                     ]
                 },

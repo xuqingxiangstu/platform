@@ -32,7 +32,9 @@ SOURCES += main.cpp\
     dssingleimg.cpp \
     dsmuiltimg.cpp \
     versionform.cpp \
-    dssingleupdatethread.cpp
+    dssingleupdatethread.cpp \
+    dsfile.cpp \
+    readfilethread.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
@@ -46,7 +48,9 @@ HEADERS  += mainwindow.h \
     dssingleimg.h \
     dsmuiltimg.h \
     versionform.h \
-    dssingleupdatethread.h
+    dssingleupdatethread.h \
+    dsfile.h \
+    readfilethread.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \
@@ -57,7 +61,8 @@ FORMS    += mainwindow.ui \
     datashowwidget.ui \
     dssingleimg.ui \
     dsmuiltimg.ui \
-    versionform.ui
+    versionform.ui \
+    dsfile.ui
 
 include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)

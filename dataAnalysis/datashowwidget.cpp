@@ -4,6 +4,7 @@
 #include "datashowtable.h"
 #include "dssingleimg.h"
 #include "dsmuiltimg.h"
+#include "dsfile.h"
 
 dataShowWidget::dataShowWidget(QWidget *parent) :
     QWidget(parent),
@@ -63,5 +64,23 @@ void dataShowWidget::onShowMultImgWidget()
         mTabWidgetManager[M_IMG_WIDGET] = tableW;
         ui->tabWidget->addTab(tableW, M_IMG_WIDGET);
         ui->tabWidget->setCurrentWidget(tableW);
+    }
+}
+
+void dataShowWidget::onShowFileWiget(const QString &uuid, const QString &path)
+{
+    if(mTabWidgetManager.contains(uuid))
+    {
+        ui->tabWidget->setCurrentWidget(mTabWidgetManager[uuid]);
+    }
+    else
+    {
+        dsFile *w = new dsFile();
+
+        mTabWidgetManager[uuid] = w;
+        ui->tabWidget->addTab(w, path.right(path.size() - path.lastIndexOf("/") - 1));
+        ui->tabWidget->setCurrentWidget(w);
+
+        w->updateContext(path);
     }
 }

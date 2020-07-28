@@ -78,10 +78,26 @@ signals:
     void showMultImgWidget(QString uuid, QString proPath);
 
     /**
+     * @brief showFileWidget    显示文件窗体
+     * @param uuid              uuid
+     * @param filePath
+     */
+    void showFileWidget(QString proUuid, QString fileUuid, QString proPath, QString filePath);
+
+    /**
      * @brief saveProjectOver   保存结束
      */
     void saveProjectOver(QString uuid);
+
+    void closeProject(QString uuid);
 public slots:
+
+    /**
+     * @brief projectHighlight  工程高亮
+     * @param uuid
+     * @param state
+     */
+    void projectHighlight(QString uuid);
     /**
      * @brief analysisResult    数据分析结果
      * @param result            文件信息（多个文件:uuid+filepath）
@@ -139,6 +155,12 @@ public slots:
      * @param uuid
      */
     void onProjectAlreadySave(QString uuid);
+
+    /**
+     * @brief onCloseProject  关闭工程
+     * @param uuid
+     */
+    void onCloseProject(QString uuid);
 public:
     bool isModify(QString uuid);
     /**
@@ -223,6 +245,8 @@ private:
 
     void deleteItem(QTreeWidgetItem *item);
 private:
+    QString mPreHightUuid;
+    QTreeWidgetItem *mCurCloseItem;    //当前关闭Item
     QTreeWidgetItem *mCurSelectItem;    //当前选择Item
     QString mUiUuid;    //界面UUID
     QMenu *mPopMenu;
