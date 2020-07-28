@@ -10,7 +10,8 @@
 
 dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::dataShowTable)
+    ui(new Ui::dataShowTable),
+    mCurCondition("")
 {
     ui->setupUi(this);
 
@@ -43,35 +44,43 @@ dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) 
 
     connect(ui->queryBtn, &QPushButton::clicked, [=](){
         QString queryCon = ui->lineEdit->text();
-        if(queryCon.compare("") == 0)
+
+        for(QString name : mTableTitle)
         {
-            query("select " + mSelectField +  " from " + mTableName);
+            queryCon.contains(name);
+            queryCon.replace(name, mTableFiledName.at(mTableTitle.indexOf(name)));
         }
 
-        conditionQuery(queryCon);
+        mCurCondition = queryCon;
+
+        updateTable(queryCon);
     });
 
     connect(ui->refreshBtn, &QPushButton::clicked, [=](){
-        updateTable();
+        updateTable("");
     });
 
     connect(ui->lineEdit, &QLineEdit::returnPressed, [=](){
 
         QString queryCon = ui->lineEdit->text();
-        if(queryCon.compare("") == 0)
+
+        for(QString name : mTableTitle)
         {
-            query("select " + mSelectField +  " from " + mTableName);
+            queryCon.contains(name);
+            queryCon.replace(name, mTableFiledName.at(mTableTitle.indexOf(name)));
         }
 
-        conditionQuery(queryCon);
+        mCurCondition = queryCon;
+
+        updateTable(queryCon);
     });
 
-    updateTable();
+    updateTable("");
 
     connect(ui->firstPageBtn, &QPushButton::clicked, this, [=](){
         mCurPageIndex = 1;
 
-        query(pageSql(mCurPageIndex));
+        query(pageSql(mCurPageIndex, mCurCondition));
 
         updateButtonAndInfo();
     });
@@ -80,7 +89,7 @@ dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) 
 
         mCurPageIndex--;
 
-        query(pageSql(mCurPageIndex));
+        query(pageSql(mCurPageIndex, mCurCondition));
 
         updateButtonAndInfo();
     });
@@ -89,16 +98,16 @@ dataShowTable::dataShowTable(QString proUuid, QString proPath, QWidget *parent) 
 
         mCurPageIndex++;
 
-        query(pageSql(mCurPageIndex));
+        query(pageSql(mCurPageIndex, mCurCondition));
 
         updateButtonAndInfo();
     });
 
     connect(ui->lastPageBtn, &QPushButton::clicked, this, [=](){
 
-        mCurPageIndex = mMaxPageIndex;
+        mCurPageIndex = mMaxPageIndex;        
 
-        query(pageSql(mCurPageIndex));
+        query(pageSql(mCurPageIndex, mCurCondition));
 
         updateButtonAndInfo();
     });
@@ -111,9 +120,9 @@ dataShowTable::~dataShowTable()
     delete ui;
 }
 
-void dataShowTable::updateTable()
+void dataShowTable::updateTable(QString cond)
 {
-    mMaxRecordSize = getRecordSize();
+    mMaxRecordSize = getRecordSize(cond);
 
     if(mMaxRecordSize % MAX_RECORD_SIZE)
         mMaxPageIndex = mMaxRecordSize / MAX_RECORD_SIZE + 1;
@@ -122,7 +131,7 @@ void dataShowTable::updateTable()
 
     mCurPageIndex = 1;
 
-    query(pageSql(mCurPageIndex));
+    query(pageSql(mCurPageIndex, cond));
 
     updateButtonAndInfo();
 
@@ -201,11 +210,18 @@ void dataShowTable::updateButtonAndInfo()
     ui->curPageLabel->setText(curPageText);
 }
 
-QString dataShowTable::pageSql(int pageIndex)
+QString dataShowTable::pageSql(int pageIndex, QString cond)
 {
     QString sql = "";
 
     sql = "select " + mSelectField +  " from " + mTableName;
+
+    if(cond.compare("") != 0)
+    {
+        sql += " where ";
+        sql += cond;
+    }
+
     sql += " limit ";
     sql += QString::number(MAX_RECORD_SIZE, 10);
     sql += " offset ";
@@ -261,10 +277,18 @@ void dataShowTable::query(const QString &sql)
     }
 }
 
-int dataShowTable::getRecordSize()
+int dataShowTable::getRecordSize(QString cond)
 {
-    int size = -1;
+    int size = -1;    
+
     QString sql = "select count (*) as num from " + mTableName;
+
+    if(cond.compare("") != 0)
+    {
+        sql += " where ";
+        sql += cond;
+    }
+
     QSqlQuery query(sql, mDb);
     QSqlRecord rec = query.record();
 

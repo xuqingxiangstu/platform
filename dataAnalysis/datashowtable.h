@@ -44,7 +44,7 @@ public:
 private:
     void initTable();
 
-    void updateTable();
+    void updateTable(QString cond);
 private:
     void conditionQuery(QString cond);
 
@@ -54,15 +54,16 @@ private:
      * @brief getRecordSize 获取总记录数
      * @return
      */
-    int getRecordSize();
+    int getRecordSize(QString cond);
 
-    QString pageSql(int pageIndex);
+    QString pageSql(int pageIndex, QString cond = "");
 
     void updateButtonAndInfo();
 
 public slots:
     void onSpinValueChange(int value);
 private:
+    QString mCurCondition;
     QSqlQueryModel *mDataModel;
     QSqlDatabase mDb;
     QString mSelectField;
