@@ -5,11 +5,11 @@
 #include <QChart>
 #include <QChartView>
 #include <QSplineSeries>
+#include <QAbstractSeries>
 #include <QValueAxis>
-#include "chartView.h"
-#include "chart.h"
-#include "lineSeries.h"
-//#include "callout.h"
+#include <QMenu>
+#include "ChartView.h"
+#include "callout.h"
 #include "../src/PfSql/paramsTable/parseResult/resulttable.h"
 
 namespace Ui {
@@ -36,26 +36,31 @@ signals:
     void deleteCurve(QString uuid);
 public slots:
     void onAddCurve(QString uuid, QString name);
-    void tooltip(QPointF point, bool state);
+    void tooltip(QAbstractSeries *series, QPointF point, bool state);
 private:
     void initCurve();
 
-    LineSeries *createSeries();
+    QLineSeries *createSeries();
 private:
     std::shared_ptr<resultTable> mResultTable;
 
     double mXMaxValue;
     double mYMaxValue;
 
-    //Callout *mTooltip;
+    QMap<QLineSeries*, int> mDefaultPenWidht;
+    Callout *mTooltip;
 
     QValueAxis *mAxisYData;
     QValueAxis *mAxisXData;
     //QChartView *mChartView;
     ChartView *mChartView;
-    Chart *mChart;
+    QChart *mChart;
 
-    QMap<QString, LineSeries*> mLineSeries;
+    QMap<QString, QLineSeries*> mLineSeries;
+    QMenu *mSeriesPop;
+    QMap<QLineSeries*, QVector<QString>> mPointsInfo;
+
+    QLineSeries *mCurSelectSeries;
 private:
     Ui::curveWiget *ui;
 };

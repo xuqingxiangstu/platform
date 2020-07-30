@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QStandardItemModel>
 
+#include "textedit.h"
+
 namespace Ui {
 class dsFile;
 }
@@ -29,6 +31,7 @@ public slots:
     void appendContext(QByteArray context);
 private:
     QStandardItemModel *mDataModel;
+    TextEdit *plainTextEdit;
 private:
     Ui::dsFile *ui;
 };

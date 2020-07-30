@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QSettings>
+#include <QDesktopServices>
 
 projectNavigation::projectNavigation(QWidget *parent) :
     QWidget(parent),
@@ -26,6 +27,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
     mPopMenu->addAction(ui->actionDelete);
     mPopMenu->addAction(ui->actionParse);
     mPopMenu->addAction(ui->actionCloseProject);
+    mPopMenu->addAction(ui->actionOpenExplorer);
 
     ui->treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->treeWidget, &QTreeWidget::itemDoubleClicked, this, &projectNavigation::onDoubleClicked);
@@ -43,6 +45,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
         if(currentItem)
         {
             recordRole role = currentItem->data(Name_Index, Qt::UserRole).value<recordRole>();
+
             if(DataFile_Group_Node == role.nodeType)
             {
                 ui->actionCloseProject->setEnabled(false);
@@ -54,6 +57,8 @@ projectNavigation::projectNavigation(QWidget *parent) :
                     ui->actionParse->setEnabled(false);
 
                 ui->actionDelete->setEnabled(false);
+
+                ui->actionOpenExplorer->setEnabled(true);
             }
             else if(DataFile_Node == role.nodeType)
             {
@@ -61,6 +66,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
                 ui->actionAddFile->setEnabled(false);
                 ui->actionParse->setEnabled(false);
                 ui->actionDelete->setEnabled(true);
+                ui->actionOpenExplorer->setEnabled(true);
             }
             else if(Prj_Node == role.nodeType)
             {
@@ -76,6 +82,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
                 ui->actionParse->setEnabled(true);
 
                 ui->actionDelete->setEnabled(false);
+                ui->actionOpenExplorer->setEnabled(true);
             }
             else
             {
@@ -83,6 +90,7 @@ projectNavigation::projectNavigation(QWidget *parent) :
                 ui->actionAddFile->setEnabled(false);
                 ui->actionParse->setEnabled(false);
                 ui->actionDelete->setEnabled(false);
+                ui->actionOpenExplorer->setEnabled(false);
             }
 
             mPopMenu->exec(QCursor::pos());
@@ -102,6 +110,11 @@ projectNavigation::projectNavigation(QWidget *parent) :
        onDeleteFile();
     });
 
+    connect(ui->actionOpenExplorer, &QAction::triggered, [=](){
+       onExplorer();
+    });
+
+
     connect(ui->actionCloseProject, &QAction::triggered, [=]{
         if(mCurCloseItem)
         {
@@ -118,6 +131,22 @@ projectNavigation::projectNavigation(QWidget *parent) :
 projectNavigation::~projectNavigation()
 {
     delete ui;
+}
+
+void projectNavigation::onExplorer()
+{
+    if(mCurSelectItem)
+    {
+        recordRole role = mCurSelectItem->data(Name_Index, Qt::UserRole).value<recordRole>();
+        if(Prj_Node == role.nodeType)
+        {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(role.proPath));
+        }
+        else
+        {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(role.proPath + "/data"));
+        }
+    }
 }
 
 void projectNavigation::onClicked(QTreeWidgetItem *item, int column)

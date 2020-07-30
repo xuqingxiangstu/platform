@@ -18,6 +18,19 @@
     <layout class="QVBoxLayout" name="verticalLayout"/>
    </item>
   </layout>
+  <action name="actionDelete">
+   <property name="text">
+    <string>删除</string>
+   </property>
+  </action>
+  <action name="actionFilterline">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>显示过滤线</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

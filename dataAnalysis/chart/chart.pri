@@ -4,13 +4,9 @@ FORMS += \
 HEADERS += \
     $$PWD/curvewiget.h \
     $$PWD/callout.h \
-    $$PWD/chart.h \
-    $$PWD/chartView.h \
-    $$PWD/lineSeries.h
+    $$PWD/ChartView.h
 
 SOURCES += \
     $$PWD/curvewiget.cpp \
     $$PWD/callout.cpp \
-    $$PWD/chart.cpp \
-    $$PWD/chartView.cpp \
-    $$PWD/lineSeries.cpp
+    $$PWD/ChartView.cpp

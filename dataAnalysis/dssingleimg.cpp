@@ -6,7 +6,7 @@
 #include <QDebug>
 #include <QSqlError>
 #include <QUuid>
-
+#include <QSplitter>
 #include <QThread>
 #include <QEventLoop>
 
@@ -81,6 +81,22 @@ dsSingleImg::dsSingleImg(QString proUuid, QString proPath, QWidget *parent) :
     connect(ui->actionAdd, &QAction::triggered, [=](){
         addCurveShow();
     });
+
+    QSplitter * mainSplitter = new QSplitter(Qt::Horizontal, this);
+
+    mainSplitter->addWidget(ui->frame);
+    mainSplitter->addWidget(ui->frame_2);
+
+    mainSplitter->setStretchFactor(0, 1);
+    mainSplitter->setStretchFactor(1, 3);
+
+    mainSplitter->setOpaqueResize(false);
+    //mainSplitter->setHandleWidth(3);
+    //mainSplitter->setStyleSheet("QSplitter::handle{background:rgb(200, 0, 0)}");
+
+    mainSplitter->show();
+
+    ui->horizontalLayout->addWidget(mainSplitter);
 }
 
 dsSingleImg::~dsSingleImg()

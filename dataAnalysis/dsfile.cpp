@@ -11,7 +11,10 @@ dsFile::dsFile(QWidget *parent) :
     ui->setupUi(this);
 
     mDataModel = new QStandardItemModel(this);
-    //ui->listView->setModel(mDataModel);
+
+    plainTextEdit = new TextEdit();
+    plainTextEdit->setReadOnly(true);
+    ui->verticalLayout->addWidget(plainTextEdit);
 }
 
 dsFile::~dsFile()
@@ -28,8 +31,8 @@ void dsFile::appendContext(QByteArray context)
 //    QStandardItem *tmp = new QStandardItem();
 //    tmp->setText(text);
 //    mDataModel->appendRow(tmp);
-    ui->plainTextEdit->insertPlainText(context);
-    ui->plainTextEdit->moveCursor(QTextCursor::End);
+    plainTextEdit->insertPlainText(context);
+    plainTextEdit->moveCursor(QTextCursor::End);
 }
 
 void dsFile::updateContext(const QString &filePath)
@@ -48,5 +51,5 @@ void dsFile::updateContext(const QString &filePath)
     delete thread;
     thread = nullptr;
 
-    ui->plainTextEdit->moveCursor(QTextCursor::Start);
+    plainTextEdit->moveCursor(QTextCursor::Start);
 }

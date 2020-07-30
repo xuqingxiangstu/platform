@@ -2,13 +2,45 @@
 #include "ui_curvewiget.h"
 #include <QGraphicsLayout>
 #include <QDebug>
+#include <QScatterSeries>
 
 curveWiget::curveWiget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::curveWiget),
-    mResultTable(nullptr)
+    mResultTable(nullptr),
+    mTooltip(nullptr),
+    mCurSelectSeries(nullptr)
 {
     ui->setupUi(this);    
+
+    mSeriesPop = new QMenu(this);
+    mSeriesPop->addAction(ui->actionDelete);
+    mSeriesPop->addAction(ui->actionFilterline);
+
+    ui->actionFilterline->setCheckable(true);
+
+    connect(ui->actionFilterline, &QAction::triggered, this, [=](){
+        ui->actionFilterline->setCheckable(!ui->actionFilterline->isCheckable());
+
+        mChartView->setFilterLineSeries(mCurSelectSeries);
+    });
+
+    connect(ui->actionDelete, &QAction::triggered, this, [=](){
+        if(mCurSelectSeries)
+        {
+            mDefaultPenWidht.remove(mCurSelectSeries);
+            mPointsInfo.remove(mCurSelectSeries);
+            int index = mLineSeries.values().indexOf(mCurSelectSeries);
+
+            emit deleteCurve(mLineSeries.keys().at(index));
+
+            mLineSeries.remove(mLineSeries.keys().at(index));
+
+            mChart->removeSeries(mCurSelectSeries);
+            delete mCurSelectSeries;
+            mCurSelectSeries = nullptr;
+        }
+    });
 
     initCurve();
 }
@@ -25,96 +57,95 @@ void curveWiget::setDbInfo(QString dbPath, QString uuid)
 
 void curveWiget::initCurve()
 {
-#if 0
-    mChart = new QChart();
-
-    mChart->layout()->setContentsMargins(0, 0, 0, 0);//设置外边界全部为0
-    mChart->setMargins(QMargins(0, 0, 0, 0));//设置内边界全部为0
-    mChart->setBackgroundRoundness(0);//设置背景区域无圆角
-
-    mChart->setTheme(QChart::ChartThemeLight);//设置白色主题
+    mChart = new QChart;
+   // mChart->layout()->setContentsMargins(0,0,0,0);
+   // mChart->setMargins(QMargins(0, 0, 0, 0));
+    mChart->setTheme(QChart::ChartThemeQt);//设置白色主题
     mChart->setDropShadowEnabled(true);//背景阴影
     mChart->setAutoFillBackground(true);  //设置背景自动填充
-
-    mChart->legend()->setBackgroundVisible(true);//设置背景是否可视
-    mChart->setAnimationOptions(QChart::AllAnimations);//设置启用或禁用动画
-    mChart->setLocalizeNumbers(true);//数字是否本地化
-    mChart->createDefaultAxes();//创建默认轴
-
     mAxisYData = new QValueAxis;
     mAxisXData = new QValueAxis;
-    mChart->setTitle("Time-Value");
-    mChart->createDefaultAxes();
+    mAxisXData->setLabelFormat("%i");
+    mAxisYData->setLabelFormat("%f");
 
+//    axisX->setLabelFormat("%u");   //设置刻度的格式
+//     axisX->setGridLineVisible(true);   //网格线可见
+//     axisX->setTickCount(10);       //设置多少格
+//     axisX->setMinorTickCount(1);   //设置每格小刻度线的数目
+
+    //mChart->setTitle("Time-Value");
+    mChart->createDefaultAxes();
+//    m_chart->setAxisX(axisX_Time);
     mChart->setAxisX(mAxisXData);
     mChart->setAxisY(mAxisYData);
-
-    mChartView = new QChartView(mChart);
-    mChartView->setRubberBand(QChartView::RectangleRubberBand);//矩形缩放
+    mChart->legend()->setAlignment(Qt::AlignTop);
+    mChartView = new ChartView(mChart);//使用自定义的chartview
     mChartView->setRenderHint(QPainter::Antialiasing);//消除锯齿
     ui->verticalLayout->addWidget(mChartView);
-#else
-    mChart = new Chart();
 
-    mChart->setTheme(QChart::ChartThemeLight);//设置白色主题
-    mChart->setDropShadowEnabled(true);//背景阴影
-    mChart->setAutoFillBackground(true);  //设置背景自动填充
-    //mChart->setTitleBrush(QBrush(QColor(0,0,255)));//设置标题Brush
-    //mChart->setTitleFont(QFont("微软雅黑"));//设置标题字体
-    //mChart->setTitle("曲线图");
-
-    mAxisYData = new QValueAxis;
-    mAxisXData = new QValueAxis;
-
-    mYMaxValue = 10;
-    mXMaxValue = 10;
-
-    mChart->setAxisX(mAxisXData);
-    mChart->setAxisY(mAxisYData);
-
-    //mChart->createDefaultAxes();
-
-    //m_chart->createDefaultAxes();             //或者创建默认轴
-
-    //修改说明样式
-    mChart->legend()->setVisible(true);
-    mChart->legend()->setAlignment(Qt::AlignTop);//底部对齐
-    //mChart->legend()->setBackgroundVisible(true);//设置背景是否可视
-    //mChart->legend()->setAutoFillBackground(true);//设置背景自动填充
-    //mChart->legend()->setColor(QColor(222,233,251));//设置颜色
-    //mChart->legend()->setLabelColor(QColor(0,100,255));//设置标签颜色
-    //mChart->legend()->setMaximumHeight(50);
-    //mChartView = new QChartView(mChart);
-    mChartView = new ChartView(mChart);
-    //mChartView->setGeometry(0, 0, 400, 400);
-    mChartView->setRenderHint(QPainter::Antialiasing);
-    mChartView->setRubberBand(QChartView::RectangleRubberBand);//矩形缩放
-    ui->verticalLayout->addWidget(mChartView);
-
-
-#endif
+    connect(mChartView, &ChartView::pointHovered, this, &curveWiget::tooltip);
 }
 
-LineSeries *curveWiget::createSeries()
+QLineSeries *curveWiget::createSeries()
 {
-    LineSeries *series = new LineSeries();
+    QLineSeries *series = new QLineSeries();
 
+    connect(series, &QLineSeries::pressed, this, [=](const QPointF &point){
+       //高亮
+       if(QGuiApplication::mouseButtons() & Qt::LeftButton)
+       {
+            qDebug() << "left";
+       }
+       else if(QGuiApplication::mouseButtons() & Qt::RightButton)
+       {
+           mCurSelectSeries = series;
+            //qDebug() << "right";
+           mSeriesPop->exec(QCursor::pos());
+       }
+    });
+
+    connect(series, &QLineSeries::hovered, this, [=](const QPointF &point, bool state){
+       //高亮
+        if(state)
+        {
+            QPen tmp = series->pen();
+            tmp.setWidth(3);
+            series->setPen(tmp);
+        }
+        else
+        {
+            QPen tmp = series->pen();
+            tmp.setWidth(mDefaultPenWidht[series]);
+            series->setPen(tmp);
+        }
+    });
+
+#if 1
     series->setVisible(true);
     //点标签是否可视
     series->setPointLabelsVisible(false);
-    //点标签颜色
-    series->setPointLabelsColor(QColor(0,0,0));
-    //点标签字体
-    series->setPointLabelsFont(QFont("微软雅黑"));
-    //设置点标签显示格式
-    series->setPointLabelsFormat("(@xPoint,@yPoint)");
-    //是否切割边缘点标签，默认为true
-    series->setPointLabelsClipping(false);
-    //设置点标签是否可视
-    series->setPointsVisible(true);
-    //series->setUseOpenGL(true);
+//    //点标签颜色
+//    series->setPointLabelsColor(QColor(0,0,0));
+//    //点标签字体
+//    series->setPointLabelsFont(QFont("微软雅黑"));
+//    //设置点标签显示格式
+//    series->setPointLabelsFormat("(@xPoint,@yPoint)");
+//    //是否切割边缘点标签，默认为true
+//    series->setPointLabelsClipping(false);
+//    //设置点标签是否可视
+//    series->setPointsVisible(true);
+//    //series->setUseOpenGL(true);
 
-    //connect(series, &QSplineSeries::hovered, this, &curveWiget::tooltip);
+    //connect(series, &QSplineSeries::hovered, this, &curveWiget::tooltip1);
+#endif
+
+    mDefaultPenWidht[series] = series->pen().width();
+
+    if(mCurSelectSeries == nullptr)
+    {
+        mCurSelectSeries = series;
+        mChartView->setFilterLineSeries(mCurSelectSeries);
+    }
 
     return series;
 }
@@ -130,7 +161,7 @@ void curveWiget::onAddCurve(QString uuid, QString name)
     {
         tableNum = result.at(0);
         codingNum = result.at(1);
-    }
+    }   
 
     mLineSeries[uuid] = createSeries();
 
@@ -141,72 +172,75 @@ void curveWiget::onAddCurve(QString uuid, QString name)
 
         if(mResultTable->getTimeByTableCoding(tableNum, codingNum, values))
         {
-            //QList<QPointF> points;
+            QList<QPointF> points;
+            QVector<QString> info;
 
             for(int index = 0; index < values.size(); index++)
             {
                 QString time = values.at(index).toObject().value(RESULT_TABLE_TIME).toString();
 
                 QString parseValue = values.at(index).toObject().value(RESULT_TABLE_PARSE_VALUE).toString();
-
+                QString hexValue = values.at(index).toObject().value(RESULT_TABLE_HEX_VALUE).toString();
+                QString isOver = values.at(index).toObject().value(RESULT_TABLE_IS_OVER).toString();
                 double tmp = parseValue.toDouble();
 
                 mXMaxValue < index ? mXMaxValue = index : mXMaxValue = mXMaxValue;
                 mYMaxValue < tmp ? mYMaxValue = tmp : mYMaxValue = mYMaxValue;
 
-                //points.append(QPointF(index, tmp));
-                QPointF point = QPointF(index, tmp);
-                qDebug() << point;
-                mLineSeries[uuid]->append(point);
+                points.append(QPointF(index, tmp));
+
+                QString msg;
+                msg += "时间:";
+                msg += time;
+                msg += "\n";
+                msg += "源码:";
+                msg += hexValue;
+                msg += "\n";
+                msg += "工程值:";
+                msg += parseValue;
+
+                info.append(msg);
             }
 
-            //mLineSeries[uuid]->append(points);
-
+            mPointsInfo[mLineSeries[uuid]] = info;
+            mLineSeries[uuid]->append(points);
         }
     }
 
     mLineSeries[uuid]->setName(name);
 
-    mAxisYData->setRange(0, mYMaxValue);
-    mAxisXData->setRange(0, mXMaxValue);
-
+    mAxisYData->setRange(0, mYMaxValue * 1.3);
+    mAxisXData->setRange(0, mXMaxValue * 1.3);
 
     mChart->addSeries(mLineSeries[uuid]);
-    //mChart->createDefaultAxes();
-    mChart->setAxisX(mAxisXData, mLineSeries[uuid]);
-    mChart->setAxisY(mAxisYData, mLineSeries[uuid]);    
+
+    mChart->setAxisX(mAxisXData, mLineSeries[uuid]);    
+
+    mChart->setAxisY(mAxisYData, mLineSeries[uuid]);
 }
 
 
-void curveWiget::tooltip(QPointF point, bool state)
-{
-#if 0
+void curveWiget::tooltip(QAbstractSeries *series, QPointF point, bool state)
+{    
     if(!mTooltip)
     {
         mTooltip = new Callout(mChart);
-    }
+    }   
 
-    //qDebug() << point << state;
+    if(state && series)
+    {
+        int index = point.toPoint().x();
 
-    if (state) {
-        int a = point.x();
-
-        QPointF curVal = mChart->mapToValue(point);
-        qDebug() << curVal;
-        //QString m_time = tableTime.at(a);
-        int c = point.y();
-
-
-        QString m_data = QString::number(c);
-        QString str = "时间：\r\n数值：" + m_data;
+        QString str = mPointsInfo[dynamic_cast<QLineSeries*>(series)].at(index);
         mTooltip->setText(str);
-//        m_tooltip->setText(QString("时间: %1 \n数值: %2 ").arg(point.x()).arg(point.y()));
+    //        m_tooltip->setText(QString("时间: %1 \n数值: %2 ").arg(point.x()).arg(point.y()));
         mTooltip->setAnchor(point);
         mTooltip->setZValue(11);
         mTooltip->updateGeometry();
         mTooltip->show();
-    } else {
+    }
+    else
+    {
         mTooltip->hide();
     }
-#endif
 }

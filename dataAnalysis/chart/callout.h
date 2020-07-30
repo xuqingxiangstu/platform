@@ -33,7 +33,7 @@
 #include <QtCharts/QChartGlobal>
 #include <QtWidgets/QGraphicsItem>
 #include <QtGui/QFont>
-#include <QBrush>
+#include <QPaintEvent>
 
 QT_BEGIN_NAMESPACE
 class QGraphicsSceneMouseEvent;
@@ -45,47 +45,29 @@ QT_CHARTS_END_NAMESPACE
 
 QT_CHARTS_USE_NAMESPACE
 
-class Callout : public QObject, public QGraphicsItem
+class Callout : public QGraphicsItem
 {
-	Q_OBJECT
-    Q_INTERFACES(QGraphicsItem)
-
 public:
     Callout(QChart *parent);
 
     void setText(const QString &text);
     void setAnchor(QPointF point);
     void updateGeometry();
-	
-	QPointF anchor() const;	// point in x/y series terms (not layout terms) where the callout points to.
-	void setSeriesName(QString name);
-	QString seriesName() const;
+
     QRectF boundingRect() const;
-	void setBrush(QBrush);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,QWidget *widget);
-	virtual QPainterPath shape() const override;
-
 protected:
-
+    void paintEvent(QPaintEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-	virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-	QPointF clampY(QPointF point) const;
-
-signals:
-
-	void dropped(Callout*);
 
 private:
-
-	QString m_seriesName;
     QString m_text;
     QRectF m_textRect;
     QRectF m_rect;
     QPointF m_anchor;
     QFont m_font;
-	QBrush m_brush;
     QChart *m_chart;
-	QColor m_textColor;
 };
 
 #endif // CALLOUT_H

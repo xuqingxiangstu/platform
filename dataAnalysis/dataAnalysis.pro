@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     versionform.cpp \
     dssingleupdatethread.cpp \
     dsfile.cpp \
-    readfilethread.cpp
+    readfilethread.cpp \
+    textedit.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
@@ -50,7 +51,8 @@ HEADERS  += mainwindow.h \
     versionform.h \
     dssingleupdatethread.h \
     dsfile.h \
-    readfilethread.h
+    readfilethread.h \
+    textedit.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \

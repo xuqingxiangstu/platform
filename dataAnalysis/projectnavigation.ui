@@ -62,6 +62,11 @@
     <string>关闭项目</string>
    </property>
   </action>
+  <action name="actionOpenExplorer">
+   <property name="text">
+    <string>在Explorer显示</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

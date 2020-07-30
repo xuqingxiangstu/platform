@@ -44,8 +44,15 @@
       <string>最近使用项目</string>
      </property>
     </widget>
+    <widget class="QMenu" name="closeItemMenu">
+     <property name="title">
+      <string>关闭项目</string>
+     </property>
+    </widget>
     <addaction name="actionNewPrj"/>
+    <addaction name="actionOpenPrject"/>
     <addaction name="useredMenu"/>
+    <addaction name="closeItemMenu"/>
     <addaction name="actionCloseAll"/>
     <addaction name="actionExit"/>
    </widget>
@@ -304,6 +311,24 @@ border: 1px solid gray;
   <action name="actionCloseProject">
    <property name="text">
     <string>关闭项目</string>
+   </property>
+  </action>
+  <action name="actionClearMenu">
+   <property name="text">
+    <string>清除菜单</string>
+   </property>
+  </action>
+  <action name="actionOpenPrject">
+   <property name="text">
+    <string>打开工程</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="action12">
+   <property name="text">
+    <string>12</string>
    </property>
   </action>
  </widget>

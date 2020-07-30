@@ -217,6 +217,8 @@ private:
 
     void onDeleteFile();
 
+    void onExplorer();
+
     /**
      * @brief getDataFilesJson  获取数据文件路径及json
      * @return

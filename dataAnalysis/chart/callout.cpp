@@ -28,24 +28,17 @@
 ****************************************************************************/
 
 #include "callout.h"
-#include <QApplication>
-#include <QDebug>
-#include <QStyleOptionGraphicsItem>
-#include <QValueAxis>
-#include <QtCharts/QChart>
-#include <QtGui/QFontMetrics>
-#include <QtGui/QMouseEvent>
 #include <QtGui/QPainter>
+#include <QtGui/QFontMetrics>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtGui/QMouseEvent>
+#include <QtCharts/QChart>
+#include <QDebug>
 
-Callout::Callout(QChart *chart) :
+Callout::Callout(QChart *chart):
     QGraphicsItem(chart),
-	m_seriesName(""),
     m_chart(chart)
 {
-	this->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsScenePositionChanges| QGraphicsItem::ItemIsFocusable);
-	setZValue(11);
-	setBrush(QColor(QRgb(0x3d3d3d)));
 }
 
 QRectF Callout::boundingRect() const
@@ -59,119 +52,72 @@ QRectF Callout::boundingRect() const
     return rect;
 }
 
-
-// --------------------------------------------------------------------------------
-// 	FUNCTION: setBrush (public )
-// --------------------------------------------------------------------------------
-void Callout::setBrush(QBrush brush)
+void Callout::paintEvent(QPaintEvent *event)
 {
-	m_brush = brush;
 
-	// determine text color: http://stackoverflow.com/questions/1855884/determine-font-color-based-on-background-color
-	double a = 1 - (0.299 * m_brush.color().red() + 0.587 * m_brush.color().green() + 0.114 * m_brush.color().blue()) / 255;
-
-	if (a < 0.5)
-		m_textColor = Qt::black; // bright colors - black font
-	else
-		m_textColor = Qt::white; // dark colors - white font
-
-	this->update();
 }
 
 void Callout::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(option)
     Q_UNUSED(widget)
     QPainterPath path;
     path.addRoundedRect(m_rect, 5, 5);
 
     QPointF anchor = mapFromParent(m_chart->mapToPosition(m_anchor));
-    if (!m_rect.contains(anchor)) 
-	{
-		QRectF plotRect = mapFromParent(m_chart->plotArea()).boundingRect();
-		if (!plotRect.contains(anchor))
-		{
-			anchor.rx() = anchor.x() < plotRect.left() ? plotRect.left() : plotRect.right();
-		}
+    if (!m_rect.contains(anchor)) {
+        QPointF point1, point2;
 
-		QPointF point1, point2;
-	
-		// establish the position of the anchor point in relation to m_rect
-		bool above = anchor.y() <= m_rect.top();
-		bool aboveCenter = anchor.y() > m_rect.top() && anchor.y() <= m_rect.center().y();
-		bool belowCenter = anchor.y() > m_rect.center().y() && anchor.y() <= m_rect.bottom();
-		bool below = anchor.y() > m_rect.bottom();
-	
-		bool onLeft = anchor.x() <= m_rect.left();
-		bool leftOfCenter = anchor.x() > m_rect.left() && anchor.x() <= m_rect.center().x();
-		bool rightOfCenter = anchor.x() > m_rect.center().x() && anchor.x() <= m_rect.right();
-		bool onRight = anchor.x() > m_rect.right();
-	
-		// get the nearest m_rect corner.
-		qreal x = m_rect.left() + m_rect.width() / 2;
-		qreal y = below ? m_rect.bottom() : m_rect.top();
-		bool cornerCase = (above && onLeft) || (above && onRight) || (below && onLeft) || (below && onRight);
-		bool vertical = qAbs(anchor.x() - x) > qAbs(anchor.y() - y);
-	
-		point1.setX(x - 5);
-		point1.setY(y);
-	
-		point2.setX(x + 5);
-		point2.setY(y);
-	
-		path.moveTo(point1);
-		path.lineTo(anchor);
-		path.lineTo(point2);
-		path = path.simplified();
+        // establish the position of the anchor point in relation to m_rect
+        bool above = anchor.y() <= m_rect.top();
+        bool aboveCenter = anchor.y() > m_rect.top() && anchor.y() <= m_rect.center().y();
+        bool belowCenter = anchor.y() > m_rect.center().y() && anchor.y() <= m_rect.bottom();
+        bool below = anchor.y() > m_rect.bottom();
+
+        bool onLeft = anchor.x() <= m_rect.left();
+        bool leftOfCenter = anchor.x() > m_rect.left() && anchor.x() <= m_rect.center().x();
+        bool rightOfCenter = anchor.x() > m_rect.center().x() && anchor.x() <= m_rect.right();
+        bool onRight = anchor.x() > m_rect.right();
+
+        // get the nearest m_rect corner.
+        qreal x = (onRight + rightOfCenter) * m_rect.width();
+        qreal y = (below + belowCenter) * m_rect.height();
+        bool cornerCase = (above && onLeft) || (above && onRight) || (below && onLeft) || (below && onRight);
+        bool vertical = qAbs(anchor.x() - x) > qAbs(anchor.y() - y);
+
+        qreal x1 = x + leftOfCenter * 10 - rightOfCenter * 20 + cornerCase * !vertical * (onLeft * 10 - onRight * 20);
+        qreal y1 = y + aboveCenter * 10 - belowCenter * 20 + cornerCase * vertical * (above * 10 - below * 20);;
+        point1.setX(x1);
+        point1.setY(y1);
+
+        qreal x2 = x + leftOfCenter * 20 - rightOfCenter * 10 + cornerCase * !vertical * (onLeft * 20 - onRight * 10);;
+        qreal y2 = y + aboveCenter * 20 - belowCenter * 10 + cornerCase * vertical * (above * 20 - below * 10);;
+        point2.setX(x2);
+        point2.setY(y2);
+
+        path.moveTo(point1);
+        path.lineTo(anchor);
+        path.lineTo(point2);
+        path = path.simplified();
     }
-
-	if(option->state & QStyle::State_Selected)
-		painter->setBrush(m_brush.color().lighter());
-	else
-		painter->setBrush(m_brush);
+    painter->setBrush(QColor(255, 255, 255));
     painter->drawPath(path);
-	painter->setPen(m_textColor);
     painter->drawText(m_textRect, m_text);
 }
 
-
-QPainterPath Callout::shape() const
+void Callout::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	QPainterPath path;
-	path.addRect(m_rect);
-	return path;
+    event->setAccepted(true);
 }
 
 void Callout::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton)
-	{
+    if (event->buttons() & Qt::LeftButton){
         setPos(mapToParent(event->pos() - event->buttonDownPos(Qt::LeftButton)));
         event->setAccepted(true);
     } else {
         event->setAccepted(false);
     }
-}
-
-QVariant Callout::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-	if (change == ItemPositionChange)
-	{
-		return clampY(value.toPointF());
-	}
-
-	return QGraphicsItem::itemChange(change, value);
-}
-
-QPointF Callout::clampY(QPointF point) const
-{
-	QRectF plotRect = m_chart->plotArea();
-
-	if (point.y() < plotRect.top() + plotRect.height() / 2)
-		point.ry() = m_chart->plotArea().top() - m_rect.height();
-	else
-		point.ry() = m_chart->plotArea().bottom();
-
-	return point;
 }
 
 void Callout::setText(const QString &text)
@@ -191,33 +137,7 @@ void Callout::setAnchor(QPointF point)
 
 void Callout::updateGeometry()
 {
-	prepareGeometryChange();
-
-	QPointF topLeftCorner = m_chart->mapToPosition(m_anchor);
-	topLeftCorner.rx() -= m_rect.width() / 2;
-	setPos(clampY(topLeftCorner));
-}
-
-// --------------------------------------------------------------------------------
-// 	FUNCTION: anchor (public )
-// --------------------------------------------------------------------------------
-QPointF Callout::anchor() const
-{
-	return m_anchor;
-}
-
-// --------------------------------------------------------------------------------
-// 	FUNCTION: setSeriesName (public )
-// --------------------------------------------------------------------------------
-void Callout::setSeriesName(QString name)
-{
-	m_seriesName = name;
-}
-
-// --------------------------------------------------------------------------------
-// 	FUNCTION: seriesName (public )
-// --------------------------------------------------------------------------------
-QString Callout::seriesName() const
-{
-	return m_seriesName;
+    prepareGeometryChange();
+    setPos(m_chart->mapToPosition(m_anchor) + QPoint(10, -50));
+    update();
 }

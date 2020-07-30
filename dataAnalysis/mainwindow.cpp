@@ -14,6 +14,7 @@
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QDebug>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,10 +47,53 @@ MainWindow::MainWindow(QWidget *parent) :
         tmpAction->setText(path);
         ui->useredMenu->addAction(tmpAction);
     }
+    if(recentlyPrj.size() > 0)
+    {
+        ui->useredMenu->addSeparator();
+        ui->useredMenu->addAction(ui->actionClearMenu);
+        ui->useredMenu->setEnabled(true);
+    }
+    else
+    {
+        ui->useredMenu->setEnabled(false);
+    }
+
+    connect(ui->actionClearMenu, &QAction::triggered, [=](){
+       ui->useredMenu->clear();
+       QSettings prjSettings("BJTU", "dataAnalysis");
+       QStringList nullList = {};
+       prjSettings.setValue("recently_used", nullList);
+       ui->useredMenu->setEnabled(false);
+    });
 
     connect(ui->useredMenu, &QMenu::triggered, [=](QAction *action){
+        if(action == ui->actionClearMenu)
+            return ;
+
         QString prjPath = action->text();
         loadProject(prjPath);
+    });
+
+    connect(ui->actionExit, &QAction::triggered, [=](){
+       //exit(1);
+        close();
+    });
+
+    connect(ui->actionOpenPrject, &QAction::triggered, [=](){
+        QFileDialog fileDialog(this);
+        //设置窗口的标题
+        fileDialog.setWindowTitle("工程文件选择");
+        fileDialog.setNameFilter("工程文件(*.prj)"); //设置一个过滤器
+
+        //这个标志用来设置选择的类型，比如默认是单个文件。QFileDialog::ExistingFiles 多个文件,还可以用来选择文件夹QFileDialog::Directory。QFileDialog::ExistingFile 单个文件。注意这个ExistingFile，单词后面多了一个s 表示选择多个文件。要看清楚了。
+        fileDialog.setFileMode(QFileDialog::ExistingFile);
+
+        //弹出对话框
+        if (fileDialog.exec() == QDialog::Accepted)
+        {
+            QStringList srcFiles = fileDialog.selectedFiles();
+            loadProject(srcFiles[0]);
+        }
     });
 
     //初始化工作区
@@ -172,14 +216,13 @@ void MainWindow::onProjectAlreadySave(QString uuid)
 
 void MainWindow::loadProject(const QString &path)
 {
+    QSettings prjSettings("BJTU", "dataAnalysis");
+    QStringList recentlyPrj = prjSettings.value("recently_used").toStringList();
+
     //判断是否存在
     if(!QFile::exists(path))
     {
         //删除记录
-
-        QSettings prjSettings("BJTU", "dataAnalysis");
-        QStringList recentlyPrj = prjSettings.value("recently_used").toStringList();
-        //recentlyPrj.append(proPath + "/" + name + "/" + name + ".prj");
 
         if(recentlyPrj.contains(path))
         {
@@ -197,7 +240,12 @@ void MainWindow::loadProject(const QString &path)
     }
     else
     {
-        mProjectNavigationWidget->loadProject(path);
+        if(!recentlyPrj.contains(path))
+            recentlyPrj.insert(0, path);
+
+        prjSettings.setValue("recently_used", recentlyPrj);
+
+        mProjectNavigationWidget->loadProject(path);        
     }
 }
 
