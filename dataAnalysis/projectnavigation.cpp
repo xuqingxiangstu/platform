@@ -387,7 +387,7 @@ void projectNavigation::onDoubleClicked(QTreeWidgetItem *item, int column)
         }
         else if(DataFile_Node == role.nodeType)
         {
-            emit showFileWidget(role.proUuid, role.nodeUuid, role.proPath, role.filePath);
+            emit showFileWidget(role.proUuid, role.nodeUuid, role.proPath, role.proPath + role.filePath);
         }
     }
 }
@@ -487,7 +487,7 @@ QVector<QPair<QString, QString>> projectNavigation::getDataFilesUuid(const QStri
                 recordRole subRole = subItem->data(Name_Index, Qt::UserRole).value<recordRole>();
                 if(DataFile_Node == subRole.nodeType)
                 {
-                    resultFiles.append(qMakePair(subRole.filePath, subRole.nodeUuid));
+                    resultFiles.append(qMakePair(subRole.proPath + subRole.filePath, subRole.nodeUuid));
                 }
             }
             break;
@@ -742,7 +742,14 @@ void projectNavigation::onDeleteFile()
             //删除item
             deleteItem(curItem);
 
-            //更新属性
+            //TODO:更新属性
+
+            //TODO:删除文件
+            QFile tmpFile(role.proPath + role.filePath);
+            if(tmpFile.exists())
+            {
+                tmpFile.remove();
+            }
         }
     }
 }
@@ -1008,15 +1015,15 @@ void projectNavigation::createFileNode(QTreeWidgetItem *fatherItem, const QStrin
 
         QTreeWidgetItem *subItem = new QTreeWidgetItem();
 
+        QString showFile = file.right(file.size() - file.lastIndexOf("/") - 1);
+
         QVariant subData;
         recordRole subRole;
         subRole.proUuid = uuid;
         subRole.proPath = proPath;
         subRole.nodeType = DataFile_Node;
-        subRole.filePath = file;
-        subRole.nodeUuid = QUuid::createUuid().toString();
-
-        QString showFile = file.right(file.size() - file.lastIndexOf("/") - 1);
+        subRole.filePath = "/data/" + showFile;
+        subRole.nodeUuid = QUuid::createUuid().toString();        
 
         if(isInit)
         {

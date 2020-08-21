@@ -44,7 +44,7 @@ namespace Pf
             bool parse(unsigned char *inBuf, const unsigned int inSize, Json::Value &result) override;
             void setUuid(const std::string &uuid) override {mCurUuid = uuid;}
         private:
-            void _parseRegion(const int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue);
+            void _parseRegion(const unsigned int &tableNum, const unsigned char *u8Msg, const unsigned int u32Size, Json::Value &regionValue);
             void _fillRegion(byteArray &outValue, const Json::Value &jsValue);
         private:
             std::string mCurUuid;

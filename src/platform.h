@@ -1,10 +1,28 @@
 #include "./PfAdapter/PfAdapterManager/pfadaptermanager.h"
+#include "./PfAdapter/ZmqSendAdapter/ZmqSendAdapter.h"
+#include "./PfAdapter/ZmqRcvAdapter/ZmqRcvAdapter.h"
+#include "./PfAdapter/UnicastAdapter/UnicastAdapter.h"
+#include "./PfAdapter/SerialPortAdapter/SerialPortAdapter.h"
+#include "./PfAdapter/m1553Adapter/m1553adapter.h"
 
 #include "./PfIcdWorkBench/icdFrameAdapter/icdframeadapter.h"
+#include "./PfIcdWorkBench/frame93/specialframe93.h"
+#include "./PfIcdWorkBench/frame1553B/frame1553b.h"
+#include "./PfIcdWorkBench/frameBE/framebe.h"
+#include "./PfIcdWorkBench/frameC3/framec3.h"
+#include "./PfIcdWorkBench/frameCZXK/frameczxk.h"
+#include "./PfIcdWorkBench/frameFE/framefe.h"
+#include "./PfIcdWorkBench/frameMiddle/framemiddle.h"
 
 #include "./PfSmlModel/modelManager/modelmanager.h"
+#include "./PfSmlModel/randaModel/randamodel.h"
+#include "./PfSmlModel/temperatureModel/temperatureModel.h"
+#include "./PfSmlModel/waveformModel/waveformModel.h"
 
 #include "./PfCommon/crc/crc.h"
 #include "./PfCommon/jsoncpp/json.h"
 #include "./PfCommon/TinyXml/tinyxml.h"
 #include "./PfCommon/tools/ut_error.h"
+#include "./PfCommon/rsaEncryption/rsaencryption.h"
+
+#include "./PfSql/paramsTable/paramstable.h"

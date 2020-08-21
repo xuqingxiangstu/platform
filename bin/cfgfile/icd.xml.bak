@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>	
+<configure>
+	<icd key="BE" frame="frameBE"/n>
+	<icd key="中间件" frame="frameMiddle"/>	
+	<icd key="信控协议" frame="frameXK"/>	
+	<icd key="定位瞄准协议" frame="frameDM"/>	
+	<icd key="车长显控通讯协议" frame="frameCZXK"/>	
+	<icd key="C3协议" frame="frameC3"/>
+	<icd key="M1553B协议" frame="frame1553B"/>
+	<icd key="密码集控装置协议" frame="frame93"/>
+	<icd key="FE" frame="frameFE"/>
+	<icd key="机柜协议" frame="frameJG"/>
+</configure>

@@ -2,5 +2,6 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     #recordLogDemo \
-    jsoncppDemo \    
+    jsoncppDemo \
     #xlsxDemo
+    rsaEncryptionDemo

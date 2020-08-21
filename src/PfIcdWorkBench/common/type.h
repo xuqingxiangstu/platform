@@ -59,8 +59,8 @@ namespace Pf
         /** 数据转换结构体 **/
         typedef union
         {
-            unsigned char u8Buf[8]; ///< 无符号8位数组
-            char i8Buf[8];          ///< 有符号8位数组
+            unsigned char u8Buf[16]; ///< 无符号8位数组
+            char i8Buf[16];          ///< 有符号8位数组
             unsigned char u8Value;  ///< 无符号8位
             unsigned short u16Value;///< 无符号16位
             unsigned int u32Value;  ///< 无符号32位

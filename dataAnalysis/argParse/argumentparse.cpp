@@ -52,7 +52,8 @@ void argumentParse::parse(QString uuid, Json::Value param, QByteArray vaildMsg)
 
     try
     {
-        frameObj->parse((unsigned char*)vaildMsg.data(), vaildMsg.size(), result);
+
+        frameObj->parse((unsigned char*)vaildMsg.data(), vaildMsg.size(), result);                
 
         //参数提取
         QString frameKey = icdManager::getInstance()->getMapping(frameType);
@@ -65,11 +66,15 @@ void argumentParse::parse(QString uuid, Json::Value param, QByteArray vaildMsg)
         {
             SHOW("[ERROR] not find frame key -> " + frameKey.toStdString());
         }
-    }
+    }    
     catch(std::runtime_error error)
     {
         SHOW(error.what());
 
         emit showMessage(error.what(), false);
+    }
+    catch(...)
+    {
+        emit showMessage("unkown error", false);
     }
 }

@@ -73,12 +73,18 @@ namespace Pf
 
             /**
              * @brief simulation    协议仿真
-             * @param outValue 仿真数据
-             * @param json json协议             
+             * @param outValue      仿真数据
+             * @param json          json协议
+             * @see ptl.json文件
              */
             virtual void simulation(byteArray &outValue, const std::string &json){}
 
-
+            /**
+             * @brief simulation    仿真协议
+             * @param outValue      仿真数据
+             * @param json          协议
+             * @see ptl.json
+             */
             virtual void simulation(byteArray &outValue, const Json::Value &json){}
             /**
              * @brief simulation    协议仿真

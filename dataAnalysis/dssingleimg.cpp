@@ -88,7 +88,7 @@ dsSingleImg::dsSingleImg(QString proUuid, QString proPath, QWidget *parent) :
     mainSplitter->addWidget(ui->frame_2);
 
     mainSplitter->setStretchFactor(0, 1);
-    mainSplitter->setStretchFactor(1, 3);
+    mainSplitter->setStretchFactor(1, 4);
 
     mainSplitter->setOpaqueResize(false);
     //mainSplitter->setHandleWidth(3);

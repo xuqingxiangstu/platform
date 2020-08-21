@@ -46,12 +46,6 @@ public:
      * @return
      */
     Json::Value getValueBySysUuid(const std::string &sysUuid);
-
-    /**
-     * @brief getValue
-     * @return
-     */
-    Json::Value getValue();
 private:
     sysInterfaceTable();
 private:

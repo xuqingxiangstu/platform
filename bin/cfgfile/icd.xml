@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>	
 <configure>
-	<icd key="BE" frame="frameBE">
-		<frameconfig>General/GeneralConfig.xlsx</frameconfig>
-		<dataRegionConfig>General/GeneralDateRegionConfig.xlsx</dataRegionConfig>
-	</icd>
+	<icd key="BE" frame="frameBE"/>
 	<icd key="中间件" frame="frameMiddle"/>	
 	<icd key="信控协议" frame="frameXK"/>	
 	<icd key="定位瞄准协议" frame="frameDM"/>	

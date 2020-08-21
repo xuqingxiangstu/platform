@@ -3,6 +3,8 @@
 
 #include <bitset>
 #include <sstream>
+#include <QDebug>
+#include <atomic>
 
 namespace Pf
 {
@@ -15,7 +17,7 @@ namespace Pf
 
         unDataConvert dataStorage::getAutoData(const unsigned char *u8Data, const unsigned int &u32Size, const int &byteStartPos, const int &byteSize, const int &bitStartPos, const int &bitSize, const std::string &dataType)
         {
-            int i32Pos = 0;
+            std::atomic_int i32Pos(0);
             int i32BitStartPos = bitStartPos;
             int i32BitStopPos = i32BitStartPos + bitSize;
             unsigned __int64 TmpData = 0;
@@ -23,6 +25,7 @@ namespace Pf
             int i32ByteStopPos = i32ByteStartPos + byteSize;
             unDataConvert mData;
             mData.u64Value = 0;
+
             std::ostringstream strErr;
 
             if( (i32ByteStartPos < 0) || (i32ByteStopPos < 0))
@@ -48,7 +51,7 @@ namespace Pf
             {
                 strErr << " 总长度(" << std::dec << u32Size << ") < 待提取长度(" << i32ByteStopPos << ")";
                 throw std::runtime_error(strErr.str());
-            }
+            }            
 
             /*
             step1:先取整字节
@@ -65,9 +68,10 @@ namespace Pf
             }
             else if (dataType == SAMLLENDIAN)
             {
+                i32Pos = 0;
                 for (int i = i32ByteStartPos; i < i32ByteStopPos; i++)
                 {
-                    mData.i8Buf[i32Pos++] = u8Data[i];
+                    mData.u8Buf[i32Pos++] = u8Data[i];
                 }
             }
 

@@ -114,7 +114,7 @@ void analysis::onAnalysis(QString uuid, QString filePath, std::shared_ptr<analys
                 Json::Value param;
                 param["frameType"] = type;
                 param["rowIndex"] = rowIndex;
-                param["time"] = match.getValue(VAR_NAME(timeFilter)).toStdString();
+                param["time"] = match.getValue(VAR_NAME(timeFilter)).toStdString();                                
 
                 //解析
                 emit toParse(mCurUuid, param, QByteArray::fromHex(msg));

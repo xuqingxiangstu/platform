@@ -104,7 +104,7 @@ void projectCfg::load(const QString &prjPath, const QString &uuid)
                     property = QString(point);
                 }
 
-                mDataFiles.append(qMakePair(name, property));
+                mDataFiles.append(qMakePair(mPrjPath + name, property));
             }
         }
 

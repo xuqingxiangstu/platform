@@ -6,8 +6,8 @@ SUBDIRS += \
     #template \
     #logicLayer \
     #EquivalentDevice\
-    eq \
-    dataAnalysis \
+    #eq \
+    #dataAnalysis \
     #mulitThreadSqlite
-    test
+    #test
 

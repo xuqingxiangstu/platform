@@ -1,0 +1,27 @@
+{
+    "configure":
+    [
+        {
+            "uuid":"cmdRcv",
+            "class":"UnicastAdapter",
+            "params":
+            {
+                "localIp":"192.168.1.1",
+                "localPort":5004,
+                "remoteIp":"192.168.1.2",
+                "remotePort":5006
+            }
+        },
+        {
+            "uuid":"cmdSend",
+            "class":"UnicastAdapter",
+            "params":
+            {
+                "localIp":"192.168.1.1",
+                "localPort":5004,
+                "remoteIp":"192.168.1.2",
+                "remotePort":5006
+            }
+        }
+    ]
+}

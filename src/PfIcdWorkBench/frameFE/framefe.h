@@ -29,7 +29,7 @@ namespace Pf
             std::shared_ptr<frameObj> clone() override;
             void init(const TiXmlElement *ele) override;
             std::string getFrameName() override{return VAR_NAME(frameFE);}
-            std::string version() override {return VERSION;}            
+            std::string version() override {return VERSION;}                        
             void simulation(byteArray &outValue, const Json::Value &json) override;
             void simulation(byteArray &outValue, const std::string &json) override;
             void resendMsg(byteArray &outValue) override;

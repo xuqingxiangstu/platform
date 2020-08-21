@@ -75,8 +75,7 @@ public:
     }
 
     ~paramsTable();
-public:
-
+public:   
     //eq
     bool getStateValues(Json::Value &value);
     //eq

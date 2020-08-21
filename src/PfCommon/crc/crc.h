@@ -38,8 +38,20 @@ namespace Pf
              */
             static unsigned char calSum(const unsigned char *DataBuf, unsigned int dwNumOfBytes);
 
+            /**
+             * @brief calMd5        MD5值计算
+             * @param DataBuf       待计算首地址
+             * @param dwNumOfBytes  计算长度
+             * @return              MD5值
+             */
             static std::string calMd5(const unsigned char *DataBuf, unsigned int dwNumOfBytes);
 
+            /**
+             * @brief xOr           异或和计算
+             * @param dataBuf       待计算首地址
+             * @param dwNumOfBytes  计算长度
+             * @return              计算结果
+             */
             static unsigned char xOr(const unsigned char *dataBuf, unsigned int dwNumOfBytes);
         };
     }

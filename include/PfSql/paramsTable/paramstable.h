@@ -6,7 +6,10 @@
 #include <QtSql/QSql>
 #include <QtSql/QSqlDatabase>
 #include <mutex>
+#include <QMutex>
 #include <memory>
+#include <QHash>
+#include <QMap>
 
 #include "../../PfCommon/jsoncpp/json.h"
 
@@ -52,13 +55,21 @@
 #define IS_ACK_YES  "是"
 #define IS_ACK_NO   "否"
 
+#define USE_MEMORY_QUERY    1   //1：使用内存查询，2：使用SQL查询
+
 class PARAMSTABLESHARED_EXPORT paramsTable
 {
 public:
-    static paramsTable *getInstance(){
+    static std::shared_ptr<paramsTable> getInstance(){
         if(mInstance == nullptr)
         {
-            mInstance = new paramsTable();
+            mInstanceMutex.lock();
+            if(mInstance == nullptr)
+            {
+                paramsTable *tmp = new paramsTable();
+                mInstance = std::shared_ptr<paramsTable>(tmp);
+            }
+            mInstanceMutex.unlock();
         }
         return mInstance;
     }
@@ -66,10 +77,11 @@ public:
     ~paramsTable();
 public:
 
+    //eq
     bool getStateValues(Json::Value &value);
-
+    //eq
     bool getParamValues(Json::Value &value);
-
+    //eq
     bool getCmdValues(Json::Value &value);
 
     /**
@@ -84,9 +96,10 @@ public:
      * }
      * @return
      */
-    bool getValue(std::string tableNum, int coding, Json::Value &value);
+    bool getValue(const QString &tableNum, int coding, Json::Value &value);
 
-    bool getValue(std::string tableNum, std::string  coding, Json::Value &value);
+    //TODO:
+    bool getValue(const QString &tableNum, const QString &coding, Json::Value &value);
 
     /**
      * @brief getValues 通过表号获取相应参数信息多组(已排序)
@@ -108,10 +121,13 @@ public:
      * }
      * @return
      */
-    bool getValues(int tableNum, Json::Value &value);
 
+    //TODO:
+    bool getValues(int tableNum, Json::Value &value);
+    //TODO:
     bool getValues(unsigned int tableNum, Json::Value &value);
 
+    //TODO：
     bool getValues(const std::string &tableNum, Json::Value &value);
 
     /**
@@ -119,37 +135,48 @@ public:
     * @param value
     * @return
     */
+    //eq
     bool getValueFrameParamSys(Json::Value &value);
 
     /**
-           * @brief getValueFrameParamCMD获取指令分类
-           * @param system
-           * @param value
-           * @return
-           */
-          bool getValueFrameParamCMD(QString system, Json::Value &value);
-          /**
-           * @brief getValueFrameParamGroup 获取表分类
-           * @param cmdType
-           * @param value
-           * @return
-           */
-          bool getValueFrameParamGroup(QString system, QString cmdType, Json::Value &value);
-          /**
-           * @brief getValueFrameParamPar
-           * @param group
-           * @param value
-           * @return
-           */
-          bool getValueFrameParamPar(QString system,QString cmdType, QString group, Json::Value &value);
+       * @brief getValueFrameParamCMD获取指令分类
+       * @param system
+       * @param value
+       * @return
+       */
+        //eq
+      bool getValueFrameParamCMD(QString system, Json::Value &value);
+      /**
+       * @brief getValueFrameParamGroup 获取表分类
+       * @param cmdType
+       * @param value
+       * @return
+       */
+      //eq
+      bool getValueFrameParamGroup(QString system, QString cmdType, Json::Value &value);
+      /**
+       * @brief getValueFrameParamPar
+       * @param group
+       * @param value
+       * @return
+       */
+      //eq
+      bool getValueFrameParamPar(QString system,QString cmdType, QString group, Json::Value &value);
+
+private:
+      void readAll();
 private:
     paramsTable();
+
+    QHash<QString, std::shared_ptr<QMap<int, Json::Value>>> mParamsMem;
+
 private:
     const QString mTableName = "params_table";
     QSqlDatabase mDb;
-    std::mutex mMutex;
+    QMutex mMutex;
 private:
-    static paramsTable *mInstance;
+    static QMutex mInstanceMutex;
+    static std::shared_ptr<paramsTable> mInstance;
 };
 
 #endif // PARAMSTABLE_H
