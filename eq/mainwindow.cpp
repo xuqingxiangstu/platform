@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QDir>
+#include <QSplitter>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -85,8 +86,81 @@ MainWindow::MainWindow(QWidget *parent) :
         QMessageBox::information(this, "提示", "[ERROR]...");
         exit(0);
     }
+
+    connect(ui->actionDefaultLayout, &QAction::triggered, this, [this](){
+
+        if(ui->pjtDock->isFloating())
+            ui->pjtDock->setFloating(false);
+
+        if(ui->pjtAttrDock->isFloating())
+            ui->pjtAttrDock->setFloating(false);
+
+        if(ui->templateDock->isFloating())
+            ui->templateDock->setFloating(false);
+
+        if(ui->workAttrDock->isFloating())
+            ui->workAttrDock->setFloating(false);
+
+        addDockWidget(Qt::LeftDockWidgetArea,ui->pjtDock);
+        addDockWidget(Qt::LeftDockWidgetArea,ui->pjtAttrDock);
+        addDockWidget(Qt::RightDockWidgetArea,ui->templateDock);
+        addDockWidget(Qt::RightDockWidgetArea,ui->workAttrDock);
+        //splitDockWidget();
+    });
+
+    mSearchForm = new searchForm();
+    ui->horizontalLayout->addWidget(mSearchForm);
+
+    connect(this, &MainWindow::searchResult, mSearchForm, &searchForm::onSearchResult);
+    connect(mSearchForm, &searchForm::toSearch, this, &MainWindow::onSearch);
+    connect(mSearchForm, &searchForm::closeSearch, this, [=](){
+
+        ui->frame->hide();
+    });
+
+    connect(ui->actionSearch, &QAction::triggered, this, [=](){
+       if(ui->frame->isHidden())
+           ui->frame->show();
+
+       mSearchForm->onChanageSearch();
+    });
+
+    QSplitter * mainSplitter = new QSplitter(Qt::Vertical);
+
+    mainSplitter->addWidget(ui->stackedWidget);
+    mainSplitter->addWidget(ui->frame);
+
+    mainSplitter->setStretchFactor(0, 4);
+    mainSplitter->setStretchFactor(1, 1);
+
+    mainSplitter->setOpaqueResize(false);
+    //mainSplitter->setHandleWidth(3);
+    //mainSplitter->setStyleSheet("QSplitter::handle{background:rgb(200, 0, 0)}");
+
+    mainSplitter->show();
+
+    ui->frame->hide();
+
+    ui->verticalLayout->addWidget(mainSplitter);
 }
 
+void MainWindow::onSearch(Json::Value condition)
+{
+    //范围
+    std::string scope = condition["scope"].asString();
+    if(scope == "all")
+    {
+        for(auto uuid : mFlowWidgetManager.keys())
+        {
+            emit toSearch(uuid, condition);
+        }
+    }
+    else
+    {
+        //当前
+        emit toSearch(mCurFlowWidgetUuid, condition);
+    }
+}
 
 void MainWindow::onDeleteFlow(QString uuid)
 {   
@@ -171,6 +245,9 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
         connect(flowWidget, &flowTree::addGroupProperty, mPropertyWidgetObj, &propertyWidget::addGroupProperty);
         connect(flowWidget, &flowTree::addProperty, mPropertyWidgetObj, &propertyWidget::addProperty);
 
+
+        connect(flowWidget, &flowTree::searchResult, this, &MainWindow::searchResult);
+        connect(this, &MainWindow::toSearch, flowWidget, &flowTree::onSearch);
 
         connect(mCmdDecodeObj.get(), &cmdDecode::testMsg, this, &MainWindow::onTestMsg);
         mFlowWidgetManager[uuid] = flowWidget;

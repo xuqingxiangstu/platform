@@ -9,6 +9,7 @@
 #include "flowtree.h"
 #include "recordnavigation.h"
 #include "./propertyui/propertywidget.h"
+#include "searchform.h"
 #include "cmddecode.h"
 #include "versionform.h"
 
@@ -45,6 +46,8 @@ public slots:
     void onShowMessage(QString msg);
 
     void onTestMsg(Json::Value msg);
+
+    void onSearch(Json::Value condition);
 signals:
     void valueChange(QString uuid, QString attr, Json::Value val);
     void showCurItemProperty(QString uuid);
@@ -61,6 +64,9 @@ signals:
     void updateProject(QString uuid);
 
     void updateProperty(QString propertyName, Json::Value value);
+
+    void toSearch(QString uuid, Json::Value condition);
+    void searchResult(Json::Value result);
 private:
     /**
      * @brief initNavigationProperty    初始化导航属性
@@ -73,6 +79,7 @@ private:
     propertyWidget *mPropertyWidgetObj; //流程属性
     QMap<QString, QWidget*> mFlowWidgetManager; //流程管理
     QString mCurFlowWidgetUuid; //当前流程UUID
+    searchForm *mSearchForm;    ///< 搜索窗体
     bool isExit;
     QStringList mSaveProjectUuid;
     std::shared_ptr<cmdDecode> mCmdDecodeObj;   //协议解析句柄

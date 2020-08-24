@@ -65,11 +65,15 @@ public:
     //int codingNum(){return mCurCoding;}
     void setUuid(std::string uuid){mCurUuid = uuid;}
     std::string uuid(){return mCurUuid;}
+
+    void setItemUuid(std::string uuid){mItemUuid = uuid;}
+    std::string itemUuid(){return mItemUuid;}
 private:
     nodeType mCurCmdType;
     std::string mCurTable;
     int mCurCoding;
     std::string mCurUuid;
+    std::string mItemUuid;
     std::shared_ptr<nodeProperty> mNodeProperty;
 };
 

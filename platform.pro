@@ -1,12 +1,12 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    src \
+    #src \
     #examples \
     #template \
     #logicLayer \
     #EquivalentDevice\
-    #eq \
+    eq \
     #dataAnalysis \
     #mulitThreadSqlite
     #test

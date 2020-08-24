@@ -23,6 +23,6 @@
 #include "./PfCommon/jsoncpp/json.h"
 #include "./PfCommon/TinyXml/tinyxml.h"
 #include "./PfCommon/tools/ut_error.h"
-#include "./PfCommon/rsaEncryption/rsaencryption.h"
+#include "./PfCommon/encryption/rsa.h"
 
 #include "./PfSql/paramsTable/paramstable.h"

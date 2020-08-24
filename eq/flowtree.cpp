@@ -159,6 +159,75 @@ flowTree::~flowTree()
     delete ui;
 }
 
+void flowTree::onSearch(QString uuid, Json::Value condition)
+{
+    if(mCurProjectUuid.compare(uuid) != 0)
+        return ;
+
+    //遍历查找
+    QTreeWidgetItemIterator Itor(ui->treeWidget);
+
+    while (*Itor)
+    {
+        std::shared_ptr<dragRole> drapData = (*Itor)->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+        if( (dragRole::Node_Cmd == drapData->getNodeType())
+                || (dragRole::Node_Param_Group == drapData->getNodeType())
+                )
+        {
+            QString tmpText = (*Itor)->text(Table_Coding_Index);
+            QStringList splitResult = tmpText.split("_");
+            QString table = splitResult.at(0);
+            QString coding = splitResult.at(1);
+
+            bool isFind = false;
+
+            if(!condition["table"].isNull())
+            {
+                if(table.toStdString() == condition["table"].asString())
+                    isFind = true;
+            }
+
+            //当为参数时不判断编码
+            if(dragRole::Node_Param_Group != drapData->getNodeType())
+            {
+                if(!condition["coding"].isNull())
+                {
+                    if(isFind)
+                    {
+                        if(coding.toStdString() == condition["coding"].asString())
+                            isFind = true;
+                        else
+                            isFind = false;
+                    }
+                }
+            }
+            if(isFind)
+            {
+                //找到信息
+
+                Json::Value resultJs;
+
+                //项目名称
+                resultJs["project_name"] = ui->testProductLab->text().toStdString();
+
+                //项目uuid
+                resultJs["project_uuid"] = mCurProjectUuid.toStdString();
+
+                //流程名称
+                resultJs["item_name"] = (*Itor)->text(Name_Index).toStdString();
+
+                //流程uuid
+                resultJs["item_uuid"] = drapData->itemUuid();
+
+                emit searchResult(resultJs);
+            }
+        }
+
+        ++Itor;
+    }
+}
+
 void flowTree::setSystemAndProductName(QString sysName, QString produceName)
 {
     ui->systemNameLab->setText(sysName);
@@ -190,6 +259,18 @@ void flowTree::updateCmdOrParamGroupItemValue(QTreeWidgetItem *item, std::shared
     drapData->getProperty()->getProperty(PROPERTY_DESCRIBE, desJs);
     if(!desJs.isNull())
         item->setText(Name_Index, desJs.asString().c_str());
+
+    //modify xqx 2020-8-24 增加表号编码
+
+    Json::Value tableJs;
+    drapData->getProperty()->getProperty(PROPERTY_BASE_TABLE_NUM, tableJs);
+
+    Json::Value codingJs;
+    drapData->getProperty()->getProperty(PROPERTY_BASE_CODING_NUM, codingJs);
+    if(!codingJs.isNull() && !tableJs.isNull())
+        item->setText(Table_Coding_Index, std::string(tableJs.asString() + "_" + codingJs.asString()).c_str());
+
+    //end
 
     Json::Value startCondJs;
     drapData->getProperty()->getProperty(PROPERTY_START_CONDITION, startCondJs);
@@ -242,6 +323,8 @@ QTreeWidgetItem *flowTree::newCmdItem(QTreeWidgetItem *dropItem)
     std::shared_ptr<dragRole> newData = drapData->clone();
     variant.setValue(newData);
 
+    newData->setItemUuid(QUuid::createUuid().toString().toStdString());
+
     item->setData(0, Qt::UserRole, variant);
 
     updateCmdOrParamGroupItemValue(item, newData);
@@ -259,6 +342,18 @@ void flowTree::updateParamItemValue(QTreeWidgetItem *newChildItem, std::shared_p
     {
         newChildItem->setText(Name_Index, desJs.asString().c_str());
     }
+
+    //modify xqx 2020-8-24 增加表号编码
+
+    Json::Value tableJs;
+    drapData->getProperty()->getProperty(PROPERTY_BASE_TABLE_NUM, tableJs);
+
+    Json::Value codingJs;
+    drapData->getProperty()->getProperty(PROPERTY_BASE_CODING_NUM, codingJs);
+    if(!codingJs.isNull() && !tableJs.isNull())
+        newChildItem->setText(Table_Coding_Index, std::string(tableJs.asString() + "_" + codingJs.asString()).c_str());
+
+    //end
 
     Json::Value changeJs;
     drapData->getProperty()->getProperty(PROPERTY_SIM_MODEL, changeJs);
@@ -345,6 +440,8 @@ QTreeWidgetItem *flowTree::newParamItem(QTreeWidgetItem *dropItem)
         QVariant variant;
         std::shared_ptr<dragRole> newData = drapData->clone();
         variant.setValue(newData);
+
+        newData->setItemUuid(QUuid::createUuid().toString().toStdString());
 
         newChildItem->setData(0, Qt::UserRole, variant);
 
@@ -1051,7 +1148,7 @@ void flowTree::setCmdItemValue(QString subFlowUuid, const std::shared_ptr<dragRo
         //关联数据
         QVariant variant;
         variant.setValue(role);
-        item->setData(0,Qt::UserRole,variant);
+        item->setData(0,Qt::UserRole,variant);        
 
         updateCmdOrParamGroupItemValue(item, role);
 
@@ -1078,6 +1175,8 @@ void flowTree::setParamItemValue(QString subFlowUuid, const std::shared_ptr<drag
         QVariant variant;
         variant.setValue(role);
         groupItem->setData(0,Qt::UserRole,variant);
+
+        role->setItemUuid(QUuid::createUuid().toString().toStdString());
 
         updateCmdOrParamGroupItemValue(groupItem, role);
 

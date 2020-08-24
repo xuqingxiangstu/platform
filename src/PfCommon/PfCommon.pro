@@ -7,8 +7,7 @@ SUBDIRS +=  \
     crc \    
     CalcFormula \
     cmdToJson \
-    dynCreate \
-    rsaEncryption \
+    dynCreate \    
     qftp \
     encryption
 

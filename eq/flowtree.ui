@@ -109,6 +109,11 @@ QTreeView::item:selected:!active {
      </column>
      <column>
       <property name="text">
+       <string>表号编码</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
        <string>值</string>
       </property>
      </column>

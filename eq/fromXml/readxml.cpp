@@ -2,6 +2,7 @@
 #include <QMetaType>
 #include <QDebug>
 #include <QFile>
+#include <QUuid>
 #include <iostream>
 #include "../property/templateproperty.h"
 #include "../src/PfSql/paramsTable/paramstable.h"
@@ -252,6 +253,8 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
         testItemRole->getProperty()->setProperty(PROPERTY_DESCRIBE, Json::Value(des));
         testItemRole->setUuid(testItemUuid);
 
+        testItemRole->setItemUuid(QUuid::createUuid().toString().toStdString());
+
         if(testItemRole->mNodeKey[dragRole::Node_Cmd] == pro->getKey())
         {
             testItemRole->setNodeType(dragRole::Node_Cmd);
@@ -330,6 +333,8 @@ void readXml::readSubFlow(std::string subFlowUuid, TiXmlElement *ele)
 
                 paramRole->setProperty(paramPro);
                 paramRole->setNodeType(dragRole::Node_Param);
+
+                paramRole->setItemUuid(QUuid::createUuid().toString().toStdString());
 
                 subRoles.push_back(paramRole);
             }

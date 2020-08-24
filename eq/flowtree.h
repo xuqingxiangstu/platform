@@ -18,6 +18,7 @@ class flowTree : public QWidget
     Q_OBJECT
     enum TreeWidgetItemIndex{
         Name_Index,
+        Table_Coding_Index,
         Value_Index,
         Param_Change_Index,
         Start_Cond_Index,
@@ -99,6 +100,8 @@ public slots:
     void onFrameTypeChange(QString uuid, QString type);
 
     void onPasteCmdItem(std::shared_ptr<dragRole> role);
+
+    void onSearch(QString uuid, Json::Value condition);
 private:
     void onNewFlowNode();
     void onCopyNode();
@@ -138,6 +141,8 @@ signals:
      * @param value 测试项
      */
     void singleTeset(Json::Value value);
+
+    void searchResult(Json::Value result);
 private:
     /**
      * @brief newItem   新创建Item

@@ -12,6 +12,8 @@ win32:CONFIG(release, debug|release): TARGET =  ../../eq
 else:win32:CONFIG(debug, debug|release): TARGET =  ../../eq
 else:unix:!macx: TARGET =  ../eqTool
 
+QT += network
+
 CONFIG += c++11
 
 TEMPLATE = app
@@ -28,7 +30,8 @@ SOURCES += main.cpp\
     cmddecode.cpp \
     versionform.cpp \
     copypaste.cpp \
-    triggercondition.cpp
+    triggercondition.cpp \
+    searchform.cpp
 
 HEADERS  += mainwindow.h \
     templatetree.h \
@@ -40,7 +43,8 @@ HEADERS  += mainwindow.h \
     cmddecode.h \
     versionform.h \
     copypaste.h \
-    triggercondition.h
+    triggercondition.h \
+    searchform.h
 
 FORMS    += mainwindow.ui \
     templatetree.ui \
@@ -49,7 +53,8 @@ FORMS    += mainwindow.ui \
     recordnavigation.ui \
     newprojectdialog.ui \
     progresswidget.ui \
-    versionform.ui
+    versionform.ui \
+    searchform.ui
 
 LIBS += -L$$OUT_PWD/../ -ljsoncpp
 

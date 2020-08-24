@@ -11,10 +11,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>流程配置工具</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -25,12 +25,50 @@
      <number>0</number>
     </property>
     <property name="bottomMargin">
-     <number>0</number>
+     <number>9</number>
     </property>
     <item>
-     <layout class="QHBoxLayout" name="flowTreeHorizontalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="1,1">
       <item>
-       <widget class="QStackedWidget" name="stackedWidget"/>
+       <widget class="QStackedWidget" name="stackedWidget">
+        <property name="styleSheet">
+         <string notr="true">QWidget#stackedWidget{
+border: 1px solid gray;
+}</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame">
+        <property name="styleSheet">
+         <string notr="true">QFrame#frame {
+border: 1px solid gray;
+}</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout"/>
+         </item>
+        </layout>
+       </widget>
       </item>
      </layout>
     </item>
@@ -42,7 +80,7 @@
      <x>0</x>
      <y>0</y>
      <width>1150</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
@@ -57,12 +95,17 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionSave"/>
+   <addaction name="actionSearch"/>
+   <addaction name="actionDefaultLayout"/>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="pjtDock">
    <property name="styleSheet">
     <string notr="true">QDockWidget &gt; QWidget {
 border: 1px solid gray;
 }</string>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
    </property>
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
@@ -93,7 +136,7 @@ border: 1px solid gray;
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="templateDock">
    <property name="styleSheet">
     <string notr="true">QDockWidget &gt; QWidget {
 border: 1px solid gray;
@@ -128,7 +171,7 @@ border: 1px solid gray;
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_3">
+  <widget class="QDockWidget" name="workAttrDock">
    <property name="styleSheet">
     <string notr="true">QDockWidget &gt; QWidget {
 border: 1px solid gray;
@@ -163,7 +206,7 @@ border: 1px solid gray;
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget_4">
+  <widget class="QDockWidget" name="pjtAttrDock">
    <property name="styleSheet">
     <string notr="true">QDockWidget &gt; QWidget {
 border: 1px solid gray;
@@ -259,6 +302,27 @@ border: 1px solid gray;
    </property>
    <property name="text">
     <string>新建</string>
+   </property>
+  </action>
+  <action name="actionDefaultLayout">
+   <property name="icon">
+    <iconset resource="qrc.qrc">
+     <normaloff>:/icon/Layout.png</normaloff>:/icon/Layout.png</iconset>
+   </property>
+   <property name="text">
+    <string>恢复默认布局</string>
+   </property>
+  </action>
+  <action name="actionSearch">
+   <property name="icon">
+    <iconset resource="qrc.qrc">
+     <normaloff>:/icon/Search_16px.png</normaloff>:/icon/Search_16px.png</iconset>
+   </property>
+   <property name="text">
+    <string>搜索</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>
