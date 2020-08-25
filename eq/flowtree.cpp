@@ -21,6 +21,8 @@
 #include <QFileInfo>
 #include <QUuid>
 #include <QAction>
+#include <QDateTime>
+#include <QDebug>
 
 flowTree::flowTree(QString uuid, int sysType, QWidget *parent) :
     QWidget(parent),
@@ -159,6 +161,38 @@ flowTree::~flowTree()
     delete ui;
 }
 
+void flowTree::onPositionResult(QString projectUuid, QString itemUuid)
+{
+    if(mCurProjectUuid.compare(projectUuid) != 0)
+        return ;
+
+    //遍历查找
+    QTreeWidgetItemIterator Itor(ui->treeWidget);
+
+    while (*Itor)
+    {
+        std::shared_ptr<dragRole> drapData = (*Itor)->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
+
+        if( (dragRole::Node_Cmd == drapData->getNodeType())
+                || (dragRole::Node_Param_Group == drapData->getNodeType())
+                )
+        {
+            if(itemUuid.toStdString() == drapData->itemUuid())
+            {
+                ui->treeWidget->setCurrentItem(*Itor);
+
+                onItemClicked(*Itor, 0);
+
+                mCurSelectItem = *Itor;
+
+                break;
+            }
+        }
+
+        ++Itor;
+    }
+}
+
 void flowTree::onSearch(QString uuid, Json::Value condition)
 {
     if(mCurProjectUuid.compare(uuid) != 0)
@@ -179,29 +213,57 @@ void flowTree::onSearch(QString uuid, Json::Value condition)
             QStringList splitResult = tmpText.split("_");
             QString table = splitResult.at(0);
             QString coding = splitResult.at(1);
+            QString nameText = (*Itor)->text(Name_Index);
 
             bool isFind = false;
 
-            if(!condition["table"].isNull())
+            if(condition["type"].asString() == "tableCodingType")
             {
-                if(table.toStdString() == condition["table"].asString())
-                    isFind = true;
-            }
-
-            //当为参数时不判断编码
-            if(dragRole::Node_Param_Group != drapData->getNodeType())
-            {
-                if(!condition["coding"].isNull())
+                if(!condition["table"].isNull())
                 {
-                    if(isFind)
+                    if(table.toLower().compare(QString::fromStdString(condition["table"].asString()).toLower()) == 0)
+                        isFind = true;
+                }
+
+                //当为参数时不判断编码
+                if(dragRole::Node_Param_Group != drapData->getNodeType())
+                {
+                    if(!condition["coding"].isNull())
                     {
-                        if(coding.toStdString() == condition["coding"].asString())
-                            isFind = true;
+                        if(!condition["table"].isNull() && isFind)
+                        {
+                            if(table.toLower().compare(QString::fromStdString(condition["coding"].asString()).toLower()) == 0)
+                                isFind = true;
+                            else
+                                isFind = false;
+                        }
                         else
-                            isFind = false;
+                        {
+                            if(table.toLower().compare(QString::fromStdString(condition["coding"].asString()).toLower()) == 0)
+                                isFind = true;
+                            else
+                                isFind = false;
+                        }
                     }
                 }
             }
+            else if(condition["type"].asString() == "nameType")
+            {
+                QString strKey = QString::fromStdString(condition["name"].asString());
+
+                if(condition["wholeWords"].asBool())
+                {
+                    if(nameText.compare(strKey) == 0)
+                    {
+                        isFind = true;
+                    }
+                }
+                else
+                {
+                    isFind = nameText.contains(strKey, Qt::CaseInsensitive);
+                }
+            }
+
             if(isFind)
             {
                 //找到信息
@@ -219,6 +281,9 @@ void flowTree::onSearch(QString uuid, Json::Value condition)
 
                 //流程uuid
                 resultJs["item_uuid"] = drapData->itemUuid();
+
+                resultJs["table"] = table.toStdString();
+                resultJs["coding"] = coding.toStdString();
 
                 emit searchResult(resultJs);
             }
@@ -489,7 +554,6 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
 
     std::shared_ptr<dragRole> drapData = item->data(0, Qt::UserRole).value<std::shared_ptr<dragRole>>();
 
-
     if( ( (dragRole::Node_Cmd == drapData->getNodeType()) || (dragRole::Node_Param_Group == drapData->getNodeType())))
     {
         updateFrameAttr(drapData);
@@ -502,14 +566,6 @@ void flowTree::onItemClicked(QTreeWidgetItem * item, int column)
         //更新参数变化属性
         updateParamSelAttr(drapData);
     }
-
-    Json::Value startJs;
-    drapData->getProperty()->getProperty(PROPERTY_START_CONDITION, startJs);
-    if(!startJs.isNull())
-    {
-        qDebug() << startJs.toStyledString().c_str();
-    }
-
 
     //modify xqx 2020-6-20 09:17:05 在此处增加启动条件初始值，在模板中加载时内存太大
 

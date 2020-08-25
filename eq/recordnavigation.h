@@ -55,6 +55,8 @@ public slots:
     void onPropertyValueChange(QString uuid, QString attr, Json::Value value);
 
     void onSaveProject(QTreeWidgetItem *item);
+
+    void onSwitchItem(QString uuid);
 signals:
     /**
      * @brief flowChange    点击流程变化槽

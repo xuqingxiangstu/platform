@@ -4,11 +4,16 @@
         <file>icon/copy.png</file>
         <file>icon/cut.png</file>
         <file>icon/paste.png</file>
-        <file>icon/save.png</file>
         <file>icon/loading.gif</file>
         <file>icon/waiting.gif</file>
-        <file>icon/Layout.png</file>
-        <file>icon/Search_16px.png</file>
+        <file>icon/clear_disable_png.png</file>
+        <file>icon/Flow Chart_16px.png</file>
+        <file>icon/clear.png</file>
         <file>icon/close.png</file>
+        <file>icon/left.png</file>
+        <file>icon/right.png</file>
+        <file>icon/Layout_32px.png</file>
+        <file>icon/Search_32px.png</file>
+        <file>icon/Save_32px.png</file>
     </qresource>
 </RCC>

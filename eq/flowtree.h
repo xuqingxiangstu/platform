@@ -102,6 +102,8 @@ public slots:
     void onPasteCmdItem(std::shared_ptr<dragRole> role);
 
     void onSearch(QString uuid, Json::Value condition);
+
+    void onPositionResult(QString projectUuid, QString itemUuid);
 private:
     void onNewFlowNode();
     void onCopyNode();

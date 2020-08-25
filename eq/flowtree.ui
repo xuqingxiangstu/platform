@@ -83,8 +83,7 @@
    <item>
     <widget class="PfTreeWidget" name="treeWidget">
      <property name="styleSheet">
-      <string notr="true">
-QTreeWidget::item{
+      <string notr="true">QTreeWidget::item{
     background: transparent;
 	border-right:1px solid #E5E5E5;
 }

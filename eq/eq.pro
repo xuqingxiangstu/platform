@@ -12,7 +12,6 @@ win32:CONFIG(release, debug|release): TARGET =  ../../eq
 else:win32:CONFIG(debug, debug|release): TARGET =  ../../eq
 else:unix:!macx: TARGET =  ../eqTool
 
-QT += network
 
 CONFIG += c++11
 
@@ -89,3 +88,5 @@ INCLUDEPATH += $$PWD/QtPropertyBrowser/include
 DEPENDPATH += $$PWD/QtPropertyBrowser/include
 
 LIBS += -L$$OUT_PWD/../../../ -lTinyXml
+
+include (./qtsingleapplication/qtsingleapplication.pri)

@@ -113,6 +113,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(this, &MainWindow::searchResult, mSearchForm, &searchForm::onSearchResult);
     connect(mSearchForm, &searchForm::toSearch, this, &MainWindow::onSearch);
+    connect(mSearchForm, &searchForm::positionResult, this, &MainWindow::onPositionResult);
     connect(mSearchForm, &searchForm::closeSearch, this, [=](){
 
         ui->frame->hide();
@@ -248,7 +249,7 @@ void MainWindow::onFlowChange(QString sysName, int sysType, QString testName, QS
 
         connect(flowWidget, &flowTree::searchResult, this, &MainWindow::searchResult);
         connect(this, &MainWindow::toSearch, flowWidget, &flowTree::onSearch);
-
+        connect(this, &MainWindow::positionResult, flowWidget, &flowTree::onPositionResult);
         connect(mCmdDecodeObj.get(), &cmdDecode::testMsg, this, &MainWindow::onTestMsg);
         mFlowWidgetManager[uuid] = flowWidget;
 
@@ -273,6 +274,33 @@ void MainWindow::onShowMessage(QString msg)
 void MainWindow::onTestMsg(Json::Value msg)
 {
 
+}
+
+void MainWindow::onPositionResult(QString projectUuid, QString itemUuid)
+{
+    if(mCurFlowWidgetUuid.compare(projectUuid) == 0)
+    {
+
+    }
+    else
+    {
+        mRecordNavigationObj->onSwitchItem(projectUuid);
+        if(mFlowWidgetManager.contains(projectUuid))
+        {
+            //已有则切
+            ui->stackedWidget->setCurrentWidget(mFlowWidgetManager[projectUuid]);
+
+            emit showCurItemProperty(projectUuid);
+
+            //更新树(新创建的则不用更新)
+
+            emit updateProject(projectUuid);
+
+            mCurFlowWidgetUuid = projectUuid;
+        }
+    }
+
+    emit positionResult(projectUuid, itemUuid);
 }
 
 MainWindow::~MainWindow()

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>316</height>
+    <width>866</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,9 +20,44 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
-      <widget class="QPushButton" name="clearBtn">
+      <widget class="QToolButton" name="clearBtn">
        <property name="text">
         <string>清除</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qrc.qrc">
+         <normaloff>:/icon/clear.png</normaloff>:/icon/clear.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="leftBtn">
+       <property name="text">
+        <string>上一条</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qrc.qrc">
+         <normaloff>:/icon/left.png</normaloff>:/icon/left.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="rightBtn">
+       <property name="text">
+        <string>下一条</string>
+       </property>
+       <property name="icon">
+        <iconset resource="qrc.qrc">
+         <normaloff>:/icon/right.png</normaloff>:/icon/right.png</iconset>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
        </property>
       </widget>
      </item>
@@ -41,6 +76,24 @@
      </item>
      <item>
       <widget class="QPushButton" name="closeBtn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>24</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16</width>
+         <height>16777215</height>
+        </size>
+       </property>
        <property name="styleSheet">
         <string notr="true">QPushButton#closeBtn{border-image: url(:/icon/close.png);}</string>
        </property>
@@ -58,6 +111,18 @@
      </property>
      <widget class="QWidget" name="searchParamPage">
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
         <widget class="QFrame" name="frame_2">
          <property name="frameShape">
@@ -66,7 +131,7 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
@@ -80,7 +145,7 @@
              <widget class="QComboBox" name="comboBox">
               <item>
                <property name="text">
-                <string>所有项目</string>
+                <string>已打开项目</string>
                </property>
               </item>
               <item>
@@ -106,9 +171,15 @@
            </layout>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBox">
+           <widget class="QGroupBox" name="tableCodingGroupBox">
             <property name="title">
-             <string>搜索</string>
+             <string>表号/编码搜索</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout">
              <item>
@@ -143,6 +214,81 @@
                </item>
               </layout>
              </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_7" stretch=""/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="nameGroupBox">
+            <property name="title">
+             <string>名称搜索</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>名称：</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="nameLineEdit"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <item>
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="wholeWordsCheck">
+                 <property name="text">
+                  <string>全字匹配</string>
+                 </property>
+                 <property name="checked">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
             </layout>
            </widget>
           </item>
@@ -170,6 +316,19 @@
             </item>
            </layout>
           </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
          </layout>
         </widget>
        </item>
@@ -184,6 +343,11 @@
            <string/>
           </property>
          </column>
+         <column>
+          <property name="text">
+           <string/>
+          </property>
+         </column>
         </widget>
        </item>
       </layout>
@@ -192,6 +356,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="qrc.qrc"/>
+ </resources>
  <connections/>
 </ui>

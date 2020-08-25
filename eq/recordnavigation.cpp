@@ -664,6 +664,39 @@ void recordNavigation::onMenuTrigger(QAction *action)
     }
 }
 
+void recordNavigation::onSwitchItem(QString uuid)
+{
+    QTreeWidgetItemIterator Itor(ui->treeWidget);
+
+    while (*Itor)
+    {
+        recordRole role = (*Itor)->data(Name_Index, Qt::UserRole).value<recordRole>();
+
+        if(Flow_Node == role.nodeType)
+        {
+            if(uuid.toStdString() == role.uuid)
+            {
+                mCurSelectUuid = role.uuid.c_str();
+
+                //通知流程树类型变化
+                Json::Value tmJs;
+                role.mNodeProperty->getProperty(PROPERTY_FRAME, tmJs);
+
+                emit frameTypeChange(mCurSelectUuid, QString::fromStdString(tmJs.asString()));
+
+                //属性变化
+                emit toShowProperty(mUiUuid, role.mNodeProperty->getJson());
+
+                ui->treeWidget->setCurrentItem(*Itor);
+                break;
+            }
+        }
+
+        ++Itor;
+    }
+
+}
+
 void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
 {
     if(!item)

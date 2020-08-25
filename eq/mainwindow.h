@@ -48,6 +48,8 @@ public slots:
     void onTestMsg(Json::Value msg);
 
     void onSearch(Json::Value condition);
+
+    void onPositionResult(QString projectUuid, QString itemUuid);
 signals:
     void valueChange(QString uuid, QString attr, Json::Value val);
     void showCurItemProperty(QString uuid);
@@ -67,6 +69,7 @@ signals:
 
     void toSearch(QString uuid, Json::Value condition);
     void searchResult(Json::Value result);
+    void positionResult(QString projectUuid, QString itemUuid);
 private:
     /**
      * @brief initNavigationProperty    初始化导航属性

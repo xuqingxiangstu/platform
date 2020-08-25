@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>流程配置工具</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="qrc.qrc">
+    <normaloff>:/icon/Flow Chart_16px.png</normaloff>:/icon/Flow Chart_16px.png</iconset>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <property name="leftMargin">
@@ -274,7 +278,7 @@ border: 1px solid gray;
   <action name="actionSave">
    <property name="icon">
     <iconset resource="qrc.qrc">
-     <normaloff>:/icon/save.png</normaloff>:/icon/save.png</iconset>
+     <normaloff>:/icon/Save_32px.png</normaloff>:/icon/Save_32px.png</iconset>
    </property>
    <property name="text">
     <string>保存</string>
@@ -307,7 +311,7 @@ border: 1px solid gray;
   <action name="actionDefaultLayout">
    <property name="icon">
     <iconset resource="qrc.qrc">
-     <normaloff>:/icon/Layout.png</normaloff>:/icon/Layout.png</iconset>
+     <normaloff>:/icon/Layout_32px.png</normaloff>:/icon/Layout_32px.png</iconset>
    </property>
    <property name="text">
     <string>恢复默认布局</string>
@@ -316,7 +320,7 @@ border: 1px solid gray;
   <action name="actionSearch">
    <property name="icon">
     <iconset resource="qrc.qrc">
-     <normaloff>:/icon/Search_16px.png</normaloff>:/icon/Search_16px.png</iconset>
+     <normaloff>:/icon/Search_32px.png</normaloff>:/icon/Search_32px.png</iconset>
    </property>
    <property name="text">
     <string>搜索</string>
