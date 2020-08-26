@@ -4,9 +4,9 @@
 #include <QDebug>
 #include <QDateTime>
 
-#include "../../src/PfSql/paramsTable/sysinterfacetable.h"
-#include "../../src/PfSql/paramsTable/udptable.h"
-#include "../../src/PfCommon/crc/crc.h"
+#include "../../../src/PfSql/paramsTable/sysinterfacetable.h"
+#include "../../../src/PfSql/paramsTable/udptable.h"
+#include "../../../src/PfCommon/crc/crc.h"
 #include "../../virtualParams/virtualparams.h"
 
 using namespace Pf::PfIcdWorkBench;

@@ -12,8 +12,8 @@
 #include <QListWidgetItem>
 
 #include "./test/testflow.h"
-#include "../../src/PfAdapter/PfAdapterManager/pfadaptermanager.h"
-#include "../../src/PfCommon/jsoncpp/json.h"
+#include "../src/PfAdapter/PfAdapterManager/pfadaptermanager.h"
+#include "../src/PfCommon/jsoncpp/json.h"
 #include "simulation/simulation.h"
 #include "delegate/qtreeitemdelegate.h"
 #include <QProcess>

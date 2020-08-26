@@ -4,12 +4,12 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QString>
-#include "../../src/PfCommon/crc/crc.h"
+#include "../../../src/PfCommon/crc/crc.h"
 #include "../../virtualParams/virtualparams.h"
 
-#include "../../src/PfCommon/crc/crc.h"
-#include "../../src/PfSql/paramsTable/udptable.h"
-#include "../../src/PfSql/paramsTable/sysinterfacetable.h"
+#include "../../../src/PfCommon/crc/crc.h"
+#include "../../../src/PfSql/paramsTable/udptable.h"
+#include "../../../src/PfSql/paramsTable/sysinterfacetable.h"
 
 using namespace Pf::PfIcdWorkBench;
 

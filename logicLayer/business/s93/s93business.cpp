@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QDateTime>
 
-#include "../../src/PfCommon/crc/crc.h"
+#include "../../../src/PfCommon/crc/crc.h"
 #include "../../virtualParams/virtualparams.h"
 
 using namespace Pf::PfIcdWorkBench;

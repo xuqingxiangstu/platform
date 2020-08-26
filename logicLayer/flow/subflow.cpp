@@ -92,6 +92,12 @@ Json::Value subFlow::getRunItems()
     if(subFlowJs["info"].size() > 0)
     {
         subFlowJs["table"] = subFlowJs["info"][0]["table"].asString();
+
+        //modify xqx 20200825 执行界面需要显示编码
+
+        subFlowJs["coding"] = subFlowJs["info"][0]["coding"].asString();
+
+        //end
     }
 
     subFlowJs["sub_flow_uuid"] = mUuid;

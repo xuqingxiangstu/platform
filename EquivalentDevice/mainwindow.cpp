@@ -20,9 +20,9 @@
 #include "./simulation/simulation.h"
 #include "./sysManage/sysmanageui.h"
 #include "dbtableopt.h"
-#include "../../src/PfCommon/cmdToJson/cmdtojson.h"
-#include "../../src/PfCommon/jsoncpp/json.h"
-#include "../../src/PfCommon/tools/ut_error.h"
+#include "../src/PfCommon/cmdToJson/cmdtojson.h"
+#include "../src/PfCommon/jsoncpp/json.h"
+#include "../src/PfCommon/tools/ut_error.h"
 #include <QJsonObject>
 #include <QScrollBar>
 #include <QInputDialog>
