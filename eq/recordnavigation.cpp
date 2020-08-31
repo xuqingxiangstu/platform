@@ -697,6 +697,33 @@ void recordNavigation::onSwitchItem(QString uuid)
 
 }
 
+void recordNavigation::loadAllRecord()
+{
+    QTreeWidgetItemIterator Itor(ui->treeWidget);
+
+    while (*Itor)
+    {
+        recordRole role = (*Itor)->data(Name_Index, Qt::UserRole).value<recordRole>();
+        if(Flow_Node == role.nodeType)
+        {
+            emit flowChange((*Itor)->parent()->text(Name_Index), role.sysType, (*Itor)->text(Name_Index),role.uuid.c_str(), mNewUuid.contains(role.uuid.c_str()));
+        }
+
+        ++Itor;
+    }
+
+    //切回之前
+    QTreeWidgetItem *curItem = ui->treeWidget->currentItem();
+    if(curItem)
+    {
+        recordRole role = curItem->data(Name_Index, Qt::UserRole).value<recordRole>();
+        if(Flow_Node == role.nodeType)
+        {
+            emit flowChange(curItem->parent()->text(Name_Index), role.sysType, curItem->text(Name_Index),mCurSelectUuid, mNewUuid.contains(mCurSelectUuid));
+        }
+    }
+}
+
 void recordNavigation::onItemClicked(QTreeWidgetItem * item, int column)
 {
     if(!item)

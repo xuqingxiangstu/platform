@@ -93,6 +93,8 @@ public:
      */
     QStringList getModifyProject();
     QTreeWidgetItem *curItem(QString uuid);
+
+    void loadAllRecord();
 private:    
     /**
      * @brief findItem  根据Uuid查找item

@@ -13,7 +13,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    isExit(false)
+    isExit(false),
+    mIsLoadAllWidget(false)
 {
     ui->setupUi(this);
 
@@ -124,6 +125,18 @@ MainWindow::MainWindow(QWidget *parent) :
            ui->frame->show();
 
        mSearchForm->onChanageSearch();
+
+       //modify xqx 2020-8-31 点击后首次加载所有窗体，为了搜索所有
+        if(!mIsLoadAllWidget)
+        {
+            mIsLoadAllWidget = true;
+
+            //获取所有记录uuid
+            this->setEnabled(false);
+            mRecordNavigationObj->loadAllRecord();
+            this->setEnabled(true);
+        }
+       //end
     });
 
     QSplitter * mainSplitter = new QSplitter(Qt::Vertical);

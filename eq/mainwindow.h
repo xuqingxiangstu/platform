@@ -87,6 +87,7 @@ private:
     QStringList mSaveProjectUuid;
     std::shared_ptr<cmdDecode> mCmdDecodeObj;   //协议解析句柄
     versionForm *mVersionWidget;  ///< 版本号
+    bool mIsLoadAllWidget;
 private:
     Ui::MainWindow *ui;
 };
