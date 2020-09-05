@@ -465,8 +465,14 @@ namespace Pf
                 return;
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues((unsigned int)tableNum, paramValues);
-
+            if(!paramsTable::getInstance()->getValues((unsigned int)tableNum, paramValues))
+            {
+                regionValue["table_is_find"] = false;
+            }
+            else
+            {
+                regionValue["table_is_find"] = true;
+            }
             dataStorage data;
             int preValue = 0;
             int preStartPos = 0;
@@ -501,14 +507,23 @@ namespace Pf
                     //end
 
                     std::string calResult = std::string((const char*)&u8Msg[startPos], preValue);
-
+                    tmpValue["src_value"] = QByteArray((const char*)&u8Msg[startPos], preValue).toHex().toStdString();
                     tmpValue["value"] = calResult;
 
                     preStartPos = startPos + preValue;
                 }
+                else if(nRawType == dataType)
+                {
+                    std::string calResult = QByteArray((const char*)&u8Msg[startPos], byteSize).toHex().toStdString();
+                    tmpValue["src_value"] = calResult;
+                    tmpValue["value"] = calResult;
+                    preStartPos = startPos + byteSize;
+                }
                 else
                 {
                     unDataConvert pValue = data.getAutoData(u8Msg, u32Size, startPos, byteSize, bitPos, bitSize, bigSmall);
+
+                    tmpValue["src_value"] = QByteArray((const char*)&u8Msg[startPos], byteSize).toHex().toStdString();
 
                     preValue = pValue.i32Value;
                     preStartPos = startPos + byteSize;

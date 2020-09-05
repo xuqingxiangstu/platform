@@ -52,11 +52,7 @@ void middleArgExtract::extract(const QString &uuid, const Json::Value &otherPara
                 if(!newJs[index]["src_value"].isNull())
                 {
                     srcValue = newJs[index]["src_value"].asString();
-                }
-                else
-                {
-                    continue;
-                }
+                }                
 
                 judge(table, coding, value,srcValue);
             }
@@ -73,15 +69,27 @@ void middleArgExtract::extract(const QString &uuid, const Json::Value &otherPara
             if(!regionValue["table_num"].isNull())
             {
                 unsigned int table = regionValue["table_num"].asUInt();
+                bool isFind = regionValue["table_is_find"].asBool();
 
-                Json::Value array = regionValue["data"];
-                for(int index = 0; index < array.size(); index++)
+                if(isFind)
                 {
-                    int coding = array[index]["coding"].asInt();                    
-                    std::string srcValue = "";
-                    srcValue = array[index]["src_value"].asString();
+                    Json::Value array = regionValue["data"];
+                    for(int index = 0; index < array.size(); index++)
+                    {
+                        int coding = array[index]["coding"].asInt();
+                        std::string srcValue = "";
+                        srcValue = array[index]["src_value"].asString();
 
-                    judge(table, coding, array[index]["value"], srcValue);
+                        judge(table, coding, array[index]["value"], srcValue);
+                    }
+                }
+                else
+                {
+                    QString errorMsg;
+                    errorMsg += "数据库获取表号(";
+                    errorMsg += regionValue["table_num"].asString().c_str();
+                    errorMsg += ")失败";
+                    emit showMessage(errorMsg ,false);
                 }
             }
         }
@@ -204,6 +212,8 @@ void middleArgExtract::judge(const unsigned int &table, const unsigned int &codi
         objJs.insert(RESULT_TABLE_IS_OVER, 0);
 
     emit writeToDb(objJs);
+
+    emit showResult(objJs);
 
 #ifdef PRINT_RESULT
 

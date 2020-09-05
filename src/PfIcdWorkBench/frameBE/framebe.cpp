@@ -1124,6 +1124,7 @@ namespace Pf
                 std::string codeKey = "info_" + std::to_string(type + 1) + "_code";
                 std::string tableKey = "info_" + std::to_string(type + 1) + "_table";
                 std::string valueKey = "info_" + std::to_string(type + 1) + "_data";
+                std::string srcValueKey = "info_" + std::to_string(type + 1) + "_src_data";
 
                 if(!result["infoWord"].isNull())
                 {
@@ -1143,6 +1144,11 @@ namespace Pf
 
                         if(!infoWord[index][valueKey].isNull())
                             tmpJs["value"] = infoWord[index][valueKey];
+
+                        if(!infoWord[index][srcValueKey].isNull())
+                        {
+                            tmpJs["src_value"] = infoWord[index][srcValueKey].asString();
+                        }
 
                         value.append(tmpJs);
                     }
@@ -1248,14 +1254,21 @@ namespace Pf
         {
             //从数据库中获取参数信息
             Json::Value paramValues;
-            paramsTable::getInstance()->getValues(tableNum, paramValues);
+            if(!paramsTable::getInstance()->getValues(tableNum, paramValues))
+            {
+                regionValue["table_is_find"] = false;
+            }
+            else
+            {
+                regionValue["table_is_find"] = true;
+            }
 
             dataStorage data;
             int preValue = 0;
             int preStartPos = 0;
 
             //TODO:表号
-            regionValue["table_num"] = tableNum;
+            regionValue["table_num"] = tableNum;                       
 
             Json::Value dataJs;
 
@@ -1286,13 +1299,24 @@ namespace Pf
 
                     std::string calResult = std::string((const char*)&u8Msg[startPos], preValue);
 
+                    tmpValue["src_value"] = QByteArray((const char*)&u8Msg[startPos], preValue).toHex().toStdString();
+
                     tmpValue["value"] = calResult;
 
                     preStartPos = startPos + preValue;
                 }
+                else if(nRawType == dataType)
+                {
+                    std::string calResult = QByteArray((const char*)&u8Msg[startPos], byteSize).toHex().toStdString();
+                    tmpValue["src_value"] = calResult;
+                    tmpValue["value"] = calResult;
+                    preStartPos = startPos + byteSize;
+                }
                 else
                 {
                     unDataConvert pValue = data.getAutoData(u8Msg, u32Size, startPos, byteSize, bitPos, bitSize, bigSmall);
+
+                    tmpValue["src_value"] = QByteArray((const char*)&u8Msg[startPos], byteSize).toHex().toStdString();
 
                     preValue = pValue.i32Value;
                     preStartPos = startPos + byteSize;

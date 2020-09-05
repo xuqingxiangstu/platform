@@ -3,6 +3,7 @@
 #include "./fileAnalysis/analysis.h"
 #include "./property/templateproperty.h"
 #include "./argSave/saveDataBaseTask.h"
+#include "manualtestdialog.h"
 
 #include <QDir>
 #include <QFile>
@@ -164,6 +165,13 @@ MainWindow::MainWindow(QWidget *parent) :
     mVersionWidget = new versionForm();
 
     ui->mainToolBar->addWidget(mVersionWidget);
+
+    connect(ui->actionManualTest, &QAction::triggered, [=]{
+        manualTestDialog mTDlg;
+        mTDlg.exec();
+    });
+
+
 }
 
 MainWindow::~MainWindow()

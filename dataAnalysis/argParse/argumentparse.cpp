@@ -16,12 +16,28 @@ argumentParse::argumentParse(QObject *parent) : QObject(parent)
     auto middleObj = std::make_shared<middleArgExtract>();
 
     connect(middleObj.get(), &middleArgExtract::writeToDb, this, &argumentParse::toDataBase);
+    connect(middleObj.get(), &middleArgExtract::showResult, this, &argumentParse::toShowResult);
+    connect(middleObj.get(), &middleArgExtract::showMessage, this, &argumentParse::showMessage);
 
     mArgExtracts[FRAME_MIDDLE] = middleObj;
 
 
-    mArgExtracts[FRAME_BE] = std::make_shared<beArgExtract>();
-    mArgExtracts[FRAME_FE] = std::make_shared<feArgExtract>();
+    auto beObj = std::make_shared<beArgExtract>();
+
+    connect(beObj.get(), &beArgExtract::writeToDb, this, &argumentParse::toDataBase);
+    connect(beObj.get(), &beArgExtract::showResult, this, &argumentParse::toShowResult);
+    connect(beObj.get(), &beArgExtract::showMessage, this, &argumentParse::showMessage);
+
+    mArgExtracts[FRAME_BE] = beObj;
+
+
+    auto feObj = std::make_shared<feArgExtract>();
+
+    connect(feObj.get(), &feArgExtract::writeToDb, this, &argumentParse::toDataBase);
+    connect(feObj.get(), &feArgExtract::showResult, this, &argumentParse::toShowResult);
+    connect(feObj.get(), &feArgExtract::showMessage, this, &argumentParse::showMessage);
+
+    mArgExtracts[FRAME_FE] = feObj;
 }
 
 void argumentParse::parse(QString uuid, Json::Value param, QByteArray vaildMsg)
@@ -47,12 +63,10 @@ void argumentParse::parse(QString uuid, Json::Value param, QByteArray vaildMsg)
         return ;
     }
 
-
     Json::Value result;
 
     try
     {
-
         frameObj->parse((unsigned char*)vaildMsg.data(), vaildMsg.size(), result);                
 
         //参数提取

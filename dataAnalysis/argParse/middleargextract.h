@@ -19,6 +19,17 @@ signals:
      * @param value     值
      */
     void writeToDb(QJsonObject value);
+
+    void showResult(QJsonObject value);
+
+    /**
+     * @brief showMessage   显示消息提示
+     * @param msg           消息
+     * @param state         消息状态
+     * -true:正常
+     * -false:异常
+     */
+    void showMessage(QString msg, bool state);
 public:
     void extract(const QString &uuid, const Json::Value &otherParam, std::shared_ptr<PfIcdWorkBench::frameObj> frameObj, const Json::Value &result) override;
 private:

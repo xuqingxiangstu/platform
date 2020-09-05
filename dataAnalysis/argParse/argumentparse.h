@@ -36,6 +36,12 @@ signals:
      * @param value         数据
      */
     void toDataBase(QJsonObject value);
+
+    /**
+     * @brief toShowResult  显示解析结果
+     * @param value
+     */
+    void toShowResult(QJsonObject value);
 public slots:
     /**
      * @brief parse     参数解析

@@ -73,6 +73,7 @@
    </attribute>
    <addaction name="actionSave"/>
    <addaction name="actionParse"/>
+   <addaction name="actionManualTest"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockWidget">
@@ -329,9 +330,12 @@ border: 1px solid gray;
     <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="action12">
+  <action name="actionManualTest">
    <property name="text">
-    <string>12</string>
+    <string>手动测试</string>
+   </property>
+   <property name="toolTip">
+    <string>手动测试</string>
    </property>
   </action>
  </widget>

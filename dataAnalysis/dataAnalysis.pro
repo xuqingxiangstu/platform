@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     dssingleupdatethread.cpp \
     dsfile.cpp \
     readfilethread.cpp \
-    textedit.cpp
+    textedit.cpp \
+    manualtestdialog.cpp
 
 HEADERS  += mainwindow.h \
     projectnavigation.h \
@@ -52,7 +53,8 @@ HEADERS  += mainwindow.h \
     dssingleupdatethread.h \
     dsfile.h \
     readfilethread.h \
-    textedit.h
+    textedit.h \
+    manualtestdialog.h
 
 FORMS    += mainwindow.ui \
     projectnavigation.ui \
@@ -64,7 +66,8 @@ FORMS    += mainwindow.ui \
     dssingleimg.ui \
     dsmuiltimg.ui \
     versionform.ui \
-    dsfile.ui
+    dsfile.ui \
+    manualtestdialog.ui
 
 include($$PWD/property/property.pri)
 include($$PWD/propertyui/propertyui.pri)
